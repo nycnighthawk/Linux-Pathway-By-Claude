@@ -11,14 +11,15 @@ compliance-as-code,ComplianceAsCode / SCAP Security Guide rules,BSD-3-Clause,ful
 nist-sp800-53,NIST SP 800-53 Rev. 5 controls (OSCAL),US-Gov-PD,full,adapt,PD,5.2.0:sha256:64ca6b4161de51ab,2026-11-01,1216
 nist-sp800-guides,NIST SP 800-123 (server security) and SP 800-190 (container security),US-Gov-PD,full,adapt,PD,sp800-123:182ae5d23011;sp800-190:0ebad52c4a3a,2026-11-01,101
 disa-stig,"DISA STIGs (RHEL 10, RHEL 9, Ubuntu 24.04, Kubernetes)",US-Gov-PD,full,adapt,PD,U_RHEL_10_V1R3_STIG;U_RHEL_9_V2R10_STIG;U_CAN_Ubuntu_24-04_LTS_V1R7_STIG;U_Kubernetes_V2R6_STIG,2026-11-01,1171
-archwiki,ArchWiki,GFDL-1.3-or-later,link,link-only,B,,,1
-ansible-docs,Ansible community documentation,GPL-3.0-or-later,link,link-only,C,,,1
-man-pages,Linux man-pages project,various (per page),link,link-only,Ref,,,1
+archwiki,ArchWiki (via Arch's official arch-wiki-docs package),GFDL-1.3-or-later,full,link-only,B,arch-wiki-docs-20261101-1-any.pkg.tar.zst,2026-11-01,2080
+ansible-docs,Ansible community documentation (GitHub source),GPL-3.0-or-later,full,link-only,C,33315864fedd0e340ceed7a8468254eb123836eb,2026-11-01,712
+samba-docs,"Samba manual pages (GitHub source, docs-xml/manpages)",GPL-3.0-or-later,full,link-only,C,f6fddd2232c9f94b591d52b5689d3ee03cc19be6,2026-11-01,1376
+man-pages,Linux man pages (man7.org),various (per page),full,link-only,Ref,2026-11-01:pages=400,2026-11-01,5034
+cilium-docs,Cilium documentation (stable),Apache-2.0,full,adapt,Permissive,2026-11-01:pages=150,2026-11-01,1137
+docker-docs,"Docker documentation (engine, build, compose)",Apache-2.0,full,adapt,Permissive,2026-11-01:pages=279,2026-11-01,2736
+ms-learn-adds,Microsoft Learn: AD DS and OpenSSH for Windows,CC-BY-4.0,full,adapt,A-compatible,2026-11-01:pages=200,2026-11-01,2160
+freeipa-docs,FreeIPA documentation,NOASSERTION,outline,link-only,Ref,2026-11-01:pages=200,2026-11-01,1975
+lfd103,LFD103 A Beginner's Guide to Linux Kernel Development (course page),Proprietary,outline,link-only,Ref,2026-11-01:pages=1,2026-11-01,1
 samba-wiki,Samba wiki,NOASSERTION,link,link-only,Ref,,,1
-freeipa-docs,FreeIPA documentation,NOASSERTION,link,link-only,Ref,,,1
-cilium-docs,Cilium documentation,NOASSERTION,link,link-only,Ref,,,1
-docker-docs,Docker documentation,NOASSERTION,link,link-only,Ref,,,1
-ms-learn-adds,Microsoft Learn: AD DS and OpenSSH for Windows,CC-BY-4.0 (verify per repo),link,link-only,Ref,,,1
-lfd103,LFD103 A Beginner's Guide to Linux Kernel Development,Proprietary,link,link-only,Ref,,,1
 tlcl,The Linux Command Line (W. Shotts),CC-BY-NC-ND-3.0,link,excluded,Ref,,,1
 cis-benchmarks,CIS Benchmarks,CC-BY-NC-SA-4.0,link,excluded,Ref,,,1

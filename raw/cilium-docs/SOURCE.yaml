@@ -1,0 +1,23 @@
+id: cilium-docs
+name: Cilium documentation (stable)
+license: Apache-2.0
+license_note: null
+mode: full
+reuse: adapt
+stream: Permissive
+retrieved: '2026-11-01'
+upstream:
+- https://docs.cilium.io/en/stable/overview/
+- https://docs.cilium.io/en/stable/network/
+- https://docs.cilium.io/en/stable/security/
+- https://docs.cilium.io/en/stable/observability/
+- https://docs.cilium.io/en/stable/gettingstarted/
+text_files: 150
+pages: 150
+failed:
+- 404 https://docs.cilium.io/en/stable/network/bgp-control-plane/
+- 404 https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/backendtlspolicy/github-mkcert
+blocked: []
+queue_left: 0
+cap_reached: false
+pin: 2026-11-01:pages=150

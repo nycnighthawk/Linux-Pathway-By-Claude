@@ -1,0 +1,8 @@
+Cilium documentation (stable)
+Licence: Apache-2.0
+
+
+
+Retrieved with a headless browser (Playwright) from: https://docs.cilium.io/en/stable/overview/, https://docs.cilium.io/en/stable/network/, https://docs.cilium.io/en/stable/security/, https://docs.cilium.io/en/stable/observability/, https://docs.cilium.io/en/stable/gettingstarted/
+Licence basis: Docs are built from Documentation/ in github.com/cilium/cilium (Apache-2.0); robots.txt allows /en/stable (D-019).
+Curated into Linux-Pathway-By-Claude by `lpc sync`. See SOURCE.yaml for provenance.

@@ -1,0 +1,119 @@
+---
+{"title": "io_setup(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/io_setup.2.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+---
+
+# io_setup(2) --- Linux manual page
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| [NAME](#NAME) \| [LIBRARY](#LIBRARY) \| [SYNOPSIS](#SYNOPSIS) \| [DESCRIPTION](#DESCRIPTION) \| [RETURN VALUE](#RETURN_VALUE) \| [ERRORS](#ERRORS) \| [VERSIONS](#VERSIONS) \| [STANDARDS](#STANDARDS) \| [HISTORY](#HISTORY) \| [SEE ALSO](#SEE_ALSO) \| [COLOPHON](#COLOPHON) |                                   |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+|                                                                                                                                                                                                                                                                                 |                                   |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+
+    io_setup(2)                System Calls Manual                io_setup(2)
+
+## [](#NAME)NAME
+
+           io_setup - create an asynchronous I/O context
+
+## [](#LIBRARY)LIBRARY
+
+           Standard C library (libc, -lc)
+
+## [](#SYNOPSIS)SYNOPSIS
+
+           #include <linux/aio_abi.h>
+           #include <sys/syscall.h>    /* Definition of SYS_* constants */
+           #include <unistd.h>
+
+           long syscall(SYS_io_setup, unsigned int n, aio_context_t *ctx_idp);
+
+## [](#DESCRIPTION)DESCRIPTION
+
+           Note: you probably want to use the io_setup(3) wrapper function
+           provided by libaio; see VERSIONS.
+
+           The io_setup() system call creates an asynchronous I/O context
+           suitable for concurrently processing n operations.  The ctx_idp
+           argument must not point to an AIO context that already exists, and
+           must be initialized to 0 prior to the call.  On successful
+           creation of the AIO context, *ctx_idp is filled in with the
+           resulting handle.
+
+## [](#RETURN_VALUE)RETURN VALUE
+
+           On success, io_setup() returns 0.  On error, -1 is returned, and
+           errno is set to indicate the error.
+
+## [](#ERRORS)ERRORS
+
+           EAGAIN The specified n exceeds the limit of available events, as
+                  defined in /proc/sys/fs/aio-max-nr (see proc_sys_fs(5)).
+
+           EFAULT An invalid pointer is passed for ctx_idp.
+
+           EINVAL *ctx_idp is not initialized to 0.
+
+           EINVAL The specified n exceeds internal limits.  n should be
+                  greater than 0.
+
+           ENOMEM Insufficient kernel resources are available.
+
+           ENOSYS io_setup() is not implemented on this architecture.
+
+## [](#VERSIONS)VERSIONS
+
+           libaio ⟨https://pagure.io/libaio⟩ provides a wrapper function with
+           the same name, but different prototype and return value.  You
+           probably want to use that wrapper.
+
+## [](#STANDARDS)STANDARDS
+
+           Linux.
+
+## [](#HISTORY)HISTORY
+
+           Linux 2.5.
+
+## [](#SEE_ALSO)SEE ALSO
+
+           io_cancel(2), io_destroy(2), io_getevents(2), io_submit(2),
+           io_setup(3), aio(7)
+
+## [](#COLOPHON)COLOPHON
+
+           This page is part of the man-pages (Linux kernel and C library
+           user-space interface documentation) project.  Information about
+           the project can be found at 
+           ⟨https://www.kernel.org/doc/man-pages/⟩.  If you have a bug report
+           for this manual page, see
+           ⟨https://git.kernel.org/pub/scm/docs/man-pages/man-pages.git/tree/CONTRIBUTING⟩.
+           This page was obtained from the tarball man-pages-6.19.tar.gz
+           fetched from
+           ⟨https://mirrors.edge.kernel.org/pub/linux/docs/man-pages/⟩ on
+           2026-09-09.  If you discover any rendering problems in this HTML
+           version of the page, or you believe there is a better or more up-
+           to-date source for the page, or you have corrections or
+           improvements to the information in this COLOPHON (which is not
+           part of the original manual page), send a mail to
+           man-pages@man7.org
+
+    Linux man-pages 6.19            2026-04-11                    io_setup(2)
+
+------------------------------------------------------------------------
+
+Pages that refer to this page: [fork(2)](../man2/fork.2.html),  [io_cancel(2)](../man2/io_cancel.2.html),  [io_destroy(2)](../man2/io_destroy.2.html),  [io_getevents(2)](../man2/io_getevents.2.html),  [io_submit(2)](../man2/io_submit.2.html),  [syscalls(2)](../man2/syscalls.2.html),  [io_setup(3)](../man3/io_setup.3.html),  [proc_sys_fs(5)](../man5/proc_sys_fs.5.html),  [systemd.exec(5)](../man5/systemd.exec.5.html),  [aio(7)](../man7/aio.7.html)
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+| HTML rendering created 2026-09-09 by [Michael Kerrisk](https://man7.org/mtk/index.html), author of [*The Linux Programming Interface*](https://man7.org/tlpi/). |                       | [](https://man7.org/tlpi/) |
+|                                                                                                                                                                 |                       |                            |
+| For details of in-depth **Linux/UNIX system programming training courses** that I teach, look [here](https://man7.org/training/).                               |                       |                            |
+|                                                                                                                                                                 |                       |                            |
+| Hosting by [jambit GmbH](https://www.jambit.com/index_en.html).                                                                                                 |                       |                            |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+
+------------------------------------------------------------------------
