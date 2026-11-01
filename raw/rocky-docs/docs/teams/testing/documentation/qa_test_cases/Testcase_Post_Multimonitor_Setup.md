@@ -1,0 +1,52 @@
+---
+title: QA:Testcase Multimonitor Setup
+author: Lukas Magauer
+contributors: Chris Stackpole
+tested_with: 8.10, 9.7, 10.1
+tags:
+  - testing
+  - qa
+revision_date: 2026-05-08
+rc:
+  prod: Rocky Linux
+  ver:
+    - 8
+    - 9
+    - 10
+  level: Final
+render_macros: true
+---
+
+!!! info "Release relevance"
+    This Testcase applies the following versions of {{ rc.prod }}: {% for version in rc.ver %}{{ version }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+!!! info "Associated release criterion"
+    This test case is associated with the [Release_Criteria#dual-monitor-setup-desktop-only](../../guidelines/release_criteria/r9/9_release_criteria.md#dual-monitor-setup-desktop-only) release criterion. If you are doing release validation testing, a failure of this test case may be a breach of that release criterion.
+
+## Description
+
+This test covers the check if GNOME behaves as it should in multi-monitor setups.
+
+All items in this category are ⬇️ - Low priority. It would be good to have this tested, but if it isn't or if it fails then it is inconsequential. 
+
+## Releases and Architectures
+
+| Distro         | aarch64 | ppc64le | riscv64 | s390x | x86_64 |
+| -------------- | ------- | ------- | ------- | ----- | ------ |
+| Rocky Linux  9 | ⬇️       | ⬇️       | N/A     | ⬇️     | ⬇️      |
+| Rocky Linux 10 | ⬇️       | ⬇️       | ⬇️       | ⬇️     | ⬇️      |
+
+## Setup
+
+You will need either a machine which can be reinstalled with multiple screens, or a virtualization software which is capable of providing multiple screens (like VMware Workstation ([Pro](https://www.vmware.com/products/workstation-pro/workstation-pro-evaluation.html) or [Player](https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html) or [VMware Fusion](https://www.vmware.com/products/fusion/fusion-evaluation.html))
+
+## How to test
+
+1. Run installer with multiple screens connected and install with either the Workstation or Graphical Server group
+2. Login to the machine after the finished install
+
+## Expected Results
+
+There shouldn't be any graphical glitches, or scaling issues through the install and the usage.
+
+{% include 'teams/testing/qa_testcase_bottom.md' %}

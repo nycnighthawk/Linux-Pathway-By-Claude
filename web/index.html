@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linux Pathway Content Catalog</title>
+<style>
+/* Layout idea: a dense research console — query bar, facet rail, ranked result list. */
+:root{
+  --bg:#f4f6f8; --surface:#fff; --ink:#17202a; --muted:#5b6672; --line:#d8dee4; --accent:#1f5fa8; --accent-soft:#e3edf8;
+  --ok:#2e7d5b; --warn:#a86400;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{--bg:#11161c;--surface:#1a222b;--ink:#e4e9ee;--muted:#9aa6b2;--line:#2d3843;--accent:#6ea8ec;--accent-soft:#1d2e42;--ok:#5cc495;--warn:#e3a24a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body)}
+header{background:var(--surface);border-bottom:1px solid var(--line);padding:16px 20px}
+h1{margin:0;font-size:22px}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.bar{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+input[type=search]{flex:1;min-width:240px;font:inherit;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{display:grid;grid-template-columns:260px 1fr;gap:16px;padding:16px 20px;max-width:1300px;margin:0 auto}
+aside{display:flex;flex-direction:column;gap:14px}
+fieldset{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:10px 12px;margin:0}
+legend{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;padding:0 4px}
+select{width:100%;font:inherit;font-size:14px;padding:5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+label.chk{display:flex;gap:6px;align-items:center;font-size:14px;padding:2px 0}
+.count{color:var(--muted);font-size:13px;margin-bottom:8px}
+.res{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.res h2{font-size:16px;margin:0 0 2px}
+.res h2 a{color:var(--ink);text-decoration:none}
+.res h2 a:hover{text-decoration:underline}
+.sec{color:var(--muted);font-size:13px}
+.ex{margin:6px 0 8px;font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.t{font:600 11px var(--mono);padding:1px 6px;border-radius:3px;background:var(--accent-soft);color:var(--ink)}
+.t.adapt{background:transparent;border:1px solid var(--ok);color:var(--ok)}
+.t.link-only{background:transparent;border:1px solid var(--warn);color:var(--warn)}
+.cmd{font:12px var(--mono);color:var(--muted);cursor:pointer;border:0;background:none;padding:0}
+.empty{color:var(--muted);padding:30px 0;text-align:center}
+@media (max-width:820px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Linux Pathway Content Catalog</h1>
+  <div class="sub" id="sub">Loading the catalog…</div>
+  <div class="bar"><label for="q" class="sub" style="position:absolute;left:-9999px">Search</label>
+    <input type="search" id="q" placeholder="Search titles, sections and excerpts, e.g. selinux port label, kubeadm upgrade, kunit" autofocus></div>
+</header>
+<main>
+  <aside>
+    <fieldset><legend>Pathway</legend><select id="f-path"><option value="">All pathways</option><option>ENT</option><option>CN</option><option>DEV</option><option>KRN</option></select></fieldset>
+    <fieldset><legend>Course</legend><select id="f-course"><option value="">Any course</option></select></fieldset>
+    <fieldset><legend>Source</legend><select id="f-source"><option value="">All sources</option></select></fieldset>
+    <fieldset><legend>Reuse</legend>
+      <label class="chk"><input type="checkbox" id="r-adapt" checked> adapt (may be adapted into lessons)</label>
+      <label class="chk"><input type="checkbox" id="r-link" checked> link-only (paraphrase or link)</label>
+    </fieldset>
+    <fieldset><legend>Tag confidence</legend>
+      <label class="chk"><input type="checkbox" id="c-untagged"> Only untagged / low (review queue)</label>
+    </fieldset>
+    <p class="sub">Full text lives in the SQLite catalog: <code>bin/lpc search …</code> and <code>bin/lpc show &lt;id&gt;</code>. Click a result's command to copy it.</p>
+  </aside>
+  <section>
+    <div class="count" id="count"></div>
+    <div id="results"></div>
+  </section>
+</main>
+<script src="vendor/minisearch-7.1.2.umd.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let META,DOCS=[],MS;
+fetch("index.json").then(r=>r.json()).then(d=>{
+  META=d.meta;const F=META.fields;
+  DOCS=d.rows.map((r,i)=>{const o={};F.forEach((f,j)=>o[f]=r[j]);o.n=i;return o});
+  MS=new MiniSearch({idField:"n",fields:["title","section","excerpt","courses","certs","source"],storeFields:[],
+    searchOptions:{boost:{title:3,section:2},prefix:true,fuzzy:0.15,combineWith:"AND"}});
+  MS.addAll(DOCS);
+  $("#f-course").innerHTML+=Object.entries(META.courses).map(([k,v])=>`<option value="${k}">${k} ${esc(v)}</option>`).join("");
+  $("#f-source").innerHTML+=Object.entries(META.sources).map(([k,v])=>`<option value="${k}">${esc(v.name)}</option>`).join("");
+  const t=META.stats.totals;
+  $("#sub").textContent=`${DOCS.length.toLocaleString()} sections from ${t.files.toLocaleString()} files across ${Object.keys(META.sources).length} sources · ${t.review_queue.toLocaleString()} waiting for tag review`;
+  render();
+}).catch(e=>{$("#sub").textContent="Couldn't load index.json. Run `bin/lpc build && bin/lpc web`, then serve site/ over HTTP."});
+function filters(d){
+  const p=$("#f-path").value,c=$("#f-course").value,s=$("#f-source").value;
+  if(p&&!(" "+d.pathways+" ").includes(" "+p+" "))return false;
+  if(c&&!(" "+d.courses+" ").includes(" "+c+" "))return false;
+  if(s&&d.source!==s)return false;
+  if(d.reuse==="adapt"&&!$("#r-adapt").checked)return false;
+  if(d.reuse!=="adapt"&&!$("#r-link").checked)return false;
+  if($("#c-untagged").checked&&!["none","low"].includes(d.confidence))return false;
+  return true;
+}
+function render(){
+  if(!MS)return;
+  const q=$("#q").value.trim();
+  let list=q?MS.search(q).map(h=>DOCS[h.id]):DOCS;
+  list=list.filter(filters);
+  $("#count").textContent=`${list.length.toLocaleString()} result${list.length===1?"":"s"}${q?` for “${q}”`:""}${list.length>100?" · showing the first 100":""}`;
+  $("#results").innerHTML=list.length?list.slice(0,100).map(d=>{const src=META.sources[d.source]||{};return `<article class="res">
+    <h2><a href="${esc(d.url)}">${esc(d.title)}</a></h2>
+    <div class="sec">${esc(d.section||"")}</div>
+    ${d.excerpt?`<p class="ex">${esc(d.excerpt)}</p>`:`<p class="ex sec">${src.mode==="link"?"Link-only source: nothing stored, follow the link.":"Headings only (licence or owner decision): follow the link for the text."}</p>`}
+    <div class="tags"><span class="t">${esc(d.source)}</span><span class="t ${esc(d.reuse)}">${esc(d.reuse)}</span><span class="t">${esc(src.license||"")}</span>
+      ${d.courses?d.courses.split(" ").map(c=>`<span class="t" title="${esc(META.courses[c]||"")}">${c}</span>`).join(""):`<span class="t">untagged</span>`}
+      <button class="cmd" type="button" data-id="${d.id}" title="Copy the CLI command that prints the full text">bin/lpc show ${d.id}</button></div>
+  </article>`}).join(""):`<div class="empty">No matches. Try fewer words or clear a filter.</div>`;
+}
+let timer;$("#q").addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(render,120)});
+["#f-path","#f-course","#f-source","#r-adapt","#r-link","#c-untagged"].forEach(s=>$(s).addEventListener("change",render));
+document.addEventListener("click",async e=>{const b=e.target.closest(".cmd");if(!b)return;
+  try{await navigator.clipboard.writeText("bin/lpc show "+b.dataset.id);b.textContent="Copied";setTimeout(()=>b.textContent="bin/lpc show "+b.dataset.id,1500)}catch(_){}});
+</script>
+</body>
+</html>

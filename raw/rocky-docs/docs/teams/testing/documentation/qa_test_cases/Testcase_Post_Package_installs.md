@@ -1,0 +1,69 @@
+---
+title: QA:Testcase Basic Package installs
+author: Lukas Magauer
+contributors: Chris Stackpole
+tested_with: 8.10, 9.7, 10.1
+tags:
+  - testing
+  - qa
+revision_date: 2026-05-08
+rc:
+  prod: Rocky Linux
+  ver:
+    - 8
+    - 9
+    - 10
+  level: Final
+render_macros: true
+---
+
+!!! info "Release relevance"
+    This Testcase applies the following versions of {{ rc.prod }}: {% for version in rc.ver %}{{ version }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+!!! info "Associated release criterion"
+    This test case is associated with the [Release_Criteria#packages-and-module-installation](../../guidelines/release_criteria/r9/9_release_criteria.md#packages-and-module-installation) release criterion. If you are doing release validation testing, a failure of this test case may be a breach of that release criterion.
+
+!!! error "REFERENCED RELEASE CRITERIA IS OVERLY GENERAL AND UNTESTABLE"
+    The associated release criteria, [Release_Criteria#packages-and-module-installation](../../guidelines/release_criteria/r9/9_release_criteria.md#packages-and-module-installation), for this test case is overly general and **must** be modified to specific enough to be testable.
+
+## Description
+
+Installing several packages should work without any issues.
+
+Please also test these usecases (it's basically the fun of learning to install software, it's even good if it's done differently each other time):
+
+- httpd
+- httpd with php and ssl
+- nginx
+- nginx with php and ssl
+- mysql-server
+- mysql-server with secure setup
+- mariadb-server
+- postgresql-server
+- postgresql-server with secure setup
+- compiling packages with:
+  - cmake
+  - g++
+- ipa-server
+- ipa-server with dns
+
+All items in this category are ⬇️ - Low priority. It would be good to have this tested, but if it isn't or if it fails then it is inconsequential. 
+
+## Releases and Architectures
+
+| Distro         | aarch64 | ppc64le | riscv64 | s390x | x86_64 |
+| -------------- | ------- | ------- | ------- | ----- | ------ |
+| Rocky Linux  9 | ⬇️       | ⬇️       | N/A     | ⬇️     | ⬇️      |
+| Rocky Linux 10 | ⬇️       | ⬇️       | ⬇️       | ⬇️     | ⬇️      |
+
+Obtain access to a suitable system where any of the tested packages can be installed without any issues.
+
+## How to test
+
+1. Install a list of packages or usecases
+
+## Expected Results
+
+Installs work without any issues.
+
+{% include 'teams/testing/qa_testcase_bottom.md' %}

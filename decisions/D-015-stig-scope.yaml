@@ -1,0 +1,23 @@
+id: D-015
+title: Which STIGs to extract
+decided_by: claude
+options:
+- name: 'Current releases: RHEL 10, RHEL 9, Ubuntu 24.04, Kubernetes'
+  r1: 5
+  r2: 5
+  r3: 5
+  r4: 5
+  r5: 4
+  r6: 5
+- name: 'Also legacy: RHEL 8, Ubuntu 22.04'
+  r1: 5
+  r2: 3
+  r3: 5
+  r4: 3
+  r5: 4
+  r6: 4
+chosen: 'Current releases: RHEL 10, RHEL 9, Ubuntu 24.04, Kubernetes'
+justification: The curriculum targets RHEL 10 (RHCSA EX200 is now based on RHEL 10), current Ubuntu LTS and Kubernetes.
+  Legacy STIGs mostly duplicate rules, which lowers curriculum fit (R2) and adds search noise (R4). The STIG list
+  in sources.yaml can be extended at any time.
+date: '2026-11-01'

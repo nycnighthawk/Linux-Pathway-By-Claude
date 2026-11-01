@@ -1,0 +1,25 @@
+id: D-012
+title: Depth of NIST content
+decided_by: owner
+options:
+- name: ID, title, family + statement
+  r1: 5
+  r2: 4
+  r3: 5
+  r4: 5
+  r5: 5
+  r6: 4
+- name: ID, title, family only
+  r1: 5
+  r2: 3
+  r3: 5
+  r4: 3
+  r5: 5
+  r6: 5
+- name: Add SP 800-123 / 800-190 refs
+chosen: ID, title, family + statement; add SP 800-123 and SP 800-190 with extracted content under the same licence
+owner_answer: 'ID, title, family + statement (Recommended); Add SP 800-123 / 800-190 refs; plus: "Extract links
+  content also and make the licenses the same"'
+context: Gap 0.40. SP 800-53 Rev. 5 is generated from the OSCAL catalog (controls + enhancements, statement + guidance).
+  SP 800-123 and 800-190 PDFs are downloaded and split by their bookmark outline. All are recorded as US-Gov-PD.
+date: '2026-11-01'

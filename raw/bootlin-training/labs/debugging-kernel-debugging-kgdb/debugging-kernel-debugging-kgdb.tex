@@ -1,0 +1,248 @@
+\subchapter
+{Kernel debugging: OOPS analysis and KGDB}
+{Objectives:
+  \begin{itemize}
+	  \item Analyzing an {\em oops}.
+	  \item Debugging with {\em KGDB}.
+  \end{itemize}
+}
+
+\section{OOPS analysis}
+We noticed that the watchdog command generated a crash on the kernel. In order
+to reproduce the crash, run the following command on the target:
+
+\begin{bashinput}
+$ watchdog -T 10 -t 5 /dev/watchdog0
+\end{bashinput}
+
+Immediately after executing this commands, you'll see that the kernel will report
+an OOPS!
+
+\subsection{Analyzing the crash message}
+
+Analyze the crash message carefully. Knowing that on ARM, the \code{PC}
+register contains the location of the instruction being executed, find
+in which function does the crash happen, and what the function call
+stack is.
+
+Using Elixir (\url{https://elixir.bootlin.com/linux/latest/source}) or the
+kernel source code, have a look at the definition of this function. In most
+cases, a careful review of the driver source code is enough to understand the
+issue. But not in that case!
+
+\subsection{Locating the exact line where the error happens}
+
+Even if you already found out which instruction caused the crash, it's
+useful to use information in the crash report.
+
+If you look again, the report tells you at what offset in the function
+this happens. We will disassemble the code for this function to understand
+exactly where the issue happened.
+
+That is where we need a kernel compiled with \kconfig{CONFIG_DEBUG_INFO},
+which is already enabled in the kernel we compiled in the initial lab.
+This way, the kernel vmlinux file is compiled with \code{-g} compiler flag,
+which adds a lot of debugging information (matching between source code
+lines and assembly for instance).
+
+Using \code{addr2line}, find the exact source code line were the crash happened.
+For that, you can use the following command on your development host:
+
+\begin{bashinput}
+$ addr2line -e /home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/vmlinux -a <crash_address>
+\end{bashinput}
+
+This can also be done automatically using \code{decode_stacktrace.sh}. First,
+copy/paste the OOPS message into the \code{~/__SESSION_NAME__-labs/oops.txt} file.
+Then, using the script provided by the kernel, execute the following command:
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/
+$ export ARCH=%\kernelarch%
+$ export CROSS_COMPILE=/home/$USER/__SESSION_NAME__-labs/buildroot/output/host/bin/%\toolchainprefix%-
+$ ./scripts/decode_stacktrace.sh vmlinux < ~/__SESSION_NAME__-labs/oops.txt
+\end{bashinput}
+
+We can even go a step further and use the cross GDB to open vmlinux and
+locate the function and corresponding offset in assembly
+
+\begin{bashinput}
+$ ${CROSS_COMPILE}gdb /home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/vmlinux
+(gdb) disassemble <function>
+\end{bashinput}
+
+\section{KGDB debugging}
+In order to debug this OOPS, we'll use KGDB which is an in-kernel debugger.
+The provided image already contains the necessary KGDB support and the watchdog
+has been disabled to avoid rebooting while debugging. In order to use KGDB and
+the console simultaneously, compile and run kdmx on your development host:
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs
+$ git clone https://git.kernel.org/pub/scm/utils/kernel/kgdb/agent-proxy.git
+$ cd agent-proxy/kdmx
+$ make
+$ ./kdmx -n -d -p/dev/ttyACM0 -b115200
+serial port: /dev/ttyACM0
+Initalizing the serial port to 115200 8n1
+/dev/pts/7 is slave pty for terminal emulator
+/dev/pts/8 is slave pty for gdb
+
+Use <ctrl>C to terminate program
+\end{bashinput}
+
+Note: the slave ports number will depend on the run.
+
+\textbf{Important: before using \code{/dev/pts/7} and \code{/dev/pts/8}, the
+picocom process that did open \code{/dev/ttyACM0} must be closed!}
+
+On the target, setup KGDB by setting the console to be used for that purpose in
+kgdboc module parameters:
+
+\begin{bashinput}
+$ echo %\consoletty% > /sys/module/kgdboc/parameters/kgdboc
+\end{bashinput}
+
+Once done, trigger the crash by running the watchdog command, the system will
+automatically wait for a debugger to be attached. Run the cross GDB and
+attach a gdb process to KGDB with the following command:
+
+\begin{bashinput}
+$ ${CROSS_COMPILE}gdb ${HOME}/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/vmlinux
+(gdb) target remote /dev/pts/8
+\end{bashinput}
+
+{\em TIP: in order to allow auto-loading of python scripts, you can add
+\code{set auto-load safe-path /} in your .gdbinit file}
+
+First of all, confirm with GDB the information that were previously obtained
+post-crash. This will allow you to also display variables values. Starting from that
+point, we will add a breakpoint on the \code{watchdog_set_drvdata()} function.
+However, this function is called early in boot so we will need to actually
+attach with KGDB at boot time. To do so, we'll modify the bootargs to specify
+that. In U-Boot, add the following arguments to bootargs using \code{env edit}:
+
+\begin{bashinput}
+=> env edit bootargs
+=> <existing bootargs> kgdboc=%\consoletty%,115200 kgdbwait
+=> boot
+\end{bashinput}
+
+Then the kernel will halt during boot waiting for a GDB process to be attached.
+Attach gdb client from your development host using the same command that was previously
+used:
+
+\begin{bashinput}
+$ ${CROSS_COMPILE}gdb /home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/vmlinux
+(gdb) target remote /dev/pts/8
+\end{bashinput}
+
+Note: if you prefer using gdb-multiarch instead of the cross-gdb we have
+built and do not specify a file to be used, gdb-multiarch won't be able to
+detect the architecture automatically and the target command will fail. In
+that case, you can set the architecture using:
+
+\begin{bashinput}
+(gdb) set arch %\kernelarch%
+(gdb) set gnutarget %\ifdefstring{\arch}{ARM64}{elf64}{elf32}%-littlearm
+\end{bashinput}
+
+Before continuing the execution, add a breakpoint on
+\code{watchdog_set_drvdata()} using the \code{break} GDB command and then
+continue the execution using the \code{continue} command
+
+\begin{bashinput}
+(gdb) break watchdog_set_drvdata
+(gdb) continue
+\end{bashinput}
+
+Analyze the subsequent calls and find the place where the driver data are
+clobbered.
+
+TIP: you can fix the problem in "live" by modifying the content of the
+\code{wdd->driver_data} variable directly using the following command:
+
+\begin{bashinput}
+(gdb) p/x var=hex_value
+\end{bashinput}
+
+Use it to set the variable with the previous value that was used before getting
+clobbered with NULL. Once done, continue the execution and verify that you fixed
+the problem using the \code{watchdog} command.
+
+\ifdefstring{\board}{stm32mp1}{
+{\em Note: In theory, we could have added a watchpoint to watch the address that
+was modified but the ARM32 platform does not provide watchpoint support with
+KGDB.}
+}
+
+\subsection{Debugging a module}
+
+KGDB also allows to debug modules and thanks to the GDB python scripts
+(\code{lx-symbols}) mainly, it is as easy as debugging kernel core code. In
+order to test that feature, we are going to compile a test module and break on
+it. On your development host, build the module:
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs/nfsroot/root/kgdb
+$ export CROSS_COMPILE=/home/$USER/__SESSION_NAME__-labs/buildroot/output/host/bin/%\toolchainprefix%-
+$ export ARCH=arm
+$ export KDIR=/home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/
+$ make
+\end{bashinput}
+
+Then on the target, insert the module using insmod:
+\begin{bashinput}
+# cd /root/kgdb
+# insmod kgdb_test.ko
+\end{bashinput}
+
+We can now enter KGDB mode and attach the external gdb to it. We will do
+that using the magic SySrq 'g' key. Before that, ensure the TTY
+device for kgdboc is already set, or set it now:
+
+\begin{bashinput}
+# echo %\consoletty% > /sys/module/kgdboc/parameters/kgdboc
+# echo g > /proc/sysrq-trigger
+\end{bashinput}
+
+The kernel will then enter KGDB mode and will wait for a gdb connection. On the
+development platform, start it and attach to the target:
+
+\begin{bashinput}$
+$ ${CROSS_COMPILE}gdb /home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/vmlinux
+(gdb) target remote /dev/pts/8
+\end{bashinput}
+
+Then you will need to execute the \code{lx-symbols} command in gdb to reload the
+symbols from the module. You'll also need to pass a list of path that contains
+the external modules:
+
+\begin{bashinput}
+(gdb) lx-symbols /home/${USER}/__SESSION_NAME__-labs/nfsroot/root/kgdb/
+loading vmlinux
+scanning for modules in /home/<user>/__SESSION_NAME__-labs/nfsroot/root
+loading @0xbf000000: /home/<user>/__SESSION_NAME__-labs/nfsroot/root/kgdb/kgdb_test.ko
+\end{bashinput}
+
+{\em NOTE: If KGDB was already connected and the lx scripts loaded, then
+\code{lx-symbols} would be run automatically on module loading.}
+
+Finally, add a breakpoint right after the \code{pr_debug()} call and continue
+the execution to trigger it:
+
+\begin{bashinput}
+(gdb) break kgdb_test.c:17
+(gdb) continue
+\end{bashinput}
+
+At some point, the breakpoint will be triggered. Try to display the variable
+\code{i} to display the current loop value.
+
+Note: Due to a GDB bug, sometimes, gdb will crash when continuing. You can
+use a temporary breakpoint using the gdb \code{tbreak} command to workaround
+this problem.
+
+Bonus: as a side quest you can try to enable the \code{pr_debug()} call using
+the dynamic debug feature of the kernel. This can be done using the
+\code{/proc/dynamic_debug/control} file.

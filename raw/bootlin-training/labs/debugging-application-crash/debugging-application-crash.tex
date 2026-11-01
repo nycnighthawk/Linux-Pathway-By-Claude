@@ -1,0 +1,257 @@
+\subchapter
+{Solving an application crash}
+{Objectives:
+  \begin{itemize}
+    \item Analysis of compiled C code with compiler-explorer to understand
+          optimizations.
+    \item Managing {\em gdb} from the command line.
+    \item Debugging a crashed application using a coredump with {\em gdb}.
+    \item Using {\em gdb} Python scripting capabilities.
+    \item (Bonus) configuring an IDE for debugging
+  \end{itemize}
+}
+
+\section{Compiler explorer}
+
+Go to \url{https://godbolt.org/} and paste the content of
+\code{/home/$USER/__SESSION_NAME__-labs/nfsroot/root/compiler_explorer/swap_bytes.c}.
+Select the correct compiler for armv7 and observe the generated assembly. Try
+to modify the compiler options to optimize the generation (-O3). Observe the
+result.
+
+\section{Using GDB}
+
+Take our \code{linked_list.c} program. It uses the \code{<sys/queue.h>} header
+which provides multiple linked-list implementations. This program creates and
+fill a linked list with the names read from a file. Compile it from your
+development host using the following command:
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs/nfsroot/root/gdb/
+$ make
+\end{bashinput}
+
+By default, it will look for a \code{word_list} file located in the current
+directory. This program, when run on the target, should display the list of
+words that were read from the file.
+
+\begin{bashinput}
+$ ./linked_list
+\end{bashinput}
+
+From what you can see, it actually crashes! So we will use GDB to debug that
+program. We will do that remotely since our target does not embed a full gdb,
+only a gdbserver, a lightweight gdb server that allows connecting with a remote
+full feature GDB. Start our program on the target using gdbserver in multi mode:
+
+\begin{bashinput}
+$ gdbserver --multi :2000 ./linked_list
+\end{bashinput}
+
+On the host side install gdb-multiarch if not already done and attach to this
+process using gdb-multiarch:
+
+\begin{bashinput}
+$ sudo apt install gdb-multiarch
+$ gdb-multiarch ./linked_list
+(gdb) target extended-remote 192.168.0.100:2000
+(gdb) set sysroot /home/<user>/__SESSION_NAME__-labs/buildroot/output/staging/
+\end{bashinput}
+
+Then continue the execution and try to find the error using GDB. There are
+multiple ways to debug such program. Here are a few hints to help you find the bug root
+cause:
+\begin{itemize}
+  \item Instead of waiting for the segfault to happen, you can use breakpoints
+  to stop at a specific place BEFORE the segfault happens
+  \item The bug is pretty reproductible here, so do not hesitate to restart the
+  program multiple times during your analysis to properly understand the path
+  leading to the bug, and to run it step by step
+  \item If your breakpoint is in a loop, it may be tedious to type "continue"
+  multiple times to reach to execution site you are interested in: remember
+  that you can use conditional breakpoints and watchpoints to make a breakpoint
+  hit on a specific loop occurrence!
+  \item It is necessary to understand the data structures your code is using to
+  understand why you eventually get a segfault: take some time to get familiar
+  with the \code{SLIST_HEAD} and \code{SLIST_ENTRY} macros, and to print them
+  during debugging to see how data is organized.
+  \begin{itemize}
+    \item You can also refer to the \code{macro} command documentation to learn
+    how to interpret macros in gdb during the program execution
+  \end{itemize}
+  \item You mave even use and call existing code during your debug session: you
+  can for example try to print the list by executing
+  \code{display_linked_list()} with the \code{p} gdb command!
+\end{itemize}
+
+{\em TIP: you can execute command automatically at GDB startup by putting them
+in a \code{~/.gdbinit} file. For instance, history can be enabled with
+\code{set history save on} and pretty printing of structure with
+\code{set print pretty on}.}
+
+{\em TIP: GDB features a TUI which can be spawned using Ctrl + X + A. You can
+switch from the command line to the TUI view using Ctrl X + O.}
+
+{\em NOTE: you can exit gdbserver from the connected gdb process using the
+\code{monitor exit} command.}
+
+\section{Using a coredump with GDB}
+
+Sometimes, the problems only arise in production and you can only gather data
+once the application crashed. This is also something that can be used if the
+crash is not reproducible but crashes only once in a while.  If so, we can use
+the kernel coredump support to generate a core dump of the faulty application
+and do a post-mortem analysis.
+
+First of all, we need to enable kernel coredumping support of programs. On the
+target, run:
+
+\begin{bashinput}
+$ ulimit -c unlimited
+\end{bashinput}
+
+Then, run the program normally:
+
+\begin{bashinput}
+$ ./linked_list
+Segmentation fault (core dumped)
+\end{bashinput}
+
+When crashing, a \code{core} file will be generated. On your desktop computer,
+fix the permissions using:
+\begin{bashinput}
+$ sudo chown $USER:$USER core
+\end{bashinput}
+
+Then, open this file using \code{gdb-multiarch}:
+
+\begin{bashinput}
+$ gdb-multiarch ./linked_list ./core
+\end{bashinput}
+
+Note: depending on your GDB version, you may not get a readable
+backtrace without helping gdb. In that case, you can try to:\\
+- replicate the binary location from your target in your sysroot:
+\begin{bashinput}
+$ mkdir -p ${HOME}/__SESSION_NAME__-labs/buildroot/output/staging/root/gdb
+$ cp ${HOME}/__SESSION_NAME__-labs/nfsroot/root/gdb/linked_list \
+     ${HOME}/__SESSION_NAME__-labs/buildroot/output/staging/root/gdb/linked_list
+\end{bashinput}
+- force gdb to re-read symbols:
+\begin{bashinput}
+gdb> set sysroot ${HOME}/__SESSION_NAME__-labs/buildroot/output/staging
+gdb> core core
+\end{bashinput}
+
+You can then inspect the program state (memory, registers, etc) at the time it
+crashed. While less dynamic, it allows to pinpoint the place that triggered the
+crash. Here are a few hints to help you manipulate the coredump:
+\begin{itemize}
+  \item Since the coredump is only a memory snapshot (the program is not
+  running anymore), you can not run any process-controlling command in gdb
+  (\code{run}, \code{continue}, \code{step}...)
+  \item However, you can print any variable which is in scope. You can even
+  define your own commands to ease printing our custom list:
+  \begin{itemize}
+    \item Use the \code{define} command to start defining a command, use
+    \code{end} to mark its end
+    \item In between, knowing how the data is organized, you can print some
+    data fields with \code{p}
+    \item You can use gdb custom variables to navigate into the list: refresh
+    your custom variable to make it point to the next element of the list each
+    time you call your custom command
+  \end{itemize}
+\end{itemize}
+
+\section{GDB Python support}
+
+When developing and debugging applications, sometimes we often uses the same
+set of commands over and over under GDB. Rather than doing so, we can create
+python scripts that are integrated with GDB.
+
+In order to display our program list from GDB, we provide a python GDB script
+named \code{linked_list.py} that displays this list. You will need to fill two
+parts of this script to display a complete list correctly. This python script
+takes the list head name and the next field name as parameters.
+
+The part to be filled in are the pretty printer struct formatting and the
+iteration on the list. We would like to display each \code{struct name} as
+\code{index: name}. In order to access a struct field in gdb python, you can use
+\code{self.val['field_name']}.
+
+Once done, you can use the following commands in your development host gdb
+client session to test your script:
+
+\begin{bashinput}
+(gdb) source linked_list.py
+(gdb) printslist name_list next
+\end{bashinput}
+
+\section{(Bonus) Configuring an IDE for debugging}
+
+While using bare gdb commands in console is enough to debug your application issues, you
+may want to use some frontend to do so, for example by using GDB features directly
+in your IDE. Multiple frontends are able to interact with GDB thanks to its
+\href{https://sourceware.org/gdb/current/onlinedocs/gdb.html/GDB_002fMI.html}{MI
+interface}
+For this example, we will configure
+\href{https://code.visualstudio.com/}{Visual Studio Code}. Start by installing
+the IDE.
+
+The firmware used for this training labs is in fact already running a gdbserver
+right at boot, listening on port 9876: thanks to the \code{--multi} option,
+this server can be configured by the client to debug any target of interest.
+
+We must then provide instructions to VSCode about how to start a debug session.
+You may have noticed that the labs data also provide a \code{.vscode} directory
+along the program sources. If you open vscode in the sources directory, it will
+recognize this \code{.vscode} directory and load corresponding configuration
+
+The \code{.vscode} directory contains a minimalistic configuration to allow
+remote debugging, thanks to two files:
+\begin{itemize}
+  \item \code{launch.json} contains a debug configuration which indicates what
+  is the program to debug, how to connect to gdbserver and to configure it, where to
+  find the missing symbols (our staging directory), etc.
+  \item \code{tasks.json} contains a default build task: we have defined in our
+  debug configuration that we want to run a build before each debug session (so
+  we are sure that the program under debug is in sync with our sources), so
+  we have to define this build task. Note that since we are using a NFS root,
+  this build task also takes in charge the "deploy" step!
+\end{itemize}
+
+You can then open VSCode in the sources directory:
+\begin{bashinput}
+  cd ~/__SESSION_NAME__-labs/root/gdb
+  code .
+\end{bashinput}
+Before being able to debug your program onto the target, you will need to install
+\href{https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools}{the
+official C/C++} extension (you can do it directly from the "Extensions" tab in
+the left column).
+
+You can now start the debugging session (hit the "Run and Debug"
+tab on the left column, then "Debug linked list" in the list on top left, or
+directly hit "F5" to start the debug session).
+VSCode will start our cross-gdb and connect it to the remote gdbserver, and you
+will be able to do everything we have done in the console so far:
+\begin{itemize}
+  \item Add breakpoints by clicking on the line number you want to break in
+  \item Set conditions on breakpoint by issuing right-click on the breakpoint
+  (red circle on the line number), "Edit breakpoint"
+  \item In the debugging tab (left column), you can
+  \begin{itemize}
+    \item Check variables which are in scope
+    \item take a look at your call stack
+    \item add expression to watch for specific values
+  \end{itemize}
+  \item Control the program execution with the "Continue", "Step Over", "Step
+  Into", "Step Out", "Restart", "Stop" buttons (in the upper right section)
+  \item Use directly bare gdb commands in the debugging console: open the
+  "Debug console" tab on the lower part of the screen, then type any command
+  learnt so far, but remember to prefix it with \code {-exec}
+\end{itemize}
+
+You can also refer to
+\href{https://code.visualstudio.com/docs/editor/debugging}{VSCode debug
+configuration documentation} to learn more about available configuration options

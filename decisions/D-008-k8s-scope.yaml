@@ -1,0 +1,30 @@
+id: D-008
+title: Kubernetes documentation scope
+decided_by: owner
+options:
+- name: concepts/tasks/tutorials/setup
+  r1: 5
+  r2: 5
+  r3: 5
+  r4: 4
+  r5: 4
+  r6: 5
+- name: Curated reference subset
+  r1: 5
+  r2: 5
+  r3: 5
+  r4: 5
+  r5: 4
+  r6: 4
+- name: All of reference/
+  r1: 5
+  r2: 4
+  r3: 5
+  r4: 3
+  r5: 4
+  r6: 2
+chosen: concepts/tasks/tutorials/setup + curated reference subset
+owner_answer: Both recommended options
+context: 'Reference subset: glossary, kubectl, access-authn-authz, networking, command-line-tools-reference. Generated
+  kubernetes-api/config-api pages are excluded.'
+date: '2026-11-01'

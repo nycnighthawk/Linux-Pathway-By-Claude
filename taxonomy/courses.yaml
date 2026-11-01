@@ -1,0 +1,183 @@
+# Course taxonomy used by the auto-tagger (lpc tag).
+# Keywords are case-insensitive regexes matched on word boundaries. A match in a
+# title counts 3x, in a section heading 2x, and in body text 1x (body hits are capped).
+# Strong keywords (prefixed "!") count double. Pathways: ENT, CN, DEV, KRN. TRUNK means all four.
+
+pathways:
+  ENT: Enterprise Infrastructure
+  CN: Cloud-Native Platform
+  DEV: Linux Software Development
+  KRN: Kernel & Low-Level Systems
+
+courses:
+  LNX-101:
+    title: Linux Foundations & the Command Line
+    pathways: {TRUNK: core}
+    certs: [LE, LPIC1, LPLUS, LFCS, RHCSA]
+    keywords: ["!command line", "!shell", "bash", "globbing", "!grep", "!sed", "!awk", "pipes?", "redirection", "file permissions?", "chmod", "chown", "umask", "\\bvim?\\b", "nano", "\\btar\\b", "gzip", "regular expressions?", "man pages?", "filesystem hierarchy", "hard links?", "symbolic links?", "neovim", "nvchad", "text editors?", "\\bless\\b", "find command", "\\bfind\\b", "\\bxargs\\b"]
+  LNX-102:
+    title: System Administration Essentials
+    pathways: {TRUNK: core}
+    certs: [LPIC1, LPLUS, LFCS, RHCSA]
+    keywords: ["!systemd", "!systemctl", "unit files?", "\\btargets?\\b", "journald", "journalctl", "rsyslog", "logrotate", "\\bcron\\b", "crontab", "systemd timers?", "\\bgrub2?\\b", "boot process", "rescue mode", "emergency target", "useradd", "usermod", "\\bsudo\\b", "user accounts?", "groups?", "chrony", "timedatectl", "sysctl", "kernel modules?", "modprobe", "\\btuned\\b", "processes", "signals?", "\\bnice\\b", "cronie", "anacron", "\\bat daemon\\b", "login", "shells?", "home directories", "hostname", "locale", "time zones?"]
+  LNX-103:
+    title: Storage & Filesystems
+    pathways: {TRUNK: core}
+    certs: [LPIC1, LPIC2, LPLUS, LFCS, RHCSA]
+    keywords: ["!lvm", "!logical volumes?", "volume groups?", "physical volumes?", "\\bxfs\\b", "\\bext4\\b", "btrfs", "\\bfstab\\b", "mount units?", "partition(ing|s)?", "\\bparted\\b", "fdisk", "gdisk", "\\bswap\\b", "zram", "mdadm", "software raid", "\\braid\\b", "quotas?", "\\bacls?\\b", "\\bnfs\\b", "autofs", "\\biscsi\\b", "\\bluks2?\\b", "cryptsetup", "\\bbackups?\\b", "rsync", "restic", "borg", "stratis", "vdo", "multipath", "file systems?", "discard", "\\btrim\\b", "\\bfstrim\\b", "\\bnvme\\b", "block devices?", "disks?", "\\bdd\\b", "snapshots?"]
+  LNX-104:
+    title: Software Packages on a Single Host
+    pathways: {TRUNK: core}
+    certs: [LPIC1, LPLUS, LFCS, RHCSA]
+    keywords: ["!\\bdnf\\b", "!\\bapt\\b", "\\brpm\\b", "dpkg", "\\byum\\b", "zypper", "repositor(y|ies)", "package management", "packages?", "flatpak", "\\bsnaps?\\b", "appstream", "gpg keys?", "dependenc(y|ies)", "ldconfig", "shared librar(y|ies)"]
+  LNX-201:
+    title: Linux Networking I
+    pathways: {TRUNK: core}
+    certs: [LPIC1, LPLUS, LFCS, RHCSA]
+    keywords: ["!networkmanager", "!nmcli", "netplan", "systemd-networkd", "\\bip addr", "\\bip route", "ip command", "\\bss\\b", "ethtool", "ipv4", "ipv6", "subnet(s|ting)?", "default gateway", "static routes?", "routing table", "/etc/hosts", "resolv\\.conf", "systemd-resolved", "name resolution", "!firewalld", "!nftables", "iptables", "\\bufw\\b", "firewall zones?", "!openssh", "\\bssh\\b", "sshd", "ssh keys?", "port forwarding", "tcpdump", "traceroute", "\\bmtr\\b", "\\bdig\\b", "\\bping\\b", "network interfaces?", "\\bdns\\b", "\\bdhcp\\b", "hostnames?", "\\bntp\\b", "network(ing)?", "infiniband", "ethernet", "\\bnic\\b"]
+  LNX-203:
+    title: Shell Scripting & Python for Sysadmins
+    pathways: {TRUNK: core}
+    certs: [LPIC1, LPLUS, RHCSA]
+    keywords: ["!shell scripts?", "!bash scripts?", "!scripting", "shellcheck", "\\bbats\\b", "exit (codes?|status)", "\\btrap\\b", "\\bjq\\b", "\\byq\\b", "python scripts?", "\\bgit\\b", "here ?documents?", "functions?", "loops?", "conditionals?", "positional parameters", "pull requests?", "github", "gitlab", "version control", "markdown"]
+  LNX-202:
+    title: Advanced Linux Networking
+    pathways: {ENT: core, CN: core, KRN: elective}
+    certs: [LPIC2]
+    keywords: ["!bonding", "!bond(ed)? interfaces?", "teaming", "network bridges?", "\\bbridges?\\b", "\\bvlans?\\b", "802\\.1q", "\\bvrf\\b", "policy routing", "ip rule", "network namespaces?", "\\bveth\\b", "slaac", "dhcpv6", "radvd", "!bind9?\\b", "\\bnamed\\b", "unbound", "dnssec", "dns servers?", "\\bkea\\b", "dhcp servers?", "haproxy", "keepalived", "vrrp", "load balanc(er|ing)", "!wireguard", "\\bipsec\\b", "libreswan", "strongswan", "\\bvpn\\b", "tshark", "\\btc\\b", "netem", "\\bmtu\\b", "\\bfrr\\b", "\\bospf\\b", "\\bbgp\\b", "network performance"]
+  LNX-204:
+    title: Linux Security Fundamentals
+    pathways: {ENT: core, CN: core, DEV: elective}
+    certs: [LPIC2, LPLUS, RHCSA]
+    keywords: ["!selinux", "!security contexts?", "selinux booleans?", "audit2why", "audit2allow", "semanage", "restorecon", "apparmor", "\\bpam\\b", "pwquality", "faillock", "password polic(y|ies)", "!auditd", "audit rules?", "\\baide\\b", "file integrity", "!openscap", "\\bscap\\b", "security profiles?", "hardening", "\\btls\\b", "openssl", "certificates?", "crypto(-| )policies", "fips", "cves?", "errata", "least privilege", "ssh hardening", "nosuid", "noexec", "nodev", "mount options?", "password", "banners?", "umask", "\\bsetuid\\b", "permissions", "screen lock(ing)?", "usbguard", "\\busb\\b", "fapolicyd", "crypto policy"]
+  LNX-305:
+    title: Configuration Management with Ansible
+    pathways: {ENT: core, CN: core, DEV: elective}
+    certs: [RHCE]
+    keywords: ["!ansible", "!playbooks?", "inventor(y|ies)", "ansible roles?", "\\broles\\b", "collections?", "ansible vault", "\\bvault\\b", "jinja2?", "\\bhandlers?\\b", "system roles?", "molecule", "ansible-lint", "ansible-navigator", "execution environments?", "\\bawx\\b", "automation controller", "idempoten(t|ce)"]
+  LNX-307:
+    title: Observability, Performance & Troubleshooting
+    pathways: {ENT: core, CN: core, DEV: core, KRN: core}
+    certs: [LPLUS, LPIC2]
+    keywords: ["!troubleshoot(ing)?", "!performance", "monitoring", "\\bsar\\b", "sysstat", "vmstat", "iostat", "pidstat", "\\btop\\b", "htop", "prometheus", "grafana", "alerting", "\\bmetrics\\b", "\\blogging\\b", "!strace", "\\bperf\\b", "\\bebpf\\b", "\\bbpf\\b", "bpftrace", "\\bbcc\\b", "!kdump", "\\bcrash\\b", "core dumps?", "\\boom\\b", "out of memory", "cgroups?( v2)?", "resource limits?", "pcp", "performance co-pilot", "tuning", "latency", "capacity planning"]
+  LNX-308:
+    title: Virtualization with KVM & libvirt
+    pathways: {ENT: core, CN: elective, KRN: elective}
+    certs: [LPIC3-305, LPLUS]
+    keywords: ["!\\bkvm\\b", "!libvirt", "!virsh", "virt-install", "virtual machines?", "\\bvms?\\b", "\\bqemu\\b", "virt-manager", "virt-customize", "live migration", "storage pools?", "hypervisors?", "virtio", "hugepages", "cpu pinning", "systemd-nspawn", "\\blxc\\b", "incus", "nested virtualization", "firecracker", "proxmox", "ovirt", "raspberry pi", "\\baarch64\\b", "architectures?"]
+  LNX-310:
+    title: Containers in Depth
+    pathways: {CN: core, DEV: core, ENT: elective}
+    certs: [EX188, KCNA, LPIC3-305]
+    keywords: ["!containers?", "!podman", "!docker", "buildah", "skopeo", "container images?", "containerfiles?", "dockerfiles?", "\\boci\\b", "\\brunc\\b", "\\bcrun\\b", "containerd", "cri-o", "\\bcri\\b", "rootless", "\\bpods?\\b", "quadlet", "compose", "registr(y|ies)", "image layers?", "overlayfs", "namespaces?", "\\bcosign\\b", "sbom", "trivy", "gvisor", "kata containers?", "seccomp"]
+  LNX-220:
+    title: Linux Application Development
+    pathways: {DEV: core, KRN: core}
+    certs: [EX188]
+    keywords: ["!\\bgcc\\b", "!clang", "!\\bgdb\\b", "compil(e|er|ing|ation)", "\\blinker\\b", "\\belf\\b", "binutils", "\\bmake(files?)?\\b", "cmake", "meson", "autotools", "pkg-config", "valgrind", "sanitizers?", "asan", "ubsan", "static analysis", "unit tests?", "fuzz(ing|er)?", "libfuzzer", "\\bafl\\b", "\\brust\\b", "cargo", "\\bgolang\\b|\\bgo\\b (modules|build)", "sd_notify", "socket activation", "d-bus", "dbus", "\\bxdg\\b", "rpm packaging", "spec files?", "debugging", "debuginfo", "c\\+\\+", "\\bc programs?\\b", "toolchains?"]
+  LNX-301:
+    title: Identity, Directory & AD Integration
+    pathways: {ENT: core}
+    certs: [EX362, LPIC3-300]
+    keywords: ["!active directory", "!\\bidm\\b", "!freeipa", "!identity management", "!\\bsssd\\b", "realmd", "realm join", "adcli", "winbind", "\\bldap\\b", "openldap", "389[- ]ds", "directory server", "!kerberos", "\\bkdc\\b", "keytabs?", "kinit", "gssapi", "\\bhbac\\b", "sudo rules?", "id mapping", "idmap", "\\btrusts?\\b", "smart cards?", "single sign-on", "\\bsso\\b"]
+  LNX-302:
+    title: Mixed Environments
+    pathways: {ENT: core}
+    certs: [LPIC3-300, LPIC2]
+    keywords: ["!samba", "!\\bsmb\\b", "\\bcifs\\b", "smbclient", "mount\\.cifs", "windows clients?", "windows servers?", "\\bwindows\\b", "powershell", "\\bcups\\b", "printing", "print servers?", "nfsv4", "file shares?", "shares", "ad dc", "domain controllers?", "\\bwinrm\\b", "postfix", "\\bsmtp\\b", "mail servers?", "web servers?", "\\bapache\\b", "\\bhttpd\\b", "\\bnginx\\b", "proxy", "squid", "media server", "file sharing", "\\bftp\\b", "vsftpd"]
+  LNX-303:
+    title: Advanced Security & Compliance
+    pathways: {ENT: core, CN: elective, KRN: elective}
+    certs: [LPIC3-303]
+    keywords: ["!\\bpki\\b", "certificate authorit(y|ies)", "\\bca\\b", "\\bcrls?\\b", "\\bocsp\\b", "!clevis", "!\\btang\\b", "\\bnbde\\b", "\\btpm2?\\b", "secure boot", "signed (kernel )?modules", "\\bima\\b", "\\bevm\\b", "lockdown", "falco", "suricata", "fail2ban", "intrusion detection", "\\boval\\b", "vulnerabilit(y|ies)", "!compliance", "\\bstig\\b", "nist", "800-53", "security controls?", "\\bxccdf\\b", "secrets? management", "openbao", "\\bsops\\b", "forensics", "incident response", "risk", "encrypt(ion|ed)?", "\\btor\\b", "principles?"]
+  LNX-304:
+    title: Software Packages at Scale
+    pathways: {ENT: core, CN: elective, DEV: elective}
+    certs: [LPLUS, RHCE]
+    keywords: ["!rpmbuild", "!\\bmock\\b", "spec files?", "\\bsrpms?\\b", "debhelper", "sbuild", "pbuilder", "debian packag(e|es|ing)", "!packaging", "createrepo", "\\baptly\\b", "reprepro", "\\bpulp\\b", "\\bmirrors?\\b", "reposync", "content views?", "katello", "satellite", "patch(ing| management)", "dnf-automatic", "unattended-upgrades", "\\bbootc\\b", "image mode", "ostree", "rpm-ostree", "image builder", "osbuild", "blueprints?", "signing packages", "errata", "abrt", "system image", "release engineering"]
+  LNX-306:
+    title: Provisioning & Server Lifecycle
+    pathways: {ENT: core, CN: elective}
+    certs: [RHCE, LPIC3-305]
+    keywords: ["!kickstart", "!cloud-init", "!\\bpxe\\b", "ipxe", "http boot", "preseed", "autoinstall", "anaconda", "\\bpacker\\b", "terraform", "opentofu", "foreman", "cobbler", "\\bmaas\\b", "\\bipmi\\b", "redfish", "\\bbmc\\b", "\\bleapp\\b", "in-place upgrades?", "upgrad(e|ing) (from|to) rhel", "do-release-upgrade", "golden images?", "provisioning", "bare metal", "\\bami\\b", "cloud images?", "azure", "aws", "google cloud", "decommission", "installation", "install(ing)? rhel", "iso images?", "boot media", "images?"]
+  LNX-309:
+    title: High Availability & Clusters
+    pathways: {ENT: elective}
+    certs: [LPIC3-306]
+    keywords: ["!pacemaker", "!corosync", "\\bpcs\\b", "high availability", "\\bha clusters?\\b", "fencing", "stonith", "fence agents?", "drbd", "gfs2", "cluster resources?", "quorum", "failover", "replication", "disaster recovery"]
+  LNX-311:
+    title: Kubernetes Administration
+    pathways: {CN: core}
+    certs: [CKA, KCNA]
+    keywords: ["!kubernetes", "!kubeadm", "!kubectl", "\\bk8s\\b", "control plane", "\\betcd\\b", "kube-apiserver", "api server", "kube-scheduler", "kubelet", "\\bnodes?\\b", "cluster upgrades?", "\\bdrain\\b", "cordon", "deployments?", "daemonsets?", "statefulsets?", "persistent volumes?", "\\bpvcs?\\b", "storage ?class(es)?", "\\bcsi\\b", "\\brbac\\b", "service ?accounts?", "kubeconfig", "\\bhelm\\b", "kustomize", "custom resources?", "\\bcrds?\\b", "operators?", "taints?", "tolerations?", "affinity", "autoscal(er|ing)"]
+  LNX-312:
+    title: Container & Kubernetes Networking
+    pathways: {CN: core}
+    certs: [CCA, CKA]
+    keywords: ["!\\bcni\\b", "!cilium", "!network ?polic(y|ies)", "calico", "flannel", "kube-proxy", "\\bipvs\\b", "services?", "clusterip", "nodeport", "loadbalancer", "!ingress", "!gateway api", "httproute", "coredns", "service discovery", "service mesh", "istio", "linkerd", "\\bmtls\\b", "metallb", "cluster ?mesh", "hubble", "dual-stack", "endpointslices?", "pod network(ing)?"]
+  LNX-313:
+    title: Kubernetes App Delivery & GitOps
+    pathways: {CN: core, DEV: elective}
+    certs: [CKAD]
+    keywords: ["!configmaps?", "!secrets?", "probes?", "liveness", "readiness", "startup probes?", "init containers?", "sidecars?", "\\bjobs?\\b", "cronjobs?", "rolling updates?", "canary", "blue[/-]green", "helm charts?", "gitops", "argo ?cd", "\\bflux\\b", "kubebuilder", "ephemeral containers?", "kubectl debug", "securitycontext", "resource (requests|limits)", "opentelemetry", "workloads?"]
+  LNX-314:
+    title: Kubernetes & Cloud-Native Security
+    pathways: {CN: core}
+    certs: [CKS, KCSA]
+    keywords: ["!pod security", "!pod security admission", "!\\bpsa\\b", "admission (controllers?|webhooks?)", "kyverno", "gatekeeper", "\\bopa\\b", "encryption at rest", "audit (logs?|policy)", "kube-bench", "runtimeclass", "image signing", "supply chain", "seccomp profiles?", "apparmor profiles?", "security context", "least privilege", "\\bsbom\\b", "node restriction", "authenticat(e|ion)", "authoriz(e|ation)"]
+  LNX-320:
+    title: Linux System Programming
+    pathways: {DEV: core, KRN: core}
+    certs: []
+    keywords: ["!system calls?", "!syscalls?", "\\berrno\\b", "\\bglibc\\b", "\\bmmap\\b", "file descriptors?", "\\bfcntl\\b", "!\\bepoll\\b", "io_uring", "\\bfork\\b", "\\bexecve?\\b", "\\bwaitpid\\b", "signal handlers?", "signalfd", "timerfd", "\\bpthreads?\\b", "futex(es)?", "atomics?", "memory model", "\\bipc\\b", "unix (domain )?sockets?", "shared memory", "eventfd", "\\bsockets?\\b", "posix", "capabilities", "seccomp", "landlock", "inotify", "fanotify", "netlink", "ptrace", "libbpf", "co-re"]
+  LNX-330:
+    title: "Kernel Development I: Workflow & Tooling"
+    pathways: {KRN: core}
+    certs: [KDEV]
+    keywords: ["!kernel development", "!patch(es)?", "!checkpatch", "get_maintainer", "submitting patches", "mailing lists?", "\\bb4\\b", "send-email", "format-patch", "kconfig", "defconfig", "localmodconfig", "kernel config(uration)?", "building (the )?kernel", "kernel build", "cross[- ]compil(e|ing|ation)", "virtme", "\\bkunit\\b", "kselftest", "ftrace", "kasan", "kcsan", "lockdep", "kgdb", "dynamic debug", "printk", "sparse", "coccinelle", "bisect", "coding style", "maintainers?", "stable kernels?", "signed-off-by", "kernel tree"]
+  LNX-331:
+    title: Kernel Internals & Device Drivers
+    pathways: {KRN: core}
+    certs: [KDEV]
+    keywords: ["!device drivers?", "!kernel modules?", "!character devices?", "file_operations", "ioctl", "misc devices?", "device model", "sysfs", "udev", "platform drivers?", "device ?tree", "\\bpci\\b", "interrupts?", "softirqs?", "tasklets?", "workqueues?", "kernel timers?", "spinlocks?", "mutex(es)?", "\\brcu\\b", "slab", "kmalloc", "vmalloc", "\\bdma\\b", "\\bvfs\\b", "filesystem drivers?", "\\bnapi\\b", "network drivers?", "sched_ext", "rust for linux", "\\barm64\\b", "embedded linux", "bootloaders?", "u-boot", "buildroot", "yocto", "\\bgpio\\b", "\\bi2c\\b", "\\bspi\\b", "board support"]
+  LNX-401:
+    title: "Capstone: Enterprise Estate as Code"
+    pathways: {ENT: core}
+    certs: []
+    keywords: []
+  LNX-402:
+    title: "Capstone: Cloud-Native Platform"
+    pathways: {CN: core}
+    certs: []
+    keywords: []
+  LNX-403:
+    title: "Capstone: Ship a Linux Service"
+    pathways: {DEV: core}
+    certs: []
+    keywords: []
+  LNX-404:
+    title: "Capstone: Upstream-Quality Kernel Work"
+    pathways: {KRN: core}
+    certs: []
+    keywords: []
+
+# Source priors: added to a course's score for every chunk from that source.
+# A prior of 6 or more tags the chunk even with no keyword hits; use that only where
+# the whole source belongs to the course (e.g. kernel process docs -> LNX-330).
+source_priors:
+  kubernetes-docs: {LNX-311: 4, LNX-312: 2, LNX-313: 2, LNX-314: 1}
+  bootlin-training: {LNX-331: 4, LNX-330: 2}
+  kernel-docs: {LNX-330: 6}
+  lkmpg: {LNX-331: 6}
+  compliance-as-code: {LNX-204: 3, LNX-303: 3}
+  disa-stig: {LNX-303: 4, LNX-204: 3}
+  nist-sp800-53: {LNX-303: 6}
+  nist-sp800-guides: {LNX-303: 3, LNX-204: 3}
+
+# Tagging thresholds (implementation constants, documented here so they're reviewable).
+thresholds:
+  assign: 6          # minimum score to tag a course
+  relative: 0.5      # also must be >= relative * top score
+  max_courses: 3
+  high: 14           # confidence bands on the top score
+  medium: 8

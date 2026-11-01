@@ -1,0 +1,81 @@
+\subchapter{Training setup}{Download files and directories used in practical labs}
+
+\section{Install lab data}
+
+For the different labs in this course, your instructor has prepared a
+set of data (kernel images, kernel configurations, root filesystems
+and more). Download and extract its tarball from a terminal:
+
+{\small
+\begin{bashinput}
+$ cd
+$ wget %\sessionurl%/__SESSION_NAME__-labs.tar.xz
+$ tar xvf __SESSION_NAME__-labs.tar.xz
+\end{bashinput}
+}
+
+Lab data are now available in an \code{__SESSION_NAME__-labs} directory in
+your home directory. This directory contains directories and files used in
+the various practical labs. It will also be used as working space,
+in particular to keep generated files separate when needed.
+
+\section{Update your distribution}
+
+To avoid any issue installing packages during the practical labs,
+you should apply the latest updates to the packages in your distro:
+
+\begin{bashinput}
+$ sudo apt update
+$ sudo apt dist-upgrade
+\end{bashinput}
+
+You are now ready to start the real practical labs!
+
+\section{Install extra packages}
+
+Feel free to install other packages you may need for your development
+environment. In particular, we recommend to install your favorite text
+editor and configure it to your taste. The favorite text editors of
+embedded Linux developers are of course {\em Vim} and {\em Emacs}, but
+there are also plenty of other possibilities, such as {Visual Studio
+Code}\footnote{This tool from Microsoft is Open Source! To try it on
+Ubuntu: \code{sudo snap install code --classic}}, {\em GEdit},
+{\em Qt Creator}, {\em CodeBlocks}, {\em Geany}, etc.
+
+It is worth mentioning that by default, Ubuntu comes with a very
+limited version of the \code{vi} editor. So if you would like to use
+\code{vi}, we recommend to use the more featureful version by
+installing the \code{vim} package.
+
+\section{More guidelines}
+
+Can be useful throughout any of the labs
+
+\begin{itemize}
+
+\item Read instructions and tips carefully. Lots of people make
+  mistakes or waste time because they missed an explanation or a
+  guideline.
+
+\item Always read error messages carefully, in particular the first
+  one which is issued. Some people stumble on very simple errors just
+  because they specified a wrong file path and didn't pay enough
+  attention to the corresponding error message.
+
+\item Never stay stuck with a strange problem more than 5
+  minutes. Show your problem to your colleagues or to the instructor.
+
+\item You should only use the \code{root} user for operations that require
+  super-user privileges, such as: mounting a file system, loading a
+  kernel module, changing file ownership, configuring the
+  network. Most regular tasks (such as downloading, extracting
+  sources, compiling...) can be done as a regular user.
+
+\item If you ran commands from a root shell by mistake, your regular
+  user may no longer be able to handle the corresponding generated
+  files. In this case, use the \code{chown -R} command to give the new
+  files back to your regular user.\\
+  Example: \inlinebash{$ sudo chown -R myuser:myuser linux/}
+
+\end{itemize}
+

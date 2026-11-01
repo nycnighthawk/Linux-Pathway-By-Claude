@@ -1,0 +1,11 @@
+id: D-016
+title: Meaning of "link-only entries" for LKMPG and kernel docs
+decided_by: owner
+options: []
+chosen: 'Outline mode: titles + headings + URL, no body text; reuse=link-only'
+owner_answer: 'Kernel & dev sources (Recommended): "Bootlin kernel training (CC BY-SA), plus LKMPG and kernel Documentation/process
+  as link-only entries"'
+context: This interprets the owner answer in D-002 and isn't re-scored (see RUBRIC.md, 'Who decides'). Documentation/dev-tools
+  is included alongside process because it holds the KUnit, kselftest, KASAN and checkpatch pages that LNX-330 needs.
+  Both stay headings-only.
+date: '2026-11-01'

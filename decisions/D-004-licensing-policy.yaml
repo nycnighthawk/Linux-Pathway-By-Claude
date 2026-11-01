@@ -1,0 +1,13 @@
+id: D-004
+title: Repository licensing and content policy
+decided_by: owner
+options:
+- name: MIT tooling + per-source licences
+- name: Exclude NC/ND content
+- name: Relicense repo to CC BY-SA 4.0
+- name: Split raw content to a private repo
+chosen: MIT tooling + per-source licences, and exclude NC/ND content
+owner_answer: MIT tooling + per-source licences (Recommended), Exclude NC/ND content (Recommended)
+context: 'Enforced by `lpc gate`: NC/ND sources must be link-only with reuse=excluded; every raw/<id>/ carries its
+  upstream LICENSE or a generated notice.'
+date: '2026-11-01'

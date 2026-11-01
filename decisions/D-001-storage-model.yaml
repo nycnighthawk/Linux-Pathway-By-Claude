@@ -1,0 +1,13 @@
+id: D-001
+title: How raw upstream content is stored
+decided_by: owner
+options:
+- name: Pinned snapshot
+- name: Manifest + fetch in CI
+- name: Git submodules
+- name: Git LFS for PDFs/binaries
+chosen: Pinned snapshot + Manifest + fetch in CI + Git LFS for PDFs/binaries
+owner_answer: Pinned snapshot (Recommended), Manifest + fetch in CI (Recommended), Git LFS for PDFs/binaries
+context: Round 1, question 1. Implemented as sources.yaml (manifest with pins), raw/<id>/ snapshots written by `lpc
+  sync`, and a scheduled CI re-sync. LFS scope was narrowed later in D-007.
+date: '2026-11-01'

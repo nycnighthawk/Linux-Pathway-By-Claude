@@ -1,0 +1,58 @@
+\titleframe
+
+\ifdefempty{\trainer}{
+  \begin{frame}{\trainingtitle{} training}
+    \begin{columns}
+      \column{0.8\textwidth}
+    \begin{itemize}
+    \item These slides are the training materials for Bootlin's
+      {\em \trainingtitle{}} training course.
+    \item If you are interested in following this course with an
+      experienced Bootlin trainer, we offer:
+      \begin{itemize}
+      \item {\bf Public online sessions}, opened to individual
+        registration. Dates announced on our site, registration
+        directly online.
+      \item {\bf Dedicated online sessions}, organized for a team of
+        engineers from the same company at a date/time chosen by our
+        customer.
+      \item {\bf Dedicated on-site sessions}, organized for a team of
+        engineers from the same company, we send a Bootlin trainer
+        on-site to deliver the training.
+      \end{itemize}
+    \item Details and registrations: \url{https://bootlin.com/training/\training}
+    \item Contact: \code{training@bootlin.com}
+    \end{itemize}
+    \column{0.2\textwidth}
+    \includegraphics[width=\textwidth]{common/training.png}\\
+    {\tiny {\em Icon by Eucalyp, Flaticon}}
+  \end{columns}
+  \end{frame}
+}
+{}
+
+\ifdefempty{\trainer}{}{
+  \input{../slides/first-slides/\trainer.tex}
+}
+
+%% If the materials a generated for a real session, not for the website
+
+\ifdefempty{\trainer}{}{
+  \begin{frame}
+  \frametitle{Electronic copies of these documents}
+     \begin{itemize}
+        \item Electronic copies of your particular version of the
+              materials are available on:\\
+              {\scriptsize \url{\sessionurl}} \\
+        \item You can download and open these documents to follow
+	      lectures and labs, to look for explanations given earlier
+              by the trainer and to copy and paste text during labs.
+        \item This specific URL will remain available for a long time.
+	      This way, you can always access the exact instructions
+              corresponding to the labs performed in this session.
+        \item If you are interested in the latest versions of our
+	      training materials, visit the description of each
+              course on \url{https://bootlin.com/training/}.
+    \end{itemize}
+  \end{frame}
+}

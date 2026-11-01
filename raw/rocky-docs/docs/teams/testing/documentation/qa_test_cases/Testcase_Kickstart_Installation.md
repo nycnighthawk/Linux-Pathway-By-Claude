@@ -1,0 +1,64 @@
+---
+title: QA:Testcase Kickstart Installation
+author: Al Bowles
+contributors: Lukas Magauer
+tested_with: 8.10, 9.7
+tags:
+  - testing
+  - qa
+revision_date: 2026-05-08
+rc:
+  prod: Rocky Linux
+  ver:
+    - 8
+    - 9
+    - 10
+  level: Final
+render_macros: true
+---
+
+!!! info "Associated release criterion"
+    This test case is associated with the [Release_Criteria#Kickstart Installation](../../guidelines/release_criteria/r9/9_release_criteria.md#kickstart-installation) release criterion. If you are doing release validation testing, a failure of this test case may be a breach of that release criterion.
+
+## Description
+
+This test case verifies that installations via both local and remote Kickstart configuration files are successful.
+
+* ⬇️ - Low priority. It would be good to have this tested, but if it isn't or if it fails then it is inconsequential. 
+* ❗ - Important. It is best to have this tested, but if it isn't or if it fails then it won't block the release.
+
+{% include 'teams/testing/qa_data_loss_warning.md' %}
+
+## Releases, Architectures, and ISO's
+
+| Distro         | aarch64 | ppc64le | riscv64 | s390x | x86_64 |
+| -------------- | ------- | -------- | ------ | ----- | ------ |
+| Rocky Linux  9 | ❗       | ⬇️        | N/A    | ⬇️     | ❗      |
+| Rocky Linux 10 | ❗       | ⬇️        | ⬇️      | ⬇️     | ❗      |
+
+## Setup
+
+1. Copy a valid Kickstart file to a USB stick
+1. Connect the USB stick to the test system
+   {% include 'teams/testing/qa_setup_boot_to_media.md' %}
+1. Hit the Tab key to edit the boot command
+1. Provide a local Kickstart file by supplying the GRUB boot option `inst.ks=file:/path/to/local.ks` or a remote Kickstart file by supplying the GRUB boot option `inst.ks=https://git.resf.org/testing/createhdds/raw/branch/rocky/server.ks`.
+
+## How to test
+
+1. Continue booting the installer as normal.
+
+## Expected Results
+
+1. The installation should complete and boot successfully, automatically populating the options specified in the Kickstart file.
+
+## Testing in openQA
+
+The following openQA test suites satisfy this release criteria:
+
+- `install_kickstart_nfs`
+- `server_realmd_join_kickstart`
+
+<!-- TODO provide a test suite that does not require PARALLEL_WITH= -->
+
+{% include 'teams/testing/qa_testcase_bottom.md' %}

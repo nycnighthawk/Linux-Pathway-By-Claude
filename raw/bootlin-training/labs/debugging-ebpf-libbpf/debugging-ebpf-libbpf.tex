@@ -1,0 +1,200 @@
+\subchapter
+{eBPF tooling with libbpf}
+{Objectives:
+  \begin{itemize}
+    \item Port our BCC tool onto the target thanks to libbpf
+    \item Implement new features in our program
+  \end{itemize}
+}
+
+Unfortunately, embedding BCC scripts onto our target is not very convenient: we need to bring python, llvm, clang... So it may be more relevant to switch our tool to libbpf. Before starting converting our tool, make sure that the following packages are installed on your development system:
+\begin{itemize}
+  \item \code{clang} to be able to build bpf programs
+  \item \code{linux-tools-common} to get \code{bpftool} (needed to generate skeletons)
+  \item \code{pahole} to allow BTF header (vmlinux.h) generation with bpftool
+\end{itemize}
+
+The first step is to prepare our bpf program:
+\begin{itemize}
+  \item Go to the labs directory, in \path{ebpf/libbpf} directory. In there, you will find \code{trace_programs.bpf.c}. It is the exact same eBPF program as the one used in the BCC script, but any BCC-specific API or macro has been replaced with libbpf functions or macros. Take some time to spot and understand the differences with the previous version:
+    \begin{itemize}
+      \item This program may access some kernel structures at some point, so it has been prepared to benefit from CO-RE (to remain compatible between different kernel versions), that's why it depends on a \path{vmlinux.h} header that we will have to generate.
+      \item In order to manipulate kprobes, the program needs some libbpf header, and because the data manipulated by kprobes changes with the platform (it directly uses registers), we need to define the target architecture with
+	      \ifdefstring{\board}{beagleplay}{\code{__TARGET_ARCH_arm64}}{\code{__TARGET_ARCH_arm}}
+      \item The code uses the \code{SEC} macro to place the eBPF program in a specific section: libbpf will use this section to learn about the program type and attach point
+      \item It also uses the \code{BPF_KPROBE_SYSCALL} macro to allow to get access to already-interpreted arguments from the kprobes: without this macro, we would have to identify the relevant registers to parse the targeted function arguments
+      \item Be careful that the \code{bpf_trace_printk} is not the same helper as the one used with BCC, and so the way to call it is slightly different
+    \end{itemize}
+  \item You will first need to generate the vmlinux header used in the eBPF program. You can use bpftool to do so:
+  \begin{bashinput}
+$ bpftool btf dump file /home/${USER}/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/vmlinux format c > vmlinux.h
+  \end{bashinput}
+  \item Next you need to build your eBPF program into a loadable object:
+  \begin{bashinput}
+$ clang -target bpf -g -O2 --sysroot=/home/${USER}/__SESSION_NAME__-labs/buildroot/output/staging -c trace_programs.bpf.c -o trace_programs.bpf.o
+  \end{bashinput}
+
+{\em Notes:
+\begin{itemize}
+    \item Since our program deals with pt\_regs, it is not portable
+        between architectures, that's why we have to provide the
+        target architecture with
+        \ifdefstring{\board}{beagleplay}{\code{__TARGET_ARCH_arm64}}{\code{__TARGET_ARCH_arm}}.
+    \item Our program needs some headers provided by libbpf. We can
+        provide access to those headers to clang with the \code{--sysroot}
+        parameter.
+\end{itemize}
+}
+
+\end{itemize}
+
+Your eBPF program does not really need a userspace program to run, and the
+data it emits can be read from the trace buffer. So to use it in a minimal
+way you can use \code{bpftool} without writing a userspace tool.
+
+However you'll also need to use the bpf filesystem to keep a reference to
+the loaded program, or it will be unloaded as soon as bpftool exits. On the
+target:
+
+\begin{verbatim}
+  mount -t bpf none /sys/fs/bpf
+  mkdir /sys/fs/bpf/myprog
+  bpftool prog loadall trace_programs.bpf.o /sys/fs/bpf/myprog autoattach
+\end{verbatim}
+
+Now the eBPF program should be loaded on the kernel and run every time
+the \code{execve} syscall is invoked. Check its output by reading the
+ftrace buffer content:
+
+\begin{verbatim}
+bpftool prog tracelog
+\end{verbatim}
+
+Open another console onto the target (through SSH) and execute some
+programs: they should appear in the tracing buffer.
+
+Wait for at least a minute. Did your tracer allow you to spot anything
+suspect?
+
+{\em TIP: if you don't see any log in your trace buffer, make sure that
+tracing is enabled (tracing\_on entry in tracefs)}
+
+Feel free to experiment using bpftool to better understand how your eBPF
+program is managed by the kernel, for example using \code{bpftool prog}:
+
+\begin{verbatim}
+bpftool prog
+bpftool prog dump xlated id <id>
+\end{verbatim}
+
+Before continuing, ensure you remove the eBPF program from the kernel:
+
+\begin{verbatim}
+rm -fr /sys/fs/bpf/myprog/
+\end{verbatim}
+
+Managing the eBPF program with bpftool is a simple way to experiment with
+it. However a user-friendly tool should not require all the manual steps
+with bpftool and the bpf filesystem. By building on top of the work done so
+far, add a userspace program to automate loading the eBPF program with a
+single command:
+
+\begin{itemize}
+  \item Generate a C skeleton header from this object with bpftool and libbpf
+  \begin{bashinput}
+$ bpftool gen skeleton trace_programs.bpf.o name trace_programs > trace_programs.skel.h
+  \end{bashinput}
+  Check the generated header: you will see that the raw bpf program has been
+  embedded in the header, but also that you have a small set of APIs available
+  to easily design your tracing tool.
+\end{itemize}
+
+You now have to write the userspace part in charge of managing your eBPF program:
+\begin{itemize}
+  \item Create a \path{trace_programs.c} file. In there, include your freshly created skeleton header, create a main function, and use the available APIs to open, load and attach your program. You can refer to the kernel documentation to learn how to use those skeleton APIs: \kdochtml{bpf/libbpf/libbpf_overview}
+  \item Once again, remember to make sure that your userspace program does not end after attaching your eBPF program, otherwise it will be detached and unloaded immediately. You can add a busy loop in your code to prevent it.
+  \item libbpf expects you to "destroy" ebpf objects when you are done using it, check your skeleton file to find the relevant API.
+\end{itemize}
+
+Finally, build your program:
+\begin{bashinput}
+$ ${CROSS_COMPILE}gcc trace_programs.c -lbpf -o trace_programs
+\end{bashinput}
+
+Run your tracing tool on the target. Now you don't need to use bpftool and
+the bpf filesystem anymore. Your users will be glad!
+
+\section{Improving our program}
+
+Now that we have a working base for our custom tracing tool, we will improve it
+to make it more useful.
+
+In the labs directory, go to \path{ebpf/libbpf_advanced}. Copy the
+\path{trace_programs.c} and \path{trace_programs.bpf.c} from the previous
+part in this directory, as you will iterate on it. The directory provides a
+makefile which automates all build steps performed manually earlier. To use
+this makefile, make sure to have your \code{CROSS_COMPILE} variable
+properly set, as well as a \code{KDIR} variable pointing to your kernel
+directory:
+\begin{bashinput}
+export KDIR=/home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%
+\end{bashinput}
+
+Having to open ftrace to display the logs is cumbersome, we would like to get the trace directly in the console in which we have started the tool. We will use the opportunity to switch our program output from a log line in ftrace to events pushed in a \href{https://docs.kernel.org/6.6/bpf/ringbuf.html}{perf ring buffer}. A perf ring buffer is a kind of map which can be used in eBPF programs to stream data to userspace in a very efficient way. To use a perf ring buffer, perform the following steps:
+\begin{itemize}
+  \item Edit your eBPF program to push data into a perf ring buffer instead of ftrace:
+  \begin{itemize}
+    \item Create a structure type containing the data we will push in the ring buffer. This struct will contain two pieces of information for now: a PID, and a program name. Since you will need to use this structure from both the eBPF program and the userspace program, define it in a shared header.
+    \item Create the map in your eBPF program file. There are
+      \href{https://ebpf-docs.dylanreimerink.nl/linux/concepts/maps/}{different
+        ways of defining maps} in eBPF programs, we will create a BTF Style
+      map.
+    \item Look at the
+      \href{https://docs.ebpf.io/linux/map-type/BPF_MAP_TYPE_RINGBUF/}{\code{BPF_MAP_TYPE_RINGBUF}}
+      documentation to know how to set (or not set) the \code{key_size},
+      \code{value_size} and \code{max_entries} attributes.
+    \item Edit your program code to push data in the ring buffer each time it is triggered: create an instance of your custom data structure in the BPF program, fill it with the event information and push it into the buffer.
+    \begin{itemize}
+      \item You can not use strcpy or memcpy in your program to copy the
+      executable name in your event structure, you have to use the bpf helper \code{bpf_probe_read_str}.
+      \item To push the custom data structure into the perf ring buffer, you can use another bpf helper called \code{bpf_ringbuf_output}.
+    \end{itemize}
+  \end{itemize}
+  \item Finally, edit your userspace program to retrieve data from the perf ring buffer, thanks to libbpf APIs
+  \begin{itemize}
+    \item Now that we have added a map into our program, the skeleton object has a handle to this map in its \code{maps} field
+    \item To manipulate the ring buffer in the userspace program, you have
+    access to specific libbpf APIs, especially \code{ring_buffer__new} to
+    create an instance of the ring buffer, and \code{ring_buffer__poll} to poll
+    the buffer in your main loop. Unfortunately, the official documentation is
+    quite succinct on those functions, but you can take a look at the
+    \kdir{tools/testing/selftests/bpf} directory in the kernel source tree to learn how to
+    use those (search for \kfunc{ring_buffer__new} and
+    \kfunc{ring_buffer__poll} usage in Elixir), or this
+    \href{https://github.com/anakryiko/bpf-ringbuf-examples/blob/main/src/ringbuf-output.c}{Ring
+    Buffer example from Andrii Nakryiko}.
+    \item You may need to convert maps objects into the corresponding file descriptors. libbpf \href{https://libbpf.readthedocs.io/en/latest/api.html}{also provides APIs} to do so.
+    \item In the event callback passed to \code{ring_buffer__new}, retrieve the data from the ring buffer and print it.
+  \end{itemize}
+\end{itemize}
+
+Once done, run your updated program onto the target: you should see some traces directly in the console in which you have started the tracing tool.
+
+As a final improvement, we will trace the parent PID as well to know who is starting any program.
+\begin{itemize}
+  \item Edit your eBPF program to read the parent PID. This info can be captured by retrieving the current \code{struct task_struct}, and identifying the relevant fields. Check both Elixir for the layout of \code{struct task_struct}, and \manpage{bpf-helpers}{7} to learn how to get the current task.
+  \item We are using CO-RE definition for kernel data (through vmlinux.h), so
+  we can not dereference directly a \code{struct task_struct} in our eBPF
+  program, we must use helpers to retrieve struct fields. You can check
+  \href{https://nakryiko.com/posts/bpf-core-reference-guide/#the-missing-manual}{this
+  blog post from Andrii Nakryiko} to learn about such helpers: you will need to
+  use either \code{bpf_core_read} function or even the \code{BPF_CORE_READ}
+  macro, both availables from the \code{bpf/bpf_core_read.h} header from
+  libbpf. Also, you will  need to check \kstruct{task_struct} to know what
+  field to extract to get the parent PID.
+  \item Update your userspace program to read and print the newly captured value
+\end{itemize}
+
+Once done, run your script again, you can now see the parent process of any new
+program executed on the target, and so investigate further any suspicious
+activity on the system!

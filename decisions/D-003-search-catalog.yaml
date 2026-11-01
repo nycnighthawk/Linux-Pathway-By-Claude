@@ -1,0 +1,11 @@
+id: D-003
+title: Search catalog implementation
+decided_by: owner
+options:
+- name: SQLite FTS5 + CLI
+- name: Static web search page
+- name: Plain catalog files only
+- name: Hosted search engine
+chosen: SQLite FTS5 + CLI and Static web search page
+owner_answer: SQLite FTS5 + CLI (Recommended), Static web search page (Recommended)
+date: '2026-11-01'

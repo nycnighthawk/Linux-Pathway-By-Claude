@@ -1,0 +1,90 @@
+name: catalog
+
+# Validates licences and decisions, rebuilds the catalog, checks the committed metadata is current,
+# and on main publishes the full-text SQLite DB (release "catalog-latest") and the search page (GitHub Pages).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false            # figures aren't needed to build the catalog; saves LFS bandwidth
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Unit tests
+        run: PYTHONPATH=tools pytest -q tests
+      - name: Licence and provenance gate
+        run: bin/lpc gate
+      - name: Decision log matches the rubric
+        run: bin/lpc decisions && git diff --exit-code decisions/DECISIONS.md
+      - name: Build catalog
+        run: bin/lpc build
+      - name: Committed catalog is up to date
+        run: |
+          if ! git diff --quiet -- catalog review/queue.csv; then
+            git --no-pager diff --stat -- catalog review/queue.csv
+            # Warning, not failure: parser library versions can shift output slightly between machines.
+            echo "::warning::catalog/ or review/queue.csv differs from a fresh build. Run 'bin/lpc build' and commit the result."
+          fi
+      - name: Build search site
+        run: bin/lpc web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: catalog-db
+          path: build/catalog.db
+          retention-days: 30
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: site
+
+  release-db:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: catalog-db
+      - name: Publish catalog.db to the catalog-latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release view catalog-latest >/dev/null 2>&1 || \
+            gh release create catalog-latest --title "Catalog (latest build)" --notes "Full-text SQLite FTS5 catalog. Query with bin/lpc search after placing it at build/catalog.db." --latest=false
+          gh release upload catalog-latest catalog.db --clobber
+
+  pages:
+    # Requires Settings → Pages → Source: "GitHub Actions" (one-time setup by the repository owner).
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,14 @@
+id: rocky-docs
+name: Rocky Linux documentation
+license: CC-BY-SA-4.0
+license_note: null
+mode: full
+reuse: adapt
+stream: A
+retrieved: '2026-11-01'
+upstream: https://github.com/rocky-linux/documentation
+pin: fed6b43daf614237fafcff3861a08e95ceebfa94
+upstream_commit_date: '2026-10-31'
+license_file_upstream: LICENSE.md
+text_files: 493
+figures: 334

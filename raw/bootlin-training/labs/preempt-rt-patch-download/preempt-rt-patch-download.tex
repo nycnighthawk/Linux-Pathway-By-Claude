@@ -1,0 +1,159 @@
+\subchapter{Lab 1: Building and Booting a Preempt-RT Kernel}{Download, Configure, Build and Boot}
+
+During this lab, you will:
+\begin{itemize}
+	\item Configure the Buildroot Build-system to generate an image based on the upstream linux-rt repository
+	\item Configure the kernel to enable full preemption
+	\item Boot the system and check that it runs preempt-rt
+\end{itemize}
+
+\section{Initial Setup}
+As specified in the Buildroot
+manual\footnote{\url{https://buildroot.org/downloads/manual/manual.html\#requirement-mandatory}},
+Buildroot requires a few packages to be installed on your
+machine. Let's install them using Ubuntu's package manager:
+
+\begin{bashinput}
+sudo apt install sed make binutils gcc g++ bash patch \
+  gzip bzip2 perl tar cpio python unzip rsync wget libncurses-dev
+\end{bashinput}
+
+\section{Download Buildroot}
+
+Since we're going to do Buildroot development, let's clone the
+Buildroot source code from its Git repository:
+
+\begin{bashinput}
+git clone https://gitlab.com/buildroot.org/buildroot.git
+\end{bashinput}
+
+In case this is blocked on your network, you can download the Buildroot
+tarball \code{buildroot-2026.08.tar.bz2} from
+\code{https://buildroot.org/downloads/} and extract it. However in this
+case, you won't be able to use {\em Git} to visualize your changes and
+keep track of them.
+
+Go into the newly created \code{buildroot} directory.
+
+We're going to start a branch from the {\em 2026.08} Buildroot
+release, with which this training has been tested.
+
+\begin{bashinput}
+git checkout -b bootlinlabs 2026.08
+\end{bashinput}
+
+\section{Configuring Buildroot}
+
+The buildroot configuration is provided in the lab materials. Copy the configuration
+in the "configs" folder of your buildroot installation:
+
+\begin{bashinput}
+cp $HOME/__SESSION_NAME__-labs/stm32mp157a_dk1_rt_defconfig configs
+\end{bashinput}
+
+We'll use that configuration as a basis for our setup:
+
+\begin{bashinput}
+make stm32mp157a_dk1_rt_defconfig
+\end{bashinput}
+
+\section{Kernel configuration}
+The standard way to configure the kernel is through the \code{make menuconfig} interface. Here, we're building everything using
+Buildroot, because it's an easy way to build a fully integrated image, with our custom kernel but also our custom applications.
+
+We'll use Buildroot's \code{make linux-menuconfig} to modify our kernel configuration,
+it's strictly equivalent to the \code{make menuconfig} command from the kernel's source tree.
+
+\begin{bashinput}
+	make linux-menuconfig
+\end{bashinput}
+
+The default kernel configuration file for this platform isn't made for a -RT kernel. Building an kernel with the Preempt-RT patch is not enough to
+benefit from the full kernel preemption, we also need to enable it. In the menuconfig interface, you'll find the \code{Preemption Model} setting under the \code{General Setup} category.
+
+We want to enable the \code{Fully Preemptible Kernel} mode, but it's not proposed as an available choice by default. To enable it, we first need to enable the \code{expert} mode, by selecting the \code{CONFIG_EXPERT} option. Once enabled, we can select the Preempt-RT mode!
+
+\begin{bashinput}
+make
+\end{bashinput}
+
+While the build is ongoing, don't hesitate to take a look at previous versions of the patchset:
+
+\begin{bashinput}
+wget https://cdn.kernel.org/pub/linux/kernel/projects/rt/6.10/patches-6.10.2-rt14.tar.gz
+\end{bashinput}
+
+Look at the \code{series} file for more information about each individual patch.
+
+\section{Setting up serial communication with the board - STM32MP157}
+
+The STM32MP1 devkit's serial port can be accessed through the micro-USB connector.
+
+Once the USB cable is plugged in, a new serial port
+should appear: \code{/dev/ttyACM0}.  You can also see this device
+appear by looking at the output of \code{dmesg}.
+
+To communicate with the board through the serial port, install a
+serial communication program, such as \code{picocom}:
+
+\begin{bashinput}
+sudo apt install picocom
+\end{bashinput}
+
+If you run \code{ls -l /dev/ttyACM0}, you can also see that only
+\code{root} and users belonging to the \code{dialout} group have
+read and write access to this file. Therefore, you need to add your user
+to the \code{dialout} group:
+
+\begin{bashinput}
+sudo adduser $USER dialout
+\end{bashinput}
+
+{\bf Important}: for the group change to be effective, in Ubuntu 18.04, you have to
+{\em completely reboot} the system \footnote{As explained on
+\url{https://askubuntu.com/questions/1045993/after-adding-a-group-logoutlogin-is-not-enough-in-18-04/}.}.
+A workaround is to run \code{newgrp dialout}, but it is not global.
+You have to run it in each terminal.
+
+Now, you can run \code{picocom -b 115200 /dev/ttyACM0}, to start serial
+communication on \code{/dev/ttyACM0}, with a baudrate of \code{115200}. If
+you wish to exit \code{picocom}, press \code{[Ctrl][a]} followed by
+\code{[Ctrl][x]}.
+
+There should be nothing on the serial line so far, as the board is not
+powered up yet.
+
+\section{Flash the image to the SDCard}
+
+In order to get a working board, you will need to flash a sdcard with the
+\code{output/images/sdcard.img} file. Plug your sdcard on your computer and
+check on which \code{/dev/sdX} it has been mounted (you can use the \code{dmesg}
+command to check that). For instance, if the sdcard has been mounted on
+\code{/dev/sde}, use the following command:
+
+\begin{bashinput}
+$ sudo dd if=output/images/sdcard.img of=/dev/sde
+$ sync
+\end{bashinput}
+
+NOTE: Double-check that you are targeting the correct device before executing
+the dd command!
+
+Once flashed, plug the sdcard onto the STM32MP157 board and reboot the board.
+
+\section{Checking that we run a Patched kernel}
+
+To check that we are indeed running a kernel with the preempt-RT patch applied and
+full kernel preemption enabled, we have 2 main ways of checking.
+
+First, use the \code{uname -a} command. Running an RT kernel should show the \code{PREEMPT_RT} version item.
+
+The other way to check is to look at the file \code{/sys/kernel/realtime}. It's content is always '1', but the file only exists for RT kernels.
+
+Take a look at the boot logs, can you see something that's not going right? Why?
+
+\section{Fixing our first kernel bug}
+
+You should see quite a lot of \code{BUG: scheduling while atomic} messages. The
+actual issue is non-trivial to fix, but it's a nice example to analyze.
+

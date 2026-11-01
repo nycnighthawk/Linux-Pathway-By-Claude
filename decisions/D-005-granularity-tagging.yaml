@@ -1,0 +1,13 @@
+id: D-005
+title: Catalog record granularity and tagging
+decided_by: owner
+options:
+- name: Section-level chunks
+- name: Rule-based auto-tags
+- name: Human review queue
+- name: File-level records only
+chosen: Section-level chunks + rule-based auto-tags + human review queue
+owner_answer: Section-level chunks, Rule-based auto-tags, Human review queue (all Recommended)
+context: Chunks split at heading levels 1-3 (long sections split at about 1,200 words). Rules live in taxonomy/courses.yaml;
+  untagged or low-confidence chunks go to review/queue.csv; corrections go in review/overrides.yaml.
+date: '2026-11-01'

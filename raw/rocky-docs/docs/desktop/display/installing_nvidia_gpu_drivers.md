@@ -1,0 +1,120 @@
+---
+title: Installing NVIDIA GPU Drivers
+author: Joseph Brinkman
+contributors: Steven Spencer, Ganna Zhyrnova
+---
+
+## Introduction
+
+NVIDIA^&reg;^ is one of the most popular GPU manufacturers. You can install NVIDIA GPU drivers in several ways. This guide uses NVIDIA's official repository to install their drivers. Therefore, [NVIDIA Driver Installation Guide](https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html) is heavily referenced here.
+
+Some other alternative ways to install NVIDIA drivers include:
+
+* NVIDIA's `.run` installer
+* Third-party RPMFusion repository
+* Third-party ELRepo driver
+
+In most cases, installing NVIDIA drivers from the official source is best. RPMFusion and ELRepo are available for those who prefer a community-based repository. For older hardware, RPMFusion works best. It is advisable to avoid using the `.run` installer. While convenient, using the `.run` installer is notorious for overwriting system files and having compatibility issues.
+
+NVIDIA Linux GPU Driver contains two “flavors” of kernel modules: open kernel module flavor supported for Turing and newer architectures and proprietary kernel module flavor required for the older. Note that the open kernel module flavor has become the default and suggested installation since 560 driver release, and the newer GPU series such as RTX 50 series support the open kernel module flavor only.
+
+## Assumptions
+
+For this guide, you need the following:
+
+* Rocky Linux Workstation
+* `sudo` privileges
+
+## Install necessary utilities and dependencies
+
+Enable the Extra Packages for Enterprise Linux (EPEL) repository:
+
+```bash
+sudo dnf install epel-release -y
+```
+
+Enable the CodeReady Builder (CRB) repository:
+
+```bash
+sudo dnf config-manager --enable crb
+```
+
+Installing development tools ensures necessary build dependencies:
+
+```bash
+sudo dnf groupinstall "Development Tools" -y
+```
+
+The `kernel-devel` package provides the necessary headers and tools to build kernel modules:
+
+```bash
+sudo dnf install kernel-devel-matched kernel-headers -y
+```
+
+## Install NVIDIA drivers
+
+After installing the necessary prerequisites, it is time to install the NVIDIA drivers.
+
+Add the official NVIDIA repository with the following command:
+
+```bash
+sudo dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel10/$(uname -m)/cuda-rhel10.repo
+```
+
+Next, clean the DNF repository cache:
+
+```bash
+sudo dnf clean expire-cache
+```
+
+Finally, install the latest NVIDIA driver for your system. For open kernel modules, run:
+
+```bash
+sudo dnf install nvidia-open -y
+```
+
+While for proprietary kernel modules, run:
+
+```bash
+sudo dnf install cuda-drivers -y
+```
+
+### Older GPUs
+Release 590 of the NVIDIA driver [dropped support for Maxwell-, Pascal-, and Volta- based GPUs](https://forums.developer.nvidia.com/t/unix-graphics-feature-deprecation-schedule/60588). On such systems, the above instructions will install the driver without error, but on reboot, it will fail to load the module because it can't find any GPUs it supports. However, if you have such a GPU, you can still install the older driver:
+
+```bash
+sudo dnf install cuda-drivers-580 -y
+```
+
+You will then need to protect the `cuda-drivers` package from future updates via [dnf's versionlock plugin](https://docs.rockylinux.org/books/admin_guide/13-softwares/#versionlock-plugin).
+
+
+## Disable Nouveau
+
+Nouveau is an open-source NVIDIA driver that provides limited functionality compared to NVIDIA's proprietary drivers. It is best to disable it to avoid driver conflicts:
+
+```bash
+sudo grubby --args="nouveau.modeset=0 rd.driver.blacklist=nouveau" --update-kernel=ALL
+```
+
+!!! Note
+
+    For systems with secure boot enabled, you need to perform this step:
+
+    ```bash
+    sudo mokutil --import /var/lib/dkms/mok.pub
+    ```
+
+    The `mokutil` command will prompt you to create a password that will be used during the reboot.
+    
+    After the reboot, your system should ask you if you want to enroll a key or something like that, say "yes" and it asks for the password you gave in the `mokutil` command.
+
+Reboot:
+
+```bash
+sudo reboot now
+```
+
+## Conclusion
+
+You have successfully installed NVIDIA GPU drivers on your system using NVIDIA's official repository. Enjoy the enhanced capabilities of your NVIDIA GPU that the default Nouveau drivers can not provide.

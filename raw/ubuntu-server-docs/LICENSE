@@ -1,0 +1,6 @@
+Ubuntu Server documentation
+Licence: NOASSERTION
+
+Upstream declares no licence (docs/conf.py license.name is empty as of the pin). Per D-006 the catalog licence matches upstream; sync re-checks and flags a change for review.
+
+Curated into Linux-Pathway-By-Claude by `lpc sync`. See SOURCE.yaml for provenance.

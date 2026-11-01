@@ -1,0 +1,192 @@
+\subchapter
+{Usage of existing {\em autotools} projects}
+{Objectives:
+  \begin{itemize}
+  \item First build of an {\em autotools} package
+  \item Out of tree build and cross-compilation
+  \item Overriding cache variables
+  \item Using {\em autoreconf}
+  \end{itemize}
+}
+
+\section{Download ethtool}
+
+Go to the \code{\$HOME/__SESSION_NAME__-labs/} directory.
+
+To start our exploration of {\em autotools}, we'll use the {\bf
+  ethtool} set of programs. Download the 5.17 version from the project
+home page at
+\url{https://www.kernel.org/pub/software/network/ethtool/} and extract
+it.
+
+\section{Exploration of the sources}
+
+Inside the sources, look at the various files available, and pay
+special attention to \code{configure.ac} and \code{Makefile.am}. Even
+though we haven't yet discussed their syntax and contents, try to get
+some idea about what they could be doing.
+
+Compare their length with the length of their corresponding generated
+files \code{configure} and \code{Makefile.in}. Also, check if there is
+already a \code{Makefile} or not in the project.
+
+Read the output of \code{./configure --help}.
+
+\section{First build}
+
+Run \code{./configure}, and look at the output. You may need to
+install the \code{libmnl-dev} package if it is not already installed
+on your system. Also look at the contents of the \code{config.log}
+file.
+
+Then, run the build with \code{make}.
+
+Finally, try to run the installation with \code{make install}. As you
+can see, it fails with {\em Permission denied} messages, because it
+tries to install to \code{/usr/local}, which is the default {\em
+  prefix}.
+
+Since we don't want to install to \code{/usr/local}, let's configure
+{\em ethtool} to install to a different place:
+
+\begin{verbatim}
+mkdir $HOME/sys
+./configure --prefix=$HOME/sys/
+make
+make install
+\end{verbatim}
+
+This time, in \code{$HOME/sys}, you should have the {\em ethtool}
+program an man pages installed.
+
+\section{Out of tree build and cross-compiling}
+
+Now, create a separate build directory, say \code{$HOME/ethtool-arm/},
+and move to this directory. Then, call the \code{configure} script of
+{\em ethtool}:
+
+\begin{verbatim}
+../ethtool-5.17/configure
+\end{verbatim}
+
+This will abort with an error: it doesn't want to do {\em out of tree}
+build if the source tree has been configured (which we did in the
+previous section of this lab). So as suggested, clean up the {\em
+  ethtool} source tree by running \code{make distclean}.
+
+To cross-compile {\em ethtool}, we'll first have to install a
+cross-compiler:
+
+\begin{verbatim}
+apt install gcc-arm-linux-gnueabihf
+\end{verbatim}
+
+Then you can do:
+
+\begin{verbatim}
+../ethtool-5.17/configure --host=arm-linux-gnueabihf
+\end{verbatim}
+
+Start the build, and verify that the cross-compiler is used. The build
+will fail because {\em libmnl} isn't available on our system,
+cross-compiled for ARM. Let's build without {\em netlink} support to
+avoid the {\em libmnl} dependency.
+
+\begin{verbatim}
+../ethtool-5.17/configure --host=arm-linux-gnueabihf --disable-netlink
+\end{verbatim}
+
+\section{Overriding cache variables}
+
+If you look at the {\em configure} output, you can see:
+
+\begin{verbatim}
+checking for strtol... yes
+\end{verbatim}
+
+The {\em configure} script is checking for the availability of the
+\code{strtol()} function. Now let's pretend for some reason that the
+detected value is not appropriate (it's obviously not the case for
+such a simple test, but we need to take an example!). We want to
+override this test by passing the appropriate value as an environment
+variable to the \code{configure} script.
+
+Before doing this change, look at the
+\code{config.h} {\em configuration header} and see the value of the
+definition related to \code{strtol}. Note that {\em ethtool} decided
+to use a custom name for the {\em configuration header} file, and it's
+actually named \code{ethtool-config.h}.
+
+Read the \code{config.log}, and identify which variable can be used to
+override the result of the \code{strtol} test. Pass it in the
+environment of \code{./configure}, and check that {\em configure}
+outputs:
+
+\begin{verbatim}
+checking for strtol... (cached) no
+\end{verbatim}
+
+You can also check in \code{ethtool-config.h} the new value for
+definition related to \code{strtol}.
+
+However, it's interesting to notice that in practice the {\em ethtool}
+source code assumes \code{strtol} is present, without taking into
+account the \code{HAVE_STRTOL} definition. So if the function was
+really absent, there would be a build failure.
+
+\section{Autoreconfiguring}
+
+Now, let's look at another piece of software, which isn't distributed
+with pre-generated \code{configure} and \code{Makefile.in} files.
+
+Go back to your \code{$HOME} directory (or another directory you
+created for this training session), and use {\em Git} to fetch the
+source code of a library called {\em libconfuse}:
+
+\begin{verbatim}
+git clone https://github.com/martinh/libconfuse
+\end{verbatim}
+
+Note: you may need to install {\em Git}, using \code{apt install
+  git}.
+
+Look at the {\em libconfuse} source code, and see that you only have
+\code{configure.ac} but not the generated \code{configure} script, and
+only the \code{Makefile.am} files, and not the generated
+\code{Makefile.in} files.
+
+Now, run \code{autoreconf -i}, and look at which files where
+generated.
+
+If you get issues when running \code{autoreconf}, it is most likely
+because your system doesn't have the {\em autotools} installed. In
+this case, run:
+
+\begin{verbatim}
+apt install autoconf automake libtool autopoint gettext
+\end{verbatim}
+
+(Note: \code{autopoint} and \code{gettext} are needed because this
+package uses internationalization features provided by {\em gettext},
+which we won't cover in this training.)
+
+You can now build and install {\em libconfuse} in
+\code{$HOME/sys}. For good measure, don't forget to disable building
+the examples: look at \code{./configure --help} to know how to do
+that.
+
+When building, you should see a message \code{flex: command not
+  found}. Indeed, this tool is not present on our
+system. Interestingly, if you look back at the output of the
+\code{./configure} script, it did check for \code{flex}, concluded it
+wasn't available, but did not error out. As you can see not all
+\code{configure} scripts are properly written!
+
+Install {\em flex}:
+
+\begin{verbatim}
+apt install flex
+\end{verbatim}
+
+Re-run \code{./configure}, and restart the build.
+

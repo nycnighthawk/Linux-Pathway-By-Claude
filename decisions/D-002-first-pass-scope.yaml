@@ -1,0 +1,14 @@
+id: D-002
+title: Sources covered by the first curation pass
+decided_by: owner
+options:
+- name: Systems docs, CC BY-SA
+- name: Kubernetes docs, CC BY 4.0
+- name: Kernel & dev sources
+- name: Security/compliance sources
+chosen: All four
+owner_answer: All four options selected.
+context: 'Systems: Rocky, Ubuntu Server, Debian Handbook, selected RHEL 10 guides. Kernel/dev: Bootlin (full), with
+  LKMPG and kernel Documentation/process as link-only entries. Security: ComplianceAsCode rules plus NIST and STIG
+  metadata.'
+date: '2026-11-01'
