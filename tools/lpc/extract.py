@@ -51,9 +51,13 @@ def parse_md(text: str, rel: str):
         if hm and len(hm.group(1)) <= MAX_LEVEL:
             cur["text"] = "\n".join(cur_lines).strip()
             secs.append(cur)
-            heading = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", hm.group(2))   # [text](#anchor) -> text
+            raw_h = hm.group(2)
+            perma = re.search(r"\[(?:¶|#|)\]\(#([\w.:-]+)[^)]*\)", raw_h)   # permalink: [](#id "Link to this heading")
+            raw_h = re.sub(r"\[top\]\(#top_of_page\)", "", raw_h)
+            raw_h = re.sub(r"\[(?:¶|#|)\]\([^)]*\)", "", raw_h)
+            heading = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", raw_h).rstrip(" ¶#")   # [text](#anchor) -> text
             heading = re.sub(r"\s+", " ", heading.replace("\\", "")).strip()
-            cur, cur_lines = _sec(len(hm.group(1)), heading, hm.group(3), []), []
+            cur, cur_lines = _sec(len(hm.group(1)), heading, hm.group(3) or (perma.group(1) if perma else None), []), []
             if title is None and len(hm.group(1)) == 1:
                 title = heading
         else:
@@ -151,16 +155,25 @@ def parse_docbook(text: str, rel: str):
     def own_text(el):
         parts = []
         for ch in el.children:
-            if getattr(ch, "name", None) in ("section", "sect1", "sect2", "sect3", "chapter", "appendix", "title"):
+            if getattr(ch, "name", None) in ("section", "sect1", "sect2", "sect3", "chapter", "appendix", "title",
+                                              "refsect1", "refsect2", "refsect3", "refmeta", "refnamediv", "refsynopsisdiv"):
                 continue
             t = ch.get_text(" ", strip=False) if hasattr(ch, "get_text") else str(ch)
             parts.append(t)
         return re.sub(r"[ \t]+", " ", re.sub(r"\n\s*\n+", "\n\n", "".join(parts))).strip()
 
     def walk(el, depth):
-        for ch in el.find_all(["chapter", "appendix", "section", "sect1", "sect2", "sect3", "preface"], recursive=False):
-            t = ch.find("title")
+        for ch in el.find_all(["chapter", "appendix", "section", "sect1", "sect2", "sect3", "preface",
+                               "refentry", "refnamediv", "refsynopsisdiv", "refsect1", "refsect2", "refsect3"], recursive=False):
+            t = ch.find("refentrytitle") if ch.name == "refentry" else ch.find("title")
             heading = t.get_text(" ", strip=True) if t else ""
+            if ch.name == "refentry":
+                vol = ch.find("manvolnum")
+                heading += f"({vol.get_text(strip=True)})" if vol else ""
+            elif ch.name == "refnamediv":
+                heading = "NAME"
+            elif ch.name == "refsynopsisdiv" and not heading:
+                heading = "SYNOPSIS"
             if depth <= MAX_LEVEL:
                 secs.append(_sec(depth, heading, ch.get("id"), [own_text(ch) if depth < MAX_LEVEL else ch.get_text(" ", strip=False)]))
                 if depth < MAX_LEVEL:

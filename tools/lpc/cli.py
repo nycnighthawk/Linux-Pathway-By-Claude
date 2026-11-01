@@ -13,6 +13,12 @@ def main(argv=None):
     s.add_argument("--source", "-s", action="append", help="only this source id (repeatable)")
     s.add_argument("--update", action="store_true", help="move to the latest upstream and re-pin")
 
+    s.add_argument("--kind", "-k", action="append", help="only sources of this kind (git, crawl, arch-pkg, rhel-html, oscal, http-pdf, stig)")
+
+    ls = sub.add_parser("list", help="list sources (for scripts and CI)")
+    ls.add_argument("--kind", "-k", action="append")
+    ls.add_argument("--ids", action="store_true", help="print space-separated ids only")
+
     sub.add_parser("build", help="chunk, tag and write catalog/ + build/catalog.db")
 
     q = sub.add_parser("search", help="full-text search the catalog")
@@ -36,7 +42,12 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.cmd == "sync":
         from . import sync
-        sync.run(a.source, a.update)
+        sync.run(a.source, a.update, a.kind)
+    elif a.cmd == "list":
+        from .common import load_sources
+        rows = [x for x in load_sources() if x.get("kind") != "none" and (not a.kind or x.get("kind") in a.kind)]
+        print(" ".join(x["id"] for x in rows) if a.ids else
+              "\n".join(f"{x['id']:<22} {x['kind']:<10} {x['mode']:<8} {x['reuse']:<10} {x['license']}" for x in rows))
     elif a.cmd == "build":
         from . import build
         build.run()

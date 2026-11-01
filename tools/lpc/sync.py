@@ -391,6 +391,63 @@ def sync_stig(src: dict, update: bool) -> dict:
     return base_prov(src) | {"upstream": src["base"], "pin": ";".join(pins), "rules": total, "text_files": len(pins)}
 
 
+# ------------------------------------------------------------------- crawl
+def sync_crawl(src: dict, update: bool) -> dict:
+    from . import crawl
+
+    out = fresh_dir(src["id"])
+    res = crawl.run(src, out)
+    write_notice(out, src, extra=f"Retrieved with a headless browser (Playwright) from: {', '.join(src['allow'])}\n"
+                 f"Licence basis: {src.get('license_basis', 'see sources.yaml')}\n")
+    return base_prov(src) | {"upstream": src["allow"], "text_files": res["pages"], **res}
+
+
+# --------------------------------------------------------- Arch wiki package
+def sync_arch_pkg(src: dict, update: bool) -> dict:
+    """ArchWiki via Arch's official arch-wiki-docs package (HTML dump), so we never crawl the wiki itself."""
+    import tarfile
+    import zstandard
+    from bs4 import BeautifulSoup
+    from .tag import Tagger
+
+    out = fresh_dir(src["id"])
+    listing = http_get(src["mirror"]).decode("utf-8", "replace")
+    names = sorted(set(re.findall(r"arch-wiki-docs-[\w.-]+-any\.pkg\.tar\.zst(?!\.sig)", listing)))
+    if not names:
+        raise RuntimeError("arch-wiki-docs package not found on mirror")
+    pkg = names[-1]
+    data = http_get(src["mirror"] + pkg, timeout=600)
+    tar = tarfile.open(fileobj=io.BytesIO(zstandard.ZstdDecompressor().decompress(data, max_output_size=1 << 31)))
+    prefix = "usr/share/doc/arch-wiki/html/en/"
+    pages = [m for m in tar.getmembers() if m.isfile() and m.name.startswith(prefix) and m.name.endswith(".html")]
+    tagger, cap = Tagger(), int(src.get("max_pages", 400))
+    scored = []
+    for m in pages:
+        name = m.name[len(prefix):-5]
+        if re.match(r"(Category|Template|Help|ArchWiki|Talk|User|File|Special)[:_]", name):
+            continue
+        title = name.replace("_", " ")
+        sc = tagger.score(src["id"], title, "", "")
+        if sc and max(sc.values()) >= float(src.get("min_title_score", 2)):
+            scored.append((max(sc.values()), m, title))
+    scored.sort(key=lambda x: -x[0])
+    for _, m, title in scored[:cap]:
+        soup = BeautifulSoup(tar.extractfile(m).read(), "lxml")
+        body = soup.select_one(".mw-parser-output") or soup.select_one("#content") or soup.body
+        for t in body.select("script, style, .mw-editsection, #toc, .toc, img, .archwiki-template-meta-related-articles-start"):
+            t.decompose()
+        md = subprocess.run(["pandoc", "-f", "html", "-t", "markdown-raw_html-native_divs-native_spans-fenced_divs-bracketed_spans-link_attributes",
+                             "--wrap=none"], input=str(body), capture_output=True, text=True, check=True).stdout
+        url = "https://wiki.archlinux.org/title/" + m.name[len(prefix):-5]
+        front = {"title": title, "url": url, "retrieved": today(), "license": src["license"]}
+        dst = out / (re.sub(r"[^\w.-]+", "_", m.name[len(prefix):-5]) + ".md")
+        dst.write_text("---\n" + json.dumps(front, ensure_ascii=False) + "\n---\n\n# " + title + "\n\n" + re.sub(r"\n{3,}", "\n\n", md))
+    write_notice(out, src, extra=f"From Arch Linux package {pkg} ({src['mirror']}). Page selection: titles scoring >= "
+                 f"{src.get('min_title_score', 2)} against taxonomy/courses.yaml, top {cap}.\n")
+    return base_prov(src) | {"upstream": src["mirror"] + pkg, "pin": pkg, "candidates": len(scored),
+                             "text_files": min(cap, len(scored)), "pages_in_package": len(pages)}
+
+
 # ------------------------------------------------------------------ helpers
 def base_prov(src: dict) -> dict:
     return {"id": src["id"], "name": src["name"], "license": src["license"], "license_note": src.get("license_note"),
@@ -403,12 +460,15 @@ def write_notice(out: Path, src: dict, extra: str = "") -> None:
         f"Curated into Linux-Pathway-By-Claude by `lpc sync`. See SOURCE.yaml for provenance.\n")
 
 
-KINDS = {"git": sync_git, "rhel-html": sync_rhel, "oscal": sync_oscal, "http-pdf": sync_pdf, "stig": sync_stig}
+KINDS = {"git": sync_git, "rhel-html": sync_rhel, "oscal": sync_oscal, "http-pdf": sync_pdf, "stig": sync_stig,
+         "crawl": sync_crawl, "arch-pkg": sync_arch_pkg}
 
 
-def run(only: list[str] | None = None, update: bool = False) -> None:
+def run(only: list[str] | None = None, update: bool = False, kinds: list[str] | None = None) -> None:
     for src in load_sources():
         if only and src["id"] not in only:
+            continue
+        if kinds and src.get("kind") not in kinds:
             continue
         fn = KINDS.get(src.get("kind"))
         if fn is None:

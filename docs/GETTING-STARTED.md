@@ -1,0 +1,104 @@
+# Getting started: continuing the curation
+
+This guide is for anyone picking up curation, human or Claude. Read `CLAUDE.md` first for the hard rules.
+
+## 1. Set up (5 minutes)
+
+```bash
+git clone https://github.com/nycnighthawk/Linux-Pathway-By-Claude && cd Linux-Pathway-By-Claude
+git lfs pull                                   # figures; optional if you only work on text
+pip install -r requirements.txt                # add: pip install playwright && python -m playwright install chromium   (crawl sources)
+sudo apt-get install -y pandoc                 # RHEL HTML and crawl conversion
+bin/lpc build                                  # about 1 min -> build/catalog.db, or download catalog.db from the catalog-latest release
+bin/lpc search selinux booleans -n 5           # sanity check
+```
+
+## 2. How it fits together
+
+```
+sources.yaml ──lpc sync──▶ raw/<id>/ (text + LICENSE + SOURCE.yaml)
+                               │
+taxonomy/courses.yaml ─┐       ▼
+review/overrides.yaml ─┴─lpc build──▶ catalog/*.jsonl|csv (committed) + build/catalog.db (FTS5) + review/queue.csv
+                                          │
+                              lpc search / lpc show / lpc web (static page)
+```
+
+| Source kind | Fetched by | Use for |
+|---|---|---|
+| `git` | sparse, shallow clone at a pinned commit | docs that live in a repo (preferred) |
+| `crawl` | Playwright headless Chromium (`tools/lpc/crawl.py`) | sites with no usable repo; obeys robots.txt, about 1 req/s |
+| `arch-pkg` | Arch mirror package | ArchWiki (the wiki blocks bots) |
+| `rhel-html`, `oscal`, `http-pdf`, `stig` | urllib | docs.redhat.com, NIST, DISA |
+| `none` | not fetched | link stubs (NC/ND, or no source available) |
+
+## 3. Everyday tasks
+
+**Re-sync one source**: `bin/lpc sync -s docker-docs --update`, then `bin/lpc build`.
+For all crawl sources: `bin/lpc sync -k crawl --update`.
+
+**Extend a crawl.** In `sources.yaml`, raise `max_pages`, or add `seeds` or `allow` prefixes, then sync that source.
+`raw/<id>/SOURCE.yaml` shows `cap_reached`, `queue_left`, and the `failed` and `blocked` URLs.
+If a site returns 403/429 or shows a challenge page, stop. Look for an official repo or package, or ask the owner.
+
+**Add a source**
+1. Check the licence. If it's NC/ND, use `mode: link, reuse: excluded`. If no licence is stated, use `mode: outline`.
+2. Prefer a `git` source over `crawl`.
+3. Add the entry to `sources.yaml`, run `bin/lpc sync -s <id>`, then `bin/lpc build`, then `bin/lpc gate`.
+4. Record the decision (step 5) if any choice was involved.
+
+**Work the review queue**
+- `review/queue.csv` lists sections with no tag or a low-confidence tag, along with the best guess.
+- **Bulk fixes:** add or sharpen keywords in `taxonomy/courses.yaml`, such as a strong `!` keyword or a source prior. Rebuild and compare `catalog/README.md`.
+- **Targeted fixes:** add `review/overrides.yaml` entries that match by source, path glob or section regex. Each entry needs `by` and `why`. Use `courses: []` for out-of-scope content.
+
+**Make a decision**
+- Score each option on R1–R6 (see `RUBRIC.md`).
+- If the gap is 0.8 or more, decide it yourself and write `decisions/D-NNN-<slug>.yaml` with the scores and a justification.
+- Otherwise, ask the owner with a multi-select card (recommended option flagged, free-text "Other"), then record their answer.
+- Run `bin/lpc decisions` to validate and regenerate the log.
+
+**Land the change**
+- Create a branch, then commit `catalog/` and `review/queue.csv` together with the change.
+- Open the PR with `gh api repos/nycnighthawk/Linux-Pathway-By-Claude/pulls --input pr.json`. GraphQL `gh pr create` is blocked in Claude sessions.
+- CI runs only the jobs the changed paths need (`catalog.yml`). You can re-run one job from the Actions tab using the `job` input.
+
+## 4. Where the catalog stands (2026-11-01, after round 2)
+
+* 24 sources (21 fetched, 3 stubs or excluded), about 42,100 sections from about 6,350 files, and 10,542 sections in the review queue.
+* Thin coverage, measured as adaptable sections tagged with high or medium confidence:
+
+| Course | Adaptable sections | Gap |
+|---|---:|---|
+| LNX-330 Kernel workflow | 106 | Kernel docs are headings-only (D-016). Needs an owner call or original writing |
+| LNX-320 System programming | 169 | man-pages are link-only. Few adaptable sources exist |
+| LNX-220 App development | 177 | Candidates: Python docs (PSF-2.0), The Rust Book (MIT/Apache) |
+| LNX-203 Scripting | 188 | Candidate: Python docs. The Bash manual is GFDL, so link-only |
+| LNX-309 HA clusters | 274 | Candidate: ClusterLabs docs (licence to verify) |
+| Capstones LNX-401…404 | 0 | By design: these are assembled from course material later |
+
+## 5. Estimate to finish the curation
+
+"Done" means all of the following:
+- every non-capstone course has 300 or more adaptable, confidently tagged sections, or an owner-approved exception;
+- the review queue is under 5% of sections;
+- every crawl reaches the end of its allowed scope;
+- each course is mapped to certification objective IDs;
+- open licence questions are closed.
+
+| # | Work item | Current state | Batch per run | Runs | PRs | Driven by | Owner input |
+|---|---|---|---|---:|---:|---|---|
+| 1 | Taxonomy tuning (bulk queue reduction) | 10,542 queued (25%) | about 2,000 cleared per run | 3 | 3 | Claude session | Review diffs |
+| 2 | Overrides for the remaining queue | about 4,000 left after #1 | about 1,000 per PR (path globs) | 4 | 4 | Claude session | Spot-check |
+| 3 | man-pages crawl to full allowed scope | 400 stored, cap reached | about 1,000 pages per run (about 25 min) | 2 | 2 | `sync.yml` manual run (`sources: man-pages`) after raising `max_pages` | none |
+| 4 | MS Learn AD DS + OpenSSH crawl | 200 stored, cap reached | about 400 per run | 1 | 1 | `sync.yml` | none |
+| 5 | FreeIPA docs (headings) crawl | 200 stored, cap reached | about 400 per run | 1 | 1 | `sync.yml` | none |
+| 6 | New sources for thin courses (Python docs, Rust Book, ClusterLabs, Git docs) | not started | 1–2 sources per PR | 3 | 3 | Claude session | Licence card if the gap is under 0.8 |
+| 7 | Exception call for LNX-320/330 (count link-only sources, or plan original text) | open | n/a | 1 | 1 | Claude session plus a card | Decision |
+| 8 | Certification objective maps (`objectives/*.yml`) | not started | about 5 courses per PR | 6 | 6 | Claude session | Review |
+| 9 | Licence follow-ups (Ubuntu, FreeIPA, Samba wiki, LFD103): draft upstream issues, record outcomes | open | all in one | 1 | 1 | Claude session | Post the issues |
+| 10 | Capstone source packs (LNX-401…404) | not started | 1 capstone per PR | 4 | 4 | Claude session | Review |
+| | **One-time total** | | | **26** | **26** | about 19 Claude sessions + 4 workflow runs | |
+| — | Recurring: repo sources (weekly) / crawl sources (monthly) | automated | 1 PR per run | 64/yr | 64/yr | `sync.yml` schedule | Merge |
+
+Items 3–5 need no Claude session. Raise `max_pages` in a small PR, then start **Actions → sync-sources → Run workflow** with the source id. Items 1 and 2 can run in parallel with 3–6. Item 8 is easiest after 6, because the new sources change what maps where.

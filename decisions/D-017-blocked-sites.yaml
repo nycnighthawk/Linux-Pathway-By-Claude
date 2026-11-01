@@ -1,0 +1,25 @@
+id: D-017
+title: Sites that block headless browsers (ArchWiki, Ansible, Samba wiki)
+decided_by: owner
+options:
+- name: Use official channels
+  r1: 5
+  r2: 4
+  r3: 5
+  r4: 4
+  r5: 5
+  r6: 4
+- name: Keep all three link-only
+  r1: 5
+  r2: 2
+  r3: 5
+  r4: 1
+  r5: 5
+  r6: 5
+- name: Ask the site owners
+chosen: Use official channels and find GitHub doc sources
+owner_answer: 'Use official channels (Recommended); plus: "find github doc sources"'
+context: Gap 0.75. Bot walls are never bypassed. ArchWiki comes from Arch's arch-wiki-docs package (official HTML
+  dump); Ansible from github.com/ansible/ansible-documentation; Samba from the man pages in its source tree (docs-xml/manpages,
+  mirrored at github.com/samba-team/samba). The Samba wiki itself stays a link stub because no source repo exists.
+date: '2026-11-01'

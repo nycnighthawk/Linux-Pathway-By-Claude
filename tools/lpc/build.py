@@ -43,13 +43,16 @@ def _strip(path: str, prefix: str) -> str:
 def make_url(src: dict, prov: dict, path: str, anchor: str, front_url: str | None) -> str:
     tpl = src.get("url_template")
     if not tpl:
-        return front_url or src.get("url") or ""
+        base = front_url or src.get("url") or ""
+        return f"{base}#{anchor}" if base and anchor and "#" not in base else base
     vals = {
         "path": path, "pin": prov.get("pin", "HEAD"), "anchor": anchor or "",
         "guide": Path(path).stem,
         "path_no_ext_strip_docs": _strip(path, "docs/"),
         "path_no_ext_strip_k8s": _strip(path, "content/en/docs/"),
         "path_no_ext_strip_documentation": _strip(path, "Documentation/"),
+        "path_no_ext_strip_ansible": _strip(path, "docs/docsite/rst/"),
+        "stem": Path(path).stem,
     }
     if "{anchor}" in tpl and not anchor:
         if src["id"] == "debian-handbook":
@@ -98,7 +101,7 @@ def iter_chunks(src: dict, prov: dict):
                 stack[h["level"]] = h["text"]
                 section = " > ".join(stack[k] for k in sorted(stack))
                 rec = base | {"path": doc["path"], "title": doc["title"], "section": section, "level": h["level"],
-                              "anchor": h["anchor"], "url": make_url(src, prov, doc["path"], h["anchor"], None), "words": 0}
+                              "anchor": h["anchor"], "url": make_url(src, prov, doc["path"], h["anchor"], doc.get("url")), "words": 0}
                 rec["id"] = sha1(sid, doc["path"], section)
                 yield rec, ""          # headings only: nothing but the heading path is searchable
         return

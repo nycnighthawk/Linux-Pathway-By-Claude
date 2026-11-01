@@ -4,7 +4,7 @@ The repository's own code (`tools/`, `tests/`, `bin/`, `web/`, workflows) is MIT
 Everything under `raw/` is third-party content that keeps its original licence. The exact upstream
 version captured is in each `raw/<source>/SOURCE.yaml`.
 
-Content was transformed only mechanically. Files were selected by path. RHEL HTML pages were converted to
+Content was transformed only mechanically. Files were selected by path. Crawled pages were rendered in headless Chromium and converted to Markdown. RHEL HTML pages were converted to
 Markdown with pandoc, PDF guides had their text extracted, OSCAL JSON and STIG XCCDF were rendered to
 Markdown, and headings were sectioned. No editorial changes were made.
 
@@ -21,6 +21,15 @@ Markdown, and headings were sectioned. No editorial changes were made.
 | Ubuntu Server documentation | No licence declared upstream (NOASSERTION) | Headings and URLs only. No body text is stored (decision D-006) |
 | Linux Kernel Module Programming Guide | OSL-3.0 (examples GPL-2.0) | Headings and URLs only (decision D-016) |
 | Linux kernel Documentation (process, dev-tools) | GPL-2.0-only | Headings and URLs only (decision D-016) |
+| ArchWiki (via arch-wiki-docs package) | GFDL-1.3-or-later | © ArchWiki contributors. https://wiki.archlinux.org/ (stored in full, link-only reuse) |
+| Ansible community documentation | GPL-3.0-or-later | © Ansible project contributors. https://github.com/ansible/ansible-documentation (link-only reuse) |
+| Samba manual pages | GPL-3.0-or-later | © The Samba Team. https://github.com/samba-team/samba (link-only reuse) |
+| Linux man pages (man7.org) | Per-page licences | © the respective authors; see each page's COLOPHON/licence (link-only reuse) |
+| Cilium documentation | Apache-2.0 | © Cilium Authors. Source: https://github.com/cilium/cilium (Documentation/) |
+| Docker documentation | Apache-2.0 | © Docker Inc. Source: https://github.com/docker/docs |
+| Microsoft Learn (AD DS, OpenSSH for Windows) | CC BY 4.0 (code MIT) | © Microsoft. Source: https://github.com/MicrosoftDocs/windowsserverdocs |
+| FreeIPA documentation | No open licence found (NOASSERTION) | Headings and URLs only (D-019) |
+| LFD103 course page | Proprietary | Headings and URLs only (D-019) |
 | MiniSearch (web/vendor) | MIT | © Luca Ongaro |
 
 Licences flagged NC or ND (CIS Benchmarks, *The Linux Command Line*) are cataloged as links only and never stored

@@ -1,12 +1,22 @@
 name: catalog
 
-# Validates licences and decisions, rebuilds the catalog, checks the committed metadata is current,
-# and on main publishes the full-text SQLite DB (release "catalog-latest") and the search page (GitHub Pages).
+# Runs only the jobs that the changed paths need (dorny/paths-filter). A manual run can pick one job.
+#   tools/tests/bin/requirements -> test, gate, decisions, build, site
+#   raw/sources/taxonomy/overrides -> gate, build
+#   decisions/RUBRIC              -> decisions
+#   web/catalog                   -> site
+# On main: build -> release-db (catalog.db to the catalog-latest release); site -> pages.
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      job:
+        description: "Job to run (all = every job)"
+        type: choice
+        default: all
+        options: [all, test, gate, decisions, build, site]
 
 permissions:
   contents: read
@@ -15,54 +25,118 @@ concurrency:
   group: catalog-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PYTHONPATH: tools
+
 jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      tools: ${{ steps.f.outputs.tools }}
+      content: ${{ steps.f.outputs.content }}
+      decisions: ${{ steps.f.outputs.decisions }}
+      site: ${{ steps.f.outputs.site }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          lfs: false
+      - id: f
+        uses: dorny/paths-filter@v4
+        continue-on-error: true   # manual runs ignore the filter; never block them on it
+        with:
+          filters: |
+            tools: [tools/**, tests/**, bin/**, requirements.txt, .github/workflows/catalog.yml]
+            content: [raw/**, sources.yaml, taxonomy/**, review/overrides.yaml]
+            decisions: [decisions/**, RUBRIC.md]
+            site: [web/**, catalog/**]
+
+  test:
+    needs: changes
+    if: inputs.job == 'all' || inputs.job == 'test' || (github.event_name != 'workflow_dispatch' && needs.changes.outputs.tools == 'true')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: pytest -q tests
+
+  gate:
+    needs: changes
+    if: inputs.job == 'all' || inputs.job == 'gate' || (github.event_name != 'workflow_dispatch' && (needs.changes.outputs.content == 'true' || needs.changes.outputs.tools == 'true'))
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: bin/lpc gate
+
+  decisions:
+    needs: changes
+    if: inputs.job == 'all' || inputs.job == 'decisions' || (github.event_name != 'workflow_dispatch' && (needs.changes.outputs.decisions == 'true' || needs.changes.outputs.tools == 'true'))
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: bin/lpc decisions && git diff --exit-code decisions/DECISIONS.md
+
   build:
+    needs: changes
+    if: inputs.job == 'all' || inputs.job == 'build' || (github.event_name != 'workflow_dispatch' && (needs.changes.outputs.content == 'true' || needs.changes.outputs.tools == 'true'))
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-        with:
-          lfs: false            # figures aren't needed to build the catalog; saves LFS bandwidth
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
       - run: pip install -r requirements.txt
-      - name: Unit tests
-        run: PYTHONPATH=tools pytest -q tests
-      - name: Licence and provenance gate
-        run: bin/lpc gate
-      - name: Decision log matches the rubric
-        run: bin/lpc decisions && git diff --exit-code decisions/DECISIONS.md
-      - name: Build catalog
-        run: bin/lpc build
+      - run: bin/lpc build
       - name: Committed catalog is up to date
         run: |
           if ! git diff --quiet -- catalog review/queue.csv; then
             git --no-pager diff --stat -- catalog review/queue.csv
-            # Warning, not failure: parser library versions can shift output slightly between machines.
             echo "::warning::catalog/ or review/queue.csv differs from a fresh build. Run 'bin/lpc build' and commit the result."
           fi
-      - name: Build search site
-        run: bin/lpc web
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: catalog-db
           path: build/catalog.db
           retention-days: 30
-      - uses: actions/upload-pages-artifact@v3
+
+  site:
+    needs: changes
+    if: inputs.job == 'all' || inputs.job == 'site' || (github.event_name != 'workflow_dispatch' && (needs.changes.outputs.site == 'true' || needs.changes.outputs.tools == 'true'))
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: bin/lpc web          # reads the committed catalog/; no rebuild needed
+      - uses: actions/upload-pages-artifact@v4
         if: github.ref == 'refs/heads/main'
         with:
           path: site
 
   release-db:
-    if: github.ref == 'refs/heads/main'
     needs: build
+    if: github.ref == 'refs/heads/main' && needs.build.result == 'success'
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: catalog-db
       - name: Publish catalog.db to the catalog-latest release
@@ -71,13 +145,13 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           gh release view catalog-latest >/dev/null 2>&1 || \
-            gh release create catalog-latest --title "Catalog (latest build)" --notes "Full-text SQLite FTS5 catalog. Query with bin/lpc search after placing it at build/catalog.db." --latest=false
+            gh release create catalog-latest --title "Catalog (latest build)" --notes "Full-text SQLite FTS5 catalog. Put it at build/catalog.db, then use bin/lpc search." --latest=false
           gh release upload catalog-latest catalog.db --clobber
 
   pages:
-    # Requires Settings → Pages → Source: "GitHub Actions" (one-time setup by the repository owner).
-    if: github.ref == 'refs/heads/main'
-    needs: build
+    # One-time setup by the owner: Settings → Pages → Source: "GitHub Actions".
+    needs: site
+    if: github.ref == 'refs/heads/main' && needs.site.result == 'success'
     runs-on: ubuntu-24.04
     permissions:
       pages: write
@@ -87,4 +161,4 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

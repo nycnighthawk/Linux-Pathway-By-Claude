@@ -1,0 +1,24 @@
+id: D-019
+title: Licence treatment for crawled sites
+decided_by: owner
+options:
+- name: Use docs source-repo licences
+  r1: 4
+  r2: 5
+  r3: 4
+  r4: 5
+  r5: 4
+  r6: 4
+- name: All crawled sites outline-only
+  r1: 5
+  r2: 3
+  r3: 4
+  r4: 2
+  r5: 4
+  r6: 5
+chosen: Docker/Cilium Apache-2.0 and MS Learn CC BY 4.0 (adapt); man-pages full text, link-only; FreeIPA + LFD103
+  outline-only
+owner_answer: All three recommended options
+context: Gap 0.50. Each licence comes from the docs source repo (docker/docs, cilium/cilium, MicrosoftDocs/windowsserverdocs),
+  recorded as license_basis in sources.yaml.
+date: '2026-11-01'
