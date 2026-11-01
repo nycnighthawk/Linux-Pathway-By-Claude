@@ -1,0 +1,23 @@
+id: D-020
+title: How round 2 lands as pull requests
+decided_by: owner
+options:
+- name: PR per change group
+  r1: 3
+  r2: 3
+  r3: 5
+  r4: 4
+  r5: 4
+  r6: 3
+- name: One PR for everything
+  r1: 3
+  r2: 3
+  r3: 4
+  r4: 3
+  r5: 4
+  r6: 4
+chosen: PR per change group
+owner_answer: PR per change group (Recommended)
+context: 'PR A: crawler, CI, docs, CLAUDE.md, decisions, sources.yaml. PR B (stacked on A): raw content + rebuilt
+  catalog.'
+date: '2026-11-01'

@@ -1,0 +1,23 @@
+id: D-022
+title: Which ArchWiki pages to keep from the package
+decided_by: claude
+options:
+- name: 'Title score >= 4 (strong or two keyword hits): 89 pages'
+  r1: 5
+  r2: 5
+  r3: 5
+  r4: 5
+  r5: 4
+  r6: 5
+- name: 'Title score >= 2 (any hit): 326 pages'
+  r1: 5
+  r2: 3
+  r3: 5
+  r4: 3
+  r5: 4
+  r6: 4
+chosen: 'Title score >= 4 (strong or two keyword hits): 89 pages'
+justification: A sample of the lower threshold was mostly off-curriculum (e.g. Apache OpenOffice, Apache Spark,
+  ALSA sound pages matched generic words), which hurts curriculum fit (R2) and search precision (R4). The threshold
+  is a single setting (min_title_score in sources.yaml) and can be lowered once taxonomy keywords are sharpened.
+date: '2026-11-01'

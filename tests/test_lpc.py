@@ -72,3 +72,21 @@ def test_tagger_assigns_expected_courses():
 def test_gate_passes_on_repo():
     from lpc import gate
     assert gate.run() == 0
+
+
+def test_robots_longest_match_and_empty_disallow():
+    from lpc.crawl import Robots
+    r = Robots("User-agent: *\nDisallow: /\nAllow: /en/stable\n")
+    assert r.can_fetch("https://x/en/stable/a/") and not r.can_fetch("https://x/en/v1.0/")
+    assert Robots("User-agent: *\nDisallow: # allow all\n").can_fetch("https://x/anything")
+    assert not Robots("User-agent: *\nDisallow: *.license.html\n").can_fetch("https://x/a/b.license.html")
+    assert not Robots(None, disallow_all=True).can_fetch("https://x/")
+
+
+def test_crawl_clean_md_and_paths():
+    from lpc.crawl import clean_md, _out_path
+    md = "nav junk\n| table |\n\n# Title\n\n## [](#NAME)NAME [top](#top_of_page)\n\n\n\ntext"
+    out = clean_md(md)
+    assert out.startswith("# Title") and "top_of_page" not in out and "\n\n\n" not in out
+    assert _out_path({}, "https://docs.docker.com/engine/network/") == "docs.docker.com/engine/network/index.md"
+    assert _out_path({}, "https://man7.org/linux/man-pages/man2/epoll_wait.2.html") == "man7.org/linux/man-pages/man2/epoll_wait.2.md"

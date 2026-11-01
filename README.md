@@ -4,6 +4,8 @@ This repo holds the curated raw content and searchable catalog behind the **Linu
 
 The raw text comes from openly licensed upstream sources. Every file keeps its upstream licence and provenance. Each heading-level section is cataloged, auto-tagged to course codes (`LNX-xxx`), pathways and certifications, and indexed for full-text search. The course and book pipelines query the catalog instead of re-reading upstream docs.
 
+**Continuing the work?** Start with [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md). It covers the workflow, current coverage, and an estimate of the runs and PRs left. AI agents should read [CLAUDE.md](CLAUDE.md).
+
 ## Quick start
 
 ```bash
@@ -30,7 +32,7 @@ You can skip the build: CI publishes `catalog.db` to the
 | `review/queue.csv` | Untagged or low-confidence sections waiting for a human decision |
 | `review/overrides.yaml` | Manual tag corrections and out-of-scope markers. These take precedence over auto-tags |
 | `decisions/` | One YAML record per curation decision, scored against [RUBRIC.md](RUBRIC.md). See the [decision log](decisions/DECISIONS.md) |
-| `tools/lpc/` | The toolchain: `sync`, `build`, `search`, `show`, `stats`, `gate`, `web`, `decisions` |
+| `tools/lpc/` | The toolchain: `sync` (git, Playwright crawl, packages, HTTP), `list`, `build`, `search`, `show`, `stats`, `gate`, `web`, `decisions` |
 | `web/` | Source for the static search page (MiniSearch, vendored, MIT) |
 
 ### Modes and reuse
@@ -54,8 +56,8 @@ Each record carries `url`, `license`, `reuse` and `pin`, which the book build's 
 
 ## Keeping it current
 
-* **Weekly sync** (`.github/workflows/sync.yml`) moves every source to its latest upstream version, rebuilds the catalog and opens a pull request. Licence changes upstream show up as review flags in the PR body.
-* **Catalog CI** (`.github/workflows/catalog.yml`) runs on every push and PR. It runs unit tests, the licence gate and a decision-log check, then rebuilds. On `main` it also publishes `catalog.db` and the search page.
+* **Sync** (`.github/workflows/sync.yml`) re-syncs sources and opens a pull request. Repo and file sources run weekly; Playwright crawl sources run monthly. A manual run can pick source ids or a kind, and Chromium is installed only when a crawl source is selected.
+* **Catalog CI** (`.github/workflows/catalog.yml`) runs only the jobs the changed paths need: tests, licence gate, decision check, build, or site. A manual run can pick one job. On `main` it publishes `catalog.db` and the search page.
 * **GitHub Pages** needs a one-time setting: Settings → Pages → Source → **GitHub Actions**.
 
 ## Decisions

@@ -1,0 +1,10 @@
+id: D-021
+title: Storage mode for GPL/GFDL content from official channels
+decided_by: owner
+options: []
+chosen: Full text stored and searchable; reuse=link-only (streams B/C)
+owner_answer: Implied by D-017 ("use official channels") together with the stream rules in D-004.
+context: An interpretation, not re-scored. ArchWiki (GFDL), Ansible docs and Samba man pages (GPL-3.0) are stored
+  in full so search matches their text, but lessons must paraphrase or link. The gate enforces reuse=adapt only
+  for A/PD/Permissive streams.
+date: '2026-11-01'

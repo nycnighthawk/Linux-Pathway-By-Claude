@@ -1,16 +1,24 @@
 name: sync-sources
 
-# Weekly re-sync of every upstream source to its latest version. Changes arrive as a pull request
-# (decision D-009), so the owner reviews new pins, licence flags and tag shifts before merging.
+# Re-syncs upstream sources and opens a PR (D-009). Each trigger touches only the sources it names:
+#   weekly  (Mon) -> repo/file sources: git, rhel-html, oscal, http-pdf, stig, arch-pkg
+#   monthly (1st) -> crawl sources (Playwright); kept less frequent to be polite to the sites
+#   manual        -> pick source ids and/or a kind; Chromium is installed only if a crawl source is selected
 on:
   schedule:
-    - cron: "17 7 * * 1"     # Mondays 07:17 UTC
+    - cron: "17 7 * * 1"     # weekly, Mondays 07:17 UTC
+    - cron: "43 8 1 * *"     # monthly, 1st of the month 08:43 UTC
   workflow_dispatch:
     inputs:
       sources:
-        description: "Space-separated source ids (blank = all)"
+        description: "Space-separated source ids (blank = use 'kind')"
         required: false
         default: ""
+      kind:
+        description: "Source kind when no ids are given"
+        type: choice
+        default: repo
+        options: [repo, crawl, all]
 
 permissions:
   contents: write
@@ -19,23 +27,45 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: tools
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           lfs: false        # sync rewrites figures from upstream; git-lfs turns them back into identical pointers
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-      - run: |
-          sudo apt-get update && sudo apt-get install -y pandoc
-          pip install -r requirements.txt
-          git lfs install --local
-      - name: Sync upstream sources
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt && git lfs install --local
+      - name: Choose sources
+        id: pick
         run: |
-          args=""
-          for s in ${{ github.event.inputs.sources }}; do args="$args -s $s"; done
+          ids="${{ github.event.inputs.sources }}"
+          kind="${{ github.event.inputs.kind }}"
+          if [ "${{ github.event.schedule }}" = "43 8 1 * *" ]; then kind=crawl; fi
+          if [ -z "$kind" ]; then kind=repo; fi
+          if [ -z "$ids" ]; then
+            case "$kind" in
+              crawl) ids=$(bin/lpc list -k crawl --ids) ;;
+              repo)  ids=$(bin/lpc list -k git -k rhel-html -k oscal -k http-pdf -k stig -k arch-pkg --ids) ;;
+              all)   ids=$(bin/lpc list --ids) ;;
+            esac
+          fi
+          crawl_ids=" $(bin/lpc list -k crawl --ids) "
+          need_browser=false
+          for i in $ids; do case "$crawl_ids" in *" $i "*) need_browser=true ;; esac; done
+          echo "ids=$ids" >> "$GITHUB_OUTPUT"
+          echo "browser=$need_browser" >> "$GITHUB_OUTPUT"
+          echo "Selected: $ids (browser: $need_browser)"
+      - name: Tools for selected sources
+        run: |
+          sudo apt-get update && sudo apt-get install -y pandoc
+          if [ "${{ steps.pick.outputs.browser }}" = "true" ]; then
+            pip install playwright && python -m playwright install --with-deps chromium
+          fi
+      - name: Sync
+        run: |
+          args=""; for s in ${{ steps.pick.outputs.ids }}; do args="$args -s $s"; done
           bin/lpc sync --update $args
       - run: bin/lpc gate
       - run: bin/lpc build
@@ -44,18 +74,19 @@ jobs:
         run: |
           {
             echo 'body<<EOF'
-            echo "Automated re-sync of upstream sources."
+            echo "Automated re-sync of: \`${{ steps.pick.outputs.ids }}\`"
             echo
             echo '```'
             git diff --stat -- sources.yaml raw catalog | tail -25
             echo '```'
             grep -h "review_flag" raw/*/SOURCE.yaml && echo "⚠️ Licence review flags above need a decision (see RUBRIC.md)." || true
+            grep -l "blocked:" raw/*/SOURCE.yaml >/dev/null 2>&1 && echo "Some crawl pages were blocked; see the 'blocked' list in raw/<id>/SOURCE.yaml." || true
             echo EOF
           } >> "$GITHUB_OUTPUT"
-      - uses: peter-evans/create-pull-request@v7
+      - uses: peter-evans/create-pull-request@v8
         with:
-          branch: sync/upstream
+          branch: sync/upstream-${{ github.run_id }}
           commit-message: "sync: re-pin upstream sources"
-          title: "sync: weekly upstream re-sync"
+          title: "sync: upstream re-sync (${{ steps.pick.outputs.ids }})"
           body: ${{ steps.sum.outputs.body }}
           labels: sync
