@@ -1,5 +1,5 @@
-.cache/
-build/
-site/
+/.cache/
+/build/
+/site/
 __pycache__/
 *.pyc
