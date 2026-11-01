@@ -1,0 +1,8 @@
+Microsoft Learn: AD DS and OpenSSH for Windows
+Licence: CC-BY-4.0
+
+
+
+Retrieved with a headless browser (Playwright) from: https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/, https://learn.microsoft.com/en-us/windows-server/administration/openssh/
+Licence basis: Source repo github.com/MicrosoftDocs/windowsserverdocs is CC BY 4.0 (code samples MIT) (D-019).
+Curated into Linux-Pathway-By-Claude by `lpc sync`. See SOURCE.yaml for provenance.

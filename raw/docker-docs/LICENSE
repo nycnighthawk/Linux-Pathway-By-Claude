@@ -1,0 +1,8 @@
+Docker documentation (engine, build, compose)
+Licence: Apache-2.0
+
+
+
+Retrieved with a headless browser (Playwright) from: https://docs.docker.com/engine/, https://docs.docker.com/build/, https://docs.docker.com/compose/, https://docs.docker.com/reference/dockerfile/
+Licence basis: Site source is github.com/docker/docs (Apache-2.0); the site footer says 'All rights reserved' (D-019).
+Curated into Linux-Pathway-By-Claude by `lpc sync`. See SOURCE.yaml for provenance.

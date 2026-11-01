@@ -1,0 +1,19 @@
+id: ms-learn-adds
+name: 'Microsoft Learn: AD DS and OpenSSH for Windows'
+license: CC-BY-4.0
+license_note: null
+mode: full
+reuse: adapt
+stream: A-compatible
+retrieved: '2026-11-01'
+upstream:
+- https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/
+- https://learn.microsoft.com/en-us/windows-server/administration/openssh/
+text_files: 200
+pages: 200
+failed:
+- empty https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/media/enable-32k-pages-optional-feature/powershell-output.png
+blocked: []
+queue_left: 930
+cap_reached: true
+pin: 2026-11-01:pages=200
