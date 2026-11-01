@@ -1,0 +1,16 @@
+id: ubuntu-server-docs
+name: Ubuntu Server documentation
+license: NOASSERTION
+license_note: Upstream declares no licence (docs/conf.py license.name is empty as
+  of the pin). Per D-006 the catalog licence matches upstream; sync re-checks and
+  flags a change for review.
+mode: outline
+reuse: link-only
+stream: Ref
+retrieved: '2026-11-01'
+upstream: https://github.com/canonical/ubuntu-server-documentation
+pin: 505feb597ec634d49a50edd2cc942be92d2d575b
+upstream_commit_date: '2026-10-16'
+license_file_upstream: null
+outline_files: 255
+license_detected_upstream: NOASSERTION

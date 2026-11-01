@@ -1,0 +1,96 @@
+\subchapter{Accessing Hardware Devices}
+{Objective: learn how to access hardware devices.}
+
+\section{Goals}
+
+Now that we have access to a command line shell thanks to a working root
+filesystem, we can now explore existing devices.
+
+{\bf Important:} {\em The manipulations in this lab are limited because
+we're working with an emulated platform, not with real hardware.
+It would be best to get your hands on the hardware platforms
+we support. Our instructions for such platforms really cover
+practising with internal and external hardware devices.}
+
+\section{Setup}
+
+Go to the \code{$HOME/__SESSION_NAME__-labs/hardware} directory,
+which provides useful files for this lab.
+
+However, we will go on booting the system through NFS, using the
+root filesystem built by the previous lab.
+
+\section{Exploring /dev}
+
+Start by exploring \code{/dev} on your target system. Here are a few
+noteworthy device files that you will see:
+
+\begin{itemize}
+ \item {\em Terminal devices}: devices starting with \code{tty}.
+       Terminals are user interfaces taking text as
+       input and producing text as output, and are typically used by
+       interactive shells. In particular, you will find
+       \code{console} which matches the device specified through
+       \code{console=} in the kernel command line. You will also find
+       the {\tt \ttyname} device file.
+ \item {\em Pseudo-terminal devices}: devices starting with \code{pty},
+       used when you connect through SSH for example. Those are virtual
+       devices, but there are so many in \code{/dev} that we wanted
+       to give a description here.
+ \item {MMC device(s) and partitions}: devices starting with
+       \code{mmcblk}. You should here recognize the MMC device(s)
+       on your system and the associated partitions.
+\end{itemize}
+
+Don't hesitate to explore \code{/dev} on your workstation too
+and ask any questions to your instructor.
+
+\section{Exploring /sys}
+
+The next thing you can explore is the {\em Sysfs} filesystem.
+
+A good place to start is \code{/sys/class}, which exposes devices
+classified by the kernel frameworks which manage them.
+
+For example, go to \code{/sys/class/net}, and you will see all the
+networking interfaces on your system, whether they are internal,
+external or virtual ones.
+
+Find which subdirectory corresponds to the network connection
+to your host system, and then check device properties such as:
+\begin{itemize}
+   \item \code{speed}: will show you whether this is a gigabit
+         or hundred megabit interface.
+   \item \code{address}: will show the device MAC address. No
+	 need to get it from a complex command!
+   \item \code{statistics/rx_bytes} will show you how many bytes
+	 were received on this interface.
+\end{itemize}
+
+Don't hesitate to look for further interesting properties by yourself!
+
+You can also check whether \code{/sys/class/thermal} exists and is not
+empty on your system. That's the thermal framework, and it allows
+to access temperature measures from the thermal sensors on your system.
+
+Next, you can now explore all the buses (virtual or physical) available
+on your system, by checking the contents of \code{/sys/bus}.
+
+In particular, go to \code{/sys/bus/mmc/devices} to see all the
+MMC devices on your system. Go inside the directory for the first device
+and check several files (for example):
+
+\begin{itemize}
+\item \code{serial}: the serial number for your device.
+\item \code{preferred_erase_size}: the preferred erase block for your
+      device. It's recommended that partitions start at multiples of this
+      size.
+\item \code{name}: the product name for your device. You could display
+      it in a user interface or log file, for example.
+\item \code{date}: apparently the manufacturing date for the device.
+\end{itemize}
+
+Don't hesitate to spend more time exploring \code{/sys} on your system
+and asking questions to your instructor.
+
+That's all for now!

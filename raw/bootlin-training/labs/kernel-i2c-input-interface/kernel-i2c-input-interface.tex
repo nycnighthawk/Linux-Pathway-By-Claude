@@ -1,0 +1,294 @@
+\subchapter{Input interface}{Objective: make the I2C device available
+to user space using the input subsystem.}
+
+After this lab, you will be able to:
+
+\begin{itemize}
+\item Expose device events to user space through an input interface,
+      using the kernel based polling API for input devices
+      (kernel space perspective).
+\item Handle registration and allocation failures in a clean
+      way.
+\item Get more familiar with the usage of the input interface
+      (user space perspective).
+\end{itemize}
+
+\section{Add input event interface support to the kernel}
+\ifdefstring{\arch}{ARM64}{
+This lab requires static input event interface support (\kconfig{CONFIG_INPUT_EVDEV})
+to be enabled in your kernel configuration, which is the default in the ARM64
+default configuration file. You can therefore continue to the next step.
+}{
+For this lab, you'll need to rebuild your kernel with static input event interface
+(\kconfig{CONFIG_INPUT_EVDEV}) support. With the default configuration, this
+feature is available as a module, which is less convenient.
+
+Update and reboot your kernel.
+}
+
+\section{Register an input interface}
+
+The first thing to do is to add an input device to the system. Here are
+the steps to do it:
+
+\begin{itemize}
+\item Declare a pointer to an \ksym{input_dev} structure in the
+      \code{probe} routine. You can call it \code{input}.
+      You can't use a global variable because your driver needs to be
+      able to support multiple devices.
+\item Allocate such a structure in the same function, using the
+      \kfunc{devm_input_allocate_device} function.
+\item Still in the \code{probe()} function, add the input device to
+      the system by calling \kfunc{input_register_device};
+\end{itemize}
+
+At this stage, first make sure that your module compiles well (add
+missing headers if needed).
+
+When the module is loaded, you should get:
+\begin{verbatim}
+input: Unspecified device as /devices/platform/ocp/48000000.interconnect/48000000.interconnect
+:segment@0/4802a000.target-module/4802a000.i2c/i2c-1/1-0052/input/input0
+\end{verbatim}
+
+This \code{Unspecified device} string is actually expected
+as we haven't filled the fields of the \code{input} structure yet.
+
+\section{Handling probe failures}
+
+In the code that you created, make sure that you handle failure
+situations properly.
+
+\begin{itemize}
+\item Of course, test return values properly and log
+      the causes of errors.
+\item In our case, we only allocated resources with \code{devm_}
+      functions. Thanks to this, in case of failure, all the
+      corresponding allocations are automatically released
+      before destroying the \ksym{device} structure for each
+      device. This greatly simplifies our error management code!
+\end{itemize}
+
+\section{Implement the remove() function}
+
+In this function, we need to unregister and release the resources allocated
+and registered in the \code{probe()} routine.
+
+Fortunately, in our case, there's nothing to do, as everything
+was allocated with \code{devm_} functions. Even the unregistration
+of the \ksym{input_dev} structure is automated. 
+
+Recompile your module, and load it and remove it multiple times, to
+make sure that everything is properly registered and automatically
+unregistered.
+
+\section{Add proper input device registration information}
+
+As explained before, we actually need to add more information to the \ksym{input}
+structure before registering it. So, add the below lines of code (still before
+device registration, of course):
+
+\sourcecode{labs/kernel-i2c-input-interface/input-device-attributes.c}
+
+Recompile and reload your driver. You should now see in the kernel log
+that the \code{Unspecified device} type is replaced by
+\code{Wii Nunchuk}.
+
+\section{Implement a polling routine}
+
+The nunchuk doesn't have interrupts to notify the I2C master that
+its state has changed. Therefore, the only way to access device data
+and detect changes is to regularly poll its registers.
+
+So, it's time to implement a routine which will poll the nunchuk registers
+at a regular interval.
+
+Create a \code{nunchuk_poll()} function with the right prototype (find
+it by looking at the definition of the \kfunc{input_setup_polling} function.)
+
+In this function, you will have to read the nunchuk registers. However,
+as you can see, the prototype of the \code{poll_fn()} routine doesn't
+carry any information about the \ksym{i2c_client} structure you will
+need to communicate with the device. That's normal as the input
+subsystem is generic, and can't be bound to any specific bus.
+
+This raises a very important aspect of the device model: the need to
+keep pointers between {\em physical} devices (devices as handled by the
+physical bus, I2C in our case) and {\em logical} devices (devices
+handled by subsystems, like the input subsystem in our case).
+
+This way, when the \code{remove()} routine is called, we can find out
+which logical device to unregister (though that's not necessary in our
+case as logical device unregistration is automatic). Conversely, when we
+have an event on the logical side (such as running the polling
+function), we can find out which I2C device this corresponds to,
+to communicate with the hardware.
+
+This need is typically implemented by creating a per device, {\em private} data
+structure to manage our device and implement such pointers between
+the physical and logical worlds.
+
+Add the below global definition to your code:
+
+\begin{verbatim}
+struct nunchuk_dev {
+        struct i2c_client *i2c_client;
+};
+\end{verbatim}
+
+Now, in your \code{probe()} routine, declare an instance of
+this structure:
+
+\begin{verbatim}
+struct nunchuk_dev *nunchuk;
+\end{verbatim}
+
+Then allocate one such instead for each new device:
+
+\sourcecode{labs/kernel-i2c-input-interface/private-data-alloc.c}
+
+Note that we haven't seen kernel memory allocator routines and flags
+yet.
+
+Also note that here there's no need to write an "out of memory"
+message to the kernel log. That's already done by the memory subsystem.
+
+Now implement the pointers that we need:
+
+\sourcecode{labs/kernel-i2c-input-interface/device-pointers.c}
+
+Making the parallel with the lectures, here are the current links (the
+dotted lines show missing links that could be added in the future):
+\begin{center}
+\includegraphics[height=10cm]{labs/kernel-i2c-input-interface/link-structures-input.pdf}
+\end{center}
+
+Make sure you add this code before registering the input device. You
+don't want to enable a device with incomplete information or when it is
+not completely initialized yet (there could be race conditions).
+
+So, back to the \code{nunchuk_poll()} function, you will first need to
+retrieve the I2C physical device from the \ksym{input_dev}
+structure. That's where you will use your private \code{nunchuk}
+structure.
+
+Now that you have a handle on the I2C physical device, you can move the
+code reading the nunchuk registers to this function. You can
+remove the double reading of the device state, as the polling function
+will make periodic reads anyway\footnote{During the move, you will have
+to handle communication errors in a slightly different way, as the
+\code{nunchuk_poll()} routine has a \code{void} type. When the function
+reading registers fails, you can use a \code{return;} statement instead
+of \code{return value;}}.
+
+At the end of the polling routine, the last thing to do is post the events
+and notify the \code{input} core. Assuming that \code{input} is the
+name of the \code{input_dev} parameter of your polling routine:
+
+\sourcecode{labs/kernel-i2c-input-interface/input-notification.c}
+
+Now, back to the \code{probe()} function, the last thing to do
+is to declare the new polling function (see the slides if you forgot
+about the details) and specify a polling interval of 50 ms.
+
+At this stage, also remove the debugging messages about the state
+of the buttons. You will get that information from the input interface.
+
+You can now make sure that your code compiles and loads successfully.
+
+\section{Testing your input interface}
+
+Testing an input device is easy with the \code{evtest} application
+that is included in the root filesystem. Just run:
+
+\begin{verbatim}
+evtest
+\end{verbatim}
+
+The application will show you all the available input devices, and will let
+you choose the one you are interested in (make sure you type a choice,
+\code{0} by default, and do not just type \code{[Enter]}). You can also
+type \code{evtest /dev/input/event0} right away. On some boards, the correct
+event device will be \code{event1}.
+
+Press the various buttons and see that the corresponding events are
+reported by \code{evtest}.
+
+\section{Going further}
+
+Stopping here is sufficient, but if you complete your lab before the
+others, you can try to achieve the below challenges (in any order):
+
+\subsection{Supporting multiple devices}
+
+Modify the driver and Device Tree to support two nunchuks at the same
+time. You can borrow another nunchuk from the instructor or from a fellow
+participant.
+
+Making sure that your driver does indeed support multiple devices at the
+same time is a good way to make sure it is implemented properly.
+
+\subsection{Use the nunchuk as a joystick in an ascii game}
+
+In this optional, challenge, you will extend the driver to expose
+the joystick part of the nunchuk, i.e. x and y coordinates.
+
+We will use the {\em nInvaders} game, which is already present in
+your root filesystem.
+
+\subsubsection{Connect through SSH}
+
+{\em nInvaders} will not work very well over the serial port,
+so you will need to log to your system through \code{ssh} in an
+ordinary terminal:
+
+\begin{verbatim}
+ssh root@192.168.1.100
+\end{verbatim}
+
+The password for the {\em root} user is \code{root}.
+
+You can already play the \code{nInvaders} game with
+the keyboard!
+
+Note: if you get the error \code{Error opening terminal: xterm-256color.}
+when running \code{nInvaders}, issue first the
+\code{export TERM=xterm} command.
+
+\subsubsection{Recompile your kernel}
+
+Recompile your kernel with support for the joystick interface
+(\kconfig{CONFIG_INPUT_JOYDEV}).
+
+Reboot to the new kernel.
+
+\subsubsection{Extend your driver}
+
+We are going to expose the joystick X and Y coordinates through
+the input device.
+
+Add the below code to the \code{probe} routine:
+\sourcecode{labs/kernel-i2c-input-interface/declare-x-and-y.c}
+
+See \kdochtml{input/input-programming} for details about
+the \kfunc{input_set_abs_params} function.
+
+For the joystick to be usable by the application, you will also
+need to declare {\em classic} buttons:
+
+\sourcecode{labs/kernel-i2c-input-interface/declare-classic-buttons.c}
+
+The next thing to do is to retrieve and report the joystick X and Y
+coordinates in the polling routine. This should be very straightforward.
+You will just need to go back to the nunchuk datasheet to find out
+which bytes contain the X and Y values.
+
+\subsubsection{Time to play}
+
+Recompile and reload your driver.
+
+You can now directly play {\em nInvaders}, only with your nunchuk.
+You'll quickly find how to move your ship, how to shoot and how
+to pause the game.
+
+Have fun!

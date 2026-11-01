@@ -1,0 +1,190 @@
+\subchapter{Bootloader optimizations}{Reduce bootloader execution time}
+
+In this lab, we will run the final stage of boot time reduction:
+\begin{itemize}
+\item Improving the efficiency of the bootloader by using faster storage
+\item Configuring the bootloader so that it's second stage can be
+skipped ({\em Falcon mode} in U-Boot).
+\end{itemize}
+
+\section{Optimizing U-Boot usage}
+
+Here, we won't try to optimize U-Boot, because we are ultimately
+going to skip its second stage. We could, but we don't need to.
+
+\section{Using faster storage}
+
+A last minute surprise: your instructor will give you new SD cards with
+faster read performance, at least as fast as the Beagle Bone Black seems
+to be able to go.
+
+Why on earth didn't we use such SD cards right from the start of our
+labs?
+
+It's because slower storage acts as a magnifying glass (or as a slow
+motion device) making it easier to observe elapsed time and the benefits
+of our optimizations. If the storage was lightning fast, it would be
+harder to appreciate speedups due to a small initramfs, for example.
+
+So, edit the partition table of your new SD card, and create the
+first partition in the same way as when you prepared your original SD
+card. Then, copy the files over.
+
+You can now go ahead and make tests again, and fill the
+\code{~/__SESSION_NAME__-labs/results/faster-storage.ods} spreadsheet:
+    
+\includegraphics[width=\textwidth]{labs/boot-time-bootloader/faster-storage.png}
+
+\section{Using U-Boot's {\em Falcon} mode}
+
+It's now time to try U-Boot's capability to directly load the
+Linux kernel from its first stage (SPL), instead of loading U-Boot.
+
+What follows is based on U-Boot's own documentation in its sources:
+\begin{itemize}
+\item \projfile{u-boot}{doc/README.falcon} (generic details)
+\item \projfile{u-boot}{board/ti/am335x/README} (specific details for boards with
+      the am335x SoC)
+\end{itemize}
+
+The first thing to do is to generate a \code{uImage} file for the kernel
+binary. This image file contains information that U-Boot uses to know a
+few things about the kernel binary, most importantly the final load
+address, but also the type of file (binary, script, environment file),
+the target architecture and whether the binary is compressed or not.
+
+This is called a {\em legacy image} for U-Boot. As you already know,
+U-Boot can now boot a \code{zImage} file, but according to the Falcon
+mode documentation, it does need a \code{uImage} file for SPL loading.
+
+So, let's generate this file:
+\begin{bashinput}
+cd $HOME/__SESSION_NAME__-labs/kernel/linux/
+make uImage LOADADDR=80008000
+\end{bashinput}
+
+Copy this \code{uImage} file to your SD card boot partition.
+
+We also need a few features to be enabled in the U-Boot SPL. So start
+U-Boot's \code{make menuconfig}:
+\begin{itemize}
+\item In the \code{SPL / TPL} menu,
+      \begin{itemize}
+      \item Enable {\em Support SPL loading and booting of Legacy images}
+	    (\code{CONFIG_SPL_LEGACY_IMAGE_SUPPORT=y}, now replaced by
+	    \projconfig{u-boot}{CONFIG_SPL_LEGACY_IMAGE_FORMAT} in the latest
+	    versions of U-Boot).
+            That's needed to support loading the legacy \code{uImage} file.
+      \item Also make sure \projconfigval{u-boot}{CONFIG_SPL_OS_BOOT}{y}
+            ({\em Activate Falcon Mode}).
+            That's the case for our current configuration, but configurations
+            for other boards may not have this by default.
+      \item Set \projconfigval{u-boot}{CONFIG_CMD_SPL_WRITE_SIZE}{0x20000} to have
+	    enough space for the \code{spl export} output. This is actually
+	    only to avoid a warning, as this setting is only used for
+	    Falcon booting from NAND and NOR flash.
+      \end{itemize}
+\end{itemize}
+
+Also modify the \projfunc{u-boot}{spl_start_uboot} function in the
+\projfile{u-boot}{board/ti/am335x/board.c}, to remove the block
+of lines under \code{#ifdef CONFIG_SPL_ENV_SUPPORT}. There seems to be
+issues loading the environment from FAT, and loading an environment file
+from a file is expensive anyway. Note that in the current U-Boot code,
+we cannot disable \projconfig{u-boot}{CONFIG_SPL_ENV_SUPPORT}, because
+it breaks some driver code.
+
+Look at the rest of the \projfile{u-boot}{board/ti/am335x/board.c} file:
+we can still fall back to starting U-Boot if we send a \code{c} key
+in the serial console.
+
+Compile U-Boot again and copy the \code{u-boot.img} and \code{MLO}
+files to the boot partition.
+
+Now, let's run the final preparation step. We will set the
+\code{bootargs} environment variable, load the kernel and DTB, and
+use U-Boot's \code{spl export} command to prepare a ready to boot record
+with the DTB contents, the \code{bootargs}, the kernel loading address
+and other information that Linux would need to boot. Note that the
+U-Boot SPL will still load the \code{uImage} file from the FAT
+filesystem in the first partition of the SD card.
+
+In the below command, you'll see that we can use U-Boot's ready made
+\code{loadaddr} and \code{fdtaddr} variables for addresses where to load
+the kernel and DTB. At least this works with U-Boot for our board.
+
+\begin{verbatim}
+load mmc 0:1 ${loadaddr} uImage
+load mmc 0:1 ${fdtaddr} dtb
+setenv bootargs console=ttyS0,115200n8 rdinit=/playvideo lpj=4980736
+spl export fdt ${loadaddr} - ${fdtaddr}
+\end{verbatim}
+
+You can then see that \code{spl export} prepared everything to boot the
+Linux kernel with the provided DTB, but didn't do it. At the end, it
+tells you where the exported data were stored in RAM:
+
+\begin{verbatim}
+## Booting kernel from Legacy Image at 82000000 ...
+   Image Name:   Linux-<version>
+   Created:      2022-04-29  17:47:56 UTC
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    3008496 Bytes = 2.9 MiB
+   Load Address: 80008000
+   Entry Point:  80008000
+   Verifying Checksum ... OK
+## Flattened Device Tree blob at 88000000
+   Booting using the fdt blob at 0x88000000
+   Loading Kernel Image
+   Loading Device Tree to 8ffec000, end 8ffffce6 ... OK
+subcommand not supported
+subcommand not supported
+   Loading Device Tree to 8ffd5000, end 8ffebce6 ... OK
+Argument image is now in RAM: 0x8ffd5000
+\end{verbatim}
+
+The last thing to do is to store such information in an \code{args} file
+in the FAT partition on the MMC. Through the \code{fdtargsaddr} and
+\code{fdtargsaddr} environment variables, we know where to copy the
+data from and their size:
+
+\begin{verbatim}
+fatwrite mmc 0:1 ${fdtargsaddr} args ${fdtargslen}
+\end{verbatim}
+
+You're ready to go and reboot your board with the SD card inside.
+You should not longer see the U-Boot second stage being loaded, but just
+the SPL and the kernel.
+
+If this doesn't work yet, please ask your instructor for advice and help.
+
+You can also try to send \code{c} characters at reset time to make
+the SPL fall back to loading U-Boot.
+
+When it works, fill the \code{~/__SESSION_NAME__-labs/results/final-results.ods}
+spreadsheet:
+
+\includegraphics[width=\textwidth]{labs/boot-time-bootloader/final-results.png}
+
+\section{Going further}
+
+There are several things we can do to try to further optimize things:
+
+\begin{itemize}
+\item Remove the warnings and information messages from the SPL
+      to save a bit of time.
+\item Reduce the features of the U-Boot SPL to make it load faster.
+\item Make the SPL load the \code{uImage} file directly from raw MMC,
+      so that there is no FAT intermediate layer.
+\item As our storage is now faster, it can be interesting to explore the
+      various kernel compression schemes again. The optimum solution may be a
+      different one.
+\item Look for a solution to eliminate the delay detecting the USB
+      webcam.
+\item If you don't manage to get rid of this delay, an idea is to modify
+      \code{ffmpeg} to wait for the video device once it's ready to
+      access it. This way, you start loading and initializing
+      \code{ffmpeg} right away, and the video can be played as soon as
+      the video device is ready. Parallelism always helps!
+\end{itemize}
+

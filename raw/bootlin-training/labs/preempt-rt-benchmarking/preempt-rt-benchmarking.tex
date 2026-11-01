@@ -1,0 +1,135 @@
+\subchapter{Lab 2: Testing and Benchmarking the system}{}
+
+During this lab, you will:
+\begin{itemize}
+  \item Use benchmarking tools to measure the latencies of a system
+  \item Use stressors to analyze various scenarios
+  \item Determine suitable options to further improve latencies
+\end{itemize}
+
+\section{Determine the maximum latency}
+
+First, we will need to install some benchmark and analysis tools on our system.
+
+In the Buildroot \code{make menuconfig} interface, enable the following packages:
+
+\begin{itemize}
+	\item rt-tests
+	\item powertop
+	\item perf
+	\item stress-ng
+	\item iperf3
+	\item fping
+	\item scheduling utilities from the util-linux package
+	\item python3
+	\item screen
+	\item dropbear
+\end{itemize}
+
+You'll also need to enable a few features in the kernel. Run \code{make linux-menuconfig} and select
+the following options, located in "Kernel Hacking":
+
+\begin{itemize}
+	\item Compile-time checks and compiler options -> Compile the kernel with debug info
+	\item Tracers -> Function tracer, Interrupts-off tracer, Preemption off tracer, scheduling latency tracer...
+\end{itemize}
+
+Re-build the image, and boot it on the board: \code {make linux-rebuild all}
+
+Let's first start by establishing the baseline latency by simply running \code{cyclictest}:
+
+\begin{bashinput}
+cyclictest
+\end{bashinput}
+
+The goal of this lab is to try to lower the latency as much as possible while
+the system is under various types of loads. This will allow us to get the
+best running conditions for our applications.
+
+Some tweaks will really be useful on SMP systems, so don't hesitate to test on
+your own machine!
+
+Here's a few leads:
+
+\begin{itemize}
+	\item Is the system SMP?
+	\item Do we need to isolate our task?
+	\item Try changing the scheduling policy
+	\item Try changing the scheduling priority
+	\item Investigate the various interrupts
+	\item Take a look at the cpuidle and cpufreq configuration
+	\item Are there any NMIs?
+\end{itemize}
+
+Stress the system using several tools:
+
+\begin{itemize}
+	\item hackbench
+	\item stress-ng
+	\item iperf3
+	\item fping
+\end{itemize}
+
+Some kernel options can also be useful:
+
+\begin{itemize}
+	\item \code{CONFIG_TRACE_HWLAT}
+\end{itemize}
+
+\section{First analysis}
+
+To get a first idea of the wakeup latencies you can expect on your system, launch
+\code{cyclictest} on the target, and take a look at the Max latency. The lower, the
+better. You shouldn't get big latency spikes.
+
+By running \code{cyclictest} as is, you will run the benchmark with the default
+scheduling policy (\code{SCHED_OTHER}), and without any CPU pinning.
+
+You may not notice huge latencies right away, since the system at that point isn't
+doing much. You can try to load the system and see how that affects the latencies
+
+To run cyclictest with a real-time scheduling policy, use the \code{-p <prio>} option.
+Cyclictest doesn't play well with the \code{chrt} command, since it will itself re-set
+it's own scheduling policy.
+
+Try running \code{cyclictest -p 40} and see if you get better latencies.
+
+\subsection{Network load}
+
+An easy way to introduce some load is to generate some network traffic. This will
+generate some interrupts, but also stress the kernel and create some context switches.
+
+First, setup the board's network interface:
+
+\code{ip link set eth0 up}
+
+\code{ip address add 192.168.0.2/24 dev eth0}
+
+Make sure that your computer has its network interface on the same subnet as your
+target.
+
+On the board,run the \code{iperf3} server in the background:
+
+\code{iperf3 -s -D}
+
+Re-run your cyclictest benchmark, and start sending traffic to your target. From
+you host computer, run \code{iperf3 -c 192.168.0.2}. You should start
+seeing the latency rising up.
+
+Try comparing the latencies you get between \code{cyclictest} and \code{cyclictest -p 40}. Do you
+still see high latencies while some network traffic is being received? If so, why and how
+could we fix this?
+
+\subsection{Scheduling load}
+
+Another way to stress the system without any external source is with the \code{hackbench}
+tool, which generates a lot of context switches by exchanging data back and forth between
+multiple processes and multiple threads. This benchmark is pretty intense and can bring
+an entire system down to a non-responsive state, so launch it with only 10 file-descriptors,
+running an infinite amount of loops:
+
+\code{hackbench -f 10 -l -1 &}
+
+With hackbench running in the background, compare the output of \code{cyclictest} and \code{cyclictest -p 40}, the
+difference should be pretty impressive.
+

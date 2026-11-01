@@ -1,0 +1,290 @@
+\subchapter{Kernel - Cross-compiling}{Objective: Learn how to
+cross-compile a kernel for an ARM target platform.}
+
+After this lab, you will be able to:
+\begin{itemize}
+\item Checkout a stable version of the Linux kernel
+\item Set up a cross-compiling environment
+\item Cross compile the kernel for the \boarddescription
+\item Use U-Boot to download the kernel
+\item Check that the kernel you compiled starts the system
+\end{itemize}
+
+\section{Setup}
+
+Stay in the \code{$HOME/__SESSION_NAME__-labs/kernel} directory.
+
+\section{Choose a particular stable version of Linux}
+
+We will use \texttt{linux-\workingkernel.x},
+\ifdefstring{\board}{qemu}{}{%
+  \ifdefstring{\board}{beagleplay}{}{which corresponds to an LTS release, and}
+}
+which this lab was tested with.
+
+First, let's get the list of branches we have available:
+
+\begin{bashinput}
+$ cd linux
+$ git branch -a
+\end{bashinput}
+
+As we will do our labs with the Linux \workingkernel,
+the remote branch we are interested in is\\%without this, you get a line overflow, weird
+\texttt{remotes/stable/linux-\workingkernel.y}.
+
+First, execute the following command to check which version you
+currently have:
+
+\begin{bashinput}
+$ make kernelversion
+\end{bashinput}
+
+You can also open the \code{Makefile} and look at the beginning of it
+to check this information.
+
+Now, let's create a local branch starting from that remote branch:
+\begin{bashinput}
+$ git checkout linux-%\workingkernel%.y
+\end{bashinput}
+
+Check the version again using the \code{make kernelversion} command
+to make sure you now have a \workingkernel.x version.
+
+\section{Cross-compiling environment setup}
+
+To cross-compile Linux, you need to have a cross-compiling
+toolchain. We will use the cross-compiling toolchain that we
+previously produced, so we just need to make it available in the PATH:
+
+\begin{bashinput}
+$ export PATH=$HOME/x-tools/%\ifdefstring{\arch}{ARM64}{aarch64-training-linux-musl}{arm-training-linux-musleabihf}%/bin:$PATH
+\end{bashinput}
+
+Also, don't forget to either:
+
+\begin{itemize}
+\item Define the value of the \code{ARCH} and \code{CROSS_COMPILE}
+  variables in your environment (using \code{export})
+\item {\bf Or} specify them on the command line at every invocation of
+  \code{make}, i.e.: \code{make ARCH=... CROSS_COMPILE=... <target>}
+\end{itemize}
+\ifdefstring{\arch}{ARM64}{
+\textbf{Important:} The majority of tools use \code{aarch64} to define 64 bits
+ARM processors. However in specific cases, the tools may use \code{arm64} to 
+define such architecture. In the case of the kernel Makefile we will use the
+\code{arm64} one.
+}{}
+
+It is assumed that the \code{ARCH} and \code{CROSS_COMPILE} variables have been exported.
+
+\section{Install dependencies}
+
+To build the Linux kernel, you need to install the \code{bc} utility:
+
+\begin{bashinput}
+$ sudo apt install bc
+\end{bashinput}
+
+\section{Linux kernel configuration}
+
+By running \code{make help}, look for the proper Makefile target to
+configure the kernel for your processor.
+
+\ifdefstring{\board}{stm32mp1}
+{The standard configuration for this kernel is actually \code{multi_v7_defconfig},
+but this will generate a pretty big kernel with support for many other
+SoCs. However, we can reduce it to compile faster and get a small
+kernel.}{}
+
+\ifdefstring{\board}{bbb}
+{In our case look for a configuration for boards in the OMAP2 and
+later family which the AM335x found in the BeagleBone belongs to.}{}
+\ifdefstring{\arch}{ARM64}
+{If you search for a configuration file that corresponds to the \code{arm64}
+architecture that the kernel will use, you might see that only one
+\code{defconfig} file is available. We will therefore load this basic
+configuration file and modify it later.}{}
+\ifdefstring{\board}{qemu}
+{In course case, use the configuration for the ARM Vexpress boards
+(\code{vexpress_defconfig}).}{}
+
+So, apply this configuration by running \code{make <default-configuration>}, and
+then run \code{make menuconfig} to fine-tune it.
+
+\begin{itemize}
+\item Disable \kconfig{CONFIG_GCC_PLUGINS} if it is set. This will skip
+  building special {\em gcc} plugins, which would require extra dependencies
+  for the build.
+\ifdefstring{\board}{stm32mp1}{
+  \item In the \code{System Type} menu, remove support for all the SoCs except
+  the STM32MP157 ones. Don't forget to disable the TI ones too which are
+  in a submenu.
+  \item Disable \kconfig{CONFIG_DRM}, \kconfig{CONFIG_WLAN},
+    \kconfig{CONFIG_MEDIA_SUPPORT} and \kconfig{CONFIG_BT}. It will remove
+    support for many display, GPU, WiFi and Bluetooth drivers which saves space
+    and build time.}{}
+\ifdefstring{\board}{qemu}{
+  Also start \code{make menuconfig} to
+  add \kconfig{CONFIG_DEVTMPFS_MOUNT} to your configuration.}{}
+\ifdefstring{\board}{bbb}{
+\item Add options to support USB host and networking over USB device:
+\begin{itemize}
+  \item \kconfigval{CONFIG_USB}{y}
+  \item \kconfigval{CONFIG_USB_GADGET}{y}
+  \item \kconfigval{CONFIG_USB_MUSB_HDRC}{y} {\em Driver for the USB OTG
+        controller}
+  \item \kconfigval{CONFIG_USB_MUSB_DSPS}{y}
+  \item \kconfigval{CONFIG_USB_MUSB_DUAL_ROLE}{y} {\em Use the USB OTG
+        both in host and device (gadget) modes. This will be needed
+        later to use the board's USB host port.}
+  \item We need to enable \kconfig{CONFIG_AM335X_PHY_USB}. You will
+    realize that this option is not available/accessible, so check its
+    dependencies. Some of its dependencies are indeed not enabled,
+    find what are those dependencies, enable them, and finally enable
+    \kconfig{CONFIG_AM335X_PHY_USB}.
+  \item Find the "USB Gadget precomposed configurations" menu
+        and set it to {\em static} instead of {\em module}
+        so that \kconfigval{CONFIG_USB_ETH}{y}
+\end{itemize}
+\item Also compile your kernel with \kconfigval{CONFIG_INPUT_EVDEV}{y},
+  to have the same default setting as in our labs with the STM32MP1 boards.
+}{}
+\ifdefstring{\board}{beagleplay}{
+\item In the \code{Platform Selection} menu, remove support for all the SoCs except
+for the Texas Instruments Inc. K3 multicore SoC architecture.
+\item Disable \kconfig{CONFIG_DRM}, which will skip support for many display
+controller and GPU drivers.
+}{}
+
+\if\defstring{\board}{imx93-frdm}
+\item In the \code{Platform Selection} menu, remove support for all the
+  SoCs except the \code{NXP SoC support} ones and in particular
+  \code{NXP i.MX SoC family}.
+\item Select built-in support for the IMX Ethernet driver:
+  \kconfig{CONFIG_DWMAC_IMX8}. Note that it depends on \kconfig{CONFIG_STMMAC_ETH}
+  and \kconfig{CONFIG_STMMAC_PLATFORM}, so you need to select these two configs as
+  built-in to be able to do the same with \kconfig{CONFIG_DWMAC_IMX8}.
+\item Select built-in support for the fuse driver: \kconfig{CONFIG_NVMEM_IMX_OCOTP_ELE}
+  This driver is used to retrieve the MAC address from the SoC fuses.
+\item Disable \kconfig{CONFIG_DRM} and \kconfig{CONFIG_MEDIA_SUPPORT},
+  which will disable support for display controller drivers, GPU
+  drivers and camera drivers, that we don't need and will save quite a
+  bit of build time.
+\fi
+
+\end{itemize}
+
+\ifdefstring{\board}{stm32mp1}{
+Please note that this will definitely not build the smallest
+and most optimized kernel for STM32MP1: \code{multi_v7_defconfig}
+enables plenty of features and drivers that will not be useful on our
+particular board.}{}
+
+\ifdefstring{\arch}{ARM64}{
+Please note that this will definitely not build the smallest and most
+optimized kernel for your board: the ARM64 \code{defconfig}
+enables plenty of features and drivers that will not be useful on our
+particular board.}{}
+
+\section{Cross compiling}
+
+You're now ready to cross-compile your kernel. Simply run:
+
+\bashcmd{$ make}
+
+and wait a while for the kernel to compile. Don't forget to use
+\code{make -j<n>} if you have multiple cores on your machine!
+
+Look at the kernel build output to see which file contains
+the kernel image.
+
+Also look in the Device Tree Source directory to see which \code{.dtb}
+files got compiled. Find which \code{.dtb} file corresponds to your board.
+
+\ifdefstring{\board}{bbb}
+{For the BeagleBone Black, its \code{am335x-boneblack.dtb},
+and for the BeagleBone Black Wireless, its
+\code{am335x-boneblack-wireless.dtb}.}
+{}
+
+\section{Load and boot the kernel using U-Boot}
+
+As we are going to boot the Linux kernel from U-Boot,
+we need to set the \code{bootargs} environment corresponding
+to the Linux kernel command line:
+
+\begin{ubootinput}
+=> setenv bootargs console=%\console%
+=> saveenv
+\end{ubootinput}
+We will use TFTP to load the kernel image on the board:
+
+\begin{itemize}
+
+\item On your workstation, copy the {\tt \ifdefstring{\arch}{ARM64}{Image.gz}{zImage}} and DTB
+(\texttt{\dtname}\texttt{.dtb}) to the directory exposed by the TFTP server.
+
+\item On the target (in the U-Boot prompt), load {\tt \ifdefstring{\arch}{ARM64}{Image.gz}{zImage}} from
+TFTP into RAM:
+\begin{ubootinput}
+=> tftp %\zimageboardaddr% %\ifdefstring{\arch}{ARM64}{Image.gz}{zImage}%
+\end{ubootinput}
+
+\item Now, also load the DTB file into RAM:
+\begin{ubootinput}
+=> tftp %\dtbboardaddr% %\dtname%.dtb
+\end{ubootinput}
+
+\item Boot the kernel with its device tree:
+\begin{ubootinput}
+=> %\ifdefstring{\arch}{ARM64}{booti}{bootz} \zimageboardaddr% - %\dtbboardaddr%
+\end{ubootinput}
+
+\end{itemize}
+
+\if\defstring{\arch}{ARM64}
+This last command should show you an error message of this type:
+\bashcmd{kernel_comp_addr_r or kernel_comp_size is not provided!}
+
+This is because the boot image that we use, \code{Image.gz}, is compressed, and
+therefore, needs to be uncompressed by U-Boot before continue booting. To do so
+U-Boot needs to know the maximum size of the uncompressed image and where to
+store it.
+
+If you look at the size of the uncompressed kernel (\code{Image} file),
+you can estimate that 32 MB (0x2000000) is a reasonable upper bound
+for the size of the uncompressed kernel, even with a more exhaustive
+configuration.
+
+This gives us,
+
+\begin{ubootinput}
+=> setenv kernel_comp_addr_r 0x85000000
+=> setenv kernel_comp_size 0x2000000
+=> saveenv
+\end{ubootinput}
+
+Now you can retry the \code{booti} command and see the kernel be uncompressed
+and then loaded.
+\fi
+
+You should see Linux boot and finally panicking. This is expected: we
+haven't provided a working root filesystem for our device yet.
+
+You can now automate all this every time the board is booted or
+reset. Reset the board, and customize \code{bootcmd}:
+
+\begin{ubootinput}
+=> setenv bootcmd 'tftp %\zimageboardaddr\ \ifdefstring{\arch}{ARM64}{Image.gz}{zImage}; tftp \dtbboardaddr\ {\dtname}.dtb; \ifdefstring{\arch}{ARM64}{booti}{bootz} \zimageboardaddr\ - \dtbboardaddr'%
+=> saveenv
+\end{ubootinput}
+
+\ifdefstring{\board}{bbb}
+{{\bf Known issue}: with at least U-Boot 2023.04 and 2024.04 and with
+USB networking, there is an issue running two \code{tftp} commands in a
+row in \code{bootcmd}. To work around this issue before we get a chance
+to fix it upstream, insert \code{sleep 0.1} between the two \code{tftp}
+commands and everything will work as expected.}{}
+
+Restart the board to make sure that booting the kernel is now automated.

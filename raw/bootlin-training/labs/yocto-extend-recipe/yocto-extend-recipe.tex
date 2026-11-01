@@ -1,0 +1,222 @@
+\subchapter{Lab 5: Extend a recipe}{Add your features to an existing recipe}
+
+During this lab, you will:
+\begin{itemize}
+  \item Apply patches to an existing recipe
+  \item Use a custom configuration file for an existing recipe
+  \item Extend a recipe to fit your needs
+\end{itemize}
+
+\section{Create a basic appended recipe}
+
+To avoid rewriting recipes when a modification is needed on an already existing
+one, BitBake allows to extend recipes and to overwrite, append or prepend
+configuration variables values through the so-called BitBake append files.
+
+We will first create a basic BitBake append file, without any change made
+to the original recipe, to see how it is integrated into the build. We will then
+extend some configuration variables of the original recipe.
+
+\ifdefstring{\board}{bbb}{
+  \def\linuxrecipename{linux-bb.org}
+}{}
+
+\ifdefstring{\board}{stm32mp1}{
+  \def\linuxrecipename{linux-stm32mp}
+}{}
+
+\ifdefstring{\board}{beagleplay}{
+  \def\linuxrecipename{linux-bb.org}
+}{}
+
+\ifdefstring{\board}{imx93-frdm}{
+  \def\linuxrecipename{linux-imx}
+}{}
+
+We here aim to extend the {\tt \linuxrecipename{}} kernel recipe.
+
+Try to create an appended recipe using the guidelines given in the slides.
+
+You can see available \code{bbappend} files and the recipe they apply to by
+using the \code{bitbake-layers} tool (again!):
+\begin{verbatim}
+bitbake-layers show-appends
+\end{verbatim}
+
+If the BitBake append file you just created is recognized by your Yocto
+environment, you should see:
+\if\defstring{\board}{stm32mp1}
+\begin{verbatim}
+linux-stm32mp_6.6.bb:
+  $HOME/__SESSION_NAME__-labs/meta-bootlinlabs/recipes-kernel/linux/linux-stm32mp_6.6.bbappend
+\end{verbatim}
+\fi
+
+\if\defstring{\board}{beagleplay}
+\begin{verbatim}
+linux-bb.org_git.bb:
+  $HOME/__SESSION_NAME__-labs/meta-bootlinlabs/recipes-kernel/linux/linux-bb.org_git.bbappend
+\end{verbatim}
+\fi
+
+\if\defstring{\board}{bbb}
+\begin{verbatim}
+linux-bb.org_git.bb:
+  $HOME/__SESSION_NAME__-labs/meta-bootlinlabs/recipes-kernel/linux/linux-bb.org_git.bbappend
+\end{verbatim}
+\fi
+
+\if\defstring{\board}{imx93-frdm}
+\begin{verbatim}
+linux-imx_6.18.bb:
+  $HOME/__SESSION_NAME__-labs/meta-bootlinlabs/recipes-kernel/linux/linux-imx_6.18.bbappend
+\end{verbatim}
+\fi
+
+\section{Add patches to apply in the recipe}
+
+We want our extended {\tt \linuxrecipename{}} kernel to support the Nunchuk as
+a joystick input. We can add this by applying patches during the
+\code{do_patch} task. The needed patches are provided with this lab. You can
+find them under \code{~/__SESSION_NAME__-labs/bootlin-lab-data/nunchuk/linux}. For more
+details about how to write the driver handling the Nunchuk, have a look at our
+embedded Linux kernel and driver development training course at
+\url{https://bootlin.com/training/kernel/}.
+
+Applying a patch is a common task in the daily Yocto process. Many recipes,
+appended or not, apply a specific patch on top of a mainline project. It's why
+patches do not have to be explicitly applied, if the recipe inherits from the
+patch class (directly or not), but only have to be present in the source files
+list.
+
+Try adding the patches included in this lab to your BitBake append
+file. Do not forget to also add the \code{defconfig} file provided
+alongside the patches. This file contains the kernel configuration.
+\if\defstring{\board}{stm32mp1}
+Add \code{KERNEL_DEFCONFIG = ""} and \code{KERNEL_EXTERNAL_DEFCONFIG =
+"defconfig"} so it is used by the \code{linux-stm32mp} recipe.
+\footnote{These settings are specific to the \code{linux-stm32mp} recipe!}
+\fi
+\if\defstring{\board}{imx93-frdm}
+Add \code{KBUILD_DEFCONFIG:imx93-11x11-lpddr4x-frdm = ""} to allow the use of our \code{defconfig} file.
+\fi
+\if\defstring{\board}{beagleplay}
+It is handled automatically in the \code{linux-bb.org} original recipe.
+\fi
+\if\defstring{\board}{bbb}
+It is handled automatically in the {\code{linux-bb.org} original recipe.
+\fi
+
+You can now rebuild the kernel to take the new patches into account:
+\begin{verbatim}
+bitbake virtual/kernel
+\end{verbatim}
+
+\section{Connect the Nunchuk}
+
+Take the Nunchuk device provided by your instructor.
+
+We will connect it to the \ifdefstring{\board}{beagleplay}{\code{i2c3}}{\code{i2c1}} port
+of the CPU, with pins available on the \code{P9} connector.
+
+Identify the 4 pins of the Nunchuk connector:
+
+\begin{center}
+\includegraphics[width=4cm]{common/nunchuk-pinout.pdf}
+\end{center}
+
+\ifdefstring{\board}{stm32mp1}{
+Connect the Nunchuk pins:
+\begin{itemize}
+\item The \code{GND} pin to CN16 pin 6 (\code{GND})
+\item The \code{PWR} pin to CN16 pin 4 (\code{3V3})
+\item The \code{SDA} pin to CN13 pin 9 (\code{D14}, \code{DATA})
+\item The \code{SCL} pin to CN13 pin 10 (\code{D15}, \code{CLK})
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=12cm]{common/dk1-nunchuk-connect.jpg}
+\end{center}
+}{}
+
+\ifdefstring{\board}{beagleplay}{
+Connect the Nunchuk pins:
+\begin{itemize}
+\item Connect the Nunchuk PWR pin to \code{+3.3V} pin of mikroBUS connector
+\item Connect the Nunchuk GND pin to \code{GND} pin of mikroBUS connector
+\item Connect the Nunchuk SCL pin to \code{SCL} pin of mikroBUS connector
+\item Connect the Nunchuk SDA pin to \code{SDA} pin of mikroBUS connector
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=12cm]{common/beagleplay-connect-nunchuk.jpg}
+\end{center}
+}{}
+
+\ifdefstring{\board}{imx93-frdm}{
+Connect the Nunchuk pins:
+\begin{itemize}
+\item The \code{GND} pin to P11 pin 6 (\code{GND})
+\item The \code{PWR} pin to P11 pin 1 (\code{3V3})
+\item The \code{SDA} pin to P11 pin 3 (\code{SDA})
+\item The \code{SCL} pin to P11 pin 5 (\code{SCL})
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=12cm]{common/imx93-frdm-connect-nunchuk.jpeg}
+\end{center}
+}{}
+
+\ifdefstring{\board}{bbb}{
+Connect the Nunchuk pins:
+\begin{itemize}
+\item The \code{GND} pin to P9 pins 1 or 2 (\code{GND})
+\item The \code{PWR} pin to P9 pins 3 or 4 (\code{DC_3.3V})
+\item The \code{SCL} pin to P9 pin 17 (\code{I2C1_SCL})
+\item The \code{SDA} pin to P9 pin 18 (\code{I2C1_SDA})
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=12cm]{common/bbb-connect-nunchuk.pdf}
+\end{center}
+}{}
+
+\section{Test the Nunchuk}
+
+Copy the newly generated kernel and device tree images into the first SD card
+partition (or to the TFTP server home directory in case you enabled TFTP
+boot). Then boot the board and wait until you have access to the
+\code{busybox} command line.
+
+You can then make sure that the Nunchuk is recognized and is working by
+checking the presence of the \code{js0} device file:
+\begin{verbatim}
+ls /dev/input/js0
+\end{verbatim}
+
+Now display the raw events generated by the Nunchuk:
+\begin{verbatim}
+cat /dev/input/js0
+\end{verbatim}
+
+\section{Patch nInvaders}
+
+The nInvaders game uses keyboard events for its controls. We first need to apply
+a patch introducing joystick support. The patch is located at
+\code{~/__SESSION_NAME__-labs/bootlin-lab-data/nunchuk/ninvaders/}.
+
+Add the patch to the nInvaders \yoctovar{SRC_URI}.
+
+Then build a full \code{core-image-minimal} and update the NFS root
+directory.
+
+\section{Play nInvaders!}
+
+After booting the board you should be able to play nInvaders with the
+keyboard\dots{} and the Nunchuk! The \code{C} button is used to confirm and to
+fire, and \code{Z} to pause the game.
+
+Access the board command line through SSH, and launch the game:
+\begin{verbatim}
+$ ninvaders
+\end{verbatim}

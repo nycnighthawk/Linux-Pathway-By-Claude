@@ -1,0 +1,126 @@
+\subchapter{Lab 3: Add a custom application}{Add a new recipe to support a required
+	custom application}
+
+During this lab, you will:
+\begin{itemize}
+  \item Write a recipe for a custom application
+  \item Integrate this application into the build
+\end{itemize}
+
+This is the first step of adding an application to Yocto. The
+remaining part is covered in the next lab, "Create a Yocto layer".
+
+\section{Setup and organization}
+
+In this lab we will add a recipe handling the \code{nInvaders} application
+found at \url{https://ninvaders.sourceforge.net/}. Before starting the recipe
+itself, find the \code{recipes-extended} directory originating from
+OpenEmbedded-Core and add a subdirectory for your application.
+
+\section{First hands on nInvaders}
+
+The nInvaders application is a terminal based game following the space invaders
+family. In order to deal with the text based user interface, nInvaders uses the
+ncurses library.
+
+First try to find the project homepage, download the sources and have a first
+look: license, Makefile, requirements\dots
+
+\section{Write a minimal recipe}
+
+Create a file that respects the Yocto nomenclature: \code{${PN}_${PV}.bb}
+%stopzone
+
+Specify the source URL of the latest nInvaders archive and give a try at
+building your recipe:
+
+\begin{verbatim}
+bitbake ninvaders
+\end{verbatim}
+
+\section{Archive checksum and license}
+
+BitBake will refuse to go any further if it cannot validate the downloaded
+bundle using a checksum. You'll also need to provide some information about the
+license of the package.
+
+\section{Testing and troubleshooting}
+
+Try to make the recipe on your own. Also eliminate the warnings related to your
+recipe: some configuration variables are not mandatory but it is a very good
+practice to define them all.
+
+If you hang on a problem, check the following points:
+\begin{itemize}
+  \item The checksum and the URI are valid
+  \item The dependencies are explicitly defined
+  \item The internal state has changed, clean the working directory: \\
+     \code{bitbake -c clean ninvaders}
+\end{itemize}
+
+\subsection{Conflicting types error}
+
+One of the build failures you will face will complain about conflicting
+definitions of \code{doSleep}: the definition having a \code{void(void)}
+prototype, while the definition uses \code{void(int)}.
+
+This is because of a new behaviour with C23. We can revert to an old standard
+version, where \code{void()} prototypes do not impose any restriction on
+provided parameters. This can be done using the \code{-std=gnu17} {\em gcc}
+flag.
+
+To achieve this, make sure to add \code{-std=gnu17} to the \yoctovar{CFLAGS}
+variable.
+
+\subsection{Multiple definition error}
+
+Another build failure you will face will generate many messages such as
+\code{multiple definition of `skill_level'; aliens.o:(.bss+0x674):
+  first defined here}.
+
+The \code{multiple definition} issue is due to the code base of {\em
+nInvaders} being quite old, and having multiple compilation units
+redefine the same symbols. While this was accepted by older {\em gcc}
+versions, since {\em gcc 10} this is no longer accepted by default.
+
+While we could fix the {\em nInvaders} code base, we will take a
+different route: ask {\em gcc} to behave as it did before {\em gcc 10}
+and accept such redefinitions. This can be done by passing the
+\code{-fcommon} {\em gcc} flag.
+
+\subsection{Tips}
+
+Tip: BitBake has command line flags to increase its verbosity and activate debug
+outputs. Also, remember that you need to cross-compile nInvaders for ARM! Maybe,
+you will have to configure your recipe to resolve some mistakes done in the
+application's Makefile (which is often the case). A bitbake variable permits
+to add some Makefile's options, you should look for it.
+
+\section{Update the rootfs and test}
+
+Now that you've compiled the \code{nInvaders} application, generate a new
+rootfs image with \code{bitbake core-image-minimal}. Then update the
+NFS root directory. You can confirm the \code{nInvaders} program is
+present by running:
+\begin{verbatim}
+find /nfs -iname ninvaders
+\end{verbatim}
+
+Access the board command line through SSH. You should be able to
+launch the \code{nInvaders} program. Now, it's time to play!
+
+\section{Inspect the build}
+
+The \code{nInvaders} application was unpacked and compiled in the
+recipe's work directory. Can you spot \code{nInvaders}' directory in
+the build work directory?
+
+Once you found it, look around. You should at least spot some
+directories:
+\begin{itemize}
+    \item The sources. Remember the \yoctovar{S} variable?
+    \item \code{temp}. There are two kinds of files in there. Can you
+      tell what are their purposes?
+    \item Try to see if the licences of \code{nInvaders} were
+      extracted.
+\end{itemize}

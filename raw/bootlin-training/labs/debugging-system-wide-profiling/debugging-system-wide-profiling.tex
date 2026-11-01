@@ -1,0 +1,141 @@
+\subchapter
+{System wide profiling and tracing}
+{Objectives:
+  \begin{itemize}
+    \item System profiling with {\em trace-cmd} and {\em KernelShark}.
+    \item (Bonus) System profiling with {\em perf} and FlameGraphs.
+  \end{itemize}
+}
+
+\section{ftrace \& uprobes}
+
+First of all, we will start a small program on the target using the following command:
+
+\begin{bashinput}
+$ mystery_program 1500 400 %\ifdefstring{\board}{beagleplay}{4}{2}% &
+\end{bashinput}
+
+In order to trace a full system, we can use ftrace. However, if we want to trace
+the userspace, we'll need to add new tracepoints using uprobes. This can be done
+manually with the uprobe sysfs interface or using \code{perf probe}.
+
+Before starting to profile, we will compile our program to be instrumented.
+On your development host, run:
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs/nfsroot/root/system_profiling
+$ make
+\end{bashinput}
+
+On the target, we will create a uprobe in the main function of the
+\code{crc_random} program each time a crc is computed. First, let's list the line
+numbers that are recognized by perf to add a uprobe:
+
+\begin{bashinput}
+$ cd /root/system_profiling
+$ perf probe --source=. -x ./crc_random -L main
+\end{bashinput}
+
+{\em Notes:
+ \begin{itemize}
+  \item In order to be able to add such userspace probe, perf needs to access
+symbols and source file
+  \item If perf output is filled with misinterpreted ANSI escape sequences, you
+  can append \code{| cat} to the command
+ \end{itemize}}
+
+Then, we can create a uprobe and capture the crc value using:
+
+\begin{bashinput}
+$ perf probe --source=. -x ./crc_random main:35 crc
+\end{bashinput}
+
+We can finally trace the application using \code{trace-cmd} with this event. We will
+use the remote tracing capabilities of \code{trace-cmd} to do that. First, we will
+start the \code{trace-cmd} server on the desktop platform:
+
+\begin{bashinput}
+trace-cmd listen -p 4567
+\end{bashinput}
+
+Then, on the target, run \code{trace-cmd} with the \code{-N} parameter to
+specify the remote trace-cmd server. Interrupt it after about 50 CRC
+computations in order to have a meaningful trace.
+
+\begin{bashinput}
+$ trace-cmd record -N 192.168.0.1:4567 -e probe_crc_random:main_L35 ./crc_random
+^C
+\end{bashinput}
+
+{\em Note: if during the recording you encounter an \code{Unsupported file
+version 7} error, it likely means that the trace-cmd tool on your
+workstation is older than the one on the target, and does not understand
+the default trace format used by the target. You can force trace-cmd on the
+target to use an older version of the trace data format by also providing
+\code{--file-version=6} on the recording command}
+
+Then, using KernelShark on the host, analyze the trace:
+
+\begin{bashinput}
+$ sudo apt install kernelshark
+$ kernelshark
+\end{bashinput}
+
+We can see that something is wrong, our process does not seem to compute crc at
+a fixed rate. Let's trace the \code{sched_switch} events to see what is happening:
+
+\begin{bashinput}
+$ trace-cmd record -N 192.168.0.1:4567 -e sched_switch -e probe_crc_random:main_L35 ./crc_random
+^C
+\end{bashinput}
+
+Reanalyze the traces with KernelShark and try to understand what is going on.
+
+\section{(Bonus) System profiling with {\em perf} and FlameGraphs}
+
+In order to profile the whole system, we are going to use perf and try to find
+the function that takes most of the time executing.
+
+First of all, we will run a global recording of functions and their backtrace on
+(all CPUs) during 10 seconds using the following command on the target:
+
+\begin{bashinput}
+$ perf record -F 99 -g -- sleep 10
+\end{bashinput}
+
+This command will generate a \code{perf.data} file that can be used on a remote
+computer for further analysis. Copy that file and fix the permissions using
+\code{chown}:
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/
+$ sudo cp /home/$USER/__SESSION_NAME__-labs/nfsroot/root/system_profiling/perf.data .
+$ sudo chown $USER:$USER perf.data
+\end{bashinput}
+
+We will then use perf report to visualize the acquired data:
+
+\begin{bashinput}
+$ perf report --symfs=/home/$USER/__SESSION_NAME__-labs/buildroot/output/staging/
+	-k /home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/vmlinux
+\end{bashinput}
+
+Another useful tool for performance analysis is flamegraphs. Latest perf
+version includes a builtin support for flamegraphs but the template is not
+available on debian so we will use another support provided by Brendan Gregg
+scripts.
+
+\begin{bashinput}
+$ git clone https://github.com/brendangregg/FlameGraph.git
+$ perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl > flame.html
+\end{bashinput}
+
+Using this flamegraph, analyze the system load.
+
+{\em TIP: if the generated graph is not relevant/missing symbols, you may try to to all symbols
+translation in the target before generating the graph on host, i.e use perf script on the target,
+and bring back the result on host and provide it to Flamegraph scripts}
+
+You can also generate a Flamegraph on previous labs: for example you can re-do a recording on
+\code{png_convert} from the application profiling lab, generate the corresponding Flamegraph and confirm
+your observations about most time-consuming functions.

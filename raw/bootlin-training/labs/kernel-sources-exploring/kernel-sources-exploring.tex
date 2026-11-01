@@ -1,0 +1,88 @@
+\subchapter{Kernel source code}{Objective: Get familiar with the
+  kernel source code}
+
+After this lab, you will be able to:
+
+\begin{itemize}
+
+\item Create a branch based on a remote tree to explore a particular
+      stable kernel version (from the \code{stable} kernel tree).
+\item Explore the sources and search for files, function headers or
+  other kinds of information\ldots
+\item Browse the kernel sources with a tool like Elixir.
+\end{itemize}
+
+\section{Choose a particular stable version}
+
+Let's work with a particular stable version of the Linux kernel.
+It would have been more logical to do this in the previous lab, but we
+wanted to get back to lectures while the \code{fetch} command was
+running.
+
+First, let's get the list of branches on our \code{stable} remote tree:
+
+\begin{verbatim}
+cd ~/__SESSION_NAME__-labs/src/linux
+git branch -a
+\end{verbatim}
+
+As we will do our labs with the Linux \workingkernel\ stable branch, the remote branch
+we are interested in is \texttt{remotes/stable/linux-\workingkernel.y}.
+
+First, execute the following command to check which version you
+currently have:
+
+\begin{verbatim}
+make kernelversion
+\end{verbatim}
+
+You can also open the \code{Makefile} and look at the beginning of it
+to check this information.
+
+Now, let's create a local branch starting from that remote branch:
+
+\texttt{git checkout -b bootlin-labs stable/linux-\workingkernel.y}
+
+Check the version again using the \code{make kernelversion} command
+to make sure you now have a \workingkernel.y version.
+
+\if\defstring{\board}{imx93-frdm}
+Before exploring the sources, we will apply a patch to add the device
+tree for the \code{i.MX93-FRDM} board in \code{arch/arm64/boot/dts
+freescale}, as it is not yet present in the official Linux kernel sources.
+\begin{verbatim}
+git apply ~/__SESSION_NAME__-labs/modules/data/0001-linux-imx93-frdm.patch
+\end{verbatim}
+Once done, modify the \code{Makefile} in the \code{freescale} directory to build
+the device tree for the \code{i.MX93-FRDM} board, and commit your changes.
+\fi
+
+\section{Exploring the sources manually}
+
+As a Linux kernel user, you will very often need to find which file
+implements a given function. So, it is useful to be familiar with
+exploring the kernel sources.
+
+\begin{enumerate}
+\item Find the Linux logo image in the sources\footnote{Look for
+      files with \code{logo} in their name. It's an
+      opportunity to practise with the \code{find} command.}.
+\item Find who the maintainer of the MVNETA network driver is.
+\item Find the declaration of the \kfunc{platform_device_register} function.
+\end{enumerate}
+
+Tip: if you need the \code{grep} command, we advise you to use \code{git
+grep}. It is similar to \code{grep} but ignores Git internal files and
+generated files (as declared by \code{.gitignore}).
+
+\section{Use a kernel source indexing tool}
+
+Now that you know how to do things in a manual way, let's use more
+automated tools.
+
+Try Elixir at \url{https://elixir.bootlin.com}
+and choose the Linux version closest to yours.
+
+As in the previous section, use this tool to find where
+the \kfunc{platform_device_register} function is declared, implemented and
+even used.

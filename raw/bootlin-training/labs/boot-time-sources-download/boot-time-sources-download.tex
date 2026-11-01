@@ -1,0 +1,74 @@
+\subchapter{Downloading bootloader, kernel and Buildroot source
+code}{Save time and start fetching the source code that you will need
+during these labs}
+
+\section{Installing the git package}
+
+We are going to access bootloader, kernel and Buildroot sources through
+their \code{git} repositories, which will allow us to track any changes
+that we make to the source code of these projects.
+
+Depending on how fast your network connection is (and how many users
+share it), fetching such sources is likely to take a significant amount
+of time. That's why we're starting such downloads now.
+
+So, let's install the below package:
+
+\begin{verbatim}
+sudo apt install git
+\end{verbatim}
+
+\section{Cloning the Buildroot source tree}
+
+Go to the \code{$HOME/__SESSION_NAME__-labs/rootfs} directory.
+
+\begin{verbatim}
+git clone https://gitlab.com/buildroot.org/buildroot.git
+\end{verbatim}
+
+We will select a particular release tag later. Let's move on to the next
+source repository.
+
+\section{Cloning the U-Boot source tree}
+
+Create the \code{$HOME/__SESSION_NAME__-labs/bootloader} directory and go
+into it.
+
+\begin{verbatim}
+git clone https://git.u-boot-project.org/u-boot/u-boot.git
+\end{verbatim}
+
+\section{Cloning the mainline Linux tree}
+
+Go to the \code{$HOME/__SESSION_NAME__-labs/kernel} directory.
+
+\begin{verbatim}
+git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux
+\end{verbatim}
+
+\section{Accessing stable Linux releases}
+
+Go to the \code{linux} source directory.
+
+Having the Linux kernel development sources is great, but when you are
+creating products, you prefer to avoid working with a target that moves
+every day.
+
+That's why we need to use the {\em stable} releases of the Linux
+kernel.
+
+Fortunately, with \code{git}, you won't have to clone an entire source
+tree again. All you need to do is add a reference to a {\em remote}
+tree, and fetch only the commits which are specific to that remote tree.
+
+{\small
+\begin{verbatim}
+git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable
+git fetch stable
+\end{verbatim}
+}
+
+We will choose a particular stable version in the next labs.
+
+Now, let's continue the lectures. This will leave time for the commands
+that you typed to complete their execution (if needed).

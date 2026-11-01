@@ -1,0 +1,195 @@
+# Source manifest: the single source of truth for what is curated and how.
+#
+# mode:   full     = text stored under raw/<id>/ and indexed in full
+#         outline  = only titles and headings stored (licence unknown, or owner chose link-only)
+#         link     = catalog stub only (title + URL), nothing fetched
+# reuse:  adapt     = may be adapted into CC BY-SA 4.0 course text and books
+#         link-only = searchable for research, but lessons must paraphrase or link
+#         excluded  = never stored (NC/ND licences, decision D-004)
+# kind:   git | rhel-html | http-pdf | oscal | stig | none
+#
+# Each `pin` is filled in by `lpc sync` and records the upstream commit or version captured.
+
+defaults:
+  lang: en
+
+sources:
+  - id: rocky-docs
+    name: Rocky Linux documentation
+    kind: git
+    repo: https://github.com/rocky-linux/documentation
+    include: ["/docs/**/*.md", "/LICENSE.md"]
+    exclude_regex: '\.[a-z]{2}(-[A-Z]{2})?\.md$'   # translations (D-011)
+    figures: ["png", "jpg", "jpeg", "gif", "webp"]
+    url_template: "https://docs.rockylinux.org/{path_no_ext_strip_docs}/"
+    license: CC-BY-SA-4.0
+    license_file: LICENSE.md
+    mode: full
+    reuse: adapt
+    stream: A
+    pin: fed6b43daf614237fafcff3861a08e95ceebfa94
+
+  - id: debian-handbook
+    name: The Debian Administrator's Handbook
+    kind: git
+    repo: https://salsa.debian.org/hertzog/debian-handbook.git
+    include: ["/en-US/**"]
+    figures: ["png", "dia", "xpm", "jpg"]
+    url_template: "https://debian-handbook.info/browse/stable/{anchor}.html"
+    license: "CC-BY-SA-3.0 OR GPL-2.0-or-later"
+    license_note: "Dual licensed; the notice is in en-US/Book_Info.xml."
+    mode: full
+    reuse: adapt
+    stream: A
+    pin: bfac53503524a02c72ca99e8049afa9d351ba565
+
+  - id: rhel-10-docs
+    name: Red Hat Enterprise Linux 10 documentation (selected guides)
+    kind: rhel-html
+    base: https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10
+    exclude_guides:            # owner chose "selected RHEL 10 guides" (D-002); desktop and support guides are out of scope
+      - administering_rhel_by_using_the_gnome_desktop_environment
+      - using_the_gnome_desktop_environment
+      - getting_the_most_from_your_support_experience
+      - package_manifest
+    url_template: "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/{guide}/index#{anchor}"
+    license: CC-BY-SA-3.0
+    license_note: "Per docs.redhat.com/legal-notice: give the URL of the original when distributing; remove Red Hat trademarks from modified versions."
+    mode: full
+    reuse: adapt
+    stream: A
+
+  - id: ubuntu-server-docs
+    name: Ubuntu Server documentation
+    kind: git
+    repo: https://github.com/canonical/ubuntu-server-documentation
+    include: ["/docs/**/*.md", "/docs/conf.py"]
+    url_template: "https://documentation.ubuntu.com/server/{path_no_ext_strip_docs}/"
+    license: NOASSERTION
+    license_note: "Upstream declares no licence (docs/conf.py license.name is empty as of the pin). Per D-006 the catalog licence matches upstream; sync re-checks and flags a change for review."
+    license_probe: {file: docs/conf.py, regex: '"name":\s*"([^"]+)"'}
+    mode: outline
+    reuse: link-only
+    stream: Ref
+    pin: 505feb597ec634d49a50edd2cc942be92d2d575b
+
+  - id: kubernetes-docs
+    name: Kubernetes documentation
+    kind: git
+    repo: https://github.com/kubernetes/website
+    include:                   # D-008
+      - "/content/en/docs/concepts/**/*.md"
+      - "/content/en/docs/tasks/**/*.md"
+      - "/content/en/docs/tutorials/**/*.md"
+      - "/content/en/docs/setup/**/*.md"
+      - "/content/en/docs/reference/glossary/**/*.md"
+      - "/content/en/docs/reference/kubectl/**/*.md"
+      - "/content/en/docs/reference/access-authn-authz/**/*.md"
+      - "/content/en/docs/reference/networking/**/*.md"
+      - "/content/en/docs/reference/command-line-tools-reference/**/*.md"
+      - "/LICENSE"
+    url_template: "https://kubernetes.io/docs/{path_no_ext_strip_k8s}/"
+    license: CC-BY-4.0
+    license_note: "Documentation CC BY 4.0; code samples Apache-2.0."
+    mode: full
+    reuse: adapt
+    stream: A
+    pin: f4ec4968d939d533ecc82b7a352155caed3c932d
+
+  - id: bootlin-training
+    name: Bootlin training materials (kernel, embedded, debugging)
+    kind: git
+    repo: https://github.com/bootlin/training-materials
+    include: ["/slides/**/*.tex", "/labs/**/*.tex", "/LICENSE"]
+    url_template: "https://github.com/bootlin/training-materials/blob/{pin}/{path}"
+    license: CC-BY-SA-3.0
+    mode: full
+    reuse: adapt
+    stream: A
+    pin: 46d5592a529ca124a2bac5f3151daa2e6530fdd3
+
+  - id: lkmpg
+    name: The Linux Kernel Module Programming Guide
+    kind: git
+    repo: https://github.com/sysprog21/lkmpg
+    include: ["/lkmpg.tex", "/LICENSE"]
+    url_template: "https://sysprog21.github.io/lkmpg/#{anchor}"
+    license: OSL-3.0
+    license_note: "Book OSL-3.0; examples GPL-2.0. The owner chose link-only entries (D-002, interpreted in D-016)."
+    mode: outline
+    reuse: link-only
+    stream: C
+    pin: 5854698bc4535357d9c40d4eefa5241ef3bd814e
+
+  - id: kernel-docs
+    name: Linux kernel documentation (process, dev-tools)
+    kind: git
+    repo: https://github.com/torvalds/linux
+    include: ["/Documentation/process/**/*.rst", "/Documentation/dev-tools/**/*.rst", "/COPYING"]
+    url_template: "https://docs.kernel.org/{path_no_ext_strip_documentation}.html"
+    license: GPL-2.0-only
+    license_note: "The owner chose link-only entries (D-002, interpreted in D-016)."
+    mode: outline
+    reuse: link-only
+    stream: C
+    pin: cbbddb6b08cc9900a87cccaa9b22bbe06aa4f50a
+
+  - id: compliance-as-code
+    name: ComplianceAsCode / SCAP Security Guide rules
+    kind: git
+    repo: https://github.com/ComplianceAsCode/content
+    include: ["/linux_os/guide/**/rule.yml", "/linux_os/guide/**/group.yml", "/LICENSE"]
+    url_template: "https://github.com/ComplianceAsCode/content/blob/{pin}/{path}"
+    license: BSD-3-Clause
+    mode: full
+    reuse: adapt
+    stream: Permissive
+    pin: 4df733118392f28f62c447459ed298a4ab8957ed
+
+  - id: nist-sp800-53
+    name: NIST SP 800-53 Rev. 5 controls (OSCAL)
+    kind: oscal
+    url: https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
+    url_template: "https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_1_1/home?element={anchor}"
+    license: US-Gov-PD
+    license_note: "Work of the US Government; not subject to copyright in the United States (17 U.S.C. 105)."
+    mode: full
+    reuse: adapt
+    stream: PD
+
+  - id: nist-sp800-guides
+    name: NIST SP 800-123 (server security) and SP 800-190 (container security)
+    kind: http-pdf
+    files:
+      - {name: sp800-123, title: "Guide to General Server Security", url: "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-123.pdf"}
+      - {name: sp800-190, title: "Application Container Security Guide", url: "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf"}
+    license: US-Gov-PD
+    license_note: "Owner: extract the linked content and give it the same licence as SP 800-53 (D-012)."
+    mode: full
+    reuse: adapt
+    stream: PD
+
+  - id: disa-stig
+    name: DISA STIGs (RHEL 10, RHEL 9, Ubuntu 24.04, Kubernetes)
+    kind: stig
+    base: https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/
+    stigs: ["RHEL_10", "RHEL_9", "CAN_Ubuntu_24-04_LTS", "Kubernetes"]   # D-015 (current releases only)
+    index_page: https://public.cyber.mil/stigs/downloads/
+    license: US-Gov-PD
+    license_note: "DoD work released publicly (STIG Distribution Statement A). The owner asked for the same licence treatment as NIST (D-014)."
+    mode: full
+    reuse: adapt
+    stream: PD
+
+  # ---- link-only catalog stubs: nothing fetched, but findable in search ----
+  - {id: archwiki, name: ArchWiki, kind: none, url: "https://wiki.archlinux.org/", license: GFDL-1.3-or-later, mode: link, reuse: link-only, stream: B}
+  - {id: ansible-docs, name: Ansible community documentation, kind: none, url: "https://docs.ansible.com/", license: GPL-3.0-or-later, mode: link, reuse: link-only, stream: C}
+  - {id: man-pages, name: Linux man-pages project, kind: none, url: "https://man7.org/linux/man-pages/", license: "various (per page)", mode: link, reuse: link-only, stream: Ref}
+  - {id: samba-wiki, name: Samba wiki, kind: none, url: "https://wiki.samba.org/", license: NOASSERTION, mode: link, reuse: link-only, stream: Ref}
+  - {id: freeipa-docs, name: FreeIPA documentation, kind: none, url: "https://www.freeipa.org/page/Documentation", license: NOASSERTION, mode: link, reuse: link-only, stream: Ref}
+  - {id: cilium-docs, name: Cilium documentation, kind: none, url: "https://docs.cilium.io/", license: NOASSERTION, mode: link, reuse: link-only, stream: Ref}
+  - {id: docker-docs, name: Docker documentation, kind: none, url: "https://docs.docker.com/", license: NOASSERTION, mode: link, reuse: link-only, stream: Ref}
+  - {id: ms-learn-adds, name: "Microsoft Learn: AD DS and OpenSSH for Windows", kind: none, url: "https://learn.microsoft.com/windows-server/identity/ad-ds/", license: "CC-BY-4.0 (verify per repo)", mode: link, reuse: link-only, stream: Ref}
+  - {id: lfd103, name: "LFD103 A Beginner's Guide to Linux Kernel Development", kind: none, url: "https://training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/", license: Proprietary, mode: link, reuse: link-only, stream: Ref}
+  - {id: tlcl, name: "The Linux Command Line (W. Shotts)", kind: none, url: "https://linuxcommand.org/tlcl.php", license: CC-BY-NC-ND-3.0, mode: link, reuse: excluded, stream: Ref}
+  - {id: cis-benchmarks, name: CIS Benchmarks, kind: none, url: "https://www.cisecurity.org/cis-benchmarks", license: CC-BY-NC-SA-4.0, mode: link, reuse: excluded, stream: Ref}

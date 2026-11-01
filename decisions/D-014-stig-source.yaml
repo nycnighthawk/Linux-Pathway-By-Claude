@@ -1,0 +1,26 @@
+id: D-014
+title: Where STIG content comes from
+decided_by: owner
+options:
+- name: Derive from ComplianceAsCode
+  r1: 5
+  r2: 4
+  r3: 4
+  r4: 4
+  r5: 5
+  r6: 5
+- name: Download DISA XCCDF packages
+  r1: 4
+  r2: 4
+  r3: 5
+  r4: 4
+  r5: 3
+  r6: 3
+- name: Manifest links only
+chosen: All three, plus extract the STIG content
+owner_answer: 'Derive from ComplianceAsCode (Recommended); Download DISA XCCDF packages; Manifest links only; plus:
+  "Extract content"'
+context: Gap 0.60. The CAC rules keep their stigid references, so a STIG to rule to course map is searchable. DISA
+  STIG zips are probed for the latest version, and the XCCDF is extracted (title, discussion, check, fix, CCI) into
+  raw/disa-stig/. The licence is recorded the same way as NIST (US-Gov-PD).
+date: '2026-11-01'

@@ -1,0 +1,139 @@
+\subchapter{Lab 8: Develop your application in the Poky SDK}{Generate and use
+the Poky SDK}
+
+During this lab, you will:
+\begin{itemize}
+  \item Build the Poky SDK
+  \item Install the SDK
+  \item Compile an application for your machine in the SDK
+    environment
+\end{itemize}
+
+\section{Build the SDK}
+
+Two SDKs are available, one only embedding a toolchain and the
+other one allowing for application development. We will use the latter one
+here.
+
+\if\defstring{\board}{stm32mp1}
+On \code{stm32mp1}, we first need to remove ST host tooling that we
+don't need and that currently fails to build anyway.
+
+Without touching the \code{meta-st-stm32mp} 3rd party layer code, you can
+achieve this by adding the following lines to your \code{local.conf}:
+\begin{verbatim}
+TOOLCHAIN_HOST_TASK:remove = "${ST_TOOLS_FOR_SDK}"
+TOOLCHAIN_HOST_TASK:remove = "${ST_DEPENDENCIES_BUILD_FOR_SDK}"
+\end{verbatim}
+\fi
+
+Build an SDK for the \code{bootlinlabs-image-minimal} image, with
+the \code{populate_sdk} task.
+
+Once the SDK is generated, a script will be available in
+\code{tmp/deploy/sdk}.
+
+\section{Install the SDK}
+
+Open a new terminal to be sure that no extra environment variable is set.
+We mean to show you how the SDK sets up a fully working environment.
+
+Install the SDK in \code{$HOME/__SESSION_NAME__-labs/sdk} by executing the script
+generated at the previous step.
+
+{\footnotesize
+\if\defstring{\board}{bbb}
+\begin{verbatim}
+$BUILDDIR/tmp/deploy/sdk/poky-glibc-x86_64-bootlinlabs-image-minimal-cortexa8t2hf-neon-bootlinlabs-toolchain-6.0.2.sh
+\end{verbatim}
+\fi
+\if\defstring{\board}{stm32mp1}
+\begin{verbatim}
+$BUILDDIR/tmp/deploy/sdk/poky-glibc-x86_64-bootlinlabs-image-minimal-cortexa7t2hf-neon-vfpv4-bootlinlabs-toolchain-6.0.2.sh
+\end{verbatim}
+\fi
+\if\defstring{\board}{beagleplay}
+\begin{verbatim}
+$BUILDDIR/tmp/deploy/sdk/poky-glibc-x86_64-bootlinlabs-image-minimal-aarch64-bootlinlabs-toolchain-6.0.2.sh
+\end{verbatim}
+\fi
+\if\defstring{\board}{imx93-frdm}
+\begin{verbatim}
+$BUILDDIR/tmp/deploy/sdk/poky-glibc-x86_64-bootlinlabs-image-minimal-cortexa55-bootlinlabs-toolchain-6.0.2.sh
+\end{verbatim}
+\fi
+}
+
+\section{Set up the environment}
+
+Go into the directory where you installed the SDK
+(\code{$HOME/__SESSION_NAME__-labs/sdk}). Source the environment script:
+\if\defstring{\board}{bbb}
+\begin{verbatim}
+source environment-setup-cortexa8t2hf-neon-poky-linux-gnueabi
+\end{verbatim}
+\fi
+\if\defstring{\board}{stm32mp1}
+\begin{verbatim}
+source environment-setup-cortexa7t2hf-neon-vfpv4-poky-linux-gnueabi
+\end{verbatim}
+\fi
+\if\defstring{\board}{beagleplay}
+\begin{verbatim}
+source environment-setup-aarch64-poky-linux
+\end{verbatim}
+\fi
+\if\defstring{\board}{imx93-frdm}
+\begin{verbatim}
+source environment-setup-cortexa55-poky-linux
+\end{verbatim}
+\fi
+Have a look at the exported environment variables:
+\begin{verbatim}
+env
+\end{verbatim}
+
+\section{Compile an application in the SDK}
+
+Download the \code{Ctris} sources at
+\url{https://download.mobatek.net/sources/ctris-0.42-1-src.tar.bz2}
+
+Extract the source in the SDK:
+\begin{verbatim}
+tar xf ctris-0.42-1-src.tar.bz2
+tar xf ctris-0.42.tar.bz2
+cd ctris-0.42
+\end{verbatim}
+
+Then modify the Makefile, to make sure that the environment variables exported
+by the SDK script are not overridden.
+
+Try to compile the application. Just like nInvaders, ctris is also an old
+program and won't build with a recent toolchain. You will face these
+errors:
+
+\begin{itemize}
+  \item The ctris makefile uses the native compiler, not the cross compiler
+  provided by the SDK; while you could fix it using \code{make -e} as done
+  for nInvaders, try fixing it by editing the \code{Makefile} this time;
+  hint: you don't need to write any code, just to delete two lines
+
+  \item Building with a recent GCC will give the following error, not
+  reported by older versions:
+\begin{verbatim}
+error: format not a string literal and no format arguments [-Werror=format-security]
+\end{verbatim}
+  Fix this by adding \code{-Wno-error=format-security} to \code{CFLAGS}
+
+  \item As for nInvaders, you will see the \code{multiple definition of...}
+  error; add the \code{-fcommon} flag to \yoctovar{CFLAGS} also for ctris
+
+\end{itemize}
+
+You can check the application was successfully compiled for the right
+target by using the \code{file} command.  The \code{ctris} binary should be
+an ELF \ifdefstring{\arch}{ARM64}{64}{32}-bit LSB
+executable compiled for ARM.
+
+Finally, you can copy the binary to the board, by using the \code{scp}
+command. Then run it and play a bit to ensure it is working fine!

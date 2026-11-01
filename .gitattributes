@@ -1,0 +1,8 @@
+# Figures referenced by curated docs live in Git LFS (decision D-007). Text stays in git.
+raw/**/*.png filter=lfs diff=lfs merge=lfs -text
+raw/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+raw/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+raw/**/*.gif filter=lfs diff=lfs merge=lfs -text
+raw/**/*.webp filter=lfs diff=lfs merge=lfs -text
+raw/**/*.dia filter=lfs diff=lfs merge=lfs -text
+raw/**/*.xpm filter=lfs diff=lfs merge=lfs -text

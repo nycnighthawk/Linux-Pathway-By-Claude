@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Wrapper so `bin/lpc <command>` works from anywhere in the repo.
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PYTHONPATH="$here/tools${PYTHONPATH:+:$PYTHONPATH}" exec python3 -m lpc "$@"

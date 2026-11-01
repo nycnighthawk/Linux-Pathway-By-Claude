@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<preface id="preface">
+  <title>Preface</title>
+
+  <para>It is a pleasure to introduce you to the Bookworm edition of the Debian
+  Administrator’s Handbook. Since you are reading this book, you are probably
+  already aware of the many good reasons to choose Debian.  Debian is known as
+  the Universal Operating System, supporting a wide range of use cases across
+  all fields where Linux is applied—likely including your specific needs, which
+  is why you have opted for Debian.</para>
+
+  <para>Since Debian is free, there are no customer bills to track, making it
+  difficult to precisely measure its usage. However, rough estimates suggest
+  that Debian and its derivatives power nearly 20% of the web servers on the
+  internet. Debian is not only well-established on servers, but is also widely
+  used in various fields of scientific research, even contributing to efforts
+  in combating the COVID-19 pandemic. Notably, Debian has also been chosen to
+  power robots that will fly to the moon.</para>
+
+  <para>While I can not speak for other users, my main motivation for choosing
+  and sticking with Debian is the ability to influence its development,
+  something that can be challenging with company-driven distributions. Debian
+  mostly operates as a “do-ocracy“ principle, where those who do the work have
+  a say in what gets done. I encourage newcomers to get involved and make sure
+  that Debian meets their specific needs … within the boundaries of our shared
+  policies, of course.</para>
+
+  <para>Within the Debian community, there is ample support available for any
+  challenges you might encounter. If this book leaves you with any unanswered
+  questions, I highly recommend consulting the relevant mailing lists, forums,
+  or IRC and Matrix channels, depending on your preference. In my experience,
+  you can receive very competent help incredibly quickly, often resolving your
+  issues almost immediately. In turn, it is highly appreciated if you join
+  these channels and share your own knowledge, possibly gained from this book,
+  to help others as well.</para>
+
+  <para>This book has become a classic resource for learning about Debian
+  administration. Having read one of its early editions, I can attest to the
+  wealth of experience and knowledge that it encapsulates. Authored by
+  long-standing members of the Debian community, many directly involved in its
+  development, this handbook embodies the collaborative spirit that defines
+  Debian. Like the operating system itself, this book is the product of a
+  collective effort, emphasizing freedom and openness.</para>
+
+  <para>August 2024</para>
+
+  <para>Andreas Tille (Debian Project Leader)</para>
+
+</preface>
+<!-- vim: set spell spelllang=en_us ft=xml tw=79 ts=2 sw=2 ai si et: -->

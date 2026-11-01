@@ -1,0 +1,25 @@
+id: D-006
+title: Ubuntu Server docs have no declared licence
+decided_by: owner
+options:
+- name: Metadata + headings only
+  r1: 4
+  r2: 3
+  r3: 5
+  r4: 3
+  r5: 4
+  r6: 5
+- name: Full text snapshot
+  r1: 1
+  r2: 4
+  r3: 5
+  r4: 5
+  r5: 4
+  r6: 4
+- name: Open an issue upstream
+chosen: Metadata + headings only
+owner_answer: 'Metadata + headings only (Recommended), plus: "Make the license to match upstream content."'
+context: 'The gap was 0.35, so it went to the owner. Interpretation of the free-text answer: the catalog licence
+  field mirrors upstream exactly (NOASSERTION today). `lpc sync` re-reads docs/conf.py and records a review flag
+  if upstream declares a licence, so the mode can be upgraded then.'
+date: '2026-11-01'

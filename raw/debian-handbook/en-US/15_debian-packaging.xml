@@ -1,0 +1,1543 @@
+<?xml version="1.0"?>
+<chapter id="debian-packaging">
+  <chapterinfo>
+    <mediaobject condition="pdf">
+      <imageobject>
+        <imagedata fileref="images/chap-debian-packaging.png" scalefit="1"/>
+      </imageobject>
+    </mediaobject>
+    <keywordset>
+      <keyword>Backport</keyword>
+      <keyword>Rebuild</keyword>
+      <keyword>Source package</keyword>
+      <keyword>Archive</keyword>
+      <keyword>Meta-package</keyword>
+      <keyword>Debian Developer</keyword>
+      <keyword>Debian Package</keyword>
+      <keyword>Maintainer</keyword>
+    </keywordset>
+  </chapterinfo>
+  <title>Creating a Debian Package</title>
+  <highlights>
+    <para>It is quite common, for an administrator who has been handling
+    Debian packages in a regular fashion, to eventually feel the need to
+    create their own packages, or to modify an existing package. This
+    chapter aims to answer the most common questions in this field, and
+    provide the required elements to take advantage of the Debian
+    infrastructure in the best way. With any luck, after trying your hand
+    for local packages, you may even feel the need to go further than that
+    and join the Debian project itself!</para>
+  </highlights>
+  <section id="sect.rebuilding-package">
+    <title>Rebuilding a Package from its Sources</title>
+    <indexterm><primary>package</primary><secondary>backport</secondary></indexterm>
+    <indexterm><primary>package</primary><secondary>rebuild</secondary></indexterm>
+
+    <para>Rebuilding a binary package is required under several sets
+    of circumstances. In some cases, the administrator needs a
+    software feature that requires the software to be compiled from
+    sources, with a particular compilation option; in others, the
+    software as packaged in the installed version of Debian is not
+    recent enough. In the latter case, the administrator will usually
+    build a more recent package taken from a newer version of Debian —
+    such as <emphasis role="distribution">Testing</emphasis> or even
+    <emphasis role="distribution">Unstable</emphasis> — so that this
+    new package works in their <emphasis
+    role="distribution">Stable</emphasis> distribution; this operation
+    is called “backporting”. As usual, care should be taken, before
+    undertaking such a task, to check whether it has been done
+    already — a quick look on the Debian Package Tracker for
+    that package will reveal that information.
+    <ulink type="block" url="https://tracker.debian.org/"/>
+    <indexterm><primary>backport</primary></indexterm>
+    </para>
+    <section>
+      <title>Getting the Sources</title>
+      <indexterm><primary>package</primary><secondary>source</secondary></indexterm>
+      <indexterm><primary><command>apt</command></primary><secondary><literal>source</literal></secondary></indexterm>
+      <indexterm><primary><command>apt-get</command></primary><secondary><literal>source</literal></secondary></indexterm>
+      <indexterm><primary><command>apt</command></primary><secondary><literal>update</literal></secondary></indexterm>
+      <indexterm><primary><command>apt-get</command></primary><secondary><literal>update</literal></secondary></indexterm>
+      <indexterm><primary><filename>/etc</filename></primary><secondary><filename>/etc/apt/</filename></secondary><see>APT</see></indexterm>
+      <indexterm><primary><literal>deb-src</literal></primary></indexterm>
+
+      <para>Rebuilding a Debian package starts with getting its source
+      code. The easiest way is to use the <command>apt-get source
+      <replaceable>package-name</replaceable></command> command.
+      This command requires a <literal>deb-src</literal> line in the
+      <filename>/etc/apt/sources.list</filename> file, and up-to-date index
+      files (i.e. <command>apt-get update</command>). These conditions
+      should already be met if you followed the instructions from the
+      chapter dealing with APT configuration (see <xref
+      linkend="sect.apt-sources.list"/>). Note, however, that you will be
+      downloading the source packages from the Debian version mentioned in
+      the <literal>deb-src</literal> line.</para>
+
+      <para>If you need another version, you
+      may need to download it manually from a Debian mirror or from the web
+      site. This involves fetching two or three files (with extensions
+      <filename>*.dsc</filename> — for <emphasis>Debian Source
+      Control</emphasis> —
+      <filename>*.tar.<replaceable>comp</replaceable></filename>, and
+      sometimes <filename>*.diff.gz</filename> or
+      <filename>*.debian.tar.<replaceable>comp</replaceable></filename> —
+      <replaceable>comp</replaceable> taking one value among
+      <literal>gz</literal>, <literal>bz2</literal>
+      or <literal>xz</literal> depending on the
+      compression tool in use), then run the <command>dpkg-source -x
+      <replaceable>file.dsc</replaceable></command> command. If the
+      <filename>*.dsc</filename> file is directly accessible at a given
+      URL, there is an even simpler way to fetch it all, with
+      <command>dget <replaceable>URL</replaceable></command>. This
+      command (which can be found in the <emphasis
+      role="pkg">devscripts</emphasis> package) fetches the
+      <filename>*.dsc</filename> file at the given address, then analyzes
+      its contents, and automatically fetches the file or files referenced
+      within. Once everything has been downloaded, it verifies the integrity
+      of the downloaded source packages using <command>dscverify</command>, and
+      it extracts the source package (unless the <literal>-d</literal> or
+      <literal>--download-only</literal> option is used). The Debian keyring is
+      needed, unless the option <literal>-u</literal> is supplied.</para>
+
+      <indexterm><primary><emphasis role="pkg">devscripts</emphasis></primary></indexterm>
+      <indexterm><primary><command>dscverify</command></primary></indexterm>
+      <indexterm><primary><command>dget</command></primary></indexterm>
+      <indexterm><primary><command>dpkg-source</command></primary></indexterm>
+      <indexterm><primary><filename>.dsc</filename></primary></indexterm>
+      <indexterm><primary><filename>.diff.gz</filename></primary></indexterm>
+      <indexterm><primary><filename>.debian.tar</filename></primary><secondary><filename>.tar.gz</filename></secondary></indexterm>
+      <indexterm><primary><filename>.debian.tar</filename></primary><secondary><filename>.tar.bz2</filename></secondary></indexterm>
+      <indexterm><primary><filename>.debian.tar</filename></primary><secondary><filename>.tar.xz</filename></secondary></indexterm>
+      <indexterm><primary><filename>.tar</filename></primary><secondary><filename>.tar.gz</filename></secondary></indexterm>
+      <indexterm><primary><filename>.tar</filename></primary><secondary><filename>.tar.bz2</filename></secondary></indexterm>
+      <indexterm><primary><filename>.tar</filename></primary><secondary><filename>.tar.xz</filename></secondary></indexterm>
+      <indexterm><primary><command>apt</command></primary><secondary><literal>--download-only</literal></secondary></indexterm>
+      <indexterm><primary><command>apt-get</command></primary><secondary><literal>--download-only</literal></secondary></indexterm>
+      <indexterm><primary><emphasis role="pkg">debian-archive-keyring</emphasis></primary></indexterm>
+    </section>
+    <section>
+      <title>Making Changes</title>
+
+      <para>Let us use the <emphasis role="pkg">samba</emphasis> package as an
+      example.</para>
+
+      <!-- MAYCHANGE: output and samba version -->
+      <screen><computeroutput>$ </computeroutput><userinput>apt source samba
+</userinput><computeroutput>Reading package lists... Done
+NOTICE: 'samba' packaging is maintained in the 'Git' version control system at:
+https://salsa.debian.org/samba-team/samba.git -b bookworm
+Please use:
+git clone https://salsa.debian.org/samba-team/samba.git -b bookworm
+to retrieve the latest (possibly unreleased) updates to the package.
+Need to get 18.5 MB of source archives.
+Get:1 http://deb.debian.org/debian bookworm/main samba 2:4.17.12+dfsg-0+deb12u1 (dsc) [4,466 B]
+Get:2 http://deb.debian.org/debian bookworm/main samba 2:4.17.12+dfsg-0+deb12u1 (tar) [18.2 MB]
+Get:3 http://deb.debian.org/debian bookworm/main samba 2:4.17.12+dfsg-0+deb12u1 (diff) [273 kB]
+Fetched 18.5 MB in 0s (59.1 MB/s)
+dpkg-source: info: extracting samba in samba-4.17.12+dfsg
+dpkg-source: info: unpacking samba_4.17.12+dfsg.orig.tar.xz
+dpkg-source: info: unpacking samba_4.17.12+dfsg-0+deb12u1.debian.tar.xz
+dpkg-source: info: using patch list from debian/patches/series
+dpkg-source: info: applying libsmbclient-ensure-lfs-221618.patch
+dpkg-source: info: applying hurd-compat.patch
+dpkg-source: info: applying [...]
+</computeroutput></screen>
+
+      <para>The source of the package is now available in a directory named
+      after the source package and its version
+      (<filename>samba-4.17.12+dfsg</filename>); this is where we'll work on
+      our local changes.</para>
+
+      <para>The first thing to do is to change the package version number,
+      so that the rebuilt packages can be distinguished from the original
+      packages provided by Debian. Assuming the current version is
+      <literal>2:4.17.12+dfsg-0+deb12u1</literal>, we can create version
+      <literal>2:4.17.12+dfsg-0+deb12u1+falcot1</literal>, which clearly indicates the
+      origin of the package. This makes the package version number higher
+      than the one provided by Debian, so that the package will easily
+      install as an update to the original package. Such a change is best
+      effected with the <command>dch</command> command (<emphasis>Debian
+      CHangelog</emphasis>) from the <emphasis
+      role="pkg">devscripts</emphasis> package.
+
+      <indexterm><primary><command>dch</command></primary></indexterm>
+      <indexterm><primary><emphasis role="pkg">devscripts</emphasis></primary></indexterm>
+      <indexterm><primary>package</primary><secondary>version</secondary></indexterm>
+
+      <screen><computeroutput>$ </computeroutput><userinput>cd samba-4.17.12+dfsg
+</userinput><computeroutput>$ </computeroutput><userinput>dch --local +falcot
+</userinput></screen>
+
+      The last command invokes a text editor
+      (<command>sensible-editor</command> — this should be your favorite
+      editor if it is mentioned in the <varname>VISUAL</varname> or
+      <varname>EDITOR</varname> environment variables, and the default
+      editor otherwise) to allow documenting the differences brought by
+      this rebuild. This editor shows us that <command>dch</command>
+      really did change the <filename>debian/changelog</filename>
+      file.</para>
+
+      <indexterm><primary><command>sensible-editor</command></primary></indexterm>
+      <indexterm><primary><varname>VISUAL</varname></primary></indexterm>
+      <indexterm><primary>environment variable</primary><secondary><varname>VISUAL</varname></secondary></indexterm>
+      <indexterm><primary><varname>EDITOR</varname></primary></indexterm>
+      <indexterm><primary>environment variable</primary><secondary><varname>EDITOR</varname></secondary></indexterm>
+      <indexterm><primary>package</primary><secondary><filename>changelog</filename></secondary></indexterm>
+
+      <para>When a change in build options is required, the changes
+      need to be made in <filename>debian/rules</filename>, which
+      drives the steps in the package build process. In the simplest
+      cases, the lines concerning the initial configuration
+      (<literal>./configure …</literal>) or the actual build
+      (<literal>$(MAKE) …</literal> or <literal>make …</literal> or
+      <literal>cmake …</literal> or …) are
+      easy to spot. If these commands are not explicitly called, they
+      are probably a side effect of another explicit command, in which
+      case please refer to their documentation to learn more about how
+      to change the default behavior. With packages using
+      <command>dh</command>, you might need to add an override
+      for the <command>dh_auto_configure</command> or
+      <command>dh_auto_build</command> commands (see their respective
+      manual pages and <citerefentry><refentrytitle>debhelper</refentrytitle>
+      <manvolnum>7</manvolnum></citerefentry> for explanations on how to achieve this).</para>
+
+      <indexterm><primary><command>dh</command></primary><secondary><command>dh_auto_build</command></secondary></indexterm>
+      <indexterm><primary><command>dh</command></primary><secondary><command>dh_auto_configure</command></secondary></indexterm>
+      <indexterm><primary><command>dh</command></primary><secondary>override target</secondary></indexterm>
+      <indexterm><primary><command>dh</command></primary><seealso><command>debhelper</command></seealso></indexterm>
+      <indexterm><primary>package</primary><secondary><filename>rules</filename></secondary><seealso><filename>rules</filename></seealso></indexterm>
+      <indexterm><primary><emphasis role="pkg">debhelper</emphasis></primary></indexterm>
+
+      <para>Depending on the local changes to the packages, an update may
+      also be required in the <filename>debian/control</filename> file,
+      which contains a description of the generated packages. In
+      particular, this file contains <literal>Build-Depends</literal> lines
+      controlling the list of dependencies that must be fulfilled at
+      package build time. These often refer to versions of packages
+      contained in the distribution the source package comes from, but
+      which may not be available in the distribution used for the rebuild.
+      There is no automated way to determine if a dependency is real or
+      only specified to guarantee that the build should only be attempted
+      with the latest version of a library — this is the only available
+      way to force an <emphasis>autobuilder</emphasis> to use a given
+      package version during build, which is why Debian maintainers
+      frequently use strictly versioned build-dependencies.</para>
+
+      <indexterm><primary>package</primary><secondary><filename>control</filename></secondary><see><filename>control</filename></see></indexterm>
+      <indexterm><primary><filename>control</filename></primary><secondary><literal>Build-Depends</literal>, header field</secondary></indexterm>
+
+      <para>If you know for sure that these build-dependencies are too
+      strict, you should feel free to relax them locally. Reading the files
+      which document the standard way of building the software — these
+      files are often called <filename>INSTALL</filename> — will help you
+      figure out the appropriate dependencies. Ideally, all dependencies
+      should be satisfiable from the distribution used for the rebuild; if
+      they are not, a recursive process starts, whereby the packages
+      mentioned in the <literal>Build-Depends</literal> field must be
+      backported before the target package can be. Some packages may not
+      need backporting, and can be installed as-is during the build process
+      (a notable example is <emphasis role="pkg">debhelper</emphasis>).
+      Note that the backporting process can quickly become complex if you
+      are not careful. Therefore, backports should be kept to a strict
+      minimum when possible.</para>
+
+      <indexterm><primary><filename>INSTALL</filename></primary></indexterm>
+
+      <sidebar>
+        <title><emphasis>TIP</emphasis> Installing <literal>Build-Depends</literal></title>
+        <indexterm><primary><filename>control</filename></primary><secondary><literal>Build-Depends</literal>, header field</secondary></indexterm>
+
+        <para><command>apt-get</command> allows installing all packages
+        mentioned in the <literal>Build-Depends</literal> fields of a source
+        package available in a distribution mentioned in a
+        <literal>deb-src</literal> line of the
+        <filename>/etc/apt/sources.list</filename> file. This is a simple
+        matter of running the <command>apt-get build-dep
+        <replaceable>package</replaceable></command> command.</para>
+
+        <indexterm><primary><literal>deb-src</literal></primary></indexterm>
+        <indexterm><primary>APT</primary><secondary><filename>/etc/apt/sources.list</filename></secondary></indexterm>
+        <indexterm><primary><command>apt-get</command></primary></indexterm>
+      </sidebar>
+    </section>
+    <section>
+      <title>Starting the Rebuild</title>
+
+      <para>When all the needed changes have been applied to the sources,
+      we can start generating the actual binary package
+      (<filename>.deb</filename> file). The whole process is managed by the
+      <command>dpkg-buildpackage</command> command.</para>
+
+      <indexterm><primary><filename>.deb</filename></primary></indexterm>
+      <indexterm><primary><command>dpkg-buildpackage</command></primary></indexterm>
+
+      <example>
+        <title>Rebuilding a package</title>
+
+        <screen><computeroutput>$ </computeroutput><userinput>dpkg-buildpackage -us -uc
+</userinput><computeroutput>[...]
+</computeroutput></screen>
+      </example>
+
+      <para>The previous command can fail if the
+      <literal>Build-Depends</literal> field has not been updated, or if
+      the related packages are not installed. In such a case, it is
+      possible to overrule this check by passing the <literal>-d</literal>
+      option to <command>dpkg-buildpackage</command>. However, explicitly
+      ignoring these dependencies runs the risk of the build process
+      failing at a later stage. Worse, the package may seem to build
+      correctly but fail to run properly: some programs automatically
+      disable some of their features when a required library is not
+      available at build time. The switch can still be very useful if you only
+      want to create a source package, which is supposed to be passed to clean
+      build environments as described in <xref linkend="sidebar.schroot"/>.</para>
+
+      <para>The other options used in the above example make sure that neither
+      the source package's <filename>.dsc</filename> (<literal>-us</literal>)
+      nor the produced <filename>.changes</filename> file
+      (<literal>-uc</literal>) get signed with the package builder's
+      cryptographic key after a successful build.</para>
+
+      <sidebar id="sidebar.fakeroot">
+        <title><emphasis>TOOL</emphasis> <command>fakeroot</command></title>
+        <indexterm><primary><command>fakeroot</command></primary></indexterm>
+        <indexterm><primary>root</primary></indexterm>
+        <indexterm><primary>account</primary><secondary>root account</secondary></indexterm>
+
+        <para>In essence, the package creation process is a simple matter
+        of gathering in an archive a set of existing (or built) files; most
+        of the files will end up being owned by <emphasis>root</emphasis>
+        in the archive. However, building the whole package under this user
+        would imply increased risks; fortunately, this can be avoided with
+        the <command>fakeroot</command> command. This tool can be used to
+        run a program and give it the impression that it runs as
+        <emphasis>root</emphasis> and creates files with arbitrary
+        ownership and permissions. When the program creates the archive
+        that will become the Debian package, it is tricked into creating an
+        archive containing files marked as belonging to arbitrary owners,
+        including <emphasis>root</emphasis>. This setup is so convenient
+        that <command>dpkg-buildpackage</command> uses
+        <command>fakeroot</command> by default when building
+        packages.</para>
+
+        <para>Note that the program is only tricked into “believing”
+        that it operates as a privileged account, and the process actually
+        runs as the user running <command>fakeroot
+        <replaceable>program</replaceable></command> (and the files are
+        actually created with that user's permissions). At no time does it
+        actually get root privileges that it could abuse.</para>
+      </sidebar>
+
+      <para>More often than not, Debian developers use a higher-level program
+      such as <command>debuild</command>; this runs
+      <command>dpkg-buildpackage</command> as usual, but it also adds an
+      invocation of a program that runs many checks to validate the generated
+      package against the Debian policy. This script also cleans up the
+      environment so that local environment variables do not “pollute” the
+      package build. The <command>debuild</command> command is one of the tools
+      in the <emphasis role="pkg">devscripts</emphasis> suite, which share some
+      consistency and configuration to make the maintainers' task
+      easier.</para>
+
+      <indexterm><primary><command>debuild</command></primary></indexterm>
+      <indexterm><primary><emphasis role="pkg">devscripts</emphasis></primary></indexterm>
+
+      <sidebar id="sidebar.schroot">
+        <title><emphasis>QUICK LOOK</emphasis> Building packages in <emphasis>chrooted</emphasis> and <emphasis>virtual</emphasis> environments</title>
+        <indexterm><primary><command>pbuilder</command></primary></indexterm>
+        <indexterm><primary><command>cowbuilder</command></primary></indexterm>
+        <indexterm><primary><command>schroot</command></primary></indexterm>
+        <indexterm><primary><command>sbuild</command></primary></indexterm>
+
+        <para>Building a package on an existing system, like a workstation or
+        server, can pose several problems. Maybe the system has packages
+        installed, that conflict with the build requirements. Or maybe it has
+        packages (libraries, headers, etc.) installed, that the project to
+        build is not supposed to use - e.g. from <emphasis
+        role="distribution">Testing</emphasis>, <emphasis
+        role="distribution">Unstable</emphasis>, or even from third parties.
+        Also, it might have packages installed, which are actually required for
+        the build, but are not listed in <filename>debian/control</filename>.
+        It is therefore a good practice to build packages in “clean“
+        environments.</para>
+
+        <para>The <command>sbuild</command>, <command>pbuilder</command>, or
+        <command>cowbuilder</command> programs (in the similarly named
+        packages) allow building a Debian package in a
+        <emphasis>chrooted</emphasis> environment. Each of them first creates a
+        temporary directory containing the minimal system required for building
+        the package (including the packages mentioned in the
+        <emphasis>Build-Depends</emphasis> field). This directory is then used
+        as the root directory (<filename>/</filename>), using the
+        <command>chroot</command> command, during the build process.</para>
+
+        <indexterm><primary><command>chroot</command></primary></indexterm>
+
+        <para>These tools allow the build process to happen in an environment
+        that is not altered by users' manipulations. This also allows for quick
+        detection of the missing build-dependencies (since the build will fail
+        unless the appropriate dependencies are documented). They also allow
+        building a package for a Debian version that is not the one used by the
+        system as a whole: the machine can be using <emphasis
+        role="distribution">Stable</emphasis> for its normal workload, and the
+        chrooted environments can be running on the same machine using
+        <emphasis role="distribution">Unstable</emphasis> for package builds.
+        Using these tools, it is also possible to build for a different
+        distribution, like <emphasis
+        role="distribution">Ubuntu</emphasis>.</para>
+
+        <para><command>schroot</command>, <command>sbuild-shell</command>, or
+        <command>pbuilder</command> allow running a command or a login
+        shell in a <emphasis>chrooted</emphasis> environment.</para>
+
+        <para>Sometimes it is not enough to build a package in a chrooted
+        environment. This can be due to building for a different architecture
+        where cross-compilation does not work, or due to the tools not being
+        able to create a chrooted environment for the desired target system.
+        Then one can create virtual machines to build the package there. These
+        setups are usually more complex then the tools mentioned above, and
+        rarely needed, so we will only mention this possibility without going
+        into much detail. Check out <xref linkend="sect.virtualization"/> for
+        an introduction into this topic.</para>
+
+        <indexterm><primary>virtualization</primary></indexterm>
+      </sidebar>
+    </section>
+  </section>
+
+  <section id="sect.building-first-package">
+    <title>Building your First Package</title>
+    <section>
+      <title>Meta-Packages or Fake Packages</title>
+      <indexterm><primary>package</primary><secondary>meta-package</secondary></indexterm>
+      <indexterm><primary>meta-package</primary></indexterm>
+      <indexterm><primary>package</primary><secondary>fake package</secondary></indexterm>
+      <indexterm><primary>fake package</primary></indexterm>
+
+      <para>Fake packages and meta-packages are similar, in that they are
+      empty shells that only exist for the effects their meta-data have on
+      the package handling stack.</para>
+
+      <para>The purpose of a fake package is to trick
+      <command>dpkg</command> and <command>apt</command> into believing
+      that some package is installed even though it is only an empty shell.
+      This allows satisfying dependencies on a package when the
+      corresponding software was installed outside the scope of the
+      packaging system. Such a method works, but it should still be avoided
+      whenever possible, since there is no guarantee that the manually
+      installed software behaves exactly like the corresponding package
+      would and other packages depending on it would not work
+      properly.</para>
+
+      <para>On the other hand, a meta-package exists mostly as a collection
+      of dependencies, so that installing the meta-package will actually
+      bring in a set of other packages in a single step.</para>
+
+      <para>Both these kinds of packages can be created by the
+      <command>equivs-control</command> and <command>equivs-build</command>
+      commands in the <emphasis role="pkg">equivs</emphasis> package. The
+      <command>equivs-control <replaceable>file</replaceable></command>
+      command creates a Debian package header file that should be edited to
+      contain the name of the expected package, its version number, the
+      name of the maintainer, its dependencies, and its description. Other
+      fields without a default value are optional and can be deleted. The
+      <literal>Copyright</literal>, <literal>Changelog</literal>,
+      <literal>Readme</literal> and <literal>Extra-Files</literal> fields
+      are not standard fields in Debian packages; they only make sense
+      within the scope of <command>equivs-build</command>, and they will
+      not be kept in the headers of the generated package.</para>
+
+      <indexterm><primary><emphasis role="pkg">equivs</emphasis></primary></indexterm>
+      <indexterm><primary><emphasis role="pkg">equivs</emphasis></primary><secondary><command>equivs-control</command></secondary></indexterm>
+      <indexterm><primary><emphasis role="pkg">equivs</emphasis></primary><secondary><command>equivs-build</command></secondary></indexterm>
+
+      <example>
+        <title>Header file of the <emphasis>libxml-libxml-perl</emphasis> fake package</title>
+
+        <!-- MAYCHANGE: default policy version -->
+        <programlisting><![CDATA[
+Section: perl
+Priority: optional
+Standards-Version: 4.6.2
+
+Package: libxml-libxml-perl
+Version: 2.0207-1
+Maintainer: Raphael Hertzog <hertzog@debian.org>
+Depends: libxml2 (>= 2.9.10)
+Architecture: all
+Description: Fake package - module manually installed in site_perl
+ This is a fake package to let the packaging system
+ believe that this Debian package is installed.
+ .
+ In fact, the package is not installed since a newer version
+ of the module has been manually compiled & installed in the
+ site_perl directory.
+]]></programlisting>
+      </example>
+
+      <para>The next step is to generate the Debian package with the
+      <command>equivs-build <replaceable>file</replaceable></command>
+      command. Voilà: the package is created in the current directory and
+      it can be handled like any other Debian package would.</para>
+
+      <screen><computeroutput>$ </computeroutput><userinput>equivs-build <replaceable>file</replaceable>
+</userinput><computeroutput><![CDATA[dpkg-buildpackage: info: source package libxml-libxml-perl
+dpkg-buildpackage: info: source version 2.0207-1
+dpkg-buildpackage: info: source distribution unstable
+dpkg-buildpackage: info: source changed by Raphael Hertzog <hertzog@debian.org>
+dpkg-buildpackage: info: host architecture amd64
+ dpkg-source --before-build .
+ debian/rules clean
+dh clean
+   dh_clean
+ debian/rules binary
+dh binary
+   dh_update_autotools_config
+   dh_autoreconf
+   create-stamp debian/debhelper-build-stamp
+   dh_prep
+   dh_auto_install --destdir=debian/libxml-libxml-perl/
+   dh_install
+   dh_installdocs
+   dh_installchangelogs
+   dh_perl
+   dh_link
+   dh_strip_nondeterminism
+   dh_compress
+   dh_fixperms
+   dh_missing
+   dh_installdeb
+   dh_gencontrol
+   dh_md5sums
+   dh_builddeb
+dpkg-deb: building package 'libxml-libxml-perl' in '../libxml-libxml-perl_2.0207-1_all.deb'.
+ dpkg-genbuildinfo --build=binary -O../libxml-libxml-perl_2.0207-1_amd64.buildinfo
+ dpkg-genchanges --build=binary -O../libxml-libxml-perl_2.0207-1_amd64.changes
+dpkg-genchanges: info: binary-only upload (no source code included)
+ dpkg-source --after-build .
+dpkg-buildpackage: info: binary-only upload (no source included)
+
+The package has been created.
+Attention, the package has been created in the current directory,
+not in ".." as indicated by the message above!
+]]></computeroutput></screen>
+    </section>
+    <section>
+      <title>Simple File Archive</title>
+      <indexterm><primary><command>dh_make</command></primary></indexterm>
+      <indexterm><primary><emphasis role="pkg">dh-make</emphasis></primary></indexterm>
+
+      <para>The Falcot Corp administrators need to create a Debian package
+      in order to ease deployment of a set of documents on a large number
+      of machines. The administrator in charge of this task first reads the
+      “New Maintainer's Guide”, then starts working on their first
+      package. <ulink type="block"
+        url="https://www.debian.org/doc/manuals/maint-guide/"/></para>
+
+      <para>The first step is creating a
+      <filename>falcot-data-1.0</filename> directory to contain the target
+      source package. The package will, logically, be named
+      <literal>falcot-data</literal> and bear the <literal>1.0</literal>
+      version number. The administrator then places the document files in a
+      <filename>data</filename> subdirectory. Then they invoke the
+      <command>dh_make</command> command (from the <emphasis
+      role="pkg">dh-make</emphasis> package) to add files required by the
+      package generation process, which will all be stored in a
+      <filename>debian</filename> subdirectory:</para>
+
+      <screen>
+<computeroutput>$ </computeroutput><userinput>cd falcot-data-1.0</userinput>
+<computeroutput>$ </computeroutput><userinput>dh_make --native</userinput>
+<computeroutput>
+Type of package: (single, indep, library, python)
+[s/i/l/p]? </computeroutput><userinput>i</userinput>
+<computeroutput>
+Maintainer Name     : Raphael Hertzog
+Email-Address       : hertzog@debian.org
+Date                : Sun, 26 May 2024 21:48:41 +0100
+Package Name        : falcot-data
+Version             : 1.0
+License             : gpl3
+Package Type        : indep
+Are the details correct? [Y/n/q]
+Currently there is not top level Makefile. This may require additional tuning
+Done. Please edit the files in the debian/ subdirectory now.
+
+$</computeroutput>
+</screen>
+
+      <para>The selected type of package (<emphasis>indep</emphasis>) indicates
+      that this source package will generate a single binary package that can
+      be shared across all architectures (<literal>Architecture: all</literal>
+      in <filename>debian/control</filename>). <emphasis>single</emphasis> acts
+      as a counterpart, and leads to a single binary package that is dependent
+      on the target architecture (<literal>Architecture: any</literal>). In
+      this case, the former choice is more relevant since the package only
+      contains documents and no binary programs, so it can be used similarly on
+      computers of all architectures.</para>
+
+      <indexterm><primary>package</primary><secondary>types</secondary></indexterm>
+      <indexterm><primary>package</primary><secondary>architecture</secondary></indexterm>
+      <indexterm><primary><filename>control</filename></primary><secondary><literal>Architecture</literal>, header field</secondary></indexterm>
+
+      <para>The <emphasis>library</emphasis> type corresponds to a source
+      package leading to several binary packages. It is useful for shared
+      libraries, since they need to follow strict packaging rules.</para>
+
+      <sidebar>
+        <title><emphasis>TIP</emphasis> Maintainer's name and email address</title>
+        <indexterm><primary><varname>DEBFULLNAME</varname></primary><see>environment variable</see></indexterm>
+        <indexterm><primary>environment variable</primary><secondary><varname>DEBFULLNAME</varname></secondary></indexterm>
+        <indexterm><primary><varname>DEBEMAIL</varname></primary><see>environment variable</see></indexterm>
+        <indexterm><primary>environment variable</primary><secondary><varname>DEBEMAIL</varname></secondary></indexterm>
+        <indexterm><primary><varname>EMAIL</varname></primary><see>environment variable</see></indexterm>
+        <indexterm><primary>environment variable</primary><secondary><varname>EMAIL</varname></secondary></indexterm>
+        <indexterm><primary><filename>.bashrc</filename></primary></indexterm>
+
+        <para>Most of the programs involved in package maintenance will
+        look for your name and email address in the
+        <varname>DEBFULLNAME</varname> and <varname>DEBEMAIL</varname> or
+        <varname>EMAIL</varname> environment variables. Defining them once
+        and for all will avoid you having to type them multiple times. If
+        your usual shell is <command>bash</command>, it is a simple matter
+        of adding the following two lines in your
+        <filename>~/.bashrc</filename> file (you will obviously
+        replace the values with more relevant ones!):</para>
+
+        <programlisting>
+export EMAIL="hertzog@debian.org"
+export DEBFULLNAME="Raphael Hertzog"
+</programlisting>
+      </sidebar>
+
+      <indexterm><primary><filename>debian</filename>, directory</primary></indexterm>
+      <indexterm><primary><filename>debian</filename>, directory</primary><secondary><filename>rules</filename></secondary><seealso><filename>rules</filename></seealso></indexterm>
+      <indexterm><primary><filename>rules</filename></primary></indexterm>
+      <indexterm><primary><filename>debian</filename>, directory</primary><secondary><filename>control</filename></secondary><seealso><filename>control</filename></seealso></indexterm>
+      <indexterm><primary><filename>control</filename></primary></indexterm>
+      <indexterm><primary><filename>debian</filename>, directory</primary><secondary><filename>changelog</filename></secondary><seealso><filename>changelog</filename></seealso></indexterm>
+      <indexterm><primary><filename>changelog</filename></primary></indexterm>
+      <indexterm><primary><filename>debian</filename>, directory</primary><secondary><filename>copyright</filename></secondary><seealso><filename>copyright</filename></seealso></indexterm>
+      <indexterm><primary><filename>copyright</filename></primary></indexterm>
+
+      <para>The <command>dh_make</command> command created a
+      <filename>debian</filename> subdirectory with many files. Some are
+      required, in particular <filename>rules</filename>,
+      <filename>control</filename>, <filename>changelog</filename> and
+      <filename>copyright</filename>. Files with the <filename>.ex</filename>
+      extension are example files that can be used by modifying them (and
+      removing the extension) when appropriate. When they are not needed,
+      removing them is recommended. The <filename>compat</filename> file is not
+      used nor created anymore. Instead of defining the debhelper compatibility
+      level as a number in this file, it is now defined as a build-dependency
+      on the <emphasis role="pkg">debhelper-compat</emphasis> virtual package
+      in the <literal>Build-Depends</literal> field in
+      <filename>debian/control</filename>.</para>
+
+      <para>The <filename>copyright</filename> file must contain information
+      about the authors of the documents included in the package, and the
+      related copyright and license. In our case, these are internal documents
+      and their use is restricted to within the Falcot Corp company. The
+      default format used for this file is defined in the
+      <literal>Format</literal> field. <ulink type="block"
+      url="https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/"/></para>
+
+      <para>The default <filename>changelog</filename> file is generally
+      appropriate; replacing the “Initial release” with a more verbose
+      explanation and changing the distribution from
+      <literal>UNRELEASED</literal> or <literal>unstable</literal> to the
+      target release name is enough.</para>
+
+      <para>The <filename>control</filename> file must also be updated: the
+      <literal>Section</literal> field can be changed to
+      <emphasis>misc</emphasis> and the <literal>Homepage</literal>,
+      <literal>Vcs-Git</literal> and <literal>Vcs-Browser</literal> fields were
+      removed. The <literal>Depends</literal> fields was completed with
+      <literal>firefox-esr | www-browser</literal> so as to ensure the
+      availability of a web browser able to display the documents in the
+      package. If the package does not require to run any commands as root (see
+      <xref linkend="sidebar.fakeroot"/>), the
+      <literal>Rules-Requires-Root</literal> field can be left as is.</para>
+
+      <indexterm><primary><filename>control</filename></primary><secondary><literal>Depends</literal>, header field</secondary></indexterm>
+      <indexterm><primary><filename>control</filename></primary><secondary><literal>Homepage</literal>, header field</secondary></indexterm>
+      <indexterm><primary><filename>control</filename></primary><secondary><literal>Rules-Requires-Root</literal>, header field</secondary></indexterm>
+      <indexterm><primary><filename>control</filename></primary><secondary><literal>Section</literal>, header field</secondary></indexterm>
+      <indexterm><primary><filename>control</filename></primary><secondary><literal>Vcs-Browser</literal>, header field</secondary></indexterm>
+      <indexterm><primary><filename>control</filename></primary><secondary><literal>Vcs-Git</literal>, header field</secondary></indexterm>
+
+      <example>
+        <title>The <filename>control</filename> file</title>
+
+        <!-- MAYCHANGE: dh-compat version, standards version, etc. -->
+        <programlisting><![CDATA[
+Source: falcot-data
+Section: misc
+Priority: optional
+Maintainer: Raphael Hertzog <hertzog@debian.org>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+
+Package: falcot-data
+Architecture: all
+Depends: firefox-esr | www-browser, ${misc:Depends}
+Description: Internal Falcot Corp Documentation
+ This package provides several documents describing the internal
+ structure at Falcot Corp.  This includes:
+  - organization diagram
+  - contacts for each department.
+ .
+ These documents MUST NOT leave the company.
+ Their use is INTERNAL ONLY.
+]]></programlisting>
+      </example>
+
+      <example>
+        <title>The <filename>changelog</filename> file</title>
+
+        <!-- MAYCHANGE: distribution name -->
+        <programlisting><![CDATA[
+falcot-data (1.0) bookworm; urgency=low
+
+  * Initial Release.
+  * Let's start with few documents:
+    - internal company structure;
+    - contacts for each department.
+
+ -- Raphael Hertzog <hertzog@debian.org>  Sun, 26 May 2024 21:48:41 +0100
+]]></programlisting>
+      </example>
+
+      <example>
+        <title>The <filename>copyright</filename> file</title>
+
+        <!-- MAYCHANGE: update copyright -->
+        <programlisting>
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: falcot-data
+
+Files: *
+Copyright: 2004-2024 Falcot Corp
+License:
+ All rights reserved.
+</programlisting>
+      </example>
+
+      <sidebar>
+        <title><emphasis>BACK TO BASICS</emphasis> <filename>Makefile</filename> file</title>
+        <indexterm><primary><filename>Makefile</filename></primary></indexterm>
+        <indexterm><primary><command>make</command></primary></indexterm>
+
+        <para>A <filename>Makefile</filename> file is a script used by the
+        <command>make</command> program; it describes rules for how to
+        build a set of files from each other in a tree of dependencies (for
+        instance, a program can be built from a set of source files). The
+        <filename>Makefile</filename> file describes these rules in the
+        following format:</para>
+
+        <programlisting>
+target: source1 source2 ...
+        command1
+        command2
+</programlisting>
+
+        <para>The basic interpretation of such a rule is as follows: if one of
+        the <literal>source*</literal> files is more recent than the
+        <literal>target</literal> file, then the target needs to be generated,
+        using <command>command1</command> and
+        <command>command2</command>.</para>
+
+        <para>Note that the command lines must start with a tab character;
+        also note that when a command line starts with a dash character
+        (<literal>-</literal>), failure of the command does not interrupt
+        the whole process.</para>
+      </sidebar>
+
+      <indexterm><primary><filename>rules</filename></primary></indexterm>
+
+      <para>The <filename>rules</filename> file usually contains a set of
+      rules used to configure, build and install the software in a
+      dedicated subdirectory (named after the generated binary package).
+      The contents of this subdirectory is then archived within the Debian
+      package as if it were the root of the filesystem. In our case, files
+      will be installed in the
+      <filename>debian/falcot-data/usr/share/falcot-data/</filename>
+      subdirectory, so that installing the generated package will deploy
+      the files under <filename>/usr/share/falcot-data/</filename>. The
+      <filename>rules</filename> file is used as a
+      <filename>Makefile</filename>, with a few standard targets (including
+      <literal>clean</literal> and <literal>binary</literal>, used
+      respectively to clean the source directory and generate the binary
+      package).</para>
+
+      <para>Although this file is the heart of the process, it increasingly
+      contains only the bare minimum for running a standard set of commands
+      provided by the <command>debhelper</command> tool. Such is the case
+      for files generated by <command>dh_make</command>. To install our
+      files, we simply configure the behavior of the
+      <command>dh_install</command> command by creating the following
+      <filename>debian/falcot-data.install</filename> file:</para>
+
+      <indexterm><primary><command>dh</command></primary><secondary><command>dh_install</command></secondary></indexterm>
+
+      <programlisting>
+data/* usr/share/falcot-data/
+</programlisting>
+
+      <para>At this point, the package can be created. We will, however, add a
+      lick of paint. Since the administrators want the documents to be easily
+      accessed from the menus of graphical desktop environments, we add a
+      <filename>falcot-data.desktop</filename> file and get it installed in
+      <filename>/usr/share/applications</filename> by adding a second line to
+      <filename>debian/falcot-data.install</filename>.</para>
+
+      <indexterm><primary><filename>.desktop</filename></primary></indexterm>
+      <indexterm><primary><filename>.install</filename></primary></indexterm>
+
+      <example>
+        <title>The <filename>falcot-data.desktop</filename> file</title>
+
+        <programlisting>
+[Desktop Entry]
+Name=Internal Falcot Corp Documentation
+Comment=Starts a browser to read the documentation
+Exec=x-www-browser /usr/share/falcot-data/index.html
+Terminal=false
+Type=Application
+Categories=Documentation;
+</programlisting>
+      </example>
+
+      <para>The updated <filename>debian/falcot-data.install</filename> looks
+      like this:</para>
+      <programlisting>
+data/* usr/share/falcot-data/
+falcot-data.desktop usr/share/applications/
+</programlisting>
+
+      <para>Our source package is now ready. All that is left to do is to
+      generate the binary package, with the same method we used previously
+      for rebuilding packages: we run the <command>dpkg-buildpackage -us
+      -uc</command> command from within the
+      <filename>falcot-data-1.0</filename> directory.</para>
+
+      <indexterm><primary><command>dpkg-buildpackage</command></primary></indexterm>
+    </section>
+  </section>
+
+  <section id="sect.setup-apt-package-repository">
+    <title>Creating a Package Repository for APT</title>
+    <indexterm><primary>package</primary><secondary>archive</secondary></indexterm>
+    <indexterm><primary>package</primary><secondary>Debian</secondary><tertiary>archive of</tertiary></indexterm>
+
+    <para>Falcot Corp gradually started maintaining a number of Debian
+    packages, either locally modified from existing packages or created from
+    scratch to distribute internal data and programs.</para>
+
+    <para>To make deployment easier, they want to integrate these packages
+    in a package archive that can be directly used by APT. For obvious
+    maintenance reasons, they wish to separate internal packages from
+    locally-rebuilt packages. The goal is for the matching entries in a
+    <filename>/etc/apt/sources.list.d/falcot.list</filename> file to be as
+    follows:</para>
+
+    <indexterm><primary>APT</primary><secondary><filename>/etc/apt/sources.list.d/</filename></secondary></indexterm>
+
+    <programlisting>
+deb http://packages.falcot.com/ updates/
+deb http://packages.falcot.com/ internal/
+</programlisting>
+
+    <indexterm><primary><command>mini-dinstall</command></primary></indexterm>
+
+    <para>The administrators therefore configure a virtual host on their
+    internal HTTP server, with <filename>/srv/vhosts/packages/</filename>
+    as the root of the associated web space. The management of the archive
+    itself is delegated to the <command>mini-dinstall</command> command
+    (in the similarly-named package). This tool keeps an eye on an
+    <filename>incoming/</filename> directory (in our case,
+    <filename>/srv/vhosts/packages/mini-dinstall/incoming/</filename>) and
+    waits for new packages there; when a package is uploaded, it is
+    installed into a Debian archive at
+    <filename>/srv/vhosts/packages/</filename>. The
+    <command>mini-dinstall</command> command reads the
+    <filename>*.changes</filename> file created when the Debian package is
+    generated. These files contain a list of all other files associated with
+    the version of the package (<filename>*.deb</filename>,
+    <filename>*.dsc</filename>,
+    <filename>*.diff.gz</filename>/<filename>*.debian.tar.gz</filename>,
+    <filename>*.orig.tar.gz</filename>, or their equivalents with other
+    compression tools), and these allow <command>mini-dinstall</command> to
+    know which files to install. <filename>*.changes</filename> files also
+    contain the name of the target distribution (often
+    <literal>unstable</literal>) mentioned in the latest
+    <filename>debian/changelog</filename> entry, and
+    <command>mini-dinstall</command> uses this information to decide where
+    the package should be installed. This is why administrators must always
+    change this field before building a package, and set it to
+    <literal>internal</literal> or <literal>updates</literal>, depending on
+    the target location. <command>mini-dinstall</command> then generates
+    the files required by APT, such as
+    <filename>Packages.gz</filename>.</para>
+
+    <sidebar>
+      <title><emphasis>ALTERNATIVE</emphasis> <command>apt-ftparchive</command>, <command>aptly</command>, and <command>reprepro</command></title>
+      <indexterm><primary><command>apt-ftparchive</command></primary></indexterm>
+
+      <para>If <command>mini-dinstall</command> seems too complex for your
+      Debian archive needs, you can also use the
+      <command>apt-ftparchive</command> command. This tool scans the
+      contents of a directory and displays (on its standard output) a
+      matching <filename>Packages</filename> file. In the Falcot Corp case,
+      administrators could upload the packages directly into
+      <filename>/srv/vhosts/packages/updates/</filename> or
+      <filename>/srv/vhosts/packages/internal/</filename>, then run the
+      following commands to create the <filename>Packages.gz</filename>
+      files:</para>
+
+      <screen>
+<computeroutput>$ </computeroutput><userinput>cd /srv/vhosts/packages</userinput>
+<computeroutput>$ </computeroutput><userinput>apt-ftparchive packages updates &gt;updates/Packages</userinput>
+<computeroutput>$ </computeroutput><userinput>gzip updates/Packages</userinput>
+<computeroutput>$ </computeroutput><userinput>apt-ftparchive packages internal &gt;internal/Packages</userinput>
+<computeroutput>$ </computeroutput><userinput>gzip internal/Packages</userinput>
+</screen>
+
+      <para>The <command>apt-ftparchive sources</command> command allows
+      creating <filename>Sources.gz</filename> files in a similar
+      fashion.</para>
+
+      <indexterm><primary><command>reprepro</command></primary></indexterm>
+      <indexterm><primary><command>aptly</command></primary></indexterm>
+
+      <para><command>reprepro</command> and <command>aptly</command> are more
+      advanced tools for the same purpose. They can produce, manage and
+      synchronize a number of package repositories, mirror other repositories,
+      even cherry-pick packages from official repositories and provide them
+      locally, create signatures of the generated package indices and thus
+      provide signed repositories. <command>reprepro</command> stores packages
+      and checksums in a Berkeley DB database file, so no database server is
+      needed. <command>aptly</command> provides the same functionality, but it
+      can be easier in handling. Unfortunately, both projects, although
+      probably the most feature-rich solutions, are not actively developed at
+      the moment.</para>
+
+      <para><command>reprepro</command> comes with a lot of documentation and
+      examples in <filename>/usr/share/doc/reprepro/</filename>, while
+      <command>aptly</command> has a vast online documentation.
+      <ulink type="block" url="https://www.aptly.info/"/>
+      </para>
+
+    </sidebar>
+
+    <para>Configuring <command>mini-dinstall</command> requires setting up
+    a <filename>~/.mini-dinstall.conf</filename> file; in the Falcot Corp
+    case, the contents are as follows:</para>
+
+    <programlisting>
+[DEFAULT]
+archive_style = flat
+archivedir = /srv/vhosts/packages
+
+verify_sigs = 0
+mail_to = admin@falcot.com
+
+generate_release = 1
+release_origin = Falcot Corp
+release_codename = stable
+
+[updates]
+release_label = Recompiled Debian Packages
+
+[internal]
+release_label = Internal Packages
+</programlisting>
+
+    <para>One decision worth noting is the generation of
+    <filename>Release</filename> files for each archive. This can help
+    manage package installation priorities using the
+    <filename>/etc/apt/preferences</filename> configuration file (see
+    <xref linkend="sect.apt.priorities" /> for details).</para>
+
+    <sidebar>
+      <title><emphasis>SECURITY</emphasis> <command>mini-dinstall</command> and permissions</title>
+      <indexterm><primary><command>mini-dinstall</command></primary></indexterm>
+
+      <para>Since <command>mini-dinstall</command> has been designed to run
+      as a regular user, there is no need to run it as root. The easiest way
+      is to configure everything within the user account belonging to the
+      administrator in charge of creating the Debian packages. Since only
+      this administrator has the required permissions to put files in the
+      <filename>incoming/</filename> directory, we can deduce that the
+      administrator authenticated the origin of each package prior to
+      deployment and <command>mini-dinstall</command> does not need to do
+      it again. This explains the <literal>verify_sigs = 0</literal>
+      parameter (which means that signatures need not be verified).
+      However, if the contents of packages are sensitive, we can reverse
+      the setting and elect to authenticate with a keyring containing the
+      public keys of persons allowed to create packages (configured with
+      the <literal>extra_keyrings</literal> parameter);
+      <command>mini-dinstall</command> will then check the origin of each
+      incoming package by analyzing the signature integrated to the
+      <filename>*.changes</filename> file.</para>
+    </sidebar>
+
+    <para>Invoking <command>mini-dinstall</command> actually starts a
+    daemon in the background. As long as this daemon runs, it will check
+    for new packages in the <filename>incoming/</filename> directory every
+    half-hour; when a new package arrives, it will be moved to the archive
+    and the appropriate <filename>Packages.gz</filename> and
+    <filename>Sources.gz</filename> files will be regenerated. If running a
+    daemon is a problem, <command>mini-dinstall</command> can also be
+    manually invoked in batch mode (with the <literal>-b</literal> option)
+    every time a package is uploaded into the
+    <filename>incoming/</filename> directory. Other possibilities provided
+    by <command>mini-dinstall</command> are documented in its
+    <citerefentry><refentrytitle>mini-dinstall</refentrytitle>
+    <manvolnum>1</manvolnum></citerefentry> manual page.</para>
+
+    <sidebar>
+      <title><emphasis>EXTRA</emphasis> Generating a signed archive</title>
+
+      <para>The APT suite checks a chain of cryptographic signatures on the
+      packages it handles before installing them, in order to ensure
+      their authenticity (see <xref
+      linkend="sect.package-authentication"/>). Private APT archives can
+      then be a problem, since the machines using them will keep displaying
+      warnings about unsigned packages. A diligent administrator will
+      therefore integrate private archives with the secure APT
+      mechanism.</para>
+
+      <para>To help with this process, <command>mini-dinstall</command>
+      includes a <literal>release_signscript</literal> configuration option
+      that allows specifying a script to use for generating the signature.
+      A good starting point is the <filename>sign-release.sh</filename>
+      script provided by the <emphasis role="pkg">mini-dinstall</emphasis>
+      package in
+      <filename>/usr/share/doc/mini-dinstall/examples/</filename>; local
+      changes may be relevant.</para>
+
+      <para>As mentioned earlier, tools like <command>aptly</command> and
+      <command>reprepro</command> come with built-in support for creating a
+      signed archive and are often the better choice for larger or more complex
+      archive setups.</para>
+    </sidebar>
+  </section>
+
+  <section id="sect.becoming-package-maintainer">
+    <title>Becoming a Package Maintainer</title>
+    <indexterm><primary>package</primary><secondary>maintainer</secondary></indexterm>
+    <indexterm><primary>package</primary><secondary>new maintainer</secondary></indexterm>
+    <indexterm><primary>maintainer</primary><secondary>package maintainer</secondary></indexterm>
+
+    <section>
+      <title>Learning to Make Packages</title>
+      <indexterm><primary>package</primary><secondary>creation</secondary></indexterm>
+
+      <para>Creating a quality Debian package is not always a simple task. And
+      becoming a package maintainer takes some learning, both with theory and
+      practice in technical and legal matters. It is not a simple matter of
+      building and installing software; rather, the bulk of the complexity
+      comes from understanding the problems and conflicts, and more generally
+      the interactions, with the myriad of other packages available.</para>
+
+      <section>
+        <title>Rules</title>
+        <indexterm><primary>package</primary><secondary>policy</secondary></indexterm>
+        <indexterm><primary>Debian</primary><secondary>Policy</secondary></indexterm>
+        <indexterm><primary><filename>control</filename></primary><secondary><literal>Standards-Version</literal>, header field</secondary></indexterm>
+
+        <para>A Debian package must comply with the precise rules compiled
+        in the Debian policy, and each package maintainer must know them.
+        There is no requirement to know them by heart, but rather to know
+        they exist and to refer to them whenever a choice presents a
+        non-trivial alternative. Every Debian maintainer has made mistakes
+        by not knowing about a rule, but this is not a huge problem as long
+        as the error gets fixed when a user reports it as a bug report (which
+        tends to happen fairly soon thanks to advanced users). The
+        <literal>Standards-Version</literal> field in
+        <filename>debian/control</filename> specifies the version of the
+        Debian policy with which a package complies. Maintainers should
+        comply to the latest version of the Debian policy.
+
+        <ulink type="block" url="https://www.debian.org/doc/debian-policy/"/>
+        </para>
+      </section>
+      <section>
+        <title>Procedures</title>
+        <indexterm><primary>Debian</primary><secondary>Developer's Reference</secondary></indexterm>
+        <indexterm><primary>package</primary><secondary>developer's reference</secondary></indexterm>
+
+        <para>Debian is not a simple collection of individual packages.
+        Everyone's packaging work is part of a collective project; being a
+        Debian developer involves knowing how the Debian project operates
+        as a whole. Every developer will, sooner or later, interact with
+        others. The Debian Developer's Reference (in the <emphasis
+        role="pkg">developers-reference</emphasis> package) summarizes what
+        every developer must know in order to interact as smoothly as
+        possible with the various teams within the project, and to take the
+        best possible advantages of the available resources. This document
+        also enumerates a number of duties a developer is expected to
+        fulfill.
+
+        <ulink type="block" url="https://www.debian.org/doc/manuals/developers-reference/"/>
+        </para>
+      </section>
+      <section>
+        <title>Tools</title>
+
+        <para>Many tools help package maintainers in their work. This
+        section describes them quickly, but does not give the full details,
+        since they all have comprehensive documentation of their
+        own.</para>
+
+        <indexterm><primary>package</primary><secondary>tools</secondary></indexterm>
+
+        <section>
+          <title>devscripts</title>
+          <indexterm><primary><emphasis role="pkg">devscripts</emphasis></primary></indexterm>
+          <indexterm><primary><command>debuild</command></primary></indexterm>
+          <indexterm><primary><command>dch</command></primary></indexterm>
+          <indexterm><primary><command>uscan</command></primary></indexterm>
+          <indexterm><primary><command>debi</command></primary></indexterm>
+          <indexterm><primary><command>debc</command></primary></indexterm>
+          <indexterm><primary><command>bts</command></primary></indexterm>
+
+          <para>The <emphasis role="pkg">devscripts</emphasis> package
+          contains many programs helping with a wide array of a Debian
+          developer's job:</para>
+          <itemizedlist>
+            <listitem>
+              <para><command>debuild</command> allows generating a package
+              (with <command>dpkg-buildpackage</command>) and running
+              <command>lintian</command> to check its compliance with the
+              Debian policy afterwards.</para>
+            </listitem>
+            <listitem>
+              <para><command>debclean</command> cleans a source package
+              after a binary package has been generated.</para>
+            </listitem>
+            <listitem>
+              <para><command>dch</command> allows quick and easy editing of
+              a <filename>debian/changelog</filename> file in a source
+              package.</para>
+            </listitem>
+            <listitem>
+              <para><command>uscan</command> checks whether a new version
+              of a software has been released by the upstream author; this
+              requires a <filename>debian/watch</filename> file with a
+              description of the location of such releases.</para>
+              <indexterm><primary><filename>debian</filename>, directory</primary><secondary><filename>watch</filename></secondary></indexterm>
+            </listitem>
+            <listitem>
+              <para><command>debi</command> allows installing (with
+              <command>dpkg -i</command>) the Debian package that was just
+              generated without the need to type its full name and path.</para>
+            </listitem>
+            <listitem>
+              <para>In a similar fashion, <command>debc</command> allows
+              scanning the contents of the recently-generated package (with
+              <command>dpkg -c</command>), without needing to type its full
+              name and path.</para>
+            </listitem>
+            <listitem>
+              <para><command>bts</command> controls the bug tracking system
+              from the command line; this program automatically generates
+              the appropriate emails.
+              <ulink type="block" url="https://www.debian.org/Bugs/server-refcard"/>
+              </para>
+            </listitem>
+            <listitem>
+              <para><command>debrelease</command> uploads a
+              recently-generated package to a remote server, without
+              needing to type the full name and path of the related
+              <filename>.changes</filename> file.</para>
+              <indexterm><primary><filename>.changes</filename></primary></indexterm>
+            </listitem>
+            <listitem>
+              <para><command>debsign</command> signs the
+              <filename>*.dsc</filename> and <filename>*.changes</filename>
+              files.</para>
+              <indexterm><primary><filename>.changes</filename></primary></indexterm>
+              <indexterm><primary><filename>.dsc</filename></primary></indexterm>
+            </listitem>
+            <listitem>
+              <para><command>uupdate</command> automates the creation of a
+              new revision of a package when a new upstream version has
+              been released.</para>
+            </listitem>
+          </itemizedlist>
+
+          <para>All of the mentioned commands are documented in their
+          respective manual pages. They can further be configured per user in
+          one file: <filename>~/.devscripts</filename>.</para>
+        </section>
+        <section>
+          <title><emphasis role="pkg">debhelper</emphasis> and <emphasis role="pkg">dh-make</emphasis></title>
+          <indexterm><primary><emphasis>debhelper</emphasis></primary></indexterm>
+          <indexterm><primary><emphasis>dh-make</emphasis></primary></indexterm>
+          <indexterm><primary><command>dh</command></primary></indexterm>
+          <indexterm><primary><filename>debian</filename></primary><secondary><filename>rules</filename></secondary></indexterm>
+
+          <para>Debhelper is a set of scripts easing the creation of
+          policy-compliant packages; these scripts are invoked from
+          <filename>debian/rules</filename>. Debhelper has been widely adopted
+          within Debian, as evidenced by the fact that it is used by the
+          majority of official Debian packages. All the commands it contains
+          have a <command>dh_</command> prefix. Each of them is documented in a
+          manual page. The different compatibility levels and common options
+          are described in
+          <citerefentry><refentrytitle>debhelper</refentrytitle>
+          <manvolnum>7</manvolnum></citerefentry>.</para>
+
+          <para>The <command>dh_make</command> script (in the
+          <emphasis>dh-make</emphasis> package) creates files required for
+          generating a Debian package in a directory initially containing
+          the sources for a piece of software. As can be guessed from the
+          name of the program, the generated files use debhelper by
+          default.</para>
+        </section>
+        <section>
+          <title><command>lintian</command></title>
+          <indexterm><primary><command>lintian</command></primary></indexterm>
+          <indexterm><primary>package</primary><secondary>checker</secondary></indexterm>
+
+          <para>This tool is one of the most important: it is the Debian
+          package checker. It is based on a large array of tests created
+          from the Debian policy, and detects quickly and automatically
+          many errors that can then be fixed before packages are
+          released.</para>
+
+          <para>This tool is only a helper, and it sometimes gets it wrong
+          (for instance, since the Debian policy changes over time,
+          <command>lintian</command> is sometimes outdated). It is also not
+          exhaustive: not getting any Lintian error should not be
+          interpreted as a proof that the package is perfect; at most, it
+          avoids the most common errors.</para>
+        </section>
+        <section>
+          <title><command>piuparts</command></title>
+          <indexterm><primary><command>piuparts</command></primary></indexterm>
+
+          <para>This is another important tool: it automates the
+          installation, upgrade, removal and purge of a package (in an
+          isolated environment), and checks that none of these
+          operations leads to an error.  It can help in detecting
+          missing dependencies, and it also detects when files are
+          incorrectly left over after the package got purged.</para>
+        </section>
+        <section>
+          <title><emphasis role="pkg">autopkgtest</emphasis></title>
+          <indexterm><primary><emphasis>autopkgtest</emphasis></primary></indexterm>
+          <indexterm><primary>package</primary><secondary>tests</secondary></indexterm>
+
+          <para><command>autopkgtest</command> runs tests on binary packages,
+          using the tests supplied in the source package in
+          <filename>debian/tests/</filename>. Several commands allow the easy
+          creation of chrooted or virtual test environments.</para>
+        </section>
+        <section>
+          <title><emphasis role="pkg">reprotest</emphasis></title>
+          <indexterm><primary><emphasis>reprotest</emphasis></primary></indexterm>
+
+      	  <para><command>reprotest</command> builds the same source code
+          twice in different environments, and then checks the binaries
+          produced by each build for differences. If any are found, then
+          <command>diffoscope</command> (if unavailable,
+          <command>diff</command>) is used to display them in detail for later
+          analysis.</para>
+
+          <indexterm><primary><command>diffoscope</command></primary></indexterm>
+        </section>
+        <section>
+          <title><command>dupload</command> and <command>dput</command></title>
+          <indexterm><primary><command>dupload</command></primary></indexterm>
+          <indexterm><primary><command>dput</command></primary></indexterm>
+
+          <para>The <command>dupload</command> and <command>dput</command>
+          commands allow uploading a Debian package to a (possibly remote)
+          server. This allows developers to publish their package on the
+          main Debian server (<literal>ftp-master.debian.org</literal>) so
+          that it can be integrated to the archive and distributed by
+          mirrors. These commands take a <filename>.changes</filename>
+          file as a parameter, and deduce the other relevant files from its
+          contents.</para>
+
+          <indexterm><primary><filename>.changes</filename></primary></indexterm>
+        </section>
+        <section>
+          <title><emphasis role="pkg">git-buildpackage</emphasis> and <emphasis role="pkg">dgit</emphasis></title>
+          <indexterm><primary><emphasis role="pkg">git-buildpackage</emphasis></primary></indexterm>
+          <indexterm><primary><emphasis role="pkg">dgit</emphasis></primary></indexterm>
+
+          <para>The project has been using various version control systems over
+          the years to store packaging efforts or package source code, or allow
+          collaborative package maintenance. In an effort to unify the systems
+          and efforts, it was ultimately decided in 2017 to move (almost) all
+          package sources into <emphasis>Git</emphasis> (<xref
+          linkend="sidebar.git"/>) onto a Gitlab instance called
+          <literal>salsa.debian.org</literal>.
+
+          <ulink type="block" url="https://salsa.debian.org/"/>
+          </para>
+
+          <indexterm><primary><literal>salsa.debian.org</literal></primary></indexterm>
+
+          <para>To make packaging using Git easier for Debian developers, tools
+          have been developed. These allow not only to store the packaging
+          files in Git, but also to use the Git repositories (and their
+          history) of software projects, put patches applied to package sources
+          into Git history, maintain software versions per distribution,
+          etc.</para>
+
+          <para>One of the most famous packages is <emphasis
+          role="pkg">git-buildpackage</emphasis>. An alternative is <emphasis
+          role="pkg">dgit</emphasis>. Of course it is still possible to use
+          neither of those.</para>
+
+          <para>Below is an example for a <filename>~/.gbp.conf</filename>
+          configuration file:</para>
+
+          <!-- MAYCHANGE: distribution name -->
+          <programlisting><![CDATA[[DEFAULT]
+builder = sbuild -d bookworm --build-dep-resolver=aptitude -s --source-only-changes --build-failed-commands "%SBUILD_SHELL"
+pristine-tar = true
+
+[buildpackage]
+sign-tags = true
+keyid = XXXX
+postbuild  = autopkgtest --user debci --apt-upgrade -s "$GBP_CHANGES_FILE" -- lxc --sudo autopkgtest-bookworm-amd64
+export-dir = /tmp/build-area/
+notify = off
+
+[import-orig]
+filter-pristine-tar = true
+sign-tags = true
+
+[pq]
+drop = true
+]]></programlisting>
+
+          <para>Building the package is then as easy as running <command>gbp
+          buildpackage</command> in the Git tree. It will start a package build
+          in a Debian <emphasis role="distribution">Bookworm</emphasis> chroot
+          using <command>sbuild</command>. When the build succeeds, the created
+          files are checked running the
+          <command>autopkgtest</command>-testsuite (if defined). All the
+          various options are explained in
+          <citerefentry><refentrytitle>gbp.conf</refentrytitle>
+          <manvolnum>5</manvolnum></citerefentry> and
+          <filename>/etc/git-buildpackage/gbp.conf</filename>.</para>
+
+          <indexterm><primary><command>gbp</command></primary></indexterm>
+          <indexterm><primary><filename>/etc</filename></primary><secondary><filename>/etc/git-buildpackage/gbp.conf</filename></secondary></indexterm>
+
+          <para>All the tools mentioned so far have been included in the
+          continuous integration (CI) process in the
+          <literal>salsa.debian.org</literal> instance as well:
+          <ulink type="block" url="https://salsa.debian.org/salsa-ci-team/pipeline"/>
+          </para>
+
+        </section>
+      </section>
+    </section>
+    <section>
+      <title>Acceptance Process</title>
+      <indexterm><primary>Debian</primary><secondary>Developer</secondary></indexterm>
+      <indexterm><primary><literal>nm.debian.org</literal></primary></indexterm>
+
+      <para>Becoming a “Debian developer” is not a simple administrative
+      matter. The process comprises several steps, and is as much an
+      initiation as it is a selection process. In any case, it is
+      formalized and well-documented, so anyone can track their progression
+      on the website dedicated to the new member process.
+      <ulink type="block" url="https://nm.debian.org/"/></para>
+
+      <sidebar>
+        <title><emphasis>EXTRA</emphasis> Lightweight process for “Debian Maintainers”</title>
+        <indexterm><primary>Debian</primary><secondary>Maintainer</secondary></indexterm>
+
+        <para>“Debian Maintainer” is another status that gives less
+          privileges than “Debian developer” but whose associated process
+          is quicker. With this status, the contributors can maintain
+          their own packages only. A Debian developer only needs to perform
+          a check on an initial upload, and issue a statement to the
+          effect that they trust the prospective maintainer with the
+          ability to maintain the package on their own.
+        </para>
+      </sidebar>
+
+      <section>
+        <title>Prerequisites</title>
+
+        <para>All candidates are expected to have at least a working
+        knowledge of the English language. This is required at all levels:
+        for the initial communications with the examiner, of course, but
+        also later, since English is the preferred language for most of the
+        documentation; also, package users will be communicating in English
+        when reporting bugs, and they will expect replies in
+        English.</para>
+
+        <para>The other prerequisite deals with motivation. Becoming a
+        Debian developer is a process that only makes sense if the
+        candidate knows that their interest in Debian will last for many
+        months. The acceptance process itself may last for several months,
+        and Debian needs developers for the long haul; each package needs
+        permanent maintenance, and not just an initial upload.</para>
+      </section>
+
+      <section>
+        <title>Registration</title>
+        <indexterm><primary>package</primary><secondary>sponsor</secondary></indexterm>
+
+        <para>The first (real) step consists in finding a sponsor or
+        advocate; this means an official developer willing to state that
+        they believe that accepting <emphasis>X</emphasis> would be a good
+        thing for Debian. This usually implies that the candidate has
+        already been active within the community, and that their work has
+        been appreciated. If the candidate is shy and their work is not
+        publicly touted, they can try to convince a Debian developer to
+        advocate them by showing their work in a private way.</para>
+
+        <indexterm><primary>key pair</primary></indexterm>
+
+        <para>At the same time, the candidate must generate a
+        public/private RSA key pair with GnuPG, which should be signed
+        by at least two official Debian developers. The signature
+        authenticates the name on the key. Effectively, during a key
+        signing party, each participant must show an official
+        identification (usually an ID card or passport) together with
+        their key identifiers. This step confirms the link between the
+        human and the keys. This signature thus requires
+        meeting in real life.  If you have not yet met any Debian
+        developers in a public free software conference, you can
+        explicitly seek developers living nearby using the list on the
+        following webpage as a starting point.  <ulink type="block"
+        url="https://wiki.debian.org/Keysigning"/></para>
+
+        <para>Once the registration on <literal>nm.debian.org</literal> has
+        been validated by the advocate, an <emphasis>Application
+        Manager</emphasis> is assigned to the candidate. The application
+        manager will then drive the process through multiple pre-defined
+        steps and checks.</para>
+
+        <indexterm><primary><literal>nm.debian.org</literal></primary></indexterm>
+
+        <para>The first verification is an identity check. If you already
+        have a key signed by two Debian developers, this step is easy;
+        otherwise, the application manager will try and guide you in your
+        search for Debian developers close by to organize a meet-up and a
+        key signing.</para>
+      </section>
+
+      <section>
+        <title>Accepting the Principles</title>
+
+        <para>These administrative formalities are followed by
+        philosophical considerations. The point is to make sure that the
+        candidate understands and accepts the social contract and the
+        principles behind Free Software. Joining Debian is only possible if
+        one shares the values that unite the current developers, as
+        expressed in the founding texts (and summarized in <xref
+        linkend="the-debian-project"/>).</para>
+
+        <para>In addition, each candidate wishing to join the Debian ranks is
+        expected to know the workings of the project, and how to interact
+        appropriately to solve the problems they will doubtless encounter
+        as time passes. All of this information is generally documented in
+        manuals targeting the new maintainers, and in the Debian
+        developer's reference. An attentive reading of this document should
+        be enough to answer the examiner's questions. If the answers are
+        not satisfactory, the candidate will be informed. They will then have
+        to read (again) the relevant documentation before trying again. In
+        the cases where the existing documentation does not contain the
+        appropriate answer for the question, the candidate can usually
+        reach an answer with some practical experience within Debian, or
+        potentially by discussing with other Debian developers. This
+        mechanism ensures that candidates get involved somewhat in Debian
+        before becoming a full part of it. It is a deliberate policy, by
+        which candidates who eventually join the project are integrated as
+        another piece of an infinitely extensible jigsaw puzzle.</para>
+
+        <para>This step is usually known as the <emphasis>Philosophy &amp;
+        Procedures</emphasis> (P&amp;P for short) in the lingo of the
+        developers involved in the new member process.</para>
+
+        <indexterm><primary><emphasis>Philosophy &amp; Procedures</emphasis></primary></indexterm>
+      </section>
+      <section>
+        <title>Checking Skills</title>
+
+        <para>Each application to become an official Debian developer must
+        be justified. Becoming a project member requires showing that this
+        status is legitimate, and that it facilitates the candidate's job
+        in helping Debian. The most common justification is that being
+        granted Debian developer status eases maintenance of a Debian
+        package, but it is not the only one. Some developers join the
+        project to contribute to porting to a specific architecture, others
+        want to improve documentation, and so on.</para>
+
+        <para>This step represents the opportunity for the candidate to
+        state what they intend to do within the Debian project and to show
+        what they have already done towards that end. Debian is a pragmatic
+        project and saying something is not enough, if the actions do not
+        match what is announced. Generally, when the intended role within
+        the project is related to package maintenance, a first version of
+        the prospective package will have to be validated technically and
+        uploaded to the Debian servers by a sponsor among the existing
+        Debian developers.</para>
+
+        <sidebar>
+          <title><emphasis>COMMUNITY</emphasis> Sponsoring</title>
+          <indexterm><primary>sponsoring</primary></indexterm>
+          <indexterm><primary>package</primary><secondary>sponsor</secondary></indexterm>
+          <indexterm><primary>Debian</primary><secondary>New Member</secondary></indexterm>
+
+          <para>Debian developers can “sponsor” packages prepared by
+          someone else, meaning that they publish them in the official
+          Debian repositories after having performed a careful review. This
+          mechanism enables external persons, who have not yet gone
+          through the new member process, to contribute occasionally to
+          the project. At the same time, it ensures that all packages
+          included in Debian have always been checked by an official
+          member.</para>
+        </sidebar>
+
+        <para>Finally, the examiner checks the candidate's technical
+        (packaging) skills with a detailed questionnaire. Bad answers are
+        not permitted, but the answer time is not limited. All the
+        documentation is available and several attempts are allowed if the
+        first answers are not satisfactory. This step does not intend to
+        discriminate, but to ensure at least a modicum of knowledge common
+        to new contributors.</para>
+
+        <para>This step is known as the <emphasis>Tasks &amp;
+        Skills</emphasis> step (T&amp;S for short) in the examiners'
+        jargon.</para>
+
+        <indexterm><primary><emphasis>Tasks &amp; Skills</emphasis></primary></indexterm>
+      </section>
+      <section>
+        <title>Final Approval</title>
+        <indexterm><primary>DAM</primary></indexterm>
+        <indexterm><primary>Debian</primary><secondary>Account Managers</secondary><seealso>DAM</seealso></indexterm>
+
+        <para>At the very last step, the whole process is reviewed by a DAM
+        (<emphasis>Debian Account Manager</emphasis>). The DAM will review
+        all the information about the candidate that the examiner
+        collected, and makes the decision on whether or not to create an
+        account on the Debian servers. In cases where extra information is
+        required, the account creation may be delayed. Refusals are rather
+        rare if the examiner does a good job of following the process, but
+        they sometimes happen. They are never permanent, and the candidate
+        is free to try again at a later time.</para>
+
+        <para>The DAM's decision is authoritative and (almost) without
+        appeal, which explains why the people in that seat have often been
+        criticized in the past.</para>
+      </section>
+    </section>
+  </section>
+</chapter>
+<!-- vim: set spell spelllang=en_us ft=xml tw=79 ts=2 sw=2 ai si et: -->

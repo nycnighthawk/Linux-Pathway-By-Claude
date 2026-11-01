@@ -1,0 +1,77 @@
+\subchapter
+{Application tracing}
+{Objectives:
+  \begin{itemize}
+    \item Analyze dynamic library calls from an application using
+            {\em ltrace}.
+    \item Using {\em strace} to analyze program syscalls.
+  \end{itemize}
+}
+
+\section{ltrace}
+
+On your computer, go into the \code{ltrace} lab folder:
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs/nfsroot/root/ltrace/
+$ make
+\end{bashinput}
+
+Next, run the \code{authent} application on the target.
+
+\begin{bashinput}
+$ cd /root/ltrace
+$ export LD_LIBRARY_PATH=$PWD
+$ ./authent
+Error: failed to authenticate the user !
+\end{bashinput}
+
+Note: Since our application uses a local dynamic shared library which is not in
+the default paths expected by ld (see \manpage{ld.so}{8}), we need to provide
+that path using \code{LD_LIBRARY_PATH}.
+
+As you can see, it seems our application is failing to correctly authenticate
+the system. Using {\em ltrace}, trace the application on the target in order to
+understand what is going on.
+
+\begin{bashinput}
+$ ltrace ./authent
+\end{bashinput}
+
+From that trace, try to find which function fails.
+
+In order to overload this check, we can use a \code{LD_PRELOAD} a library.
+We'll override the \code{al_authent_user()} based on the
+\code{authent_library.h} definitions. Create a file \code{overload.c} which
+override the \code{al_authent_user()}, prints the user, password and returns 0. 
+Compile it on your development host using the following command line:
+
+\begin{bashinput}
+$ ${CROSS_COMPILE}gcc -fPIC -shared overload.c -o overload.so
+\end{bashinput}
+
+Finally, run your application and preload the new library using the following
+command on the target:
+\begin{bashinput}
+$ LD_PRELOAD=./overload.so ./authent
+\end{bashinput}
+
+\section{strace}
+
+\code{strace} is useful to debug an application when you don't have the source.
+For that example, use the \code{strace_me} binary that is present in on the
+target in \code{/root/strace} and run it with strace:
+
+\begin{bashinput}
+$ cd /root/strace
+$ strace ./strace_me
+\end{bashinput}
+
+Based on the output and running strace with other options, try to answer the
+following questions:
+\begin{itemize}
+  \item What are the files that are opened by this binary?
+  \item How many times is \code{read()} called?
+  \item Which \code{openat} system calls failed?
+  \item How many system calls are issued by the program?
+\end{itemize}

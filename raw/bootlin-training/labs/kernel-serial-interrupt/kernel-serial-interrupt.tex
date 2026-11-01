@@ -1,0 +1,149 @@
+\subchapter{Sleeping and handling interrupts}{Objective: learn how to
+  register and implement a simple interrupt handler, and how to put a
+  process to sleep and wake it up at a later point}
+
+During this lab, you will:
+
+\begin{itemize}
+\item Register an interrupt handler for the serial controller of the
+  board.
+\item Implement the read() operation of the serial port driver to put
+  the process to sleep when no data are available.
+\item Implement the interrupt handler to wake-up the sleeping process
+  waiting for received characters.
+\item Handle communication between the interrupt handler and the
+  read() operation.
+\end{itemize}
+
+\section{Setup}
+
+This lab is a continuation of the {\em Output-only misc driver
+lab}. Use the same kernel, environment and paths!
+
+\section{Register the handler}
+
+Declare an interrupt handler function stub. Then, in the module probe
+function, we need to register this handler, binding it to the right
+IRQ number.
+
+Nowadays, Linux is using a virtual IRQ number that it derives from the
+hardware interrupt number. This virtual number is created through the
+\code{irqdomain} mechanism. The hardware IRQ number to use is found in
+the device tree.
+
+First, retrieve the unique IRQ number to request:
+
+\begin{verbatim}
+int irq;
+irq = platform_get_irq(pdev, 0);
+\end{verbatim}
+
+Then, pass the interrupt number to \kfunc{devm_request_irq} along
+with the interrupt handler to register your interrupt in the kernel.
+
+Then, in the interrupt handler, just print a message and return
+\ksym{IRQ_HANDLED} (to tell the kernel that we have handled the
+interrupt).
+
+To enable reception and its associated interrupt, the UART control register must be configured accordingly. This configuration is done within the \code{probe} function by setting the following bits:
+\if\defstring{\board}{imx93-frdm}
+  \begin{verbatim}
+  reg_write(serial, LPUART_CTRL_TE | LPUART_CTRL_RE | LPUART_CTRL_RIE, LPUART_CTRL);
+  \end{verbatim}
+\else
+  \begin{verbatim}
+	reg_write(serial, UART_IER_RDI, UART_IER);
+  \end{verbatim}
+\fi
+
+Compile and load your module. Send a character on the serial link (just
+type something in the corresponding \code{picocom} terminal, and
+look at the kernel logs: they are full of our message indicating that
+interrupts are occurring, even if we only sent one character! It shows
+you that interrupt handlers should do a little bit more when an
+interrupt occurs.
+
+\section{Enable and filter the interrupts}
+
+In fact, the hardware will replay the interrupt until you acknowledge
+it. Linux will only dispatch the interrupt event to the rightful
+handler, hoping that this handler will acknowledge it. What we
+experienced here is called an \code{interrupt flood}.
+
+Now, in our interrupt handler, we want to acknowledge the
+interrupt. On the UART controllers that we drive, it's done simply by
+reading the contents of the \ifdefstring{\board}{imx93-frdm}{\ksym{LPUART_DATA}}{\ksym{UART_RX}} register, which holds the
+next character received. You can display the value you read to see
+that the driver will receive whatever character you sent.
+
+Compile and load your driver. Have a look at the kernel messages. You
+should no longer be flooded with interrupt messages. In the kernel
+log, you should see the message of our interrupt handler. If not,
+check your code once again and ask your instructor for clarification!
+
+Load and unload your driver multiple times, to make sure that
+there are no registration / deregistration issues.
+
+\section{Sleeping, waking up and communication}
+
+Now, we would like to implement the \code{read()} operation of our
+driver so that a user space application reading from our device can
+receive the characters from the serial port.
+
+First, we need a communication mechanism between the interrupt handler
+and the \code{read()} operation. We will implement a very simple
+circular buffer. So let's add a device-specific buffer to our
+\code{serial_dev} structure.
+
+Let's also add two integers that will contain the next location
+in the circular buffer that we can write to, and the next location
+we can read from:
+
+\begin{verbatim}
+#define SERIAL_BUFSIZE 16
+
+struct serial_dev {
+        ...
+        char rx_buf[SERIAL_BUFSIZE];
+        unsigned int buf_rd;
+        unsigned int buf_wr;
+};
+\end{verbatim}
+
+In the interrupt handler, store the received character at location
+\code{buf_wr} in the circular buffer, and increment the value
+of \code{buf_wr}. If this value reaches \code{SERIAL_BUFSIZE},
+reset it to zero.
+
+In the \code{read()} operation, if the \code{buf_rd} value is
+different from the \code{buf_wr} value, it means that one
+character can be read from the circular buffer. So, read this
+character, store it in the user space buffer, update the
+\code{buf_rd} variable, and return to user space (we will only
+read one character at a time, even if the user space application
+requested more than one).
+
+Now, what happens in our \code{read()} function if no character is
+available for reading (i.e., if \code{buf_wr} is equal to
+\code{buf_rd})? We should put the process to sleep!
+
+To do so, add a \ksym{wait_queue_head_t} wait queue to our
+\code{serial_dev} structure, named for example \code{wait}. In the
+\code{read()} function, keep things simple by directly using
+\kfunc{wait_event_interruptible} right from the start, to wait until
+\code{buf_wr} is different from \code{buf_rd}\footnote{A single test in the
+\kfunc{wait_event_interruptible} function is sufficient. If the
+condition is met, you don't go to sleep and read one character right away.
+Otherwise, when you wake up, you can proceed to the reading part.}.
+
+Last but not least, in the interrupt handler,
+after storing the received characters in the circular buffer, use
+\kfunc{wake_up} to wake up all processes waiting on the wait queue.
+
+Compile and load your driver. Run \code{cat /dev/serial-<...>}
+on the target, and then in \code{picocom} on the development
+workstation side, type some characters. They should appear on the
+remote side if everything works correctly!
+
+Don't be surprised if the keys you type in Picocom don't appear on the
+screen. This happens because they are not echoed back by the target.

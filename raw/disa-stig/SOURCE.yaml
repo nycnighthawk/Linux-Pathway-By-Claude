@@ -1,0 +1,13 @@
+id: disa-stig
+name: DISA STIGs (RHEL 10, RHEL 9, Ubuntu 24.04, Kubernetes)
+license: US-Gov-PD
+license_note: DoD work released publicly (STIG Distribution Statement A). The owner
+  asked for the same licence treatment as NIST (D-015).
+mode: full
+reuse: adapt
+stream: PD
+retrieved: '2026-11-01'
+upstream: https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/
+pin: U_RHEL_10_V1R3_STIG;U_RHEL_9_V2R10_STIG;U_CAN_Ubuntu_24-04_LTS_V1R7_STIG;U_Kubernetes_V2R6_STIG
+rules: 1167
+text_files: 4

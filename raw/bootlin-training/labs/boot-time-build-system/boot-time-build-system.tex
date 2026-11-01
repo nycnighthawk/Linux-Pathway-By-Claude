@@ -1,0 +1,166 @@
+\subchapter{Build the system}{Objective: compile the root filesystem.}
+
+After this lab, you will have a ready to use root filesystem to boot
+your system with, including a video player application.
+
+We haven't compiled the bootloader and kernel for our board yet,
+but since this part can take a long time (especially compiling the
+cross-compiling toolchain), let's start it now, while we are still
+fetching kernel sources or going through lectures.
+
+\section{Setup}
+
+As specified in the Buildroot
+manual\footnote{\url{https://buildroot.org/downloads/manual/manual.html\#requirement-mandatory}},
+Buildroot requires a few packages to be installed on your
+machine. Let's install them using Ubuntu's package manager:
+
+\begin{verbatim}
+sudo apt install sed make binutils gcc g++ bash patch \
+  gzip bzip2 perl tar cpio python3 unzip rsync wget libncurses-dev
+\end{verbatim}
+
+You will later also find that you also need extra packages:
+
+\begin{verbatim}
+sudo apt install bison flex
+\end{verbatim}
+
+\section{Choosing a Buildroot release}
+
+Buildroot is one of the best tools for building a custom root filesystem
+for a dedicated embedded system with a fixed set of features, typically
+like the one we're trying to build.
+
+Go to the \code{~/__SESSION_NAME__-labs/rootfs/buildroot/} directory.
+
+We will use the latest revision of the \code{2022.02} release, which is
+one of Buildroot's long term releases:
+
+\begin{verbatim}
+git tag | grep 2022.02
+git checkout 2022.02.12
+\end{verbatim}
+
+\section{Configuring Buildroot}
+
+To minimize external dependencies and maximize flexibility, we will ask
+Buildroot to generate its own toolchain. This can be better than using
+external toolchains, as we have the ability to tweak toolchain settings
+in a fine way if needed.
+
+Start the Buildroot configuration utility:
+
+\begin{verbatim}
+make menuconfig
+\end{verbatim}
+
+\begin{itemize}
+
+\item \code{Target Options} menu
+  \begin{itemize}
+
+  \item \code{Target Architecture}: select \code{ARM (little endian)}
+
+  \item \code{Target Architecture Variant}: select \code{cortex-A8}
+
+  \item On ARM two {\em Application Binary Interfaces} are available:
+    \code{EABI} and \code{EABIhf}. Unless you have backward
+    compatibility concerns with pre-built binaries, \code{EABIhf} is
+    more efficient, so make this choice as the \code{Target ABI}
+    (which should already be the default anyway).
+
+  \item The other parameters can be left to their default value:
+    \code{ELF} is the only available \code{Target Binary Format},
+    \code{VFPv3-D16} is a sane default for the {\em Floating Point
+      Unit}, and using the \code{ARM} instruction set is also a good
+    default (we will later try the \code{Thumb-2} instruction set for
+    slightly more compact code).
+  \end{itemize}
+
+\item \code{Build options} menu
+  \begin{itemize}
+  \item Enable \code{Enable compiler cache}
+  \end{itemize}
+
+\item \code{Toolchain} menu
+  \begin{itemize}
+  \item \code{Kernel Headers}: select \code{Manually specified Linux version}
+	and then set \code{linux version} to \code{6.1}. This corresponds
+	to the Linux kernel version we are going to use. For the system
+	we want to build, which doesn't need system calls introduced
+	by recent kernels, we could have used an older version of the
+	kernel headers.
+  \item \code{GCC compiler Version}: select \code{gcc 11.x}. This allows
+        to have the most recent version of the compiler supported by
+	this Buildroot release, and the best available optimizations.
+  \item Keep all the other settings unmodified. We will get
+	a toolchain with the {\em uClibc} library this way.
+  \end{itemize}
+
+\item \code{System configuration} menu
+  \begin{itemize}
+  \item Unselect \code{remount root filesystem read-write during boot}.
+    This way, we will keep the root filesystem in read-only mode. When
+    we make tests and reboot the system multiple times, this avoids
+    filesystem recovery with approximately takes 4 seconds and adds
+    jitter to our measurements.
+  \end{itemize}
+
+\item \code{Target packages} menu
+  \begin{itemize}
+  \item In \code{Audio and video applications}, select \code{ffmpeg} and
+  inside the \code{ffmpeg} submenu, add the below options:
+     \begin{itemize}
+     \item Select \code{Build libswscale}
+     \end{itemize}
+  \end{itemize}
+
+\item For the moment, all the remaining default settings are fine for us.
+\end{itemize}
+
+However, we need to do one thing to customize the root filesystem: we
+need to add a script that will automatically start the \code{ffmpeg}
+video player.
+
+To do so, we will use Buildroot's {\em Root filesystem overlay}
+capability, which allows to drop ready-made files into the final root
+filesystem archive\footnote{See
+\url{https://buildroot.org/downloads/manual/manual.html\#customize} for
+details.}.
+
+To begin with, let's start by creating a specific directory to store our
+Buildroot customizations for our project.
+
+\begin{verbatim}
+mkdir board/beaglecam
+\end{verbatim}
+
+And in this directory, let's create a directory for root filesystem
+overlays:
+
+\begin{verbatim}
+mkdir board/beaglecam/rootfs-overlay
+\end{verbatim}
+
+Now, let's copy a script that we're providing you to \code{etc/init.d}:
+
+\begin{verbatim}
+mkdir -p board/beaglecam/rootfs-overlay/etc/init.d/
+cp ~/__SESSION_NAME__-labs/rootfs/data/S50playvideo board/beaglecam/rootfs-overlay/etc/init.d/
+\end{verbatim}
+
+We can now run \code{make menuconfig} again and in \code{System
+configuration}, add \code{board/beaglecam/rootfs-overlay} to
+\code{Root filesystem overlay directories}.
+
+\section{Running Buildroot}
+
+We are now ready to execute Buildroot:
+
+\begin{verbatim}
+make
+\end{verbatim}
+
+Enjoy, and be patient, as building a cross-compiling toolchain takes
+time!

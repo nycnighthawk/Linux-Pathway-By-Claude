@@ -1,0 +1,22 @@
+id: D-009
+title: How curation work lands in the repository
+decided_by: owner
+options:
+- name: Branch + pull request
+  r1: 3
+  r2: 3
+  r3: 5
+  r4: 3
+  r5: 5
+  r6: 3
+- name: Merge to main myself
+  r1: 3
+  r2: 3
+  r3: 3
+  r4: 3
+  r5: 2
+  r6: 3
+- name: One PR per source
+chosen: Branch + pull request
+owner_answer: Branch + pull request (Recommended)
+date: '2026-11-01'

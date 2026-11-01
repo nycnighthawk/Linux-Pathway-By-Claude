@@ -1,0 +1,22 @@
+id: D-010
+title: Language for the catalog toolchain
+decided_by: claude
+options:
+- name: Python 3 (stdlib sqlite3/FTS5 + PyYAML, bs4, lxml, pypdf)
+  r1: 3
+  r2: 3
+  r3: 3
+  r4: 5
+  r5: 5
+  r6: 5
+- name: Node.js (better-sqlite3 + parsers)
+  r1: 3
+  r2: 3
+  r3: 3
+  r4: 3
+  r5: 3
+  r6: 3
+chosen: Python 3 (stdlib sqlite3/FTS5 + PyYAML, bs4, lxml, pypdf)
+justification: Python ships SQLite with FTS5 in the standard library and is preinstalled on GitHub runners, so CI
+  needs no native build step (R4, R5, R6). Licence, curriculum and provenance criteria are neutral between the two.
+date: '2026-11-01'

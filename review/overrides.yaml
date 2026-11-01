@@ -1,0 +1,37 @@
+# Manual tag overrides, applied after automatic tagging (highest precedence).
+# match keys: source, path (glob), section (regex), id. `courses: []` marks content as out of scope:
+# it stays stored and searchable but leaves the review queue.
+# Every entry records who made it and why. The repository owner can add to or edit this file at any time.
+overrides:
+  - match: {source: rocky-docs, path: "docs/teams/*"}
+    courses: []
+    by: claude
+    why: Rocky project-internal team pages (QA, release engineering, SIG process); not course material.
+  - match: {source: rocky-docs, path: "docs/releases/*"}
+    courses: [LNX-104]
+    by: claude
+    why: Release notes. Useful only for "what changed" context when patching and upgrading.
+  - match: {source: rocky-docs, path: "docs/books/nvchad/*"}
+    courses: [LNX-101]
+    by: claude
+    why: The NvChad book is a Neovim editor configuration guide (editor skills).
+  - match: {source: rocky-docs, path: "docs/gemstones/git/*"}
+    courses: [LNX-203]
+    by: claude
+    why: Git workflow snippets.
+  - match: {section: "Providing feedback on Red Hat documentation"}
+    courses: []
+    by: claude
+    why: Boilerplate feedback instructions on every RHEL guide.
+  - match: {source: rhel-10-docs, section: "Legal Notice"}
+    courses: []
+    by: claude
+    why: Licence boilerplate; the licence is captured in raw/rhel-10-docs/LICENSE.
+  - match: {source: ubuntu-server-docs, path: "docs/contributing/*"}
+    courses: []
+    by: claude
+    why: Contributor process for the Ubuntu docs project.
+  - match: {source: kubernetes-docs, path: "content/en/docs/contribute/*"}
+    courses: []
+    by: claude
+    why: Contributor process for the Kubernetes docs project.

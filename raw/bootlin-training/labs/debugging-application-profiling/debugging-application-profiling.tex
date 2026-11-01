@@ -1,0 +1,192 @@
+\subchapter
+{Application profiling}
+{Objectives:
+  \begin{itemize}
+    \item Visualizing application heap using {\em Massif}.
+    \item Profiling an application with {\em Cachegrind}, {\em Callgrind} and
+          {\em KCachegrind}.
+    \item Analyzing application performance with {\em perf}.
+  \end{itemize}
+}
+
+\section{Massif}
+
+Massif is really helpful to understand what is going on with the memory allocation
+side of an application. Compile the \code{heap_profile} example that we did provide
+using the following command on your development host
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs/nfsroot/root/heap_profile
+$ make
+\end{bashinput}
+
+Once compiled, run it on the target under massif using the following command:
+
+\begin{bashinput}
+$ cd /root/heap_profile
+$ valgrind --tool=massif --time-unit=B ./heap_profile
+\end{bashinput}
+
+NOTE: we use \code{--time-unit=B} to set the X axis to be based on the allocated
+size.
+
+Once done, a \code{massif.out.<pid>} file will be created. This file can be
+displayed with \code{ms_print}. Based on the result, can you answer the
+following questions:
+\begin{itemize}
+  \item What is the peak allocation size of this program?
+  \item How much memory was allocated during the program lifetime?
+  \item Do we have memory leaks at the end of execution?
+\end{itemize}
+
+You can also visualize the data collected by Massif with a graphical
+interface thanks to \code{massif-visualizer}. To do so, execute the
+following commands on your development host:
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs/nfsroot/root/heap_profile
+$ sudo apt install massif-visualizer
+$ massif-visualizer massif.out.*
+\end{bashinput}
+
+Note: \code{heaptrack} is not available on buildroot but is available on debian.
+You can try the same experience using heaptrack on your computer and visualizing
+the results with \code{heaptrack_gui}.
+
+\section{Cachegrind \& Callgrind}
+
+Cachegrind and Callgrind allow to profile a userspace application by
+simulating the processor that will run it. In order to analyze our application
+and understand where time is spent, we are going to profile it with both
+tools.
+
+Let's start by profiling the application using the \code{cachegrind} tool. Our
+program takes two file names as parameters: an input PNG image and an output
+one. We provided a sample image in \code{tux_small.png} which can be used as an
+input file. First let's compile it using the following commands on our development host:
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs/nfsroot/root/app_profiling
+$ make
+\end{bashinput}
+
+We are going to profile cache usage using Cachegrind with the following
+command on the target:
+
+\begin{bashinput}
+$ valgrind --tool=cachegrind --cache-sim=yes ./png_convert tux_small.png out.png
+\end{bashinput}
+
+The execution will take some time and a \code{cachegrind.out.<pid>} will be
+generated. Once finished, on the host, fix the permissions on the
+\code{cachegrind.out.*} file to be able to open it with \code{Kcachegrind}:
+
+\begin{bashinput}
+$ sudo chown $USER:$USER cachegrind.out.*
+\end{bashinput}
+
+Analyze the results with \code{Kcachegrind} in order to understand the
+function that generates most of the D cache miss time.
+
+Based on that result, modify the program to be more cache efficient. Run again
+the cachegrind analysis to check that the modifications were actually effective.
+
+We also profile the execution time using callgrind by running valgrind again on
+the target but with a different tool:
+
+\begin{bashinput}
+$ valgrind --tool=callgrind ./png_convert tux_small.png out.png
+\end{bashinput}
+
+Again, on the host platform, fix the permissions of the file using:
+\begin{bashinput}
+$ sudo chown $USER:$USER callgrind.out.*
+\end{bashinput}
+
+Again, analyze the results using \code{Kcachegrind}. This time, the view is
+different and allows to display all the call graphs.
+
+Looking at the results, it seems like our conversion function is
+actually taking a negligible time. However, valgrind simulate the program with
+an "ideal" cache. In real life, the processor is often used by other
+applications and the kernel also takes some time to execute which leads to cache
+disturbance.
+
+\section{Perf}
+
+In order to have a better view of the performance of our program in a real
+system, we will use \code{perf}. In order to gather performance counter from
+the hardware, we will run our program using \code{perf stat}. We would like to
+observe the number of L1 data cache store misses. In order to select the correct
+event, use \code{perf list} on the target to find it amongst the cache events:
+
+\begin{bashinput}
+$ perf list cache
+\end{bashinput}
+
+\ifdefstring{\board}{beagleplay}{ You will quickly see that perf does
+not expose L1 D-cache write misses ! That's because our processor's PMU
+does not implement and expose such an event. So we are not really able to
+count this very specific event. However, based on the nature of the issue
+we have worked on so far, we should be able to see a benefit on the read
+side as well, and fortunately, the processor is able to record the L1
+D-cache read misses:}{Once found, execute the program on the
+target using \code{perf stat} and specify that event using \code{-e}:}
+
+
+\begin{bashinput}
+$ perf stat -e %\ifdefstring{\board}{beagleplay}{L1-dcache-load-misses}{L1-dcache-store-misses}% ./png_convert tux.png out.png
+\end{bashinput}
+
+
+Revert the modifications that we did to invert the program loops and again,
+measure the amount of misses.
+
+After that, we will record our program execution using the \code{perf record}
+command to obtain a callgrind like result.
+
+\begin{bashinput}
+$ perf record ./png_convert tux_small.png out.png
+\end{bashinput}
+
+Once recorded, a \code{perf.data} file will be generated. This file will
+contain the traces that have been recorded. These traces can be analyzed using
+\code{perf report} on the development host:
+
+\begin{bashinput}
+$ sudo chown $USER:$USER perf.data
+$ perf report \
+	--symfs=/home/$USER/__SESSION_NAME__-labs/buildroot/output/staging/ \
+	-k /home/$USER/__SESSION_NAME__-labs/buildroot/output/build/linux-%\workingkernel%/vmlinux
+\end{bashinput}
+
+You will quickly notice that the output is not the same as valgrind because it
+displays the time spent per function (excluding function calls inside them).
+This allows to find which function takes most of the execution time. In order to
+compare this output to the valgrind one, we can run perf and also record the
+callgraph using the \code{--call-graph} option.
+
+\begin{bashinput}
+$ perf record --call-graph dwarf ./png_convert tux_small.png out.png
+\end{bashinput}
+
+We specify that we want to record the call graph using the DWARF information
+that are contained in ELF file (compiled with \code{-g}). Once recorded, on the
+desktop platform, display the results with \code{perf report} and compare them
+with callgrind ones on your development platform.
+
+{\em NOTE: the vmlinux file used for the \code{-k} option must match the kernel
+build id that is running on the board or perf will not use it. You can
+verify those build IDs in both perf.data and vmlinux file with perf:
+
+- for perf.data: perf buildid-list (in the directory containing your
+perf.data file)
+
+- for vmlinux: perf buildid-list -i <your\_vmlinux\_file>
+
+If IDs mismatch, you need to re-sync your running kernel with the one in
+your build directory
+}
+
+{\em NOTE: in order to annotate the disassembled code and display the time spent
+for each instruction, \code{CROSS_COMPILE} must be set.}

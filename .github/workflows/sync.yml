@@ -1,0 +1,61 @@
+name: sync-sources
+
+# Weekly re-sync of every upstream source to its latest version. Changes arrive as a pull request
+# (decision D-009), so the owner reviews new pins, licence flags and tag shifts before merging.
+on:
+  schedule:
+    - cron: "17 7 * * 1"     # Mondays 07:17 UTC
+  workflow_dispatch:
+    inputs:
+      sources:
+        description: "Space-separated source ids (blank = all)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false        # sync rewrites figures from upstream; git-lfs turns them back into identical pointers
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: |
+          sudo apt-get update && sudo apt-get install -y pandoc
+          pip install -r requirements.txt
+          git lfs install --local
+      - name: Sync upstream sources
+        run: |
+          args=""
+          for s in ${{ github.event.inputs.sources }}; do args="$args -s $s"; done
+          bin/lpc sync --update $args
+      - run: bin/lpc gate
+      - run: bin/lpc build
+      - name: Summarise changes
+        id: sum
+        run: |
+          {
+            echo 'body<<EOF'
+            echo "Automated re-sync of upstream sources."
+            echo
+            echo '```'
+            git diff --stat -- sources.yaml raw catalog | tail -25
+            echo '```'
+            grep -h "review_flag" raw/*/SOURCE.yaml && echo "⚠️ Licence review flags above need a decision (see RUBRIC.md)." || true
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: sync/upstream
+          commit-message: "sync: re-pin upstream sources"
+          title: "sync: weekly upstream re-sync"
+          body: ${{ steps.sum.outputs.body }}
+          labels: sync

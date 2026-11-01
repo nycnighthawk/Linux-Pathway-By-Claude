@@ -1,0 +1,14 @@
+id: compliance-as-code
+name: ComplianceAsCode / SCAP Security Guide rules
+license: BSD-3-Clause
+license_note: null
+mode: full
+reuse: adapt
+stream: Permissive
+retrieved: '2026-11-01'
+upstream: https://github.com/ComplianceAsCode/content
+pin: 4df733118392f28f62c447459ed298a4ab8957ed
+upstream_commit_date: '2026-10-30'
+license_file_upstream: LICENSE
+text_files: 2377
+figures: 0

@@ -1,0 +1,14 @@
+id: debian-handbook
+name: The Debian Administrator's Handbook
+license: CC-BY-SA-3.0 OR GPL-2.0-or-later
+license_note: Dual licensed; the notice is in en-US/Book_Info.xml.
+mode: full
+reuse: adapt
+stream: A
+retrieved: '2026-11-01'
+upstream: https://salsa.debian.org/hertzog/debian-handbook.git
+pin: bfac53503524a02c72ca99e8049afa9d351ba565
+upstream_commit_date: '2026-01-27'
+license_file_upstream: null
+text_files: 28
+figures: 73

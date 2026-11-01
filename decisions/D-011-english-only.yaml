@@ -1,0 +1,23 @@
+id: D-011
+title: Languages captured from multilingual sources
+decided_by: claude
+options:
+- name: English only
+  r1: 5
+  r2: 5
+  r3: 5
+  r4: 5
+  r5: 5
+  r6: 5
+- name: All languages
+  r1: 5
+  r2: 3
+  r3: 5
+  r4: 2
+  r5: 5
+  r6: 1
+chosen: English only
+justification: Courses and certifications in this programme are English. Translations duplicate content, which adds
+  search noise (R4) and makes the repo several times larger (R6), with no curriculum gain (R2). Rocky translation
+  files (*.xx.md) and non-en-US Debian Handbook trees are excluded.
+date: '2026-11-01'

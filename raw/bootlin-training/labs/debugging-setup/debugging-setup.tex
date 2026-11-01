@@ -1,0 +1,175 @@
+\subchapter
+{Preparing the system}
+{Objectives:
+  \begin{itemize}
+	  \item Prepare the \boarddescription{} board
+  \end{itemize}
+}
+
+\section{Install needed packages}
+
+You need some development packages before being able to build the target firmware:
+
+\begin{bashinput}
+$ sudo apt install build-essential git
+\end{bashinput}
+
+\section{Building the image}
+
+We created a special image for the training. This image will contain everything
+we need (tools, configured kernel, etc). This image will be built with buildroot
+which allows to build a complete image for embedded systems.
+
+\begin{bashinput}
+$ cd /home/$USER/__SESSION_NAME__-labs
+$ git clone https://github.com/bootlin/buildroot
+$ cd buildroot
+$ git checkout %\brbranch%
+$ make %\brdefconfig%
+$ make
+\end{bashinput}
+
+This will take a few minutes. At the end of the build,
+the \code{output/images/} directory will contain the images that can be
+used on the board. During this course, we will use a kernel located on a
+sdcard and a rootfs via NFS. This will let us transfer data freely from and
+to the target board.
+
+The rootfs should be extracted at \code{/home/$USER/__SESSION_NAME__-labs/nfsroot}
+using this command:
+
+\begin{bashinput}
+$ tar xvf output/images/rootfs.tar -C /home/$USER/__SESSION_NAME__-labs/nfsroot
+\end{bashinput}
+
+We will also export the \code{CROSS_COMPILE} variable to set the toolchain as our
+cross compiling toolchain:
+
+\begin{bashinput}
+$ export CROSS_COMPILE=/home/$USER/__SESSION_NAME__-labs/buildroot/output/host/bin/%\toolchainprefix%-
+\end{bashinput}
+
+This export needs to be either done in each shell in which \code{CROSS_COMPILE} is
+going to be used or added to your shell configuration (\code{.bashrc} for
+instance)
+
+\section{Flashing the sdcard}
+
+In order to get a working board, you will need to flash a sdcard with the 
+\code{output/images/sdcard.img} file. Plug your sdcard on your computer and
+check on which \code{/dev/sdX} it has been mounted (you can use the \code{dmesg}
+command to check that). For instance, if the sdcard has been mounted on
+\code{/dev/sde}, use the following command:
+
+\begin{bashinput}
+$ sudo dd if=output/images/sdcard.img of=/dev/sde
+$ sync
+\end{bashinput}
+
+NOTE: Double-check that you are targeting the correct device before executing
+the dd command!
+
+\if\defstring{\board}{stm32mp1}
+\input{stm32-prepare.tex}
+\fi
+\if\defstring{\board}{beagleplay}
+\input{beagleplay-prepare.tex}
+\fi
+
+\section{Set up the Ethernet communication on the workstation}
+
+With a network cable, connect the Ethernet port of your board to the
+one of your computer. If your computer already has a wired connection
+to the network, your instructor will provide you with a USB Ethernet
+adapter. A new network interface should appear on your Linux system.
+
+Find the name of this interface by typing:
+\begin{bashinput}
+$ ip a
+\end{bashinput}
+
+The network interface name is likely to be
+\code{enxxx}\footnote{Following the {\em Predictable Network Interface
+Names} convention:
+\url{https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/}}.
+If you have a pluggable Ethernet device, it's easy to identify as it's
+the one that shows up after plugging in the device.
+
+Then, instead of configuring the host IP address from NetworkManager’s graphical interface,
+let’s do it through its command line interface, which is so much easier to use:
+
+\begin{bashinput}
+$ nmcli con add type ethernet ifname en<xxx> ip4 192.168.0.1/24
+\end{bashinput}
+
+\section{Setting up the NFS server}
+
+Install the NFS server by installing the \code{nfs-kernel-server}
+package:
+
+\begin{bashinput}
+$ sudo apt install nfs-kernel-server
+\end{bashinput}
+
+Once installed, edit the \code{/etc/exports} file as
+\code{root} to add the following lines, assuming that the IP address
+of your board will be \code{192.168.0.100}:
+
+\begin{bashinput}
+/home/<user>/__SESSION_NAME__-labs/nfsroot 192.168.0.100(rw,no_root_squash,no_subtree_check)
+\end{bashinput}
+
+Of course, replace \code{<user>} by your actual user name.
+
+Make sure that the path and the options are on the same line.
+Also make sure that there is no space between the IP address and the NFS
+options, otherwise default options will be used for this IP address,
+causing your root filesystem to be read-only.
+
+Then, restart the NFS server:
+
+\begin{bashinput}
+$ sudo exportfs -r
+\end{bashinput}
+
+If there is any error message, this usually means that there was a
+syntax error in the \code{/etc/exports} file. Don't proceed until these
+errors disappear.
+
+\section{U-Boot setup}
+
+You can now insert the freshly flashed SD card into the board micro SD card
+slot and plug power into the board. You should see some logs in your serial
+monitor software: those logs are emitted by the u-boot bootloader.
+
+\ifdefstring{\board}{beagleplay}{\textbf{Warning: take care that if you also have
+some valid software flashed in the on-board eMMC, the board will boot it by
+default ! To force the bootrom to select the SD Card as default boot
+support, make sure to press the "USR" button while applying power to the
+board. You only need to do this on "cold boots": the board will keep using
+the SD card as default boot medium if you press the reset button or enter
+"reboot" in Linux.}}{}
+
+In order to use a rootfs on NFS, we will use an external rootfs. This can be
+specified by passing bootargs to the kernel. To do so, we are going to set the
+\code{bootargs} U-Boot variable and save the environment. To be able to edit
+U-Boot variables, we need to interrupt its standard boot sequence: with the
+serial console opened, maintain the {\em Enter} key while pressing once the reset button,
+and wait for U-Boot prompt to appear. Then, enter the following commands:
+
+\begin{bashinput}
+=> env set bootargs root=/dev/nfs ip=192.168.0.100:::::eth0 \
+  nfsroot=192.168.0.1:/home/<user>/__SESSION_NAME__-labs/nfsroot/,nfsvers=3,tcp rw
+=> saveenv
+\end{bashinput}
+
+NOTE: Be sure to replace the \code{<user>} string with the correct user
+from your host
+
+\section{Login}
+
+You can now run the system by typing "boot" in u-boot.
+
+You can login on the serial console or via SSH (\code{ssh
+root@192.168.0.100}). The username is \code{root} and the password
+is \code{root}.
