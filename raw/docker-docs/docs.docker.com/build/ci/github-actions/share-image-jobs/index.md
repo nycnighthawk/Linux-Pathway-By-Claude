@@ -1,0 +1,56 @@
+---
+{"title": "Share built image between jobs with GitHub Actions", "url": "https://docs.docker.com/build/ci/github-actions/share-image-jobs/", "retrieved": "2026-11-01", "license": "Apache-2.0"}
+---
+
+# Share built image between jobs with GitHub Actions {#share-built-image-between-jobs-with-github-actions pagefind-weight="10"}
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+As each job is isolated in its own runner, you can\'t use your built image between jobs, except if you\'re using [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) or [Docker Build Cloud](/build-cloud). However, you can [pass data between jobs](https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts#passing-data-between-jobs-in-a-workflow) in a workflow using the [actions/upload-artifact](https://github.com/actions/upload-artifact) and [actions/download-artifact](https://github.com/actions/download-artifact) actions:
+
+> Note
+>
+> This workflow supports only single-platform images because the Docker exporter doesn\'t support manifest lists. For multi-platform images, push the image to a registry. If a later job rebuilds the image before pushing it, configure a [shared cache backend](https://docs.docker.com/build/ci/github-actions/cache/) to reuse the earlier build results. See also [Multi-platform image with GitHub Actions](https://docs.docker.com/build/ci/github-actions/multi-platform/).
+
+``` {.chroma tabindex="0"}
+name: ci
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and export
+        uses: docker/build-push-action@v7
+        with:
+          tags: myimage:latest
+          outputs: type=docker,dest=${{ runner.temp }}/myimage.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: myimage
+          path: ${{ runner.temp }}/myimage.tar
+
+  use:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: myimage
+          path: ${{ runner.temp }}
+
+      - name: Load image
+        run: |
+          docker load --input ${{ runner.temp }}/myimage.tar
+          docker image ls -a
+```

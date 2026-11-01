@@ -1,0 +1,441 @@
+---
+{"title": "Validating image inputs", "url": "https://docs.docker.com/build/policies/validate-images/", "retrieved": "2026-11-01", "license": "Apache-2.0"}
+---
+
+# Validating image inputs {#validating-image-inputs pagefind-weight="10"}
+
+------------------------------------------------------------------------
+
+Table of contents
+
+------------------------------------------------------------------------
+
+Container images are the most common build inputs. Every `FROM` instruction pulls an image, and `COPY --from` references pull additional images. Validating these images protects your build supply chain from compromised registries, unexpected updates, and unauthorized base images.
+
+This guide teaches you to write policies that validate image inputs, progressing from basic allowlisting to advanced attestation checks.
+
+## [Prerequisites](#prerequisites) {#prerequisites .scroll-mt-20 .flex .items-center .gap-2}
+
+You should understand the policy basics from the [Introduction](https://docs.docker.com/build/policies/intro/): creating policy files, basic Rego syntax, and how policies evaluate during builds.
+
+## [What are image inputs?](#what-are-image-inputs) {#what-are-image-inputs .scroll-mt-20 .flex .items-center .gap-2}
+
+Image inputs come from two Dockerfile instructions:
+
+``` {.chroma tabindex="0"}
+# FROM instructions
+FROM alpine:3.22
+FROM golang:1.25-alpine AS builder
+
+# COPY --from references
+COPY --from=builder /app /app
+COPY --from=nginx:latest /etc/nginx/nginx.conf /nginx.conf
+```
+
+Each of these references triggers a policy evaluation. Your policy can inspect image metadata, verify attestations, and enforce constraints before the build proceeds.
+
+## [Allowlist specific repositories](#allowlist-specific-repositories) {#allowlist-specific-repositories .scroll-mt-20 .flex .items-center .gap-2}
+
+The simplest image policy restricts which repositories can be used. This prevents developers from using arbitrary images that haven\'t been vetted.
+
+Create a policy that only allows Alpine:
+
+Dockerfile.rego
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+allow if {
+  input.image.repo == "alpine"
+}
+
+decision := {"allow": allow}
+```
+
+This policy:
+
+-   Denies all inputs by default
+-   Allows local build context
+-   Allows any image from the `alpine` repository (any tag or digest)
+
+Test it with a Dockerfile:
+
+Dockerfile
+
+``` {.chroma tabindex="0"}
+FROM alpine
+RUN echo "hello"
+```
+
+``` {.chroma tabindex="0"}
+$ docker build .
+```
+
+The build succeeds. Try changing to `FROM ubuntu`:
+
+``` {.chroma tabindex="0"}
+$ docker build .
+```
+
+The build fails because `ubuntu` doesn\'t match the allowed repository.
+
+## [Compare semantic versions](#compare-semantic-versions) {#compare-semantic-versions .scroll-mt-20 .flex .items-center .gap-2}
+
+Restrict images to specific version ranges using Rego\'s `semver` functions:
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+# Allow Go 1.21 or newer
+allow if {
+  input.image.repo == "golang"
+  semver.is_valid(input.image.tag)
+  semver.compare(input.image.tag, "1.21.0") >= 0
+}
+
+decision := {"allow": allow}
+```
+
+The `semver.compare(a, b)` function compares semantic versions and returns:
+
+-   `-1` if version `a` is less than `b`
+-   `0` if versions are equal
+-   `1` if version `a` is greater than `b`
+
+Use `semver.is_valid()` to check if a tag is a valid semantic version before comparing.
+
+Restrict to specific version ranges:
+
+``` {.chroma tabindex="0"}
+allow if {
+  input.image.repo == "node"
+  version := input.image.tag
+  semver.is_valid(version)
+  semver.compare(version, "20.0.0") >= 0  # 20.0.0 or newer
+  semver.compare(version, "21.0.0") < 0   # older than 21.0.0
+}
+```
+
+This allows only Node.js 20.x versions. The pattern works for any image using semantic versioning.
+
+These `semver` functions are standard Rego built-ins documented in the [OPA policy reference](https://www.openpolicyagent.org/docs/latest/policy-reference/#semver).
+
+## [Require digest references](#require-digest-references) {#require-digest-references .scroll-mt-20 .flex .items-center .gap-2}
+
+Tags like `alpine:3.22` can change - someone could push a new image with the same tag. Digests like `alpine@sha256:abc123...` are immutable.
+
+### [Requiring users to provide digests](#requiring-users-to-provide-digests) {#requiring-users-to-provide-digests .scroll-mt-20 .flex .items-center .gap-2}
+
+You can require that users always specify digests in their Dockerfiles:
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+allow if {
+  input.image.isCanonical
+}
+
+decision := {"allow": allow}
+```
+
+The `isCanonical` field is `true` when the user\'s reference includes a digest. This policy would allow:
+
+``` {.chroma tabindex="0"}
+FROM alpine@sha256:4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412
+```
+
+But reject tag-only references like `FROM alpine:3.22`.
+
+### [Pinning to specific digests](#pinning-to-specific-digests) {#pinning-to-specific-digests .scroll-mt-20 .flex .items-center .gap-2}
+
+Alternatively (or additionally), you can validate that an image\'s actual digest matches a specific value, regardless of how the user wrote the reference:
+
+``` {.chroma tabindex="0"}
+allow if {
+  input.image.repo == "alpine"
+  input.image.checksum == "sha256:4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412"
+}
+
+decision := {"allow": allow}
+```
+
+This checks the actual content digest of the pulled image. It would allow both:
+
+``` {.chroma tabindex="0"}
+FROM alpine:3.22
+FROM alpine@sha256:4b7ce...
+```
+
+As long as the resolved image has the specified digest. This is useful for pinning critical base images to known-good versions.
+
+## [Restrict registries](#restrict-registries) {#restrict-registries .scroll-mt-20 .flex .items-center .gap-2}
+
+Control which registries your builds can pull from. This helps enforce corporate policies or restrict to trusted sources.
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+# Allow Docker Hub images
+allow if {
+  input.image.host == "docker.io"  # Docker Hub
+  input.image.repo == "alpine"
+}
+
+# Allow images from internal registry
+allow if {
+  input.image.host == "registry.company.com"
+}
+
+decision := {"allow": allow}
+```
+
+The `host` field contains the registry hostname. Docker Hub images use `"docker.io"` as the host value. Test with:
+
+``` {.chroma tabindex="0"}
+FROM alpine                                    # Allowed (Docker Hub)
+FROM registry.company.com/myapp:latest         # Allowed (company registry)
+FROM ghcr.io/someorg/image:latest              # Denied (wrong registry)
+```
+
+Use `fullRepo` when you need the complete path including registry:
+
+``` {.chroma tabindex="0"}
+allow if {
+  input.image.fullRepo == "docker.io/library/alpine"
+}
+```
+
+## [Validate platform constraints](#validate-platform-constraints) {#validate-platform-constraints .scroll-mt-20 .flex .items-center .gap-2}
+
+Multi-architecture images support different operating systems and CPU architectures. You can restrict builds to specific platforms:
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+allow if {
+  input.image.os == "linux"
+  input.image.arch in ["amd64", "arm64"]
+}
+
+decision := {"allow": allow}
+```
+
+This policy:
+
+-   Defines supported architectures in a list
+-   Checks `input.image.os` matches Linux
+-   Verifies `input.image.arch` is in the supported list
+
+The `os` and `arch` fields come from the image manifest, reflecting the actual image platform. This works with Docker\'s automatic platform selection - policies validate what Buildx resolves, not what you specify.
+
+## [Inspect image metadata](#inspect-image-metadata) {#inspect-image-metadata .scroll-mt-20 .flex .items-center .gap-2}
+
+Images contain metadata like environment variables, labels, and working directories. You can validate these to ensure images meet requirements.
+
+Check for specific environment variables:
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+allow if {
+  input.image.repo == "golang"
+  input.image.workingDir == "/go"
+  some ver in input.image.env
+  startswith(ver, "GOLANG_VERSION=")
+  some toolchain in input.image.env
+  toolchain == "GOTOOLCHAIN=local"
+}
+
+decision := {"allow": allow}
+```
+
+This policy validates the official Go image by checking:
+
+-   The working directory is `/go`
+-   The environment has `GOLANG_VERSION` set
+-   The environment includes `GOTOOLCHAIN=local`
+
+The `input.image.env` field is an array of strings in `KEY=VALUE` format. Use Rego\'s `some` iteration to search the array.
+
+Check image labels:
+
+``` {.chroma tabindex="0"}
+allow if {
+  input.image.labels["org.opencontainers.image.vendor"] == "Example Corp"
+  input.image.labels["org.opencontainers.image.version"] != ""
+}
+```
+
+The `labels` field is a map, so you access values with bracket notation.
+
+## [Require attestations and provenance](#require-attestations-and-provenance) {#require-attestations-and-provenance .scroll-mt-20 .flex .items-center .gap-2}
+
+Modern images include [attestations](/build/metadata/attestations/): machine-readable metadata about how the image was built. [Provenance](/build/metadata/attestations/slsa-provenance/) attestations describe the build process, and [SBOMs](/build/metadata/attestations/sbom/) list the software inside.
+
+Require provenance:
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+allow if {
+  input.image.hasProvenance
+}
+
+decision := {"allow": allow}
+```
+
+The `hasProvenance` field is `true` when the image has provenance or SBOM [attestations](https://docs.docker.com/build/metadata/attestations/).
+
+### [Check provenance metadata](#check-provenance-metadata) {#check-provenance-metadata .scroll-mt-20 .flex .items-center .gap-2}
+
+Use `input.image.provenance` to check how an image was built. For example, require provenance that declares a hermetic build with all dependencies recorded:
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+allow if {
+  input.image.provenance.hermetic == true
+  input.image.provenance.completeness.materials == true
+}
+
+decision := {"allow": allow}
+```
+
+An image with missing fields fails these conditions. Other provenance fields include the builder identity, build arguments, and build definition source; see the [provenance input reference](https://docs.docker.com/build/policies/inputs/#inputimageprovenance). Pair these checks with signature verification when you need to trust the attestation\'s origin.
+
+## [Verify GitHub Actions signatures](#verify-github-actions-signatures) {#verify-github-actions-signatures .scroll-mt-20 .flex .items-center .gap-2}
+
+For images built with GitHub Actions, verify they came from trusted workflows by inspecting signature metadata:
+
+``` {.chroma tabindex="0"}
+allow if {
+  input.image.repo == "myapp"
+  input.image.hasProvenance
+  some sig in input.image.signatures
+  valid_github_signature(sig)
+}
+
+# Helper to validate GitHub Actions signature
+valid_github_signature(sig) if {
+  sig.signer.certificateIssuer == "CN=sigstore-intermediate,O=sigstore.dev"
+  sig.signer.issuer == "https://token.actions.githubusercontent.com"
+  startswith(sig.signer.buildSignerURI, "https://github.com/myorg/")
+  sig.signer.runnerEnvironment == "github-hosted"
+}
+
+decision := {"allow": allow}
+```
+
+This pattern works with any GitHub Actions workflow using Sigstore keyless signing. The signature metadata provides cryptographic proof of the build\'s origin. For complete signature verification examples, see [Example policies](https://docs.docker.com/build/policies/examples/).
+
+## [Validate provenance materials](#validate-provenance-materials) {#validate-provenance-materials .scroll-mt-20 .flex .items-center .gap-2}
+
+An image\'s provenance can expose metadata about its own build dependencies through `input.image.provenance.materials`. Use this to check the source of a base image, rather than only checking the base image\'s registry and tag.
+
+The following policy requires the base image\'s provenance to include a Git material with an approved repository and commit:
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+allow if {
+  some material in input.image.provenance.materials
+  material.git.remote == "https://github.com/myorg/base.git"
+  material.git.commitChecksum == "0123456789abcdef0123456789abcdef01234567"
+}
+
+decision := {"allow": allow}
+```
+
+Replace the repository and commit with your approved source. This checks for at least one matching material; it doesn\'t restrict other dependencies. For image materials, you can also inspect their provenance and nested materials. See the [material input reference](https://docs.docker.com/build/policies/inputs/#provenance-materials) for supported sources and metadata resolution.
+
+## [Combine multiple checks](#combine-multiple-checks) {#combine-multiple-checks .scroll-mt-20 .flex .items-center .gap-2}
+
+Real policies often combine several checks. Multiple conditions in one `allow` rule means AND - all must be true:
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+# Production images need everything
+allow if {
+  input.image.repo == "alpine"
+  input.image.isCanonical
+  input.image.hasProvenance
+}
+
+decision := {"allow": allow}
+```
+
+Multiple `allow` rules means OR - any rule can match:
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+# Allow Alpine with strict checks
+allow if {
+  input.image.repo == "alpine"
+  input.image.isCanonical
+}
+
+# Allow Go with different checks
+allow if {
+  input.image.repo == "golang"
+  input.image.workingDir == "/go"
+}
+
+decision := {"allow": allow}
+```
+
+Use this pattern to apply different requirements to different base images.
+
+## [Next steps](#next-steps) {#next-steps .scroll-mt-20 .flex .items-center .gap-2}
+
+You now understand how to validate container images in build policies. To continue learning:
+
+-   Learn [Git repository validation](https://docs.docker.com/build/policies/validate-git/) for source code inputs
+-   Browse [Example policies](https://docs.docker.com/build/policies/examples/) for complete policy patterns
+-   Read [Built-in functions](https://docs.docker.com/build/policies/built-ins/) for signature verification and attestation checking
+-   Check the [Input reference](https://docs.docker.com/build/policies/inputs/) for all available image fields
