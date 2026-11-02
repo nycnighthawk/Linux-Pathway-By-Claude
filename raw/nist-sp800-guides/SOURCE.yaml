@@ -2,11 +2,11 @@ id: nist-sp800-guides
 name: NIST SP 800-123 (server security) and SP 800-190 (container security)
 license: US-Gov-PD
 license_note: 'Owner: extract the linked content and give it the same licence as SP
-  800-53 (D-014).'
+  800-53 (D-012).'
 mode: full
 reuse: adapt
 stream: PD
-retrieved: '2026-11-01'
+retrieved: '2026-11-02'
 upstream:
 - https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-123.pdf
 - https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf

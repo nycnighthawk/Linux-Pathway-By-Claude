@@ -1,5 +1,5 @@
 ---
-{"title": "Configuring and using database servers", "guide": "configuring_and_using_database_servers", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/configuring_and_using_database_servers/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Configuring and using database servers", "guide": "configuring_and_using_database_servers", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/configuring_and_using_database_servers/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Configuring and using database servers {#configuring-and-using-database-servers .chapter-title data-id="content_chapter" v-ccb3d6a4=""}

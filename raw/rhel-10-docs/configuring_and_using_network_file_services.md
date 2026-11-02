@@ -1,8 +1,6 @@
 ---
-{"title": "Configuring and using network file services", "guide": "configuring_and_using_network_file_services", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/configuring_and_using_network_file_services/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Configuring and using network file services", "guide": "configuring_and_using_network_file_services", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/configuring_and_using_network_file_services/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
-
-Streamline your workflow with the new MCP server for Red Hat product documentation.Connect your AI tools and LLMs directly to live Red Hat product documentation. [Connect now](https://docs.redhat.com/en/documentation/mcp_server_for_red_hat_documentation/current%20).
 
 # Configuring and using network file services {#configuring-and-using-network-file-services .chapter-title data-id="content_chapter" v-ccb3d6a4=""}
 

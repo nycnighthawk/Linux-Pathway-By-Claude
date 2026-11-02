@@ -1,5 +1,5 @@
 ---
-{"title": "Deploying web servers and reverse proxies", "guide": "deploying_web_servers_and_reverse_proxies", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/deploying_web_servers_and_reverse_proxies/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Deploying web servers and reverse proxies", "guide": "deploying_web_servers_and_reverse_proxies", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/deploying_web_servers_and_reverse_proxies/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Deploying web servers and reverse proxies {#deploying-web-servers-and-reverse-proxies .chapter-title data-id="content_chapter" v-ccb3d6a4=""}

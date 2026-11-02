@@ -1,5 +1,5 @@
 ---
-{"title": "Configuring firewalls and packet filters", "guide": "configuring_firewalls_and_packet_filters", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/configuring_firewalls_and_packet_filters/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Configuring firewalls and packet filters", "guide": "configuring_firewalls_and_packet_filters", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/configuring_firewalls_and_packet_filters/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Configuring firewalls and packet filters {#configuring-firewalls-and-packet-filters .chapter-title data-id="content_chapter" v-ccb3d6a4=""}

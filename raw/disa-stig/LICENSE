@@ -1,7 +1,7 @@
 DISA STIGs (RHEL 10, RHEL 9, Ubuntu 24.04, Kubernetes)
 Licence: US-Gov-PD
 
-DoD work released publicly (STIG Distribution Statement A). The owner asked for the same licence treatment as NIST (D-015).
+DoD work released publicly (STIG Distribution Statement A). The owner asked for the same licence treatment as NIST (D-014).
 
 Index page: https://public.cyber.mil/stigs/downloads/
 Curated into Linux-Pathway-By-Claude by `lpc sync`. See SOURCE.yaml for provenance.

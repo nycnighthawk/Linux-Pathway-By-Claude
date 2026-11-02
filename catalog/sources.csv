@@ -1,24 +1,25 @@
 id,name,license,mode,reuse,stream,pin,retrieved,chunks
-rocky-docs,Rocky Linux documentation,CC-BY-SA-4.0,full,adapt,A,fed6b43daf614237fafcff3861a08e95ceebfa94,2026-11-01,4713
-debian-handbook,The Debian Administrator's Handbook,CC-BY-SA-3.0 OR GPL-2.0-or-later,full,adapt,A,bfac53503524a02c72ca99e8049afa9d351ba565,2026-11-01,462
-rhel-10-docs,Red Hat Enterprise Linux 10 documentation (selected guides),CC-BY-SA-3.0,full,adapt,A,2026-11-01:sha256:cc8d07acb508eb57,2026-11-01,5602
-ubuntu-server-docs,Ubuntu Server documentation,NOASSERTION,outline,link-only,Ref,505feb597ec634d49a50edd2cc942be92d2d575b,2026-11-01,1941
-kubernetes-docs,Kubernetes documentation,CC-BY-4.0,full,adapt,A,f4ec4968d939d533ecc82b7a352155caed3c932d,2026-11-01,5175
-bootlin-training,"Bootlin training materials (kernel, embedded, debugging)",CC-BY-SA-3.0,full,adapt,A,46d5592a529ca124a2bac5f3151daa2e6530fdd3,2026-11-01,1134
-lkmpg,The Linux Kernel Module Programming Guide,OSL-3.0,outline,link-only,C,5854698bc4535357d9c40d4eefa5241ef3bd814e,2026-11-01,126
-kernel-docs,"Linux kernel documentation (process, dev-tools)",GPL-2.0-only,outline,link-only,C,cbbddb6b08cc9900a87cccaa9b22bbe06aa4f50a,2026-11-01,884
-compliance-as-code,ComplianceAsCode / SCAP Security Guide rules,BSD-3-Clause,full,adapt,Permissive,4df733118392f28f62c447459ed298a4ab8957ed,2026-11-01,2377
-nist-sp800-53,NIST SP 800-53 Rev. 5 controls (OSCAL),US-Gov-PD,full,adapt,PD,5.2.0:sha256:64ca6b4161de51ab,2026-11-01,1216
-nist-sp800-guides,NIST SP 800-123 (server security) and SP 800-190 (container security),US-Gov-PD,full,adapt,PD,sp800-123:182ae5d23011;sp800-190:0ebad52c4a3a,2026-11-01,101
-disa-stig,"DISA STIGs (RHEL 10, RHEL 9, Ubuntu 24.04, Kubernetes)",US-Gov-PD,full,adapt,PD,U_RHEL_10_V1R3_STIG;U_RHEL_9_V2R10_STIG;U_CAN_Ubuntu_24-04_LTS_V1R7_STIG;U_Kubernetes_V2R6_STIG,2026-11-01,1171
-archwiki,ArchWiki,GFDL-1.3-or-later,link,link-only,B,,,1
-ansible-docs,Ansible community documentation,GPL-3.0-or-later,link,link-only,C,,,1
-man-pages,Linux man-pages project,various (per page),link,link-only,Ref,,,1
+rocky-docs,Rocky Linux documentation,CC-BY-SA-4.0,full,adapt,A,ebba8930a39682e3348999fbf2fd35b6772b636f,2026-11-02,4714
+debian-handbook,The Debian Administrator's Handbook,CC-BY-SA-3.0 OR GPL-2.0-or-later,full,adapt,A,bfac53503524a02c72ca99e8049afa9d351ba565,2026-11-02,462
+rhel-10-docs,Red Hat Enterprise Linux 10 documentation (selected guides),CC-BY-SA-3.0,full,adapt,A,2026-11-02:sha256:a61f27eb013a5ff8,2026-11-02,2543
+ubuntu-server-docs,Ubuntu Server documentation,NOASSERTION,outline,link-only,Ref,505feb597ec634d49a50edd2cc942be92d2d575b,2026-11-02,1940
+kubernetes-docs,Kubernetes documentation,CC-BY-4.0,full,adapt,A,177aebb48df75c35d179ae1fb0338afa15e4abd4,2026-11-02,5177
+bootlin-training,"Bootlin training materials (kernel, embedded, debugging)",CC-BY-SA-3.0,full,adapt,A,8d08ca253234fe368b6020d90d44d69d2f533524,2026-11-02,1132
+lkmpg,The Linux Kernel Module Programming Guide,OSL-3.0,outline,link-only,C,5854698bc4535357d9c40d4eefa5241ef3bd814e,2026-11-02,126
+kernel-docs,"Linux kernel documentation (process, dev-tools)",GPL-2.0-only,outline,link-only,C,6628e7d4c6b25c8d18f1345e3a20d21829aae7e4,2026-11-02,884
+compliance-as-code,ComplianceAsCode / SCAP Security Guide rules,BSD-3-Clause,full,adapt,Permissive,a6ca1533075082e1f72284622e2b6a90d3960e89,2026-11-02,2377
+nist-sp800-53,NIST SP 800-53 Rev. 5 controls (OSCAL),US-Gov-PD,full,adapt,PD,5.2.0:sha256:64ca6b4161de51ab,2026-11-02,1216
+nist-sp800-guides,NIST SP 800-123 (server security) and SP 800-190 (container security),US-Gov-PD,full,adapt,PD,sp800-123:182ae5d23011;sp800-190:0ebad52c4a3a,2026-11-02,101
+disa-stig,"DISA STIGs (RHEL 10, RHEL 9, Ubuntu 24.04, Kubernetes)",US-Gov-PD,full,adapt,PD,U_RHEL_10_V1R3_STIG;U_RHEL_9_V2R10_STIG;U_CAN_Ubuntu_24-04_LTS_V1R7_STIG;U_Kubernetes_V2R6_STIG,2026-11-02,1171
+archwiki,ArchWiki (via Arch's official arch-wiki-docs package),GFDL-1.3-or-later,full,link-only,B,arch-wiki-docs-20261101-1-any.pkg.tar.zst,2026-11-02,2080
+ansible-docs,Ansible community documentation (GitHub source),GPL-3.0-or-later,full,link-only,C,8790bb28674842280aac8b0856ef7d233b389346,2026-11-02,712
+samba-docs,"Samba manual pages (GitHub source, docs-xml/manpages)",GPL-3.0-or-later,full,link-only,C,f717f570f4b596fcf99c9c740036025fb0e26dff,2026-11-02,1376
+man-pages,Linux man pages (man7.org),various (per page),full,link-only,Ref,,,0
+cilium-docs,Cilium documentation (stable),Apache-2.0,full,adapt,Permissive,,,0
+docker-docs,"Docker documentation (engine, build, compose)",Apache-2.0,full,adapt,Permissive,,,0
+ms-learn-adds,Microsoft Learn: AD DS and OpenSSH for Windows,CC-BY-4.0,full,adapt,A-compatible,,,0
+freeipa-docs,FreeIPA documentation,NOASSERTION,outline,link-only,Ref,,,0
+lfd103,LFD103 A Beginner's Guide to Linux Kernel Development (course page),Proprietary,outline,link-only,Ref,,,0
 samba-wiki,Samba wiki,NOASSERTION,link,link-only,Ref,,,1
-freeipa-docs,FreeIPA documentation,NOASSERTION,link,link-only,Ref,,,1
-cilium-docs,Cilium documentation,NOASSERTION,link,link-only,Ref,,,1
-docker-docs,Docker documentation,NOASSERTION,link,link-only,Ref,,,1
-ms-learn-adds,Microsoft Learn: AD DS and OpenSSH for Windows,CC-BY-4.0 (verify per repo),link,link-only,Ref,,,1
-lfd103,LFD103 A Beginner's Guide to Linux Kernel Development,Proprietary,link,link-only,Ref,,,1
 tlcl,The Linux Command Line (W. Shotts),CC-BY-NC-ND-3.0,link,excluded,Ref,,,1
 cis-benchmarks,CIS Benchmarks,CC-BY-NC-SA-4.0,link,excluded,Ref,,,1

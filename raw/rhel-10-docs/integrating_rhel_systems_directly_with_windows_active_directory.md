@@ -1,5 +1,5 @@
 ---
-{"title": "Integrating RHEL systems directly with Windows Active Directory", "guide": "integrating_rhel_systems_directly_with_windows_active_directory", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/integrating_rhel_systems_directly_with_windows_active_directory/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Integrating RHEL systems directly with Windows Active Directory", "guide": "integrating_rhel_systems_directly_with_windows_active_directory", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/integrating_rhel_systems_directly_with_windows_active_directory/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Integrating RHEL systems directly with Windows Active Directory {#integrating-rhel-systems-directly-with-windows-active-directory .chapter-title data-id="content_chapter" v-ccb3d6a4=""}

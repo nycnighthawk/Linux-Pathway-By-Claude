@@ -1,5 +1,5 @@
 ---
-{"title": "Installing trust between IdM and AD", "guide": "installing_trust_between_idm_and_ad", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/installing_trust_between_idm_and_ad/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Installing trust between IdM and AD", "guide": "installing_trust_between_idm_and_ad", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/installing_trust_between_idm_and_ad/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Installing trust between IdM and AD {#installing-trust-between-idm-and-ad .chapter-title data-id="content_chapter" v-ccb3d6a4=""}

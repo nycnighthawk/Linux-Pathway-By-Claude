@@ -1,0 +1,15 @@
+id: ansible-docs
+name: Ansible community documentation (GitHub source)
+license: GPL-3.0-or-later
+license_note: docs.ansible.com blocks headless browsers (Cloudflare); the GitHub doc
+  source is used instead (D-017).
+mode: full
+reuse: link-only
+stream: C
+retrieved: '2026-11-02'
+upstream: https://github.com/ansible/ansible-documentation
+pin: 8790bb28674842280aac8b0856ef7d233b389346
+upstream_commit_date: '2026-11-02'
+license_file_upstream: COPYING
+text_files: 86
+figures: 0

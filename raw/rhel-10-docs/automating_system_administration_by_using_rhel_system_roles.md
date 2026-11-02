@@ -1,5 +1,5 @@
 ---
-{"title": "Automating system administration by using RHEL system roles", "guide": "automating_system_administration_by_using_rhel_system_roles", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/automating_system_administration_by_using_rhel_system_roles/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Automating system administration by using RHEL system roles", "guide": "automating_system_administration_by_using_rhel_system_roles", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/automating_system_administration_by_using_rhel_system_roles/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 Streamline your workflow with the new MCP server for Red Hat product documentation.Connect your AI tools and LLMs directly to live Red Hat product documentation. [Connect now](https://docs.redhat.com/en/documentation/mcp_server_for_red_hat_documentation/current%20).

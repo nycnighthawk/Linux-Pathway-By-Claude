@@ -6,7 +6,7 @@ license_note: Work of the US Government; not subject to copyright in the United 
 mode: full
 reuse: adapt
 stream: PD
-retrieved: '2026-11-01'
+retrieved: '2026-11-02'
 upstream: https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
 pin: 5.2.0:sha256:64ca6b4161de51ab
 controls: 1196

@@ -27,7 +27,7 @@ sources:
     mode: full
     reuse: adapt
     stream: A
-    pin: fed6b43daf614237fafcff3861a08e95ceebfa94
+    pin: ebba8930a39682e3348999fbf2fd35b6772b636f
 
   - id: debian-handbook
     name: The Debian Administrator's Handbook
@@ -94,7 +94,7 @@ sources:
     mode: full
     reuse: adapt
     stream: A
-    pin: f4ec4968d939d533ecc82b7a352155caed3c932d
+    pin: 177aebb48df75c35d179ae1fb0338afa15e4abd4
 
   - id: bootlin-training
     name: Bootlin training materials (kernel, embedded, debugging)
@@ -106,7 +106,7 @@ sources:
     mode: full
     reuse: adapt
     stream: A
-    pin: 46d5592a529ca124a2bac5f3151daa2e6530fdd3
+    pin: 8d08ca253234fe368b6020d90d44d69d2f533524
 
   - id: lkmpg
     name: The Linux Kernel Module Programming Guide
@@ -132,7 +132,7 @@ sources:
     mode: outline
     reuse: link-only
     stream: C
-    pin: cbbddb6b08cc9900a87cccaa9b22bbe06aa4f50a
+    pin: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
 
   - id: compliance-as-code
     name: ComplianceAsCode / SCAP Security Guide rules
@@ -144,7 +144,7 @@ sources:
     mode: full
     reuse: adapt
     stream: Permissive
-    pin: 4df733118392f28f62c447459ed298a4ab8957ed
+    pin: a6ca1533075082e1f72284622e2b6a90d3960e89
 
   - id: nist-sp800-53
     name: NIST SP 800-53 Rev. 5 controls (OSCAL)

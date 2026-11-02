@@ -1,5 +1,5 @@
 ---
-{"title": "Installing Identity Management", "guide": "installing_identity_management", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/installing_identity_management/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Installing Identity Management", "guide": "installing_identity_management", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/installing_identity_management/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Installing Identity Management {#installing-identity-management .chapter-title data-id="content_chapter" v-ccb3d6a4=""}

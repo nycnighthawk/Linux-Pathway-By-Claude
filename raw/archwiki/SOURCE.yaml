@@ -1,0 +1,14 @@
+id: archwiki
+name: ArchWiki (via Arch's official arch-wiki-docs package)
+license: GFDL-1.3-or-later
+license_note: The wiki blocks headless browsers, so content comes from Arch's own
+  HTML dump package (D-017).
+mode: full
+reuse: link-only
+stream: B
+retrieved: '2026-11-02'
+upstream: https://geo.mirror.pkgbuild.com/extra/os/x86_64/arch-wiki-docs-20261101-1-any.pkg.tar.zst
+pin: arch-wiki-docs-20261101-1-any.pkg.tar.zst
+candidates: 89
+text_files: 89
+pages_in_package: 2496

@@ -1,5 +1,5 @@
 ---
-{"title": "Kubernetes Security Technical Implementation Guide", "url": "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Kubernetes_V2R6_STIG.zip", "retrieved": "2026-11-01", "license": "US-Gov-PD"}
+{"title": "Kubernetes Security Technical Implementation Guide", "url": "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Kubernetes_V2R6_STIG.zip", "retrieved": "2026-11-02", "license": "US-Gov-PD"}
 ---
 
 # Kubernetes Security Technical Implementation Guide

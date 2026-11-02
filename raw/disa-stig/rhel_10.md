@@ -1,5 +1,5 @@
 ---
-{"title": "Red Hat Enterprise Linux 10 Security Technical Implementation Guide", "url": "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_10_V1R3_STIG.zip", "retrieved": "2026-11-01", "license": "US-Gov-PD"}
+{"title": "Red Hat Enterprise Linux 10 Security Technical Implementation Guide", "url": "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_10_V1R3_STIG.zip", "retrieved": "2026-11-02", "license": "US-Gov-PD"}
 ---
 
 # Red Hat Enterprise Linux 10 Security Technical Implementation Guide

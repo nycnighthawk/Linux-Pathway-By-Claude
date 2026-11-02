@@ -1,5 +1,5 @@
 ---
-{"title": "Customizing Anaconda", "guide": "customizing_anaconda", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/customizing_anaconda/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Customizing Anaconda", "guide": "customizing_anaconda", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/customizing_anaconda/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Customizing Anaconda {#customizing-anaconda .chapter-title data-id="content_chapter" v-ccb3d6a4=""}

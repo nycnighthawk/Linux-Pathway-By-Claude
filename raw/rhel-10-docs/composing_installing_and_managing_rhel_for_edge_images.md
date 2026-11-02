@@ -1,6 +1,8 @@
 ---
-{"title": "Composing, installing, and managing RHEL for Edge images", "guide": "composing_installing_and_managing_rhel_for_edge_images", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/composing_installing_and_managing_rhel_for_edge_images/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Composing, installing, and managing RHEL for Edge images", "guide": "composing_installing_and_managing_rhel_for_edge_images", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/composing_installing_and_managing_rhel_for_edge_images/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
+
+Streamline your workflow with the new MCP server for Red Hat product documentation.Connect your AI tools and LLMs directly to live Red Hat product documentation. [Connect now](https://docs.redhat.com/en/documentation/mcp_server_for_red_hat_documentation/current%20).
 
 # Composing, installing, and managing RHEL for Edge images {#composing-installing-and-managing-rhel-for-edge-images .chapter-title data-id="content_chapter" v-ccb3d6a4=""}
 

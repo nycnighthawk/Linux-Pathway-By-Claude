@@ -1,5 +1,5 @@
 ---
-{"title": "Configuring and managing Windows virtual machines", "guide": "configuring_and_managing_windows_virtual_machines", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/configuring_and_managing_windows_virtual_machines/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Configuring and managing Windows virtual machines", "guide": "configuring_and_managing_windows_virtual_machines", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/configuring_and_managing_windows_virtual_machines/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Configuring and managing Windows virtual machines {#configuring-and-managing-windows-virtual-machines .chapter-title data-id="content_chapter" v-ccb3d6a4=""}

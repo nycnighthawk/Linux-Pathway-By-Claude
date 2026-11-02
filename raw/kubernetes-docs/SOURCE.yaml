@@ -5,10 +5,10 @@ license_note: Documentation CC BY 4.0; code samples Apache-2.0.
 mode: full
 reuse: adapt
 stream: A
-retrieved: '2026-11-01'
+retrieved: '2026-11-02'
 upstream: https://github.com/kubernetes/website
-pin: f4ec4968d939d533ecc82b7a352155caed3c932d
-upstream_commit_date: '2026-11-01'
+pin: 177aebb48df75c35d179ae1fb0338afa15e4abd4
+upstream_commit_date: '2026-11-02'
 license_file_upstream: LICENSE
 text_files: 1278
 figures: 0

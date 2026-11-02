@@ -5,10 +5,10 @@ license_note: null
 mode: full
 reuse: adapt
 stream: A
-retrieved: '2026-11-01'
+retrieved: '2026-11-02'
 upstream: https://github.com/rocky-linux/documentation
-pin: fed6b43daf614237fafcff3861a08e95ceebfa94
-upstream_commit_date: '2026-10-31'
+pin: ebba8930a39682e3348999fbf2fd35b6772b636f
+upstream_commit_date: '2026-11-02'
 license_file_upstream: LICENSE.md
 text_files: 493
 figures: 334

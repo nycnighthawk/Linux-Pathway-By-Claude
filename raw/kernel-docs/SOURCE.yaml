@@ -1,13 +1,13 @@
 id: kernel-docs
 name: Linux kernel documentation (process, dev-tools)
 license: GPL-2.0-only
-license_note: The owner chose link-only entries (D-002).
+license_note: The owner chose link-only entries (D-002, interpreted in D-016).
 mode: outline
 reuse: link-only
 stream: C
-retrieved: '2026-11-01'
+retrieved: '2026-11-02'
 upstream: https://github.com/torvalds/linux
-pin: cbbddb6b08cc9900a87cccaa9b22bbe06aa4f50a
-upstream_commit_date: '2026-10-31'
+pin: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+upstream_commit_date: '2026-11-01'
 license_file_upstream: COPYING
 outline_files: 112

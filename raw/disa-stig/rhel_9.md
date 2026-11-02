@@ -1,5 +1,5 @@
 ---
-{"title": "Red Hat Enterprise Linux 9 Security Technical Implementation Guide", "url": "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_9_V2R10_STIG.zip", "retrieved": "2026-11-01", "license": "US-Gov-PD"}
+{"title": "Red Hat Enterprise Linux 9 Security Technical Implementation Guide", "url": "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_9_V2R10_STIG.zip", "retrieved": "2026-11-02", "license": "US-Gov-PD"}
 ---
 
 # Red Hat Enterprise Linux 9 Security Technical Implementation Guide

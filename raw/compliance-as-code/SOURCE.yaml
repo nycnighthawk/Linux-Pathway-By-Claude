@@ -5,10 +5,10 @@ license_note: null
 mode: full
 reuse: adapt
 stream: Permissive
-retrieved: '2026-11-01'
+retrieved: '2026-11-02'
 upstream: https://github.com/ComplianceAsCode/content
-pin: 4df733118392f28f62c447459ed298a4ab8957ed
-upstream_commit_date: '2026-10-30'
+pin: a6ca1533075082e1f72284622e2b6a90d3960e89
+upstream_commit_date: '2026-11-02'
 license_file_upstream: LICENSE
 text_files: 2377
 figures: 0

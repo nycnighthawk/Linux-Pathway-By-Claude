@@ -1,5 +1,5 @@
 ---
-{"title": "Canonical Ubuntu 24.04 LTS Security Technical Implementation Guide", "url": "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_CAN_Ubuntu_24-04_LTS_V1R7_STIG.zip", "retrieved": "2026-11-01", "license": "US-Gov-PD"}
+{"title": "Canonical Ubuntu 24.04 LTS Security Technical Implementation Guide", "url": "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_CAN_Ubuntu_24-04_LTS_V1R7_STIG.zip", "retrieved": "2026-11-02", "license": "US-Gov-PD"}
 ---
 
 # Canonical Ubuntu 24.04 LTS Security Technical Implementation Guide

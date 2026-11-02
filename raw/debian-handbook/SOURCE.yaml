@@ -5,7 +5,7 @@ license_note: Dual licensed; the notice is in en-US/Book_Info.xml.
 mode: full
 reuse: adapt
 stream: A
-retrieved: '2026-11-01'
+retrieved: '2026-11-02'
 upstream: https://salsa.debian.org/hertzog/debian-handbook.git
 pin: bfac53503524a02c72ca99e8049afa9d351ba565
 upstream_commit_date: '2026-01-27'

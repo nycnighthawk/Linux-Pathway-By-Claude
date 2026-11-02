@@ -1,0 +1,15 @@
+id: samba-docs
+name: Samba manual pages (GitHub source, docs-xml/manpages)
+license: GPL-3.0-or-later
+license_note: The Samba wiki returns 403 to headless browsers; the man pages from
+  Samba's own source tree are used (D-017).
+mode: full
+reuse: link-only
+stream: C
+retrieved: '2026-11-02'
+upstream: https://github.com/samba-team/samba
+pin: f717f570f4b596fcf99c9c740036025fb0e26dff
+upstream_commit_date: '2026-11-02'
+license_file_upstream: COPYING
+text_files: 113
+figures: 0

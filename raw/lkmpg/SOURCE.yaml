@@ -1,11 +1,12 @@
 id: lkmpg
 name: The Linux Kernel Module Programming Guide
 license: OSL-3.0
-license_note: Book OSL-3.0; examples GPL-2.0. The owner chose link-only entries (D-002).
+license_note: Book OSL-3.0; examples GPL-2.0. The owner chose link-only entries (D-002,
+  interpreted in D-016).
 mode: outline
 reuse: link-only
 stream: C
-retrieved: '2026-11-01'
+retrieved: '2026-11-02'
 upstream: https://github.com/sysprog21/lkmpg
 pin: 5854698bc4535357d9c40d4eefa5241ef3bd814e
 upstream_commit_date: '2026-09-08'

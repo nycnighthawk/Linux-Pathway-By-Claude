@@ -1,5 +1,5 @@
 ---
-{"title": "Installing and using dynamic programming languages", "guide": "installing_and_using_dynamic_programming_languages", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/installing_and_using_dynamic_programming_languages/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Installing and using dynamic programming languages", "guide": "installing_and_using_dynamic_programming_languages", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/installing_and_using_dynamic_programming_languages/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Installing and using dynamic programming languages {#installing-and-using-dynamic-programming-languages .chapter-title data-id="content_chapter" v-ccb3d6a4=""}

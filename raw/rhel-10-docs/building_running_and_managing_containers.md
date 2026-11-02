@@ -1,5 +1,5 @@
 ---
-{"title": "Building, running, and managing containers", "guide": "building_running_and_managing_containers", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/building_running_and_managing_containers/index", "retrieved": "2026-11-01", "license": "CC-BY-SA-3.0"}
+{"title": "Building, running, and managing containers", "guide": "building_running_and_managing_containers", "url": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/building_running_and_managing_containers/index", "retrieved": "2026-11-02", "license": "CC-BY-SA-3.0"}
 ---
 
 # Building, running, and managing containers {#building-running-and-managing-containers .chapter-title data-id="content_chapter" v-ccb3d6a4=""}
