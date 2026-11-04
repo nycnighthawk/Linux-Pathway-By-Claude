@@ -1,0 +1,296 @@
+# Syllabus topics = synthesis slices (decision D-023). Generated from the Linux Mastery Path report.
+# id: <course>-T<nn>; depth 1-4 (Aware..Expert); env = where its lab is fully testable.
+# Optional query: [terms] overrides the title words used by `lpc synth pack`.
+topics:
+  LNX-101-T01: {course: LNX-101, title: "Distributions, open-source licensing (GPL, copyleft)", depth: 1, env: C}
+  LNX-101-T02: {course: LNX-101, title: "Shell navigation, globbing, quoting, history", depth: 3, env: C}
+  LNX-101-T03: {course: LNX-101, title: "Files, links, FHS layout", depth: 3, env: C}
+  LNX-101-T04: {course: LNX-101, title: "Text tools: grep, sed, awk, cut, sort, uniq, tr, xargs", depth: 3, env: C}
+  LNX-101-T05: {course: LNX-101, title: "Redirection, pipes, tee", depth: 3, env: C}
+  LNX-101-T06: {course: LNX-101, title: "Regular expressions (BRE/ERE)", depth: 2, env: C}
+  LNX-101-T07: {course: LNX-101, title: "vi/vim and nano", depth: 2, env: C}
+  LNX-101-T08: {course: LNX-101, title: "Permissions, ownership, umask, special bits", depth: 3, env: C}
+  LNX-101-T09: {course: LNX-101, title: "Archiving and compression: tar, gzip, xz, zstd, cpio", depth: 2, env: C}
+  LNX-101-T10: {course: LNX-101, title: "Getting help: man, info, --help", depth: 2, env: C}
+  LNX-102-T01: {course: LNX-102, title: "Users, groups, sudo, password ageing", depth: 3, env: C}
+  LNX-102-T02: {course: LNX-102, title: "Processes, signals, nice, job control", depth: 3, env: C}
+  LNX-102-T03: {course: LNX-102, title: "systemd units, targets, dependencies, overrides", depth: 3, env: V}
+  LNX-102-T04: {course: LNX-102, title: "Boot process, GRUB2, rescue targets, root reset", depth: 3, env: V}
+  LNX-102-T05: {course: LNX-102, title: "journald, rsyslog, logrotate", depth: 3, env: V}
+  LNX-102-T06: {course: LNX-102, title: "cron, at, systemd timers", depth: 3, env: V}
+  LNX-102-T07: {course: LNX-102, title: "chrony and timedatectl", depth: 2, env: V}
+  LNX-102-T08: {course: LNX-102, title: "Kernel modules and sysctl, persistent vs runtime", depth: 3, env: V}
+  LNX-102-T09: {course: LNX-102, title: "tuned profiles (RHEL 10 objective)", depth: 2, env: V}
+  LNX-102-T10: {course: LNX-102, title: "Proving changes survive a reboot", depth: 3, env: V}
+  LNX-102-T11: {course: LNX-102, title: "Physical console and firmware setup", depth: 1, env: H}
+  LNX-103-T01: {course: LNX-103, title: "Partitioning GPT/MBR", depth: 3, env: V}
+  LNX-103-T02: {course: LNX-103, title: "ext4, XFS, Btrfs; fstab and mount units", depth: 3, env: V}
+  LNX-103-T03: {course: LNX-103, title: "LVM: grow, snapshots, thin pools", depth: 4, env: V}
+  LNX-103-T04: {course: LNX-103, title: "Swap files, zram", depth: 2, env: V}
+  LNX-103-T05: {course: LNX-103, title: "Software RAID with mdadm", depth: 3, env: V}
+  LNX-103-T06: {course: LNX-103, title: "Quotas, ACLs, xattrs", depth: 3, env: V}
+  LNX-103-T07: {course: LNX-103, title: "NFS and SMB clients, autofs", depth: 3, env: V}
+  LNX-103-T08: {course: LNX-103, title: "iSCSI target and initiator", depth: 2, env: V}
+  LNX-103-T09: {course: LNX-103, title: "LUKS2 volumes", depth: 3, env: V}
+  LNX-103-T10: {course: LNX-103, title: "Backup and restore: rsync, restic/borg", depth: 3, env: C}
+  LNX-103-T11: {course: LNX-103, title: "Hardware RAID, FC SAN, multipath", depth: 1, env: H}
+  LNX-104-T01: {course: LNX-104, title: "dnf/rpm: query, verify, history, undo", depth: 3, env: C}
+  LNX-104-T02: {course: LNX-104, title: "apt/dpkg: sources, pinning, holds", depth: 3, env: C}
+  LNX-104-T03: {course: LNX-104, title: "Repositories and GPG keys", depth: 3, env: C}
+  LNX-104-T04: {course: LNX-104, title: "Flatpak remotes and packages (RHEL 10 objective)", depth: 3, env: V}
+  LNX-104-T05: {course: LNX-104, title: "Building from source, shared libraries", depth: 2, env: C}
+  LNX-104-T06: {course: LNX-104, title: "Dependency troubleshooting", depth: 3, env: C}
+  LNX-201-T01: {course: LNX-201, title: "TCP/IP, IPv4/IPv6, subnetting", depth: 3, env: C}
+  LNX-201-T02: {course: LNX-201, title: "ip, ss, ethtool", depth: 3, env: C}
+  LNX-201-T03: {course: LNX-201, title: "NetworkManager/nmcli, netplan, networkd", depth: 3, env: V}
+  LNX-201-T04: {course: LNX-201, title: "Name resolution, systemd-resolved", depth: 3, env: V}
+  LNX-201-T05: {course: LNX-201, title: "Routing and multi-NIC hosts", depth: 3, env: V}
+  LNX-201-T06: {course: LNX-201, title: "firewalld, nftables", depth: 3, env: V}
+  LNX-201-T07: {course: LNX-201, title: "OpenSSH: keys, ProxyJump, forwarding", depth: 3, env: C}
+  LNX-201-T08: {course: LNX-201, title: "Troubleshooting: mtr, dig, tcpdump", depth: 3, env: C}
+  LNX-201-T09: {course: LNX-201, title: "Wi-Fi and 802.1X", depth: 1, env: H}
+  LNX-202-T01: {course: LNX-202, title: "Bridges, VLANs, bonding (LACP between Linux peers)", depth: 3, env: V}
+  LNX-202-T02: {course: LNX-202, title: "Namespaces, veth, VRF, policy routing", depth: 4, env: C}
+  LNX-202-T03: {course: LNX-202, title: "IPv6: SLAAC, DHCPv6, radvd", depth: 3, env: V}
+  LNX-202-T04: {course: LNX-202, title: "BIND9, Unbound, DNSSEC", depth: 3, env: C}
+  LNX-202-T05: {course: LNX-202, title: "Kea DHCP", depth: 3, env: C}
+  LNX-202-T06: {course: LNX-202, title: "HAProxy, keepalived VRRP", depth: 3, env: V}
+  LNX-202-T07: {course: LNX-202, title: "WireGuard, IPsec", depth: 3, env: V}
+  LNX-202-T08: {course: LNX-202, title: "tcpdump/tshark", depth: 3, env: C}
+  LNX-202-T09: {course: LNX-202, title: "FRR (OSPF/BGP)", depth: 2, env: C}
+  LNX-202-T10: {course: LNX-202, title: "Line-rate measurement", depth: 2, env: S}
+  LNX-202-T11: {course: LNX-202, title: "Vendor-switch LACP, SR-IOV", depth: 1, env: H}
+  LNX-203-T01: {course: LNX-203, title: "Bash: tests, loops, functions, traps", depth: 4, env: C}
+  LNX-203-T02: {course: LNX-203, title: "Strict mode, quoting, ShellCheck", depth: 3, env: C}
+  LNX-203-T03: {course: LNX-203, title: "bats-core tests", depth: 3, env: C}
+  LNX-203-T04: {course: LNX-203, title: "awk, jq, yq", depth: 3, env: C}
+  LNX-203-T05: {course: LNX-203, title: "Python for ops", depth: 3, env: C}
+  LNX-203-T06: {course: LNX-203, title: "Git workflow and review", depth: 3, env: C}
+  LNX-203-T07: {course: LNX-203, title: "Scripts as systemd services and timers", depth: 2, env: V}
+  LNX-204-T01: {course: LNX-204, title: "PAM, pwquality, faillock", depth: 3, env: V}
+  LNX-204-T02: {course: LNX-204, title: "sudo policy", depth: 3, env: C}
+  LNX-204-T03: {course: LNX-204, title: "SSH hardening, SSH certificates", depth: 3, env: C}
+  LNX-204-T04: {course: LNX-204, title: "SELinux: contexts, booleans, audit2why", depth: 4, env: V}
+  LNX-204-T05: {course: LNX-204, title: "AppArmor profiles", depth: 2, env: V}
+  LNX-204-T06: {course: LNX-204, title: "nftables hardening", depth: 3, env: V}
+  LNX-204-T07: {course: LNX-204, title: "auditd", depth: 3, env: V}
+  LNX-204-T08: {course: LNX-204, title: "AIDE", depth: 2, env: V}
+  LNX-204-T09: {course: LNX-204, title: "OpenSCAP scans and remediation", depth: 3, env: V}
+  LNX-204-T10: {course: LNX-204, title: "TLS and openssl", depth: 3, env: C}
+  LNX-204-T11: {course: LNX-204, title: "CVE and errata triage", depth: 2, env: C}
+  LNX-220-T01: {course: LNX-220, title: "gcc, clang, binutils, linking, ELF", depth: 3, env: C}
+  LNX-220-T02: {course: LNX-220, title: "make, CMake, Meson", depth: 3, env: C}
+  LNX-220-T03: {course: LNX-220, title: "Shared libraries, sonames, pkg-config", depth: 3, env: C}
+  LNX-220-T04: {course: LNX-220, title: "gdb, core dumps, valgrind", depth: 4, env: C}
+  LNX-220-T05: {course: LNX-220, title: "Sanitizers and static analysis", depth: 3, env: C}
+  LNX-220-T06: {course: LNX-220, title: "Unit tests, coverage, fuzzing (libFuzzer/AFL++)", depth: 3, env: C}
+  LNX-220-T07: {course: LNX-220, title: "C, Rust, Go and Python toolchains", depth: 3, env: C}
+  LNX-220-T08: {course: LNX-220, title: "systemd integration: sd_notify, socket activation, journald", depth: 3, env: V}
+  LNX-220-T09: {course: LNX-220, title: "D-Bus services, XDG conventions", depth: 2, env: V}
+  LNX-220-T10: {course: LNX-220, title: "Packaging apps: RPM, DEB, Flatpak, OCI", depth: 3, env: C}
+  LNX-220-T11: {course: LNX-220, title: "Profiling with perf and flame graphs (functional)", depth: 3, env: V}
+  LNX-220-T12: {course: LNX-220, title: "GUI apps (GTK/Qt) under Xvfb", depth: 1, env: C}
+  LNX-301-T01: {course: LNX-301, title: "LDAP servers and clients", depth: 3, env: C}
+  LNX-301-T02: {course: LNX-301, title: "Kerberos, keytabs, GSSAPI SSH", depth: 3, env: C}
+  LNX-301-T03: {course: LNX-301, title: "SSSD, nsswitch, PAM", depth: 4, env: V, query: ["sssd", "nsswitch", "pam_sss", "authselect", "sss_cache", "id_provider", "pam"]}
+  LNX-301-T04: {course: LNX-301, title: "realmd/adcli joins to Samba AD DC", depth: 4, env: V}
+  LNX-301-T05: {course: LNX-301, title: "Joining a genuine Windows AD", depth: 3, env: S}
+  LNX-301-T06: {course: LNX-301, title: "FreeIPA/IdM: replicas, HBAC, sudo rules", depth: 4, env: V}
+  LNX-301-T07: {course: LNX-301, title: "IdM to AD trust", depth: 3, env: S}
+  LNX-301-T08: {course: LNX-301, title: "ID mapping, sssctl troubleshooting", depth: 3, env: V}
+  LNX-301-T09: {course: LNX-301, title: "ansible-freeipa automation", depth: 3, env: V}
+  LNX-301-T10: {course: LNX-301, title: "Smart-card login", depth: 1, env: S}
+  LNX-302-T01: {course: LNX-302, title: "Samba file server", depth: 4, env: C}
+  LNX-302-T02: {course: LNX-302, title: "winbind vs SSSD members", depth: 3, env: V}
+  LNX-302-T03: {course: LNX-302, title: "Samba AD DC replication", depth: 3, env: C}
+  LNX-302-T04: {course: LNX-302, title: "SMB clients with Kerberos", depth: 3, env: C}
+  LNX-302-T05: {course: LNX-302, title: "AD DNS and time", depth: 3, env: C}
+  LNX-302-T06: {course: LNX-302, title: "PowerShell 7 and OpenSSH on Windows", depth: 3, env: W}
+  LNX-302-T07: {course: LNX-302, title: "Windows clients and printing", depth: 2, env: S}
+  LNX-302-T08: {course: LNX-302, title: "Ansible managing Windows", depth: 2, env: S}
+  LNX-302-T09: {course: LNX-302, title: "NFSv4 with Kerberos", depth: 2, env: V}
+  LNX-302-T10: {course: LNX-302, title: "Linux in a genuine AD estate", depth: 3, env: S}
+  LNX-303-T01: {course: LNX-303, title: "X.509 PKI: CA, CRL, OCSP", depth: 4, env: C}
+  LNX-303-T02: {course: LNX-303, title: "LUKS2, Clevis/Tang, TPM2 (swtpm)", depth: 3, env: V}
+  LNX-303-T03: {course: LNX-303, title: "Secure Boot, signed modules", depth: 2, env: V}
+  LNX-303-T04: {course: LNX-303, title: "IMA/EVM, lockdown", depth: 2, env: V}
+  LNX-303-T05: {course: LNX-303, title: "Falco, auditd advanced", depth: 3, env: V}
+  LNX-303-T06: {course: LNX-303, title: "Suricata, fail2ban", depth: 3, env: V}
+  LNX-303-T07: {course: LNX-303, title: "OVAL, Trivy, SBOMs", depth: 3, env: C}
+  LNX-303-T08: {course: LNX-303, title: "Compliance as code", depth: 4, env: V}
+  LNX-303-T09: {course: LNX-303, title: "OpenBao/Vault, sops", depth: 3, env: C}
+  LNX-303-T10: {course: LNX-303, title: "Linux forensics basics", depth: 2, env: V}
+  LNX-303-T11: {course: LNX-303, title: "Long-term compliance drift", depth: 1, env: O}
+  LNX-304-T01: {course: LNX-304, title: "RPM: spec, rpmbuild, mock", depth: 4, env: C}
+  LNX-304-T02: {course: LNX-304, title: "DEB: debhelper, sbuild", depth: 3, env: C}
+  LNX-304-T03: {course: LNX-304, title: "Signing and key rotation", depth: 3, env: C}
+  LNX-304-T04: {course: LNX-304, title: "createrepo_c, aptly, Pulp 3", depth: 3, env: C}
+  LNX-304-T05: {course: LNX-304, title: "Dated snapshots", depth: 3, env: C}
+  LNX-304-T06: {course: LNX-304, title: "Katello content views", depth: 3, env: S}
+  LNX-304-T07: {course: LNX-304, title: "Patch rings", depth: 3, env: V}
+  LNX-304-T08: {course: LNX-304, title: "bootc / image mode, rpm-ostree", depth: 3, env: V}
+  LNX-304-T09: {course: LNX-304, title: "Image Builder", depth: 2, env: V}
+  LNX-304-T10: {course: LNX-304, title: "Multi-week fleet rollouts", depth: 2, env: O}
+  LNX-305-T01: {course: LNX-305, title: "Inventories, variable precedence", depth: 4, env: C}
+  LNX-305-T02: {course: LNX-305, title: "Playbooks, handlers, loops, Jinja2", depth: 4, env: V}
+  LNX-305-T03: {course: LNX-305, title: "Roles, collections, execution environments", depth: 3, env: C}
+  LNX-305-T04: {course: LNX-305, title: "Vault", depth: 3, env: C}
+  LNX-305-T05: {course: LNX-305, title: "RHEL System Roles", depth: 3, env: V}
+  LNX-305-T06: {course: LNX-305, title: "ansible-lint and Molecule", depth: 4, env: C}
+  LNX-305-T07: {course: LNX-305, title: "Idempotence, check mode", depth: 3, env: V}
+  LNX-305-T08: {course: LNX-305, title: "AWX / automation controller", depth: 2, env: S}
+  LNX-305-T09: {course: LNX-305, title: "Managing Windows hosts", depth: 2, env: S}
+  LNX-306-T01: {course: LNX-306, title: "Kickstart, preseed, autoinstall", depth: 3, env: V}
+  LNX-306-T02: {course: LNX-306, title: "PXE/iPXE/HTTP boot", depth: 3, env: V}
+  LNX-306-T03: {course: LNX-306, title: "cloud-init", depth: 4, env: V}
+  LNX-306-T04: {course: LNX-306, title: "Packer images", depth: 3, env: V}
+  LNX-306-T05: {course: LNX-306, title: "OpenTofu with libvirt provider", depth: 3, env: V}
+  LNX-306-T06: {course: LNX-306, title: "Foreman/MAAS bare metal", depth: 2, env: S}
+  LNX-306-T07: {course: LNX-306, title: "Simulated Redfish/IPMI", depth: 2, env: V}
+  LNX-306-T08: {course: LNX-306, title: "Leapp and release upgrades", depth: 3, env: V}
+  LNX-306-T09: {course: LNX-306, title: "Drift detection, secure wipe", depth: 2, env: V}
+  LNX-306-T10: {course: LNX-306, title: "Cloud provisioning", depth: 3, env: K}
+  LNX-306-T11: {course: LNX-306, title: "Real BMC firmware", depth: 1, env: H}
+  LNX-307-T01: {course: LNX-307, title: "USE/RED methods, runbooks", depth: 3, env: C}
+  LNX-307-T02: {course: LNX-307, title: "sysstat, vmstat, iostat, pidstat", depth: 3, env: V}
+  LNX-307-T03: {course: LNX-307, title: "Prometheus, Grafana, alerting", depth: 3, env: C}
+  LNX-307-T04: {course: LNX-307, title: "Central logging", depth: 3, env: V}
+  LNX-307-T05: {course: LNX-307, title: "strace, perf, eBPF (bcc, bpftrace)", depth: 3, env: V}
+  LNX-307-T06: {course: LNX-307, title: "kdump and crash", depth: 2, env: V}
+  LNX-307-T07: {course: LNX-307, title: "Break/fix drills", depth: 4, env: V}
+  LNX-307-T08: {course: LNX-307, title: "OOM and cgroups v2", depth: 3, env: V}
+  LNX-307-T09: {course: LNX-307, title: "Reliable benchmarking", depth: 3, env: S}
+  LNX-307-T10: {course: LNX-307, title: "Production on-call", depth: 2, env: O}
+  LNX-308-T01: {course: LNX-308, title: "KVM/QEMU, libvirt, virsh, virt-install", depth: 4, env: V}
+  LNX-308-T02: {course: LNX-308, title: "Templates, snapshots, virt-customize", depth: 3, env: V}
+  LNX-308-T03: {course: LNX-308, title: "VM networking: bridges, macvtap, VLANs", depth: 3, env: V}
+  LNX-308-T04: {course: LNX-308, title: "virtio, hugepages, CPU pinning (functional)", depth: 2, env: V}
+  LNX-308-T05: {course: LNX-308, title: "Live migration between hypervisors", depth: 3, env: S}
+  LNX-308-T06: {course: LNX-308, title: "systemd-nspawn, LXC/Incus", depth: 2, env: V}
+  LNX-308-T07: {course: LNX-308, title: "Nested virtualization, Firecracker microVMs", depth: 2, env: V}
+  LNX-308-T08: {course: LNX-308, title: "Proxmox/oVirt clusters", depth: 1, env: S}
+  LNX-309-T01: {course: LNX-309, title: "Pacemaker/Corosync, fence_virsh", depth: 3, env: V}
+  LNX-309-T02: {course: LNX-309, title: "DRBD, GFS2 awareness", depth: 2, env: V}
+  LNX-309-T03: {course: LNX-309, title: "keepalived + HAProxy HA", depth: 3, env: V}
+  LNX-309-T04: {course: LNX-309, title: "PostgreSQL replication", depth: 2, env: C}
+  LNX-309-T05: {course: LNX-309, title: "DR drills", depth: 3, env: V}
+  LNX-309-T06: {course: LNX-309, title: "Real power fencing", depth: 1, env: H}
+  LNX-310-T01: {course: LNX-310, title: "Namespaces, cgroups v2, capabilities: a container by hand", depth: 4, env: C}
+  LNX-310-T02: {course: LNX-310, title: "OCI image and runtime specs; runc, crun, containerd, CRI-O", depth: 3, env: C}
+  LNX-310-T03: {course: LNX-310, title: "Podman rootless, pods, Quadlet units", depth: 4, env: V}
+  LNX-310-T04: {course: LNX-310, title: "Docker Engine, BuildKit, Compose", depth: 3, env: C}
+  LNX-310-T05: {course: LNX-310, title: "Containerfile craft: multi-stage, non-root, distroless", depth: 4, env: C}
+  LNX-310-T06: {course: LNX-310, title: "Registries, Skopeo, mirrors", depth: 3, env: C}
+  LNX-310-T07: {course: LNX-310, title: "Storage: overlayfs, volumes, SELinux labels", depth: 3, env: V}
+  LNX-310-T08: {course: LNX-310, title: "Supply chain: SBOM, cosign signing, Trivy", depth: 3, env: C}
+  LNX-310-T09: {course: LNX-310, title: "Debugging: nsenter, inspect, events", depth: 3, env: C}
+  LNX-310-T10: {course: LNX-310, title: "Sandboxed runtimes: gVisor, Kata (needs KVM)", depth: 2, env: V}
+  LNX-310-T11: {course: LNX-310, title: "Windows containers", depth: 1, env: W}
+  LNX-311-T01: {course: LNX-311, title: "Architecture: API server, etcd, scheduler, kubelet, CRI", depth: 3, env: C}
+  LNX-311-T02: {course: LNX-311, title: "kubeadm install on 3 VMs; HA control-plane design", depth: 4, env: V}
+  LNX-311-T03: {course: LNX-311, title: "Cluster upgrades, drain and cordon", depth: 4, env: V}
+  LNX-311-T04: {course: LNX-311, title: "etcd backup and restore", depth: 4, env: V}
+  LNX-311-T05: {course: LNX-311, title: "Scheduling: affinity, taints, resources, autoscaling", depth: 3, env: C}
+  LNX-311-T06: {course: LNX-311, title: "Storage: PV/PVC, StorageClass, CSI", depth: 3, env: C}
+  LNX-311-T07: {course: LNX-311, title: "RBAC, ServiceAccounts, certificates", depth: 3, env: C}
+  LNX-311-T08: {course: LNX-311, title: "Helm and Kustomize", depth: 3, env: C}
+  LNX-311-T09: {course: LNX-311, title: "CRDs and operators", depth: 3, env: C}
+  LNX-311-T10: {course: LNX-311, title: "Troubleshooting nodes, control plane and apps", depth: 4, env: V}
+  LNX-311-T11: {course: LNX-311, title: "Managed Kubernetes (EKS/AKS/GKE)", depth: 2, env: K}
+  LNX-311-T12: {course: LNX-311, title: "Hundreds of nodes; long-lived upgrades", depth: 1, env: S}
+  LNX-312-T01: {course: LNX-312, title: "netns + veth + bridge + NAT: a container network by hand", depth: 4, env: C}
+  LNX-312-T02: {course: LNX-312, title: "CNI spec; write a minimal CNI plugin", depth: 3, env: C}
+  LNX-312-T03: {course: LNX-312, title: "Flannel, Calico, Cilium compared", depth: 3, env: C}
+  LNX-312-T04: {course: LNX-312, title: "kube-proxy modes (iptables, IPVS, nftables), Service types", depth: 4, env: C, query: ["kube-proxy", "iptables", "ipvs", "nftables", "clusterip", "nodeport", "loadbalancer", "kube-proxy replacement"]}
+  LNX-312-T05: {course: LNX-312, title: "eBPF datapath, kube-proxy replacement, Hubble", depth: 3, env: C}
+  LNX-312-T06: {course: LNX-312, title: "Ingress and Gateway API", depth: 3, env: C}
+  LNX-312-T07: {course: LNX-312, title: "NetworkPolicy and L7 CiliumNetworkPolicy", depth: 4, env: C}
+  LNX-312-T08: {course: LNX-312, title: "CoreDNS and service discovery", depth: 3, env: C}
+  LNX-312-T09: {course: LNX-312, title: "Service mesh: Istio ambient / Linkerd, mTLS", depth: 2, env: C}
+  LNX-312-T10: {course: LNX-312, title: "MetalLB and BGP with FRR", depth: 3, env: C}
+  LNX-312-T11: {course: LNX-312, title: "Cilium ClusterMesh across two kind clusters", depth: 2, env: C}
+  LNX-312-T12: {course: LNX-312, title: "MTU, encapsulation overhead, throughput", depth: 2, env: S}
+  LNX-312-T13: {course: LNX-312, title: "BGP to physical top-of-rack switches", depth: 1, env: H}
+  LNX-313-T01: {course: LNX-313, title: "Pod design: init and sidecar containers", depth: 3, env: C}
+  LNX-313-T02: {course: LNX-313, title: "Config, Secrets, SecurityContext, limits", depth: 4, env: C}
+  LNX-313-T03: {course: LNX-313, title: "Probes, logs, kubectl debug", depth: 4, env: C}
+  LNX-313-T04: {course: LNX-313, title: "Rolling, blue/green, canary", depth: 3, env: C}
+  LNX-313-T05: {course: LNX-313, title: "Jobs and CronJobs", depth: 3, env: C}
+  LNX-313-T06: {course: LNX-313, title: "Helm chart authoring and testing", depth: 3, env: C}
+  LNX-313-T07: {course: LNX-313, title: "GitOps with Argo CD or Flux", depth: 3, env: C}
+  LNX-313-T08: {course: LNX-313, title: "An operator with kubebuilder", depth: 2, env: C}
+  LNX-313-T09: {course: LNX-313, title: "Prometheus metrics, OpenTelemetry", depth: 3, env: C}
+  LNX-313-T10: {course: LNX-313, title: "Inner loop: Tilt/Skaffold, devcontainers", depth: 2, env: C}
+  LNX-314-T01: {course: LNX-314, title: "Cluster setup: kube-bench, metadata protection", depth: 3, env: V}
+  LNX-314-T02: {course: LNX-314, title: "RBAC minimisation, API access", depth: 3, env: C}
+  LNX-314-T03: {course: LNX-314, title: "AppArmor, seccomp, kernel attack surface", depth: 3, env: V}
+  LNX-314-T04: {course: LNX-314, title: "Pod Security Admission, Kyverno/Gatekeeper", depth: 4, env: C}
+  LNX-314-T05: {course: LNX-314, title: "Secrets encryption at rest", depth: 3, env: V}
+  LNX-314-T06: {course: LNX-314, title: "Supply chain: cosign, SBOM, admission checks", depth: 4, env: C}
+  LNX-314-T07: {course: LNX-314, title: "Falco and audit logs", depth: 3, env: V}
+  LNX-314-T08: {course: LNX-314, title: "gVisor/Kata RuntimeClass", depth: 2, env: V}
+  LNX-314-T09: {course: LNX-314, title: "mTLS and segmentation", depth: 3, env: C}
+  LNX-314-T10: {course: LNX-314, title: "Production threat detection", depth: 1, env: O}
+  LNX-320-T01: {course: LNX-320, title: "Syscalls, errno, glibc vs raw, strace", depth: 3, env: C}
+  LNX-320-T02: {course: LNX-320, title: "File I/O, locking, mmap", depth: 4, env: C}
+  LNX-320-T03: {course: LNX-320, title: "epoll and io_uring", depth: 3, env: V, query: ["epoll", "io_uring", "edge-triggered", "level-triggered", "epollet", "epoll_wait", "submission queue"]}
+  LNX-320-T04: {course: LNX-320, title: "fork/exec/wait, sessions, daemons", depth: 4, env: C}
+  LNX-320-T05: {course: LNX-320, title: "Signals, signalfd, timerfd", depth: 3, env: C}
+  LNX-320-T06: {course: LNX-320, title: "pthreads, futexes, atomics, memory model", depth: 4, env: C}
+  LNX-320-T07: {course: LNX-320, title: "IPC: pipes, Unix sockets (fd passing), shm, eventfd", depth: 4, env: C}
+  LNX-320-T08: {course: LNX-320, title: "Sockets and non-blocking servers", depth: 4, env: C}
+  LNX-320-T09: {course: LNX-320, title: "Capabilities, seccomp-bpf, namespaces, Landlock", depth: 3, env: V}
+  LNX-320-T10: {course: LNX-320, title: "inotify/fanotify, netlink", depth: 2, env: V}
+  LNX-320-T11: {course: LNX-320, title: "ptrace: build a tiny strace", depth: 2, env: C}
+  LNX-320-T12: {course: LNX-320, title: "eBPF from user space: libbpf CO-RE", depth: 3, env: V}
+  LNX-320-T13: {course: LNX-320, title: "NUMA and cache-effect measurement", depth: 2, env: S}
+  LNX-330-T01: {course: LNX-330, title: "Kernel tree, releases, stable/LTS, maintainers", depth: 2, env: C}
+  LNX-330-T02: {course: LNX-330, title: "Kconfig, defconfig, localmodconfig, cross-compiling", depth: 4, env: C}
+  LNX-330-T03: {course: LNX-330, title: "Boot testing with QEMU and virtme-ng", depth: 4, env: V}
+  LNX-330-T04: {course: LNX-330, title: "In-tree and out-of-tree modules", depth: 3, env: V}
+  LNX-330-T05: {course: LNX-330, title: "checkpatch, get_maintainer, sparse, Coccinelle", depth: 3, env: C}
+  LNX-330-T06: {course: LNX-330, title: "format-patch, b4, send-email, list etiquette", depth: 3, env: C}
+  LNX-330-T07: {course: LNX-330, title: "KUnit (UML)", depth: 4, env: C}
+  LNX-330-T08: {course: LNX-330, title: "kselftest", depth: 3, env: V}
+  LNX-330-T09: {course: LNX-330, title: "printk, dynamic debug, ftrace, KASAN, lockdep", depth: 3, env: V}
+  LNX-330-T10: {course: LNX-330, title: "git bisect a regression", depth: 3, env: V}
+  LNX-330-T11: {course: LNX-330, title: "A real upstream review cycle", depth: 2, env: O}
+  LNX-331-T01: {course: LNX-331, title: "Character devices, file_operations, ioctl", depth: 4, env: V}
+  LNX-331-T02: {course: LNX-331, title: "Device model, sysfs, platform drivers, device tree", depth: 3, env: V}
+  LNX-331-T03: {course: LNX-331, title: "PCI driver for the QEMU 'edu' device", depth: 3, env: V}
+  LNX-331-T04: {course: LNX-331, title: "Interrupts, softirqs, workqueues, timers", depth: 3, env: V}
+  LNX-331-T05: {course: LNX-331, title: "Spinlocks, mutexes, RCU, lockdep", depth: 4, env: V, query: ["spinlock", "spin_lock", "mutex", "rcu", "lockdep", "rcu_read_lock", "might_sleep", "deadlock"]}
+  LNX-331-T06: {course: LNX-331, title: "Page allocator, slab, vmalloc, DMA API", depth: 3, env: V}
+  LNX-331-T07: {course: LNX-331, title: "VFS: write a simple filesystem", depth: 3, env: V}
+  LNX-331-T08: {course: LNX-331, title: "Network drivers and NAPI", depth: 2, env: V}
+  LNX-331-T09: {course: LNX-331, title: "eBPF internals, sched_ext schedulers", depth: 2, env: V}
+  LNX-331-T10: {course: LNX-331, title: "Rust for Linux modules", depth: 2, env: V}
+  LNX-331-T11: {course: LNX-331, title: "arm64 cross-build, boot on QEMU virt", depth: 3, env: V}
+  LNX-331-T12: {course: LNX-331, title: "Bring-up on a real board", depth: 2, env: H}
+  LNX-331-T13: {course: LNX-331, title: "Kernel performance regressions", depth: 2, env: S}
+  LNX-401-T01: {course: LNX-401, title: "IdM + Samba AD + 6 mixed servers + repo + monitoring", depth: 4, env: V}
+  LNX-401-T02: {course: LNX-401, title: "Against a genuine Windows AD with trust", depth: 4, env: S}
+  LNX-401-T03: {course: LNX-401, title: "Provision, harden, patch, upgrade, decommission", depth: 4, env: V}
+  LNX-401-T04: {course: LNX-401, title: "30-day operations simulation", depth: 3, env: O}
+  LNX-401-T05: {course: LNX-401, title: "Baseline deployed to public cloud", depth: 3, env: K}
+  LNX-401-T06: {course: LNX-401, title: "Post-incident review", depth: 3, env: C}
+  LNX-402-T01: {course: LNX-402, title: "Two kubeadm clusters on VMs with Cilium and Gateway API", depth: 4, env: V}
+  LNX-402-T02: {course: LNX-402, title: "GitOps for platform and apps with Argo CD", depth: 4, env: C}
+  LNX-402-T03: {course: LNX-402, title: "Version upgrade and etcd restore drill", depth: 4, env: V}
+  LNX-402-T04: {course: LNX-402, title: "Policy: PSA, Kyverno, signed images only", depth: 3, env: C}
+  LNX-402-T05: {course: LNX-402, title: "Observability: Prometheus, OpenTelemetry, Hubble", depth: 3, env: C}
+  LNX-402-T06: {course: LNX-402, title: "Same platform on managed Kubernetes", depth: 3, env: K}
+  LNX-402-T07: {course: LNX-402, title: "Week-long soak and chaos test", depth: 2, env: O}
+  LNX-402-T08: {course: LNX-402, title: "100+ node scale test", depth: 1, env: S}
+  LNX-403-T01: {course: LNX-403, title: "A C or Rust epoll daemon with sd_notify and socket activation", depth: 4, env: C}
+  LNX-403-T02: {course: LNX-403, title: "Fuzzing and sanitizers in CI", depth: 4, env: C}
+  LNX-403-T03: {course: LNX-403, title: "Packages: RPM, DEB, Flatpak, OCI", depth: 3, env: C}
+  LNX-403-T04: {course: LNX-403, title: "Hardened systemd unit (ProtectSystem, seccomp)", depth: 3, env: V}
+  LNX-403-T05: {course: LNX-403, title: "Profiling and flame graphs", depth: 3, env: S}
+  LNX-403-T06: {course: LNX-403, title: "Releases and user issues over time", depth: 2, env: O}
+  LNX-404-T01: {course: LNX-404, title: "Driver for a QEMU device with KUnit tests", depth: 4, env: V}
+  LNX-404-T02: {course: LNX-404, title: "Series passes checkpatch; boots on x86_64 and arm64", depth: 4, env: V}
+  LNX-404-T03: {course: LNX-404, title: "Bisect and fix a planted regression", depth: 3, env: V}
+  LNX-404-T04: {course: LNX-404, title: "Submit to a real subsystem list and address review", depth: 3, env: O}
+  LNX-404-T05: {course: LNX-404, title: "Run on a real development board", depth: 2, env: H}
+  LNX-404-T06: {course: LNX-404, title: "Multi-day syzkaller campaign", depth: 2, env: S}
