@@ -1,0 +1,565 @@
+---
+{"title": "Using build policies", "url": "https://docs.docker.com/build/policies/usage/", "retrieved": "2026-11-01", "license": "Apache-2.0"}
+---
+
+# Using build policies {#using-build-policies pagefind-weight="10"}
+
+------------------------------------------------------------------------
+
+Table of contents
+
+------------------------------------------------------------------------
+
+Build policies validate build inputs and can check HTTP(S) requests during build steps. This guide covers how to develop policies iteratively and apply them to builds with `docker buildx build` and `docker buildx bake`.
+
+## [Prerequisites](#prerequisites) {#prerequisites .scroll-mt-20 .flex .items-center .gap-2}
+
+-   Buildx 0.31.0 or later - Check your version: `docker buildx version`
+-   BuildKit 0.26.0 or later - Verify with: `docker buildx inspect --bootstrap`
+
+If you\'re using Docker Desktop, ensure you\'re on a version that includes these updates.
+
+## [Policy development workflow](#policy-development-workflow) {#policy-development-workflow .scroll-mt-20 .flex .items-center .gap-2}
+
+Buildx automatically loads policies that match your Dockerfile name. When you build with `Dockerfile`, Buildx looks for `Dockerfile.rego` in the same directory. For a file named `app.Dockerfile`, it looks for `app.Dockerfile.rego`. See the [Advanced: Policy configuration](#advanced-policy-configuration) section for configuration options and manual policy loading.
+
+Writing policies is an iterative process:
+
+1.  Start with a basic deny-all policy.
+2.  Build with debug logging to see what inputs your Dockerfile uses.
+3.  Add rules to allow specific sources based on the debug output.
+4.  Test and refine.
+
+### [Viewing inputs from your Dockerfile](#viewing-inputs-from-your-dockerfile) {#viewing-inputs-from-your-dockerfile .scroll-mt-20 .flex .items-center .gap-2}
+
+To see the inputs that your Dockerfile references (images, Git repos, HTTP downloads), build with debug logging:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --progress=plain --policy log-level=debug .
+```
+
+Example output for an image source:
+
+``` {.chroma tabindex="0"}
+#1 0.010 checking policy for source docker-image://alpine:3.19 (linux/arm64)
+#1 0.011 policy input: {
+#1 0.011   "env": {
+#1 0.011     "filename": "."
+#1 0.011   },
+#1 0.011   "image": {
+#1 0.011     "ref": "docker.io/library/alpine:3.19",
+#1 0.011     "host": "docker.io",
+#1 0.011     "repo": "alpine",
+#1 0.011     "tag": "3.19",
+#1 0.011     "platform": "linux/arm64"
+#1 0.011   }
+#1 0.011 }
+#1 0.011 unknowns for policy evaluation: [input.image.checksum input.image.labels ...]
+#1 0.012 policy decision for source docker-image://alpine:3.19: ALLOW
+```
+
+This shows the complete input structure, which fields are unresolved, and the policy decision for each source. See [Input reference](https://docs.docker.com/build/policies/inputs/) for all available fields.
+
+### [Testing policies with policy eval](#testing-policies-with-policy-eval) {#testing-policies-with-policy-eval .scroll-mt-20 .flex .items-center .gap-2}
+
+Use [`docker buildx policy eval`](/reference/cli/docker/buildx/policy/eval/) to test whether your policy allows a specific source without running a full build.
+
+Note: `docker buildx policy eval` tests the source specified as the argument. It doesn\'t parse your Dockerfile to evaluate all inputs - for that, [build with \--progress=plain](#viewing-inputs-from-your-dockerfile).
+
+Test if your policy allows the local context:
+
+``` {.chroma tabindex="0"}
+$ docker buildx policy eval .
+```
+
+No output means the policy allowed the source. If denied, you see:
+
+``` {.chroma tabindex="0"}
+ERROR: policy denied
+```
+
+Test other sources:
+
+``` {.chroma tabindex="0"}
+$ docker buildx policy eval https://example.com              # Test HTTP
+$ docker buildx policy eval https://github.com/org/repo.git  # Test Git
+```
+
+By default, `--print` shows reference information parsed from the source string (like `repo`, `tag`, `host`) without fetching from registries. To inspect metadata that requires fetching the source (like `labels`, `checksum`, or `hasProvenance`), specify which fields to fetch with `--fields`:
+
+``` {.chroma tabindex="0"}
+$ docker buildx policy eval --print --fields image.labels docker-image://alpine:3.19
+```
+
+Multiple fields can be specified as a comma-separated list.
+
+### [Iterative development example](#iterative-development-example) {#iterative-development-example .scroll-mt-20 .flex .items-center .gap-2}
+
+Here\'s a practical workflow for developing policies:
+
+1.  Start with basic deny-all policy:
+
+    Dockerfile.rego
+
+    ``` {.chroma tabindex="0"}
+    package docker
+
+    default allow := false
+
+    allow if input.local
+
+    decision := {"allow": allow}
+    ```
+
+2.  Build with debug logging to see what inputs your Dockerfile uses:
+
+    ``` {.chroma tabindex="0"}
+    $ docker buildx build --progress=plain --policy log-level=debug .
+    ```
+
+    The output shows the denied image and its input structure:
+
+    ``` {.chroma tabindex="0"}
+    #1 0.026 checking policy for source docker-image://docker.io/library/alpine:3.19
+    #1 0.027 policy input: {
+    #1 0.027   "image": {
+    #1 0.027     "repo": "alpine",
+    #1 0.027     "tag": "3.19",
+    #1 0.027     ...
+    #1 0.027   }
+    #1 0.027 }
+    #1 0.028 policy decision for source docker-image://alpine:3.19: DENY
+    #1 ERROR: source "docker-image://alpine:3.19" not allowed by policy
+    ```
+
+3.  Add a rule allowing the alpine image:
+
+    ``` {.chroma tabindex="0"}
+    allow if {
+        input.image.repo == "alpine"
+    }
+    ```
+
+4.  Build again to verify the policy works:
+
+    ``` {.chroma tabindex="0"}
+    $ docker buildx build .
+    ```
+
+If it fails, see [Debugging](https://docs.docker.com/build/policies/debugging/) for troubleshooting guidance.
+
+## [Using policies with `docker build`](#using-policies-with-docker-build) {#using-policies-with-docker-build .scroll-mt-20 .flex .items-center .gap-2}
+
+Once you\'ve developed and tested your policy, apply it to real builds.
+
+### [Basic usage](#basic-usage) {#basic-usage .scroll-mt-20 .flex .items-center .gap-2}
+
+Create a policy alongside your Dockerfile:
+
+Dockerfile
+
+``` {.chroma tabindex="0"}
+FROM alpine:3.19
+RUN echo "hello"
+```
+
+Dockerfile.rego
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+allow if {
+    input.image.repo == "alpine"
+}
+
+decision := {"allow": allow}
+```
+
+Build normally:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build .
+```
+
+Buildx loads the policy automatically and validates the `alpine:3.19` image before building.
+
+### [Build with different Dockerfile names](#build-with-different-dockerfile-names) {#build-with-different-dockerfile-names .scroll-mt-20 .flex .items-center .gap-2}
+
+Specify the Dockerfile with `-f`:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build -f app.Dockerfile .
+```
+
+Buildx looks for `app.Dockerfile.rego` in the same directory.
+
+### [Build with manual policy](#build-with-manual-policy) {#build-with-manual-policy .scroll-mt-20 .flex .items-center .gap-2}
+
+Add an extra policy to the automatic one:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --policy filename=extra-checks.rego .
+```
+
+Both `Dockerfile.rego` (automatic) and `extra-checks.rego` (manual) must pass.
+
+### [Build without automatic policy](#build-without-automatic-policy) {#build-without-automatic-policy .scroll-mt-20 .flex .items-center .gap-2}
+
+Use only your specified policy:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --policy reset=true,filename=strict.rego .
+```
+
+## [Block URLs in build steps](#block-urls-in-build-steps) {#block-urls-in-build-steps .scroll-mt-20 .flex .items-center .gap-2}
+
+To check HTTP(S) requests from `RUN` instructions, add `"caps": {"exec.proxy": true}` to the policy\'s `decision` object. This enables BuildKit\'s proxy, which checks requests against your `input.http` rules. By default, these rules only apply to `ADD` downloads.
+
+Save this policy as `Dockerfile.rego` alongside your Dockerfile to allow Debian package downloads and block requests to other hosts:
+
+Dockerfile.rego
+
+``` {.chroma tabindex="0"}
+package docker
+
+default allow := false
+
+allow if input.local
+
+allow if {
+    input.image.repo == "debian"
+}
+
+allow if {
+    input.http.host == "deb.debian.org"
+}
+
+decision := {
+    "allow": allow,
+    "caps": {"exec.proxy": true},
+}
+```
+
+Test it with this Dockerfile:
+
+Dockerfile
+
+``` {.chroma tabindex="0"}
+FROM debian:trixie
+RUN apt-get update && apt-get install -y curl
+RUN curl -f http://example.com/
+```
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --no-cache --progress=plain .
+```
+
+The package downloads from `deb.debian.org` succeed. The proxy denies the request to `example.com` with HTTP 403, and `curl -f` fails the build. Use `--no-cache` when testing to run the steps again.
+
+To restrict individual URLs, use `input.http.url` or match both `input.http.host` and `input.http.path`. See the [HTTP input reference](https://docs.docker.com/build/policies/inputs/#http-inputs).
+
+The proxy supports Linux build steps. Applications must use the injected proxy environment variables and trust BuildKit\'s certificate for HTTPS. BuildKit adds the certificate to the system trust store. Traffic that bypasses the proxy is blocked.
+
+### [Enable the proxy for a CI builder](#enable-the-proxy-for-a-ci-builder) {#enable-the-proxy-for-a-ci-builder .scroll-mt-20 .flex .items-center .gap-2}
+
+For a dedicated CI builder, enable the proxy for all builds with `--buildkitd-flags '--proxy-network'`:
+
+``` {.chroma tabindex="0"}
+$ docker buildx create --name ci-policy --driver docker-container \
+    --buildkitd-flags '--proxy-network' --use --bootstrap
+```
+
+This replaces the `exec.proxy` opt-in in each policy file. You still need a policy to restrict URLs.
+
+## [Using policies with bake](#using-policies-with-bake) {#using-policies-with-bake .scroll-mt-20 .flex .items-center .gap-2}
+
+[Bake](/build/bake/) supports automatic policy loading just like `docker buildx build`. Place `Dockerfile.rego` alongside your Dockerfile and run:
+
+``` {.chroma tabindex="0"}
+$ docker buildx bake
+```
+
+### [Manual policy in bake files](#manual-policy-in-bake-files) {#manual-policy-in-bake-files .scroll-mt-20 .flex .items-center .gap-2}
+
+Specify additional policies in your `docker-bake.hcl`:
+
+docker-bake.hcl
+
+``` {.chroma tabindex="0"}
+target "default" {
+  dockerfile = "Dockerfile"
+  policy = ["extra.rego"]
+}
+```
+
+The `policy` attribute takes a list of policy files. Bake loads these in addition to the automatic `Dockerfile.rego` (if it exists).
+
+### [Multiple policies in bake](#multiple-policies-in-bake) {#multiple-policies-in-bake .scroll-mt-20 .flex .items-center .gap-2}
+
+docker-bake.hcl
+
+``` {.chroma tabindex="0"}
+target "webapp" {
+  dockerfile = "Dockerfile"
+  policy = [
+    "shared/base-policy.rego",
+    "security/image-signing.rego"
+  ]
+}
+```
+
+All policies must pass for the target to build successfully.
+
+### [Different policies per target](#different-policies-per-target) {#different-policies-per-target .scroll-mt-20 .flex .items-center .gap-2}
+
+Apply different validation rules to different targets:
+
+docker-bake.hcl
+
+``` {.chroma tabindex="0"}
+target "development" {
+  dockerfile = "dev.Dockerfile"
+  policy = ["policies/permissive.rego"]
+}
+
+target "production" {
+  dockerfile = "prod.Dockerfile"
+  policy = ["policies/strict.rego", "policies/signing-required.rego"]
+}
+```
+
+Build with the appropriate target:
+
+``` {.chroma tabindex="0"}
+$ docker buildx bake development  # Uses permissive policy
+$ docker buildx bake production   # Uses strict policies
+```
+
+### [Bake with policy options](#bake-with-policy-options) {#bake-with-policy-options .scroll-mt-20 .flex .items-center .gap-2}
+
+Use objects in the `policy` list to configure policy loading and evaluation for a target. Each object supports `filename`, `reset`, `disabled`, `strict`, and `log-level`, with the same meanings as the [`docker buildx build --policy` options](#manual-policy-configuration).
+
+For example, load only the specified policy and require policy support from the builder:
+
+docker-bake.hcl
+
+``` {.chroma tabindex="0"}
+target "production" {
+  policy = [{
+    filename = "policies/production.rego"
+    reset    = true
+    strict   = true
+  }]
+}
+```
+
+Use `disabled = true` to disable policy evaluation for a target. For a per-invocation override across the selected targets, use the `--policy` flag:
+
+``` {.chroma tabindex="0"}
+$ docker buildx bake --policy disabled=true production
+```
+
+## [Testing in CI/CD](#testing-in-cicd) {#testing-in-cicd .scroll-mt-20 .flex .items-center .gap-2}
+
+Validate policies in continuous integration by running builds with the `--policy` flag. For unit testing policies before running builds, see [Test build policies](https://docs.docker.com/build/policies/testing/).
+
+Test policies during CI builds:
+
+.github/workflows/test-policies.yml
+
+``` {.chroma tabindex="0"}
+name: Test Build Policies
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v4
+      - name: Test build with policy
+        run: docker buildx build --policy strict=true .
+```
+
+This ensures policy changes don\'t break builds and that new rules work as intended. The `strict=true` flag fails the build if policies aren\'t loaded (for example, if the BuildKit instance used by the build is too old and doesn\'t support policies).
+
+## [Advanced: Policy configuration](#advanced-policy-configuration) {#advanced-policy-configuration .scroll-mt-20 .flex .items-center .gap-2}
+
+This section covers advanced policy loading mechanisms and configuration options.
+
+### [Automatic policy loading](#automatic-policy-loading) {#automatic-policy-loading .scroll-mt-20 .flex .items-center .gap-2}
+
+Buildx automatically loads policies that match your Dockerfile name. When you build with `Dockerfile`, Buildx looks for `Dockerfile.rego` in the same directory. For a file named `app.Dockerfile`, it looks for `app.Dockerfile.rego`.
+
+``` {.chroma tabindex="0"}
+project/
+├── Dockerfile
+├── Dockerfile.rego          # Loaded automatically for Dockerfile
+├── app.Dockerfile
+├── app.Dockerfile.rego      # Loaded automatically for app.Dockerfile
+└── src/
+```
+
+This automatic loading means you don\'t need command-line flags in most cases. Create the policy file alongside your Dockerfile and build:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build .
+```
+
+Buildx detects `Dockerfile.rego` and evaluates it before running the build.
+
+> Note
+>
+> Policy files must be in the same directory as the Dockerfile they validate. Buildx doesn\'t search parent directories or subdirectories.
+
+### [When policies don\'t load](#when-policies-dont-load) {#when-policies-dont-load .scroll-mt-20 .flex .items-center .gap-2}
+
+If Buildx can\'t find a matching `.rego` file, the build proceeds without policy evaluation. To require policies and fail if none are found, use strict mode:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --policy strict=true .
+```
+
+This fails the build if no policy loads or if the BuildKit daemon doesn\'t support policies.
+
+### [Manual policy configuration](#manual-policy-configuration) {#manual-policy-configuration .scroll-mt-20 .flex .items-center .gap-2}
+
+The `--policy` flag lets you specify additional policies, override automatic loading, or control policy behavior.
+
+Basic syntax:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --policy filename=custom.rego .
+```
+
+This loads `custom.rego` in addition to the automatic `Dockerfile.rego` (if it exists).
+
+Multiple policies:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --policy filename=policy1.rego --policy filename=policy2.rego .
+```
+
+All policies must pass for the build to succeed. Use this to enforce layered requirements (base policy + project-specific rules).
+
+Available options:
+
+  Option                Description                                                                                                             Example
+  --------------------- ----------------------------------------------------------------------------------------------------------------------- ------------------------
+  `filename=<path>`     Load policy from specified file                                                                                         `filename=custom.rego`
+  `reset=true`          Ignore automatic policies, use only specified ones                                                                      `reset=true`
+  `disabled=true`       Disable all policy evaluation                                                                                           `disabled=true`
+  `strict=true`         Fail if BuildKit doesn\'t support policies                                                                              `strict=true`
+  `log-level=<level>`   Control policy logging (error, warn, info, debug, none). Use `debug` to see complete input JSON and unresolved fields   `log-level=debug`
+
+Combine options with commas:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --policy filename=extra.rego,strict=true .
+```
+
+### [Exploring sources with policy eval](#exploring-sources-with-policy-eval) {#exploring-sources-with-policy-eval .scroll-mt-20 .flex .items-center .gap-2}
+
+The `docker buildx policy eval` command lets you quickly explore and test sources without running a build.
+
+#### [Inspect input structure with \--print](#inspect-input-structure-with---print) {#inspect-input-structure-with---print .scroll-mt-20 .flex .items-center .gap-2}
+
+Use `--print` to see the input structure for any source without running policy evaluation:
+
+``` {.chroma tabindex="0"}
+$ docker buildx policy eval --print https://github.com/moby/buildkit.git
+```
+
+``` {.chroma tabindex="0"}
+{
+  "git": {
+    "schema": "https",
+    "host": "github.com",
+    "remote": "https://github.com/moby/buildkit.git"
+  }
+}
+```
+
+Test different source types:
+
+``` {.chroma tabindex="0"}
+# HTTP downloads
+$ docker buildx policy eval --print https://releases.hashicorp.com/terraform/1.5.0/terraform.zip
+
+# Images (requires docker-image:// prefix)
+$ docker buildx policy eval --print docker-image://alpine:3.19
+
+# Local context
+$ docker buildx policy eval --print .
+```
+
+Shows information parsed from the source without fetching. Use `--fields` to fetch specific metadata (see [above](#testing-policies-with-policy-eval)).
+
+#### [Test with specific policy files](#test-with-specific-policy-files) {#test-with-specific-policy-files .scroll-mt-20 .flex .items-center .gap-2}
+
+The `--file` flag (`-f`) specifies which policy file to load by providing the base Dockerfile name (without the `.rego` extension). This is useful for testing sources against policies associated with different Dockerfiles.
+
+For example, to test a source against the policy for `app.Dockerfile`:
+
+``` {.chroma tabindex="0"}
+$ docker buildx policy eval --file app.Dockerfile .
+```
+
+This loads `app.Dockerfile.rego` and tests whether it allows the source `.` (the local directory). The flag defaults to `Dockerfile` if not specified.
+
+Test different sources against your policy:
+
+``` {.chroma tabindex="0"}
+$ docker buildx policy eval --file app.Dockerfile \
+    https://github.com/org/repo.git
+$ docker buildx policy eval --file app.Dockerfile docker-image://alpine:3.19
+```
+
+To read the policy from standard input instead, use `--file -`. Buildx reads the policy directly, without appending `.rego` to the filename:
+
+``` {.chroma tabindex="0"}
+$ cat app.Dockerfile.rego | docker buildx policy eval --file - \
+    docker-image://alpine:3.19
+```
+
+#### [Evaluate a specific platform](#evaluate-a-specific-platform) {#evaluate-a-specific-platform .scroll-mt-20 .flex .items-center .gap-2}
+
+Use `--platform` to choose the platform whose image metadata the policy evaluates. Without it, Buildx uses the first platform of the builder\'s first worker.
+
+``` {.chroma tabindex="0"}
+$ docker buildx policy eval --platform linux/arm64 \
+    docker-image://alpine:3.19
+$ docker buildx policy eval --platform linux/arm64 --print \
+    --fields image.labels docker-image://alpine:3.19
+```
+
+### [Reset automatic loading](#reset-automatic-loading) {#reset-automatic-loading .scroll-mt-20 .flex .items-center .gap-2}
+
+To use only your specified policies and ignore automatic `.rego` files:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --policy reset=true,filename=custom.rego .
+```
+
+This skips `Dockerfile.rego` and loads only `custom.rego`.
+
+### [Disable policies temporarily](#disable-policies-temporarily) {#disable-policies-temporarily .scroll-mt-20 .flex .items-center .gap-2}
+
+Disable policy evaluation for testing or emergencies:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --policy disabled=true .
+```
+
+The build proceeds without any policy checks. Use this carefully - you\'re bypassing security controls.
+
+## [Next steps](#next-steps) {#next-steps .scroll-mt-20 .flex .items-center .gap-2}
+
+-   Write unit tests for your policies: [Test build policies](https://docs.docker.com/build/policies/testing/)
+-   Debug policy failures: [Debugging](https://docs.docker.com/build/policies/debugging/)
+-   Browse working examples: [Example policies](https://docs.docker.com/build/policies/examples/)
+-   Reference all input fields: [Input reference](https://docs.docker.com/build/policies/inputs/)

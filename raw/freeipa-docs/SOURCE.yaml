@@ -1,0 +1,17 @@
+id: freeipa-docs
+name: FreeIPA documentation
+license: NOASSERTION
+license_note: null
+mode: outline
+reuse: link-only
+stream: Ref
+retrieved: '2026-11-01'
+upstream:
+- https://freeipa.readthedocs.io/en/latest/
+text_files: 200
+pages: 200
+failed: []
+blocked: []
+queue_left: 109826
+cap_reached: true
+pin: 2026-11-01:pages=200

@@ -1,0 +1,20 @@
+id: docker-docs
+name: Docker documentation (engine, build, compose)
+license: Apache-2.0
+license_note: null
+mode: full
+reuse: adapt
+stream: Permissive
+retrieved: '2026-11-01'
+upstream:
+- https://docs.docker.com/engine/
+- https://docs.docker.com/build/
+- https://docs.docker.com/compose/
+- https://docs.docker.com/reference/dockerfile/
+text_files: 279
+pages: 279
+failed: []
+blocked: []
+queue_left: 0
+cap_reached: false
+pin: 2026-11-01:pages=279

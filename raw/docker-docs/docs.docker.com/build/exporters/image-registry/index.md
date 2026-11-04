@@ -1,0 +1,66 @@
+---
+{"title": "Image and registry exporters", "url": "https://docs.docker.com/build/exporters/image-registry/", "retrieved": "2026-11-01", "license": "Apache-2.0"}
+---
+
+# Image and registry exporters {#image-and-registry-exporters pagefind-weight="10"}
+
+------------------------------------------------------------------------
+
+Table of contents
+
+------------------------------------------------------------------------
+
+The `image` exporter outputs the build result into a container image format. The `registry` exporter is identical, but it automatically pushes the result by setting `push=true`.
+
+## [Synopsis](#synopsis) {#synopsis .scroll-mt-20 .flex .items-center .gap-2}
+
+Build a container image using the `image` and `registry` exporters:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build --output type=image[,parameters] .
+$ docker buildx build --output type=registry[,parameters] .
+```
+
+The following table describes the available parameters that you can pass to `--output` for `type=image`:
+
+  Parameter                Type                                     Default   Description
+  ------------------------ ---------------------------------------- --------- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  `name`                   String                                             Image name. To specify multiple names, use a comma-separated list.
+  `push`                   `true`,`false`                           `false`   Push after creating the image.
+  `push-by-digest`         `true`,`false`                           `false`   Push image without name.
+  `registry.insecure`      `true`,`false`                           `false`   Allow pushing to insecure registry.
+  `dangling-name-prefix`   `<value>`                                          Name image with `prefix@<digest>`, used for anonymous images
+  `name-canonical`         `true`,`false`                                     Add additional canonical name `name@<digest>`
+  `compression`            `uncompressed`,`gzip`,`estargz`,`zstd`   `gzip`    Compression type, see [compression](https://docs.docker.com/build/exporters/#compression)
+  `compression-level`      `0..22`                                            Compression level, see [compression](https://docs.docker.com/build/exporters/#compression)
+  `force-compression`      `true`,`false`                           `false`   Forcefully apply compression, see [compression](https://docs.docker.com/build/exporters/#compression)
+  `rewrite-timestamp`      `true`,`false`                           `false`   Rewrite the file timestamps to the `SOURCE_DATE_EPOCH` value. See [build reproducibility](https://github.com/moby/buildkit/blob/master/docs/build-repro.md) for how to specify the `SOURCE_DATE_EPOCH` value.
+  `oci-mediatypes`         `true`,`false`                           `false`   Use OCI media types in exporter manifests, see [OCI Media types](https://docs.docker.com/build/exporters/#oci-media-types)
+  `oci-artifact`           `true`,`false`                           `false`   Attestations are formatted as OCI artifacts, see [OCI Media types](https://docs.docker.com/build/exporters/#oci-media-types)
+  `unpack`                 `true`,`false`                           `false`   Unpack image after creation (for use with containerd)
+  `store`                  `true`,`false`                           `true`    Store the result images to the worker\'s (for example, containerd) image store, and ensures that the image has all blobs in the content store. Ignored if the worker doesn\'t have image store (when using OCI workers, for example).
+  `annotation.<key>`       String                                             Attach an annotation with the respective `key` and `value` to the built image,see [annotations](#annotations)
+
+The `name` parameter is a CSV value inside the `--output` value. To specify multiple image names, quote the complete `name` field:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build \
+    --output 'type=image,"name=registry.example.com/myapp:1.0,registry.example.com/myapp:latest",push=true' .
+```
+
+To assign multiple names with CLI flags instead, repeat the [`--tag` flag](/reference/cli/docker/buildx/build/#tag).
+
+## [Annotations](#annotations) {#annotations .scroll-mt-20 .flex .items-center .gap-2}
+
+These exporters support adding OCI annotation using `annotation` parameter, followed by the annotation name using dot notation. The following example sets the `org.opencontainers.image.title` annotation:
+
+``` {.chroma tabindex="0"}
+$ docker buildx build \
+    --output "type=<type>,name=<registry>/<image>,annotation.org.opencontainers.image.title=<title>" .
+```
+
+For more information about annotations, see [BuildKit documentation](https://github.com/moby/buildkit/blob/master/docs/annotations.md).
+
+## [Further reading](#further-reading) {#further-reading .scroll-mt-20 .flex .items-center .gap-2}
+
+For more information on the `image` or `registry` exporters, see the [BuildKit README](https://github.com/moby/buildkit/blob/master/README.md#imageregistry).

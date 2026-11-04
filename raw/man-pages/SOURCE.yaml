@@ -1,0 +1,26 @@
+id: man-pages
+name: Linux man pages (man7.org)
+license: various (per page)
+license_note: null
+mode: full
+reuse: link-only
+stream: Ref
+retrieved: '2026-11-01'
+upstream:
+- https://man7.org/linux/man-pages/man2/
+- https://man7.org/linux/man-pages/man7/
+- https://man7.org/linux/man-pages/man1/
+- https://man7.org/linux/man-pages/man5/
+- https://man7.org/linux/man-pages/man8/
+- https://man7.org/linux/man-pages/dir_section_2.html
+- https://man7.org/linux/man-pages/dir_section_7.html
+text_files: 400
+pages: 400
+failed:
+- 404 https://man7.org/linux/man-pages/man8/nft.8.html
+- 404 https://man7.org/linux/man-pages/man5/sssd.conf.5.html
+- 404 https://man7.org/linux/man-pages/man8/bpftrace.8.html
+blocked: []
+queue_left: 8545
+cap_reached: true
+pin: 2026-11-01:pages=400
