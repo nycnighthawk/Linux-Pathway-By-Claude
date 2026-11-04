@@ -90,3 +90,62 @@ def test_crawl_clean_md_and_paths():
     assert out.startswith("# Title") and "top_of_page" not in out and "\n\n\n" not in out
     assert _out_path({}, "https://docs.docker.com/engine/network/") == "docs.docker.com/engine/network/index.md"
     assert _out_path({}, "https://man7.org/linux/man-pages/man2/epoll_wait.2.html") == "man7.org/linux/man-pages/man2/epoll_wait.2.md"
+
+
+# ------------------------------------------------------------------ synthesis guardrails
+import sqlite3
+
+from lpc import synth
+
+_SRC = ("The quick brown fox jumps over the lazy dog while seven sleepy cats watch from the warm "
+        "kitchen window every single afternoon")
+_GOOD = """---
+id: T
+---
+## Define the problem
+Foxes leap. Dogs nap. A cat observes all of it with mild interest from indoors.
+## History and approaches
+Agile animals have always outpaced idle ones.
+## Current state
+Our own wording throughout, with `inline code the quick brown fox jumps over the lazy dog` ignored.
+## Related and opposing views
+Some say dogs are merely resting.
+## Future direction
+More naps.
+## References
+- [src: demo 0123456789abcdef] Demo chunk
+- [web: example.org] Another publisher <https://example.org>
+"""
+
+
+def _synth_db():
+    db = sqlite3.connect(":memory:")
+    db.row_factory = sqlite3.Row
+    db.execute("CREATE TABLE chunks (id TEXT PRIMARY KEY, source TEXT)")
+    db.execute("CREATE VIRTUAL TABLE chunks_fts USING fts5(id UNINDEXED, body)")
+    db.execute("INSERT INTO chunks VALUES ('0123456789abcdef', 'demo')")
+    db.execute("INSERT INTO chunks_fts VALUES ('0123456789abcdef', ?)", [_SRC])
+    return db
+
+
+def test_synth_check_passes_original_text(tmp_path):
+    p = tmp_path / "ok.md"
+    p.write_text(_GOOD)
+    assert synth.check_file(p, _synth_db()) == []
+
+
+def test_synth_check_flags_copied_run_quotes_sources_and_order(tmp_path):
+    bad = (_GOOD.replace("Foxes leap.", "Indeed the quick brown fox jumps over the lazy dog while seven cats.")
+                .replace("More naps.", 'He said "never a half written object in sight here".')
+                .replace("- [web: example.org] Another publisher <https://example.org>\n", "")
+                .replace("## Future direction\n", "").replace("## References", "## Future direction\n## References"))
+    bad = bad.replace("## Related and opposing views", "## Tmp").replace("## Current state", "## Related and opposing views") \
+             .replace("## Tmp", "## Current state")
+    p = tmp_path / "bad.md"
+    p.write_text(bad)
+    errs = " | ".join(synth.check_file(p, _synth_db()))
+    assert "8-word run also appears in demo" in errs
+    assert "quoted passage" in errs
+    assert "at least 2 independent sources" in errs
+    assert "sections must be" in errs
+    assert "5-grams shared" in errs

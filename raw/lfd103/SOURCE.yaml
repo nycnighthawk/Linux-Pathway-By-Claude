@@ -1,0 +1,17 @@
+id: lfd103
+name: LFD103 A Beginner's Guide to Linux Kernel Development (course page)
+license: Proprietary
+license_note: null
+mode: outline
+reuse: link-only
+stream: Ref
+retrieved: '2026-11-01'
+upstream:
+- https://training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/
+text_files: 1
+pages: 1
+failed: []
+blocked: []
+queue_left: 0
+cap_reached: true
+pin: 2026-11-01:pages=1

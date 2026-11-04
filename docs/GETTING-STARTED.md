@@ -102,3 +102,51 @@ If a site returns 403/429 or shows a challenge page, stop. Look for an official 
 | — | Recurring: repo sources (weekly) / crawl sources (monthly) | automated | 1 PR per run | 64/yr | 64/yr | `sync.yml` schedule | Merge |
 
 Items 3–5 need no Claude session. Raise `max_pages` in a small PR, then start **Actions → sync-sources → Run workflow** with the source id. Items 1 and 2 can run in parallel with 3–6. Item 8 is easiest after 6, because the new sources change what maps where.
+
+## 6. Knowledge synthesis (original course text)
+
+Raw text from share-alike, GPL or headings-only sources cannot be pasted into courses. Instead, each course topic
+gets an original synthesis in `synth/<course>/<topic>.md`, written in new words from the catalog plus cited web
+research (D-023…D-027). Synthesis text is **All rights reserved** (`synth/LICENSE`) and must never copy sentences
+from any source.
+
+**Structure** (headings exactly as in `synth/TEMPLATE.md`, in order):
+1. Define the problem: the problem and the slice of it this topic covers.
+2. History and approaches: earlier solutions, what part of the problem each covered, and the lessons that led to today.
+3. Current state: how it works in depth, generalised pattern, related problems it applies to, and a structural
+   evaluation (limitations, mitigations, risks).
+4. Related and opposing views: alternatives under active work and trends that complement or replace it.
+5. Future direction.
+6. References: `[src: <source> <chunk-id>]` for catalog chunks, `[web: <domain>]` for web pages; at least 2 publishers.
+
+**Workflow per topic**
+```bash
+bin/lpc synth pack LNX-312-T04      # evidence pack -> build/packs/LNX-312-T04.md (gitignored)
+bin/lpc show <chunk-id>             # read the chunks you will rely on
+# research history/trends on the web; write synth/LNX-312/LNX-312-T04.md from TEMPLATE.md in your own words
+bin/lpc synth check                 # must print "0 failing"
+bin/lpc synth status                # coverage per course
+```
+If a pack is thin, add better terms with a `query:` list on the topic in `taxonomy/topics.yaml`.
+
+**What `synth check` enforces** (also run in CI by the `synth` job):
+* no 8-word run that appears anywhere in the corpus (FTS phrase query over every chunk);
+* at most 10% of the synthesis's 5-grams shared with any cited chunk;
+* no quoted passage of 6 or more words (keep quotes short, or rephrase);
+* the six sections in order, and at least 2 independent publishers in References.
+Inline code, link URLs and the References list are excluded from the overlap checks. The check catches copying; it
+does not prove accuracy, so a reviewer still checks facts against the cited sources before `status: reviewed`.
+
+**Estimate to finish** (pilot: 4 topics, about 1,500–2,100 words each, one per pathway):
+
+| Course level | Courses | Topics | Done | Left | Topics per run | Runs | PRs (one per course) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 1xx foundations | 4 | 38 | 0 | 38 | 6 | 7 | 4 |
+| 2xx trunk | 5 | 50 | 0 | 50 | 6 | 9 | 5 |
+| 3xx pathway courses | 17 | 178 | 4 | 174 | 5 (deeper topics) | 35 | 17 |
+| 4xx capstones | 4 | 26 | 0 | 26 | 6 | 5 | 4 |
+| **Total** | **30** | **292** | **4** | **288** | | **56** | **30** |
+
+A run is one Claude session. Owner time is mostly fact review: roughly 10 minutes per topic. Capstones are best
+written last, because they draw on the finished course syntheses.
+

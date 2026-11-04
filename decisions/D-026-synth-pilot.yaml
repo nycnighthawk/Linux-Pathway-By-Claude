@@ -1,0 +1,11 @@
+id: D-026
+title: Scope of the first synthesis pass
+decided_by: owner
+options:
+- name: Framework + 4-slice pilot
+- name: Framework only
+- name: Full course (one course end to end)
+chosen: Framework + 4-slice pilot
+owner_answer: Framework + 4-slice pilot (Recommended)
+context: 'One topic per pathway: LNX-301-T03 (ENT), LNX-312-T04 (CN), LNX-320-T03 (DEV), LNX-331-T05 (KRN).'
+date: '2026-11-04'

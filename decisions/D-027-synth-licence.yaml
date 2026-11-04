@@ -1,0 +1,15 @@
+id: D-027
+title: Licence for synthesised text
+decided_by: owner
+options:
+- name: CC BY-SA 4.0
+- name: CC BY 4.0
+- name: All rights reserved
+chosen: All rights reserved, with a strict originality rule
+owner_answer: 'All rights reserved; free text: "Make sure the synthesis of the content is going to be original.
+  It can provide reference about the information sourced, but the content should be unique. Should never copy sentences
+  verbatim"'
+context: 'Claude recommended CC BY-SA 4.0; the owner chose otherwise. Recorded in synth/LICENSE. Because the text
+  is not licensed under the sources'' share-alike terms, it must not be a derivative of their wording: no verbatim
+  sentences, only facts and ideas restated, with references.'
+date: '2026-11-04'

@@ -1,0 +1,13 @@
+id: D-025
+title: Originality and grounding guardrails
+decided_by: owner
+options:
+- name: N-gram overlap check
+- name: At least 2 independent sources
+- name: Quotes under 15 words, cited
+- name: Human review only
+chosen: N-gram overlap check + at least 2 independent sources + short cited quotes
+owner_answer: N-gram overlap check, At least 2 independent sources, Quotes under 15 words, cited (all Recommended)
+context: 'Tightened after D-027: `lpc synth check` fails on any 8-word run shared with the corpus, >10% 5-gram share
+  with any cited chunk, any quoted passage of 6+ words, fewer than 2 publishers, or missing/out-of-order sections.'
+date: '2026-11-04'

@@ -1,0 +1,12 @@
+id: D-024
+title: Evidence used to ground each synthesis
+decided_by: owner
+options:
+- name: Catalog + cited web research
+- name: Catalog only
+- name: Web research only
+chosen: Catalog + cited web research
+owner_answer: Catalog + cited web research (Recommended)
+context: '`lpc synth pack <topic>` builds an evidence pack from the FTS catalog; web sources fill history and current-trend
+  gaps and are cited as [web: domain].'
+date: '2026-11-04'

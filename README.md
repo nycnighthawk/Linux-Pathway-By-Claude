@@ -32,8 +32,9 @@ You can skip the build: CI publishes `catalog.db` to the
 | `review/queue.csv` | Untagged or low-confidence sections waiting for a human decision |
 | `review/overrides.yaml` | Manual tag corrections and out-of-scope markers. These take precedence over auto-tags |
 | `decisions/` | One YAML record per curation decision, scored against [RUBRIC.md](RUBRIC.md). See the [decision log](decisions/DECISIONS.md) |
-| `tools/lpc/` | The toolchain: `sync` (git, Playwright crawl, packages, HTTP), `list`, `build`, `search`, `show`, `stats`, `gate`, `web`, `decisions` |
+| `tools/lpc/` | The toolchain: `sync` (git, Playwright crawl, packages, HTTP), `list`, `build`, `search`, `show`, `stats`, `gate`, `web`, `decisions`, `synth` (pack, check, status) |
 | `web/` | Source for the static search page (MiniSearch, vendored, MIT) |
+| `synth/` | Original knowledge syntheses, one per course topic (All rights reserved, `synth/LICENSE`). Topics are in `taxonomy/topics.yaml`; see [GETTING-STARTED §6](docs/GETTING-STARTED.md#6-knowledge-synthesis-original-course-text) |
 
 ### Modes and reuse
 
@@ -66,4 +67,4 @@ Curation choices are scored on six weighted criteria (licence safety, curriculum
 
 ## Licensing
 
-Tooling, tests and the web page are MIT ([LICENSE](LICENSE)). Each `raw/<source>/` keeps its own upstream licence. See [NOTICE.md](NOTICE.md) for attribution and conditions.
+Tooling, tests and the web page are MIT ([LICENSE](LICENSE)). Each `raw/<source>/` keeps its own upstream licence. See [NOTICE.md](NOTICE.md) for attribution and conditions. Syntheses under `synth/` are original text, All rights reserved ([synth/LICENSE](synth/LICENSE)); they cite sources but do not reproduce them.

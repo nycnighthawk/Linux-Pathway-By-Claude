@@ -1,0 +1,13 @@
+id: D-023
+title: Unit of knowledge synthesis
+decided_by: owner
+options:
+- name: Course topic
+- name: Catalog chunk
+- name: Whole course
+- name: Source document
+chosen: Course topic
+owner_answer: Course topic (Recommended)
+context: Implemented as taxonomy/topics.yaml (292 topics from the report curriculum), one synth/<course>/<topic>.md
+  per topic.
+date: '2026-11-04'
