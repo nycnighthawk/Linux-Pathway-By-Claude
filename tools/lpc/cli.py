@@ -39,6 +39,10 @@ def main(argv=None):
     sub.add_parser("web", help="write site/ (static search page + index)")
     sub.add_parser("decisions", help="render decisions/DECISIONS.md from decisions/*.yaml")
 
+    sy = sub.add_parser("synth", help="topic syntheses: pack | check | status")
+    sy.add_argument("action", choices=["pack", "check", "status"])
+    sy.add_argument("args", nargs="*", help="topic ids (pack) or files (check)")
+
     a = ap.parse_args(argv)
     if a.cmd == "sync":
         from . import sync
@@ -66,6 +70,15 @@ def main(argv=None):
     elif a.cmd == "web":
         from . import web
         web.run()
+    elif a.cmd == "synth":
+        from . import synth
+        if a.action == "pack":
+            for t in a.args:
+                synth.pack(t)
+        elif a.action == "check":
+            sys.exit(synth.check(a.args or None))
+        else:
+            synth.status()
     elif a.cmd == "decisions":
         from . import decisions
         decisions.run()

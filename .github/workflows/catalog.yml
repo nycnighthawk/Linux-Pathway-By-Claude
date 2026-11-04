@@ -5,6 +5,7 @@ name: catalog
 #   raw/sources/taxonomy/overrides -> gate, build
 #   decisions/RUBRIC              -> decisions
 #   web/catalog                   -> site
+#   synth/                        -> synth (originality check; also runs when tools/taxonomy change)
 # On main: build -> release-db (catalog.db to the catalog-latest release); site -> pages.
 on:
   push:
@@ -16,7 +17,7 @@ on:
         description: "Job to run (all = every job)"
         type: choice
         default: all
-        options: [all, test, gate, decisions, build, site]
+        options: [all, test, gate, decisions, build, site, synth]
 
 permissions:
   contents: read
@@ -39,6 +40,7 @@ jobs:
       content: ${{ steps.f.outputs.content }}
       decisions: ${{ steps.f.outputs.decisions }}
       site: ${{ steps.f.outputs.site }}
+      synth: ${{ steps.f.outputs.synth }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -52,6 +54,7 @@ jobs:
             content: [raw/**, sources.yaml, taxonomy/**, review/overrides.yaml]
             decisions: [decisions/**, RUBRIC.md]
             site: [web/**, catalog/**]
+            synth: [synth/**, taxonomy/topics.yaml]
 
   test:
     needs: changes
@@ -112,6 +115,20 @@ jobs:
           name: catalog-db
           path: build/catalog.db
           retention-days: 30
+
+  synth:
+    needs: changes
+    if: inputs.job == 'all' || inputs.job == 'synth' || (github.event_name != 'workflow_dispatch' && (needs.changes.outputs.synth == 'true' || needs.changes.outputs.tools == 'true' || needs.changes.outputs.content == 'true'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: bin/lpc build        # the 8-gram check needs the full-text index
+      - run: bin/lpc synth check
 
   site:
     needs: changes

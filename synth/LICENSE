@@ -1,0 +1,7 @@
+Copyright (c) 2026 Han Chen. All rights reserved.
+
+The topic syntheses in this directory (synth/) are original works. No licence is granted to copy,
+modify or redistribute them without written permission from the copyright holder.
+
+They cite, but do not reproduce, third-party material. Cited sources keep their own licences (see ../NOTICE.md).
+The rest of this repository is licensed separately (MIT for tooling; upstream licences under raw/).
