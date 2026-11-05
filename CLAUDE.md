@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Curated raw content and a searchable catalog for the Linux Mastery Path (4 pathways: ENT, CN, DEV, KRN; courses LNX-xxx).
+Curated raw content and a searchable catalog for the Linux Mastery Path (5 pathways: ENT, CN, DEV, KRN, VIRT; courses LNX-xxx).
 Full guide: docs/GETTING-STARTED.md. Curriculum report: web/report.html (course scope and depth; don't read it whole, grep for the course id). Project prompts: docs/PROJECT-PROMPTS.md. Decisions: RUBRIC.md, decisions/.
 
 ## Save tokens

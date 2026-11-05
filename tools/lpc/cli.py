@@ -1,5 +1,6 @@
 """Command-line entry point: bin/lpc <command> [options]."""
 from __future__ import annotations
+from .common import load_taxonomy
 
 import argparse
 import sys
@@ -24,7 +25,7 @@ def main(argv=None):
     q = sub.add_parser("search", help="full-text search the catalog")
     q.add_argument("query", nargs="*", help="FTS5 query, e.g. 'selinux AND boolean' or '\"network policy\"'")
     q.add_argument("--course", "-c")
-    q.add_argument("--pathway", "-p", choices=["ENT", "CN", "DEV", "KRN"])
+    q.add_argument("--pathway", "-p", choices=list(load_taxonomy()["pathways"]))
     q.add_argument("--cert")
     q.add_argument("--source", "-s")
     q.add_argument("--reuse", choices=["adapt", "link-only"])

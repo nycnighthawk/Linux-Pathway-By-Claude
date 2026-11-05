@@ -149,3 +149,14 @@ def test_synth_check_flags_copied_run_quotes_sources_and_order(tmp_path):
     assert "at least 2 independent sources" in errs
     assert "sections must be" in errs
     assert "5-grams shared" in errs
+
+
+def test_pathways_and_topics_follow_the_taxonomy():
+    from lpc.common import load_taxonomy
+    from lpc.tag import ALL_PATHS
+    tax = load_taxonomy()
+    assert ALL_PATHS == list(tax["pathways"]) and "VIRT" in ALL_PATHS
+    for code, c in tax["courses"].items():
+        assert set(c["pathways"]) <= set(ALL_PATHS) | {"TRUNK"}, code
+    courses = {t["course"] for t in synth.topics().values()}
+    assert courses == set(tax["courses"]), courses ^ set(tax["courses"])

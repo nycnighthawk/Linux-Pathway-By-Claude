@@ -23,6 +23,7 @@ def run() -> None:
         "fields": ["id", "source", "title", "section", "url", "reuse", "courses", "pathways", "certs", "excerpt", "words", "confidence"],
         "sources": {s["id"]: {"name": s["name"], "license": s["license"], "reuse": s["reuse"], "mode": s["mode"]} for s in load_sources()},
         "courses": {k: v["title"] for k, v in load_taxonomy()["courses"].items()},
+        "pathways": load_taxonomy()["pathways"],
         "stats": json.loads((CATALOG / "stats.json").read_text()),
     }
     (SITE / "index.json").write_text(json.dumps({"meta": meta, "rows": rows}, ensure_ascii=False, separators=(",", ":")))

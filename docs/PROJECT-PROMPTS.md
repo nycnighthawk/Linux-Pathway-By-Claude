@@ -8,8 +8,8 @@ Paste **Instructions** into the project's Instructions box. Paste the other prom
 
 ```text
 DESCRIPTION
-This repo curates licensed Linux sources into a searchable catalog for a 30-course Linux Mastery Path (pathways
-ENT, CN, DEV, KRN). Each course topic in taxonomy/topics.yaml gets an original synthesis at
+This repo curates licensed Linux sources into a searchable catalog for a 33-course Linux Mastery Path (pathways
+ENT, CN, DEV, KRN, VIRT). Each course topic in taxonomy/topics.yaml gets an original synthesis at
 synth/<COURSE>/<TOPIC-ID>.md. Scope and depth per course are in web/report.html. CLAUDE.md holds the repo rules,
 and the four pilot files in synth/ set the quality bar. Synthesis text is All rights reserved, so it must be
 original prose that cites sources but never reproduces them.
@@ -50,11 +50,11 @@ OUTPUT FORMAT
 ## Kickoff
 
 ```text
-GOAL: Write syntheses for all 288 remaining topics, one PR per course.
-DONE: `bin/lpc synth status` on main shows 292/292, every course PR has passed CI, and the getting-started guide's
+GOAL: Write syntheses for all 317 remaining topics, one PR per course.
+DONE: `bin/lpc synth status` on main shows 321/321, every course PR has passed CI, and the getting-started guide's
 section 6 table is updated to show completion.
-CONSTRAINTS: Run at most 4 threads at a time. Order: 1xx → 2xx → 3xx (finish LNX-301, 312, 320 and 331) →
-capstones 401–404, which start only after their source courses are merged. Pause and ask me if CI fails twice on
+CONSTRAINTS: Run at most 4 threads at a time. Order: 1xx → 2xx → 3xx (finish LNX-301, 312, 320 and 331; then LNX-315 and LNX-332) →
+capstones 401–405, which start only after their source courses are merged. Pause and ask me if CI fails twice on
 one course, if usage passes 50% of my plan's limit, or if a decision needs me.
 OUTPUT: One line per merged-ready PR: course, topics, link, CI. Keep a live progress table in the library.
 ```
@@ -84,11 +84,11 @@ GOAL: Mark <COURSE> reviewed. DONE: Every topic in <COURSE> shows status: review
 ```text
 GOAL: Strengthen <COURSE>, whose catalog packs are thin.
 CONSTRAINTS: At least 3 primary web references per topic (for example docs.kernel.org, LWN, upstream docs, KEPs,
-RFCs). Note the thin topics in the PR.
+RFCs; for LNX-332, the KVM API docs, QEMU developer docs, the virtio spec and rust-vmm). Note the thin topics in the PR.
 ```
 
 ```text
-GOAL: Write capstones LNX-401 to LNX-404.
+GOAL: Write capstones LNX-401 to LNX-405.
 CONSTRAINTS: Build on the merged course syntheses (see web/report.html for the mapping), and cite them as
 related reading. All prose is new.
 ```
