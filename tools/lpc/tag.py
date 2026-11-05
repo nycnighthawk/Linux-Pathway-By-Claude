@@ -16,7 +16,7 @@ import yaml
 
 from .common import REVIEW, load_taxonomy
 
-ALL_PATHS = ["ENT", "CN", "DEV", "KRN"]
+ALL_PATHS = list(load_taxonomy()["pathways"])  # TRUNK expands to every pathway
 
 
 def _literal(pat: str):

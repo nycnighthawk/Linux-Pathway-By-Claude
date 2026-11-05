@@ -143,9 +143,12 @@ does not prove accuracy, so a reviewer still checks facts against the cited sour
 |---|---:|---:|---:|---:|---:|---:|---:|
 | 1xx foundations | 4 | 38 | 0 | 38 | 6 | 7 | 4 |
 | 2xx trunk | 5 | 50 | 0 | 50 | 6 | 9 | 5 |
-| 3xx pathway courses | 17 | 178 | 4 | 174 | 5 (deeper topics) | 35 | 17 |
-| 4xx capstones | 4 | 26 | 0 | 26 | 6 | 5 | 4 |
-| **Total** | **30** | **292** | **4** | **288** | | **56** | **30** |
+| 3xx pathway courses | 19 | 201 | 4 | 197 | 5 (deeper topics) | 40 | 19 |
+| 4xx capstones | 5 | 32 | 0 | 32 | 6 | 6 | 5 |
+| **Total** | **33** | **321** | **4** | **317** | | **62** | **33** |
+
+LNX-315, LNX-332 and LNX-405 were added with the VIRT pathway (D-028). LNX-332 has no confidently tagged catalog
+sections yet, so its syntheses rely mostly on cited web sources until virtualization sources are added.
 
 A run is one Claude session. Owner time is mostly fact review: roughly 10 minutes per topic. Capstones are best
 written last, because they draw on the finished course syntheses.

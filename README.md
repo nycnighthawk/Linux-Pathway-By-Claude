@@ -1,6 +1,6 @@
 # Linux-Pathway-By-Claude
 
-This repo holds the curated raw content and searchable catalog behind the **Linux Mastery Path**. That curriculum is one shared trunk that branches into four pathways: Enterprise Infrastructure (ENT), Cloud-Native Platform (CN), Linux Software Development (DEV), and Kernel & Low-Level Systems (KRN).
+This repo holds the curated raw content and searchable catalog behind the **Linux Mastery Path**. That curriculum is one shared trunk that branches into five pathways: Enterprise Infrastructure (ENT), Cloud-Native Platform (CN), Linux Software Development (DEV), Kernel & Low-Level Systems (KRN), and Virtualization & Hypervisors (VIRT).
 
 The raw text comes from openly licensed upstream sources. Every file keeps its upstream licence and provenance. Each heading-level section is cataloged, auto-tagged to course codes (`LNX-xxx`), pathways and certifications, and indexed for full-text search. The course and book pipelines query the catalog instead of re-reading upstream docs.
 

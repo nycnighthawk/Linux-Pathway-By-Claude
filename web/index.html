@@ -53,7 +53,7 @@ label.chk{display:flex;gap:6px;align-items:center;font-size:14px;padding:2px 0}
 </header>
 <main>
   <aside>
-    <fieldset><legend>Pathway</legend><select id="f-path"><option value="">All pathways</option><option>ENT</option><option>CN</option><option>DEV</option><option>KRN</option></select></fieldset>
+    <fieldset><legend>Pathway</legend><select id="f-path"><option value="">All pathways</option></select></fieldset>
     <fieldset><legend>Course</legend><select id="f-course"><option value="">Any course</option></select></fieldset>
     <fieldset><legend>Source</legend><select id="f-source"><option value="">All sources</option></select></fieldset>
     <fieldset><legend>Reuse</legend>
@@ -81,6 +81,7 @@ fetch("index.json").then(r=>r.json()).then(d=>{
   MS=new MiniSearch({idField:"n",fields:["title","section","excerpt","courses","certs","source"],storeFields:[],
     searchOptions:{boost:{title:3,section:2},prefix:true,fuzzy:0.15,combineWith:"AND"}});
   MS.addAll(DOCS);
+  $("#f-path").innerHTML+=Object.entries(META.pathways||{}).map(([k,v])=>`<option value="${k}">${k} ${esc(v)}</option>`).join("");
   $("#f-course").innerHTML+=Object.entries(META.courses).map(([k,v])=>`<option value="${k}">${k} ${esc(v)}</option>`).join("");
   $("#f-source").innerHTML+=Object.entries(META.sources).map(([k,v])=>`<option value="${k}">${esc(v.name)}</option>`).join("");
   const t=META.stats.totals;
