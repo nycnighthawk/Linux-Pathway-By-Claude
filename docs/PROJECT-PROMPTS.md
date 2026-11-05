@@ -1,135 +1,94 @@
 # Prompts for the Claude Code project
 
-Paste these into the project for `nycnighthawk/Linux-Pathway-By-Claude`. Prompt 1 goes in the project's
-Instructions. The rest go in the coordinator chat.
+Paste **Instructions** into the project's Instructions box. Paste the other prompts into the coordinator chat.
 
 ---
 
-## 1. Project instructions
+## Instructions
 
 ```text
-This project writes original knowledge syntheses for the Linux Mastery Path. Read CLAUDE.md first and follow it.
-The other references are:
-- synth/README.md and synth/TEMPLATE.md;
-- the four pilot files under synth/LNX-301, LNX-312, LNX-320 and LNX-331, which are the quality bar;
-- web/report.html, the curriculum report: each course's scope, topic depth, testability and certification
-  alignment. taxonomy/topics.yaml was generated from it.
+DESCRIPTION
+This repo curates licensed Linux sources into a searchable catalog for a 30-course Linux Mastery Path (pathways
+ENT, CN, DEV, KRN). Each course topic in taxonomy/topics.yaml gets an original synthesis at
+synth/<COURSE>/<TOPIC-ID>.md. Scope and depth per course are in web/report.html. CLAUDE.md holds the repo rules,
+and the four pilot files in synth/ set the quality bar. Synthesis text is All rights reserved, so it must be
+original prose that cites sources but never reproduces them.
 
-Environment: at the start of every thread, run
-  pip install -r requirements.txt --break-system-packages && bin/lpc build
-(build/catalog.db is gitignored; the synth tools need it).
+CONSTRAINTS
+- Follow CLAUDE.md. Never push to main. Open PRs through the REST API.
+- Each thread first runs `pip install -r requirements.txt --break-system-packages && bin/lpc build`.
+- One thread per course, on branch synth/<COURSE>. A thread may touch only synth/<COURSE>/ and its own topics'
+  `query:` lists.
+- Test-first: `bin/lpc synth check` is the test. A topic is not done until it passes, and fixes mean rewording
+  ideas, never loosening the check. Any tooling change needs a failing test in tests/ first, and the whole suite
+  must pass.
+- Originality: every sentence in your own words. No quote of 6 or more words. No 8-word run shared with any source.
+  Code examples written from scratch.
+- Evidence: start from `bin/lpc synth pack`. Use web search for history, versions and trends. Cite only what you
+  opened, from at least 2 publishers. Never state a "current" fact from memory.
+- Skills and tools: web search and the repo's `lpc` commands. Subagents may be used for research inside a course.
+  Don't use document-format skills, because the output is Markdown. Don't open raw/ wholesale.
+- Decisions not covered here follow RUBRIC.md. If the recommended option leads by less than 0.8, ask the owner
+  through the coordinator.
 
-ONE THREAD = ONE COURSE, on branch synth/<COURSE>. A thread writes only synth/<COURSE>/*.md, plus `query:` lists
-for its own topics in taxonomy/topics.yaml. It never edits tools/, catalog/, decisions/ or web/, so parallel PRs
-don't conflict.
-
-PER TOPIC (from taxonomy/topics.yaml; skip topics that already have a file):
-1. Run `bin/lpc synth pack <TOPIC-ID>`. Read build/packs/<TOPIC-ID>.md, and `bin/lpc show <chunk-id>` for the
-   chunks you rely on. Never open raw/ wholesale. If the pack is thin or off-topic, add a `query:` list and
-   re-pack. Check the topic's scope and depth in web/report.html.
-2. Use web search for history, dates, versions, deprecations and current trends. Don't state a version or a
-   "current default" from memory. Cite only pages you opened. Never invent a URL or chunk id.
-3. Write synth/<COURSE>/<TOPIC-ID>.md, with front matter from TEMPLATE.md (status: draft,
-   licence: All rights reserved), and these six sections, in this order:
-   - Define the problem: the problem, its constraints, and the slice this topic covers.
-   - History and approaches: earlier solutions and which part of the problem each covered (to size the problem
-     and solution space), and the patterns and lessons that led to today.
-   - Current state: a deep dive into how it works and is applied; related problems it applies to; the
-     generalised pattern; a structural evaluation (limitations, mitigations, risks, challenges), with tables
-     where useful.
-   - Related and opposing views: alternatives under active work, and trends that complement or could replace it.
-   - Future direction: concrete and dated where possible.
-   - References: [src: <source-id> <chunk-id>] and [web: <domain>] lines, from at least 2 publishers.
-   Aim for 1,400–2,200 words, scaled to the topic's depth.
-4. Originality (owner rule, D-027):
-   - every sentence in your own words; never copy a sentence verbatim;
-   - no quote of 6 or more words;
-   - no 8-word run shared with any source;
-   - restructure ideas rather than swapping synonyms;
-   - write code examples from scratch.
-5. `bin/lpc synth check synth/<COURSE>/<TOPIC-ID>.md` must print "0 failing". Fix flagged passages by explaining
-   the idea from a different angle, then re-run.
-
-PER COURSE, when all of its topics are done:
-1. Run `bin/lpc synth check`, `bin/lpc gate`, and `PYTHONPATH=tools pytest -q tests`.
-2. Commit with the attribution lines and push synth/<COURSE>.
-3. Open the PR to main through REST:
-   `gh api repos/nycnighthawk/Linux-Pathway-By-Claude/pulls --input pr.json`
-   (`gh pr create` is blocked).
-4. In the PR body, list the topics with their word counts, any claims marked "(to verify)", and any thin packs.
-5. Report to the coordinator in 3 lines or fewer: the PR link, the number of topics, CI status, and anything that
-   needs the owner.
-
-Decisions: if a choice isn't covered here and the recommended option doesn't lead by 0.8 or more on RUBRIC.md,
-ask the owner through the coordinator with a multi-select card. Never push to main.
+OUTPUT FORMAT
+- Per topic: front matter from synth/TEMPLATE.md (status: draft), then these sections in order:
+  - Define the problem
+  - History and approaches
+  - Current state
+  - Related and opposing views
+  - Future direction
+  - References
+  Aim for 1,400–2,200 words, scaled to depth.
+- Per course: one PR listing each topic with its word count, claims marked "(to verify)", and thin packs.
+- Report to the coordinator in 3 lines or fewer: the PR link, the number of topics, CI status, and anything that
+  needs the owner.
 ```
 
 ---
 
-## 2. Kickoff (coordinator)
+## Kickoff
 
 ```text
-Start the synthesis rollout. 288 topics remain across 30 courses; check with `bin/lpc synth status`. Run at most
-4 threads at a time, one course per thread. Start the next course whenever a thread finishes, in this order:
-
-1. LNX-101, LNX-102, LNX-103, LNX-104
-2. LNX-201, LNX-202, LNX-203, LNX-204, LNX-220
-3. LNX-301 (remaining), then LNX-302 to LNX-309
-4. LNX-310, LNX-311, LNX-312 (remaining), LNX-313, LNX-314
-5. LNX-320 (remaining), LNX-330, LNX-331 (remaining)
-6. Capstones LNX-401 to LNX-404, only after their source courses are merged
-
-After each PR, send me one line: course, topics done, PR link, CI status. Keep a progress table in the project
-library. Pause and ask me if:
-- CI fails twice on the same course;
-- usage passes 50% of my plan's limit;
-- a decision needs me.
+GOAL: Write syntheses for all 288 remaining topics, one PR per course.
+DONE: `bin/lpc synth status` on main shows 292/292, every course PR has passed CI, and the getting-started guide's
+section 6 table is updated to show completion.
+CONSTRAINTS: Run at most 4 threads at a time. Order: 1xx → 2xx → 3xx (finish LNX-301, 312, 320 and 331) →
+capstones 401–404, which start only after their source courses are merged. Pause and ask me if CI fails twice on
+one course, if usage passes 50% of my plan's limit, or if a decision needs me.
+OUTPUT: One line per merged-ready PR: course, topics, link, CI. Keep a live progress table in the library.
 ```
 
 ---
 
-## 3. Steering (coordinator, as needed)
+## Steering
 
-**Status**
 ```text
-Show the progress table: per course, topics done/total, PR link, CI, merged or not. List anything waiting on me.
+GOAL: Status. OUTPUT: The progress table (course, done/total, PR, CI, merged), plus items waiting on me.
 ```
 
-**Pause or resume**
 ```text
-Pause after the threads now running finish their courses. Don't start new ones until I say resume.
-```
-```text
-Resume the rollout from where it stopped, with the same limits.
+GOAL: Pause. DONE: The running threads have finished their current course, and no new thread has started.
+Resume when I say "resume".
 ```
 
-**Review feedback on a PR**
 ```text
-Apply my review comments on PR #<N> in the existing thread for that course. Fix only what I flagged, re-run
-`bin/lpc synth check`, and push to the same branch.
+GOAL: Apply my review on PR #<N>. DONE: Only the flagged items are changed, synth check passes, and the fix is
+pushed to the same branch.
 ```
 
-**Mark a course reviewed (after I've merged or approved)**
 ```text
-In course <COURSE>, change status: draft to status: reviewed for every topic, and open a small PR.
+GOAL: Mark <COURSE> reviewed. DONE: Every topic in <COURSE> shows status: reviewed, in one small PR.
 ```
 
-**Thin evidence (for example LNX-330 and LNX-331, whose kernel sources are mostly headings-only)**
 ```text
-For <COURSE>, catalog packs are thin. Rely more on primary web sources (docs.kernel.org, LWN, upstream
-project docs, KEPs or RFCs) with at least 3 web references per topic, and note in the PR body which topics
-had thin packs.
+GOAL: Strengthen <COURSE>, whose catalog packs are thin.
+CONSTRAINTS: At least 3 primary web references per topic (for example docs.kernel.org, LWN, upstream docs, KEPs,
+RFCs). Note the thin topics in the PR.
 ```
 
-**Capstones**
 ```text
-Start the capstones LNX-401 to LNX-404, one thread each. For each capstone topic, build on the merged course
-syntheses it depends on (see web/report.html for the mapping). Cite those course files as related reading,
-alongside external references, and still write every sentence fresh.
-```
-
-**Wrap-up**
-```text
-All courses are merged. Run `bin/lpc synth status` on main, confirm 292/292, and update the getting-started
-guide's section 6 estimate table to show completion. Open the final PR.
+GOAL: Write capstones LNX-401 to LNX-404.
+CONSTRAINTS: Build on the merged course syntheses (see web/report.html for the mapping), and cite them as
+related reading. All prose is new.
 ```
