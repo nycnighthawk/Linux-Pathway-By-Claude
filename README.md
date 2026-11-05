@@ -34,6 +34,7 @@ You can skip the build: CI publishes `catalog.db` to the
 | `decisions/` | One YAML record per curation decision, scored against [RUBRIC.md](RUBRIC.md). See the [decision log](decisions/DECISIONS.md) |
 | `tools/lpc/` | The toolchain: `sync` (git, Playwright crawl, packages, HTTP), `list`, `build`, `search`, `show`, `stats`, `gate`, `web`, `decisions`, `synth` (pack, check, status) |
 | `web/` | Static search page (MiniSearch, vendored, MIT) and `report.html`, the interactive curriculum report (pathways, courses, testability, certifications). Both are published with the site |
+| `web/playbook.html` | Interactive build playbook: ready-to-paste prompts and a 3-worker board for curating, synthesizing and producing every course |
 | `docs/PROJECT-PROMPTS.md` | Paste-in prompts for running the synthesis as a Claude Code project |
 | `synth/` | Original knowledge syntheses, one per course topic (All rights reserved, `synth/LICENSE`). Topics are in `taxonomy/topics.yaml`; see [GETTING-STARTED §6](docs/GETTING-STARTED.md#6-knowledge-synthesis-original-course-text) |
 
