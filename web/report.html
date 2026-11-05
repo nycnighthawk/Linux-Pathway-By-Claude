@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linux Mastery Path</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a field manual for a branching curriculum — shared trunk, four pathway branches, environment colour-codes reused everywhere. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#18212b; --muted:#5a6673; --line:#d9dfe5;
+  --accent:#1f5fa8; --accent-soft:#e3edf8;
+  --c:#2e7d5b; --v:#1f5fa8; --w:#6a4fb3; --s:#b36b00; --k:#0f8a96; --h:#a8323a; --o:#6b7480;
+  --p-ent:#1f5fa8; --p-cn:#0f8a96; --p-dev:#6a4fb3; --p-krn:#a8323a;
+  --good:#2e7d5b; --warn:#b36b00; --bad:#a8323a;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161c; --surface:#1a222b; --ink:#e4e9ee; --muted:#9aa6b2; --line:#2d3843;
+    --accent:#6ea8ec; --accent-soft:#1d2e42;
+    --c:#5cc495; --v:#6ea8ec; --w:#a891e8; --s:#e3a24a; --k:#4cc3cf; --h:#e8737a; --o:#a3acb6;
+    --p-ent:#6ea8ec; --p-cn:#4cc3cf; --p-dev:#a891e8; --p-krn:#e8737a;
+    --good:#5cc495; --warn:#e3a24a; --bad:#e8737a;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161c; --surface:#1a222b; --ink:#e4e9ee; --muted:#9aa6b2; --line:#2d3843;
+  --accent:#6ea8ec; --accent-soft:#1d2e42;
+  --c:#5cc495; --v:#6ea8ec; --w:#a891e8; --s:#e3a24a; --k:#4cc3cf; --h:#e8737a; --o:#a3acb6;
+  --p-ent:#6ea8ec; --p-cn:#4cc3cf; --p-dev:#a891e8; --p-krn:#e8737a;
+  --good:#5cc495; --warn:#e3a24a; --bad:#e8737a;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+a{color:var(--accent)}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:30px;font-weight:700}
+h2{font-size:23px;font-weight:600}
+h3{font-size:18px;font-weight:600}
+h4{font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+code,pre,.mono{font-family:var(--mono);font-size:13px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header.top{padding:28px 0 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+.top .meta{color:var(--muted);font-size:14px;margin-top:6px;max-width:75ch}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.stat{border:1px solid var(--line);border-radius:6px;padding:8px 12px;background:var(--bg);min-width:120px}
+.stat b{display:block;font:600 20px var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{font:500 14px var(--body);color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:12px 12px 9px;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding:32px 0 60px}
+section.view{display:none}
+section.view.on{display:block}
+.lead{max-width:72ch;color:var(--muted);margin:6px 0 18px}
+.grid{display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
+.env{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:4px;padding:2px 7px;border:1px solid currentColor;white-space:nowrap;font-family:var(--mono)}
+.env.C{color:var(--c)}.env.V{color:var(--v)}.env.W{color:var(--w)}.env.S{color:var(--s)}.env.K{color:var(--k)}.env.H{color:var(--h)}.env.O{color:var(--o)}
+.legend .item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+/* pathway picker */
+.picker{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 16px}
+.picker button{font:500 14px var(--body);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.picker button .dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.picker button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.ptag{font:600 11px var(--mono);padding:1px 6px;border-radius:3px;color:#fff;white-space:nowrap}
+.ptag.ENT{background:var(--p-ent)}.ptag.CN{background:var(--p-cn)}.ptag.DEV{background:var(--p-dev)}.ptag.KRN{background:var(--p-krn)}
+.ptag.el{background:transparent;border:1px dashed currentColor}
+.ptag.el.ENT{color:var(--p-ent)}.ptag.el.CN{color:var(--p-cn)}.ptag.el.DEV{color:var(--p-dev)}.ptag.el.KRN{color:var(--p-krn)}
+.branch{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.trunk{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.trunk .seq{display:flex;flex-wrap:wrap;gap:6px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--pc);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.pcard[aria-pressed="true"]{box-shadow:0 0 0 2px var(--pc)}
+.pcard .roles{font-size:13px;color:var(--muted)}
+.pcard ol{margin:0;padding-left:20px;font-size:14px}
+.pcard ol li{margin:2px 0}
+.pcard .el{font-size:13px;color:var(--muted)}
+.ladder{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px}
+.ladder .arrow{color:var(--muted)}
+.kv{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.kv b{color:var(--ink);font-variant-numeric:tabular-nums}
+/* path */
+.stages{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.stage .num{font:600 12px var(--mono);color:var(--accent)}
+.stage .goal{font-size:13px;color:var(--muted)}
+.chip{display:block;text-align:left;width:100%;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:8px 10px;cursor:pointer;color:var(--ink);font:inherit;transition:opacity .15s}
+.chip:hover{border-color:var(--accent)}
+.chip.dim{opacity:.32}
+.chip.elective{border-style:dashed}
+.chip .code{font:600 12px var(--mono);color:var(--accent)}
+.chip .t{display:block;font-weight:500;font-size:14px;line-height:1.3}
+.chip .h{font-size:12px;color:var(--muted)}
+.chip .tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+.cert-ms{border-top:1px dashed var(--line);padding-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:12px;border-radius:999px;padding:2px 9px;background:var(--accent-soft);color:var(--ink);white-space:nowrap}
+.pill.perf{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+/* courses */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.filters label{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center}
+select,input[type=search]{font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+details.course{background:var(--surface);border:1px solid var(--line);border-radius:8px}
+details.course>summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+details.course>summary::-webkit-details-marker{display:none}
+details.course[open]>summary{border-bottom:1px solid var(--line)}
+.ccode{font:600 13px var(--mono);color:var(--accent);background:var(--accent-soft);padding:3px 7px;border-radius:4px}
+.ctitle{font:600 17px var(--display)}
+.csub{font-size:13px;color:var(--muted)}
+.cov{display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:110px}
+.bar{height:6px;width:110px;background:var(--line);border-radius:3px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.cov small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cbody{padding:16px;display:grid;gap:18px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.tablebox table th,.tablebox table td{padding:8px 10px}
+.depth{display:inline-flex;gap:2px;vertical-align:middle}
+.depth i{width:9px;height:9px;border-radius:2px;background:var(--line);display:block}
+.depth i.f{background:var(--accent)}
+ul.tight{margin:6px 0 0;padding-left:18px}
+ul.tight li{margin:3px 0}
+.yes li::marker{content:"✓  ";color:var(--good)}
+.no li::marker{content:"✕  ";color:var(--bad)}
+.heat td.cell{text-align:center;font:600 12px var(--mono);font-variant-numeric:tabular-nums;min-width:44px}
+.heat td.cell.z{color:var(--line)}
+.calc{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
+.opt{display:grid;gap:6px;margin-bottom:14px}
+.opt>span{font-weight:600;font-size:14px}
+.radio{display:flex;gap:8px;align-items:flex-start;font-size:14px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:var(--bg)}
+.radio:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.radio small{display:block;color:var(--muted);font-size:12px}
+.big{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.big .stat{background:var(--surface);min-width:150px}
+.big .stat b{font-size:26px}
+.rec{border-left:4px solid var(--accent);padding:10px 14px;background:var(--surface);border-radius:0 8px 8px 0;margin-bottom:12px}
+.miss{font-size:13px}
+.miss li{margin:2px 0}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;margin:0;line-height:1.45}
+.copy{font:500 13px var(--body);padding:5px 10px;border-radius:6px;border:1px solid var(--accent);color:var(--accent);background:var(--surface);cursor:pointer}
+.lic{font:600 12px var(--mono);padding:2px 6px;border-radius:4px;white-space:nowrap}
+.lic.ok{color:var(--good);border:1px solid var(--good)}
+.lic.mid{color:var(--warn);border:1px solid var(--warn)}
+.lic.no{color:var(--bad);border:1px solid var(--bad)}
+.steps{counter-reset:s;display:grid;gap:10px;padding:0;margin:0;list-style:none}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
+.steps li::before{content:counter(s);font:600 14px var(--mono);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.note{font-size:13px;color:var(--muted)}
+.mark{font:600 13px var(--mono)}
+.mark.P{color:var(--accent)}
+.mark.S{color:var(--muted)}
+.wfhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 6px}
+footer{border-top:1px solid var(--line);padding:18px 0;color:var(--muted);font-size:13px}
+@media (max-width:860px){
+  .two,.calc{grid-template-columns:1fr}
+  details.course>summary{grid-template-columns:auto 1fr}
+  .cov{grid-column:1/-1;align-items:flex-start}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>Linux Mastery Path</h1>
+    <p class="meta">This curriculum takes a learner from zero to Linux mastery along one of four pathways: Enterprise Infrastructure, Cloud-Native Platform, Linux Software Development, or Kernel &amp; Low-Level Systems. Every pathway shares one foundation trunk and then branches. Courses map to current certifications, labs are auto-graded on GitHub Actions wherever possible, and the same source builds the books. Facts were checked on 1 November 2026, and prices and free tiers change often.</p>
+    <div class="stats" id="topstats"></div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Report sections">
+  <div class="wrap" role="tablist" id="tablist"></div>
+</nav>
+<main class="wrap">
+
+<section class="view" id="v-path" aria-labelledby="h-path">
+  <h2 id="h-path">One trunk, four pathways</h2>
+  <p class="lead">Everyone takes the Stage 0–1 trunk. At Stage 2 the learner picks a pathway, and each pathway has its own core courses, electives, certification ladder and capstone. Pick a pathway to highlight it throughout the report.</p>
+  <div class="picker" id="picker" role="group" aria-label="Choose a pathway"></div>
+  <div class="trunk" id="trunk"></div>
+  <div class="branch" id="branch"></div>
+
+  <h3 style="margin:26px 0 10px">Stage view</h3>
+  <p class="note" style="margin:0 0 10px">Solid cards are core for the selected pathway, dashed cards are electives, and faded cards belong to other pathways. Click a course to open its syllabus.</p>
+  <div class="stages" id="stages"></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:18px">
+    <div class="card"><h3>Depth scale used in every syllabus</h3>
+      <table style="margin-top:8px"><tbody id="depthkey"></tbody></table></div>
+    <div class="card"><h3>Where each lab can be fully tested</h3>
+      <div class="legend" id="envkey" style="flex-direction:column;align-items:flex-start"></div></div>
+    <div class="card"><h3>Switching pathways</h3>
+      <p>The trunk is about 280 hours and counts toward every pathway. Several Stage 2 courses are shared too: LNX-307 is core in all four, LNX-310 in three, and LNX-220/320 in both developer-facing pathways. Switching after Stage 2 usually costs only the pathway-specific Stage 3 courses.</p>
+      <p class="note">Common pairings: Cloud-Native + Enterprise for platform teams running on-prem Kubernetes, and Developer + Kernel for systems programmers.</p></div>
+  </div>
+</section>
+
+<section class="view" id="v-courses" aria-labelledby="h-courses">
+  <h2 id="h-courses">Courses: topics, depth and what CI can grade</h2>
+  <p class="lead">For each topic you can see how deep the course goes and the cheapest environment that tests it completely. The bar on each course shows the share of its syllabus, weighted by depth, that free GitHub Actions in a public repo can grade.</p>
+  <div class="filters">
+    <label for="f-path">Pathway <select id="f-path" data-pathsel></select></label>
+    <label for="f-stage">Stage <select id="f-stage"><option value="">All</option></select></label>
+    <label for="f-cert">Certification <select id="f-cert"><option value="">Any</option></select></label>
+    <label for="f-q">Search <input type="search" id="f-q" placeholder="e.g. eBPF, Kerberos, CNI"></label>
+    <button class="copy" id="expand-all" type="button">Expand all</button>
+  </div>
+  <div class="legend" id="envkey2"></div>
+  <div class="grid" id="courselist"></div>
+</section>
+
+<section class="view" id="v-testing" aria-labelledby="h-testing">
+  <h2 id="h-testing">Testing matrix</h2>
+  <p class="lead">Each cell counts the topic depth points in a course that need that environment. Read across a row to see what a course depends on, and down a column to see how much of the path rests on one environment.</p>
+  <div class="filters"><label for="f-path2">Pathway <select id="f-path2" data-pathsel></select></label></div>
+  <div class="tablebox"><table class="heat" id="heat"></table></div>
+  <div class="two" style="margin-top:18px">
+    <div class="card">
+      <h3>What GitHub Actions in a public repo gives you</h3>
+      <ul class="tight yes">
+        <li>Standard Linux runners for public repos have 4 vCPUs, 16 GB of RAM and a 14 GB SSD, free and unmetered.</li>
+        <li>Passwordless sudo and a real VM, so loop devices, network namespaces, nftables, Docker and privileged containers all work.</li>
+        <li>KVM hardware acceleration on Linux runners, so nested lab VMs, kubeadm clusters and freshly built kernels all boot inside a job. Kernel projects such as sched_ext and netdev already boot test kernels in CI with virtme-ng.</li>
+        <li>Multi-node Kubernetes with kind in containers, including CNI swaps (Flannel, Calico, Cilium) and two clusters side by side.</li>
+        <li>Up to 20 jobs at once on the Free plan, with up to 256 jobs per matrix, so one push can grade every lab on every distro, architecture or Kubernetes version.</li>
+        <li>Windows Server runners with admin rights, for PowerShell and OpenSSH-on-Windows labs.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What it cannot give you</h3>
+      <ul class="tight no">
+        <li><b>A reboot of the runner itself.</b> Do reboot and persistence checks inside nested VMs.</li>
+        <li><b>Persistence across days.</b> Jobs are ephemeral and capped at 6 hours, so soak tests, long upgrades, multi-day fuzzing and drift have to run on a long-lived lab.</li>
+        <li><b>Networking between jobs.</b> Each job is an isolated VM with no inbound connections, so a whole topology or cluster must fit inside one 16 GB runner.</li>
+        <li><b>A genuine Windows AD domain controller,</b> because promotion needs a reboot. Use Samba AD DC in CI.</li>
+        <li><b>Restricted syscalls in default containers.</b> io_uring, perf events and BPF labs need a VM or a privileged container.</li>
+        <li><b>Real hardware and trustworthy numbers.</b> Vendor switches, physical devices for driver bring-up, BMCs and performance benchmarks are out of reach on shared runners.</li>
+        <li><b>Human processes.</b> CI can't stand in for upstream patch review or a real on-call rotation.</li>
+        <li><b>Secrets on fork pull requests,</b> so labs that need cloud keys or a RHEL subscription can't be graded on them.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>Reference grading workflows</h3>
+    <p class="note">The learner forks the course repo and commits a solution. CI builds a clean environment, applies the solution and runs the lab's verifier. All three patterns use the KVM udev rule GitHub documents for hardware acceleration.</p>
+    <div class="wfhead"><h4>1 · Nested VM lab (systems pathways)</h4><button class="copy" type="button" data-copy="wf1">Copy YAML</button></div>
+    <pre id="wf1"><code>jobs:
+  vm-lab:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        lab:    [lnx102-timers, lnx103-lvm-extend, lnx204-selinux-port]
+        distro: [almalinux-10, rocky-9, ubuntu-24.04, debian-13]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - run: sudo apt-get update && sudo apt-get install -y qemu-system-x86 cloud-image-utils virtinst libvirt-daemon-system
+      - run: ./harness/boot-vm.sh "${{ matrix.distro }}" "labs/${{ matrix.lab }}"
+      - run: ./harness/apply.sh "labs/${{ matrix.lab }}/solution"
+      - run: ./harness/reboot-and-verify.sh "labs/${{ matrix.lab }}/verify"</code></pre>
+    <div class="wfhead"><h4>2 · Kubernetes lab (Cloud-Native pathway)</h4><button class="copy" type="button" data-copy="wf2">Copy YAML</button></div>
+    <pre id="wf2"><code>jobs:
+  k8s-lab:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        lab: [lnx311-etcd-restore, lnx312-netpol-default-deny, lnx314-psa-restricted]
+        cni: [default, cilium]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: helm/kind-action@v1          # multi-node cluster from the lab's config
+        with:
+          config: labs/${{ matrix.lab }}/kind-config.yaml
+      - run: ./harness/install-cni.sh "${{ matrix.cni }}"
+      - run: kubectl apply -k "labs/${{ matrix.lab }}/solution"
+      - run: ./harness/k8s-verify.sh "labs/${{ matrix.lab }}/verify"</code></pre>
+    <div class="wfhead"><h4>3 · Kernel lab (Kernel pathway)</h4><button class="copy" type="button" data-copy="wf3">Copy YAML</button></div>
+    <pre id="wf3"><code>jobs:
+  kernel-lab:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4          # learner's kernel tree or module
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - run: sudo apt-get update && sudo apt-get install -y build-essential flex bison bc libelf-dev libssl-dev qemu-system-x86
+      - run: pip install virtme-ng
+      - run: ./scripts/checkpatch.pl --strict -g HEAD   # style gate
+      - run: vng --build --config .ci/lab.config        # build a minimal kernel
+      - run: vng -- ./verify/in-guest.sh                # boot it; run KUnit, kselftest, module checks</code></pre>
+  </div>
+</section>
+
+<section class="view" id="v-costs" aria-labelledby="h-costs">
+  <h2 id="h-costs">Cheapest way to test everything</h2>
+  <p class="lead">Choose a pathway and a mix of environments. The calculator recomputes coverage, weighted by topic depth, across that pathway's core courses, along with first-year cost. Picking a pathway loads its recommended mix.</p>
+  <div class="calc">
+    <div class="card" id="opts"></div>
+    <div>
+      <div class="big" id="calcstats"></div>
+      <div class="rec" id="calcrec"></div>
+      <div class="card"><h3>Coverage by course</h3><table id="calctable" style="margin-top:6px"></table></div>
+      <div class="card" style="margin-top:14px"><h3>Still not fully testable with this mix</h3><ul class="tight miss" id="calcmiss"></ul></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>How the tiers fit together</h3>
+    <ol class="tight" style="padding-left:20px">
+      <li><b>Public GitHub repo with hosted runners</b> covers container, nested-VM, kind and virtme-ng labs at no cost. It is the default grader in every pathway.</li>
+      <li><b>One self-hosted lab box</b> (64 GB RAM) adds a genuine Windows AD DC, Katello, AWX, live migration, cluster soak tests, multi-day syzkaller runs and trustworthy benchmarks. Run it as an ephemeral self-hosted runner on a <em>separate private</em> repo, or require approval for fork PRs. Self-hosted runners are still free: GitHub's proposed $0.002/minute charge was postponed.</li>
+      <li><b>Cloud free credits</b> cover the managed-Kubernetes and cloud-provisioning topics. New AWS accounts get up to $200 in credits for up to 6 months.</li>
+      <li><b>A small hardware kit</b> is optional: a managed LACP switch for the infrastructure pathways, or an ARM development board for real driver bring-up in the Kernel pathway.</li>
+    </ol>
+    <p class="note">Cost figures are planning estimates, not quotes. Hetzner raised prices twice in 2026, and its EX44 went from €42.30 to €47.30 a month in April. Server-auction listings rose only about 3%, which keeps the auction the cheapest rented option.</p>
+  </div>
+</section>
+
+<section class="view" id="v-content" aria-labelledby="h-content">
+  <h2 id="h-content">Curating raw content into courses</h2>
+  <p class="lead">Courses are built from openly licensed source material plus original writing. Licences decide what can be adapted, what can only be paraphrased or linked, and what can appear in a book you sell. Sort sources into licence streams before writing a lesson.</p>
+  <div class="tablebox"><table id="srctable"></table></div>
+  <div class="two" style="margin-top:18px">
+    <div class="card">
+      <h3>Licence streams</h3>
+      <ul class="tight">
+        <li><b>Stream A, CC BY-SA family plus CC BY (combine freely):</b> RHEL docs, Rocky docs, Ubuntu Server docs, the Debian Handbook and Bootlin's kernel training materials (all BY-SA), plus Kubernetes docs (CC BY 4.0, which can be adapted into BY-SA). Publish course text as <b>CC BY-SA 4.0</b>.</li>
+        <li><b>Stream B, GFDL:</b> ArchWiki and GNU manuals. Paraphrase or link, or keep a separate GFDL appendix.</li>
+        <li><b>Stream C, GPL/OSL copyleft:</b> Ansible docs (GPLv3), Linux kernel Documentation (GPL-2.0) and the Linux Kernel Module Programming Guide (OSL-3.0). Link to them and write original lessons. Kernel code samples in your labs should be GPL-2.0 so they can be upstreamed.</li>
+        <li><b>Reference only:</b> NC/ND works such as <i>The Linux Command Line</i> and CIS Benchmarks (which also feed kube-bench checks). Base commercial chapters on DISA STIGs, NIST and the Kubernetes docs instead.</li>
+        <li><b>Certification objectives</b> are vendor copyright. Map objective IDs and don't reprint the lists.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Raw-to-course recipe for each lesson</h3>
+      <ol class="steps" style="margin-top:8px">
+        <li><div><b>Map.</b> Start from the objective IDs the lesson must satisfy (for example CKA "Troubleshooting", RHCSA "configure Flatpak repositories", or the LFD103 chapter on patches).</div></li>
+        <li><div><b>Gather.</b> Pull 2–4 raw passages from Stream A sources and record their URL, licence and date in <code>provenance.yml</code>.</div></li>
+        <li><div><b>Synthesise.</b> Write original prose that explains why, compares tools and adds failure modes. Keep adapted passages short and tagged.</div></li>
+        <li><div><b>Prove.</b> Every command and code sample lives in a lab with a verifier, and CI runs it across the matrix (distros, Kubernetes versions, kernel architectures).</div></li>
+        <li><div><b>Assess.</b> Add a performance task graded in CI plus recall questions mapped to objective IDs.</div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-certs" aria-labelledby="h-certs">
+  <h2 id="h-certs">Certification alignment</h2>
+  <p class="lead"><span class="mark P">P</span> means the course is primary preparation for that exam. <span class="mark S">S</span> means it supports part of the blueprint. The Developer and Kernel pathways have few vendor exams, so a CI-verified portfolio (and, for kernel work, accepted upstream patches) carries more weight there.</p>
+  <div class="filters"><label for="f-path3">Pathway <select id="f-path3" data-pathsel></select></label></div>
+  <div class="tablebox"><table id="certmatrix"></table></div>
+  <div class="tablebox" style="margin-top:16px"><table id="certtable"></table></div>
+</section>
+
+<section class="view" id="v-books" aria-labelledby="h-books">
+  <h2 id="h-books">From courses to books</h2>
+  <p class="lead">The same Markdown source builds the course site, the lab repository and the books. Each book groups courses that share a certification target and a licence stream.</p>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))" id="booklist"></div>
+  <div class="card" style="margin-top:16px">
+    <h3>Single-source pipeline, all on GitHub</h3>
+    <ol class="steps" style="margin-top:10px">
+      <li><div><b>Repo layout:</b> <code>courses/&lt;code&gt;/lessons/*.md</code>, <code>labs/&lt;lab&gt;/{setup,task.md,solution,verify}</code>, <code>sources/</code> (mirrored raw text with licence metadata) and <code>objectives/*.yml</code>.</div></li>
+      <li><div><b>Licence gate:</b> CI reads each lesson's provenance and fails the book build if NC, ND, GFDL, GPL or OSL text feeds a CC BY-SA target. Code listings carry their own SPDX tags.</div></li>
+      <li><div><b>Prose quality:</b> Vale style lint, link check, and extraction of every fenced code block into the lab harness, so the book never shows code that wasn't run.</div></li>
+      <li><div><b>Builds:</b> MkDocs Material for the course site on GitHub Pages, and Pandoc or Quarto for PDF and EPUB. The attribution appendix and objective index are generated from metadata.</div></li>
+      <li><div><b>Release:</b> a Git tag publishes the books to GitHub Releases and pins dated lab images, Kubernetes versions and kernel versions, so each edition matches a reproducible lab.</div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="view" id="v-sources" aria-labelledby="h-sources">
+  <h2 id="h-sources">Sources behind this report</h2>
+  <p class="lead">These are the primary and secondary sources used to verify runner limits, certification versions, licences and lab costs.</p>
+  <div class="card"><ul class="tight" id="reflist"></ul></div>
+</section>
+
+</main>
+<footer><div class="wrap">This is a planning document. Certification blueprints and Kubernetes exam versions change, so confirm the objectives on each vendor's exam page before you finalise a syllabus.</div></footer>
+
+<script>
+const ENVS={
+ C:{n:"GHA container",d:"Docker/Podman container or kind cluster on a free hosted Linux runner"},
+ V:{n:"GHA nested VM",d:"KVM VM inside a free hosted runner: systemd, SELinux, reboots, kubeadm, virtme-ng kernels"},
+ W:{n:"GHA Windows",d:"Free hosted Windows Server runner (no reboot, no DC promotion)"},
+ S:{n:"Self-hosted lab",d:"Your own KVM box or rented server: long-lived, more RAM, Windows DC, benchmarks"},
+ K:{n:"Cloud account",d:"AWS/Azure/OCI account for cloud-only behaviour such as managed Kubernetes"},
+ H:{n:"Physical hardware",d:"Vendor switch, dev board, real BMC; otherwise simulate"},
+ O:{n:"Time-based / human",d:"Needs days of runtime or a human process such as upstream review"}
+};
+const DEPTH={1:["Aware","Can explain it and knows when it applies"],2:["Apply","Completes guided tasks with documentation"],3:["Proficient","Configures, builds and troubleshoots it alone at exam speed"],4:["Expert","Designs, automates and tests it at scale and teaches it"]};
+const CERTS={
+ LE:{n:"LPI Linux Essentials",code:"010-160 (v1.6)",fmt:"Multiple choice",lvl:"Entry",note:"Optional starting credential."},
+ LPIC1:{n:"LPIC-1",code:"101-500 + 102-500 (v5.0)",fmt:"Multiple choice + fill-in",lvl:"Administrator",note:"Still v5.0. Some named tools (ntpd, Xorg, OpenLDAP server) are gone from current enterprise repos."},
+ LPIC2:{n:"LPIC-2",code:"201-450 + 202-450 (v4.5)",fmt:"Multiple choice + fill-in",lvl:"Engineer",note:"Needs an active LPIC-1 to be awarded."},
+ L300:{n:"LPIC-3 Mixed Environments",code:"300-300 (v3.0)",fmt:"Multiple choice + fill-in",lvl:"Specialist",note:"Samba, AD, Linux and Windows integration."},
+ L303:{n:"LPIC-3 Security",code:"303-300 (v3.0)",fmt:"60 questions, 90 minutes",lvl:"Specialist",note:"Cryptography, host, access and network security."},
+ L305:{n:"LPIC-3 Virtualization & Containerization",code:"305-300 (v3.0)",fmt:"Multiple choice + fill-in",lvl:"Specialist",note:""},
+ L306:{n:"LPIC-3 HA & Storage Clusters",code:"306-300 (v3.0)",fmt:"Multiple choice + fill-in",lvl:"Specialist",note:""},
+ LPLUS:{n:"CompTIA Linux+",code:"XK0-006 (V8)",fmt:"Up to 90 questions incl. PBQs, 90 min",lvl:"Administrator",note:"Launched 15 Jul 2025. Domains: System Mgmt 23%, Services & User Mgmt 20%, Security 18%, Automation/Scripting 17%, Troubleshooting 22%."},
+ LFCS:{n:"Linux Foundation LFCS",code:"LFCS (distro-agnostic)",fmt:"Performance-based, 2 hours",lvl:"Administrator",perf:true,note:"Ops & Deployment 25%, Networking 25%, Storage 20%, Essential Commands 20%, Users & Groups 10%. Required for Golden Kubestronaut."},
+ RHCSA:{n:"Red Hat RHCSA",code:"EX200 (RHEL 10)",fmt:"Performance-based",lvl:"Red Hat Level 2",perf:true,note:"RHEL 10 objectives add Flatpak repositories and tuning profiles."},
+ RHCE:{n:"Red Hat RHCE",code:"EX294 (Ansible)",fmt:"Performance-based",lvl:"Red Hat Level 3",perf:true,note:"Passing EX294 together with RHCSA gives RHCE."},
+ EX362:{n:"Red Hat Specialist: Identity Management",code:"EX362 (RHEL 9, IdM 4.8)",fmt:"Performance-based",lvl:"Red Hat Level 4",perf:true,note:"Counts toward an RHCA."},
+ EX188:{n:"Red Hat Certified Developer in Cloud-native Applications",code:"EX188 (RHEL 9, Podman 4.4)",fmt:"Performance-based",lvl:"Red Hat Level 2 (Cloud-native track)",perf:true,note:"Images with Containerfiles, registries, multi-container apps, troubleshooting with Podman."},
+ KCNA:{n:"CNCF KCNA",code:"Kubernetes & Cloud Native Associate",fmt:"60 MCQ, 90 min, 75% to pass",lvl:"Associate",note:"Vocabulary primer before CKA. Part of Kubestronaut."},
+ KCSA:{n:"CNCF KCSA",code:"Kubernetes & Cloud Native Security Associate",fmt:"60 MCQ, 90 min, 75% to pass",lvl:"Associate",note:"Multiple-choice warm-up for CKS. Part of Kubestronaut."},
+ CKA:{n:"CNCF CKA",code:"Certified Kubernetes Administrator (K8s v1.35)",fmt:"Performance-based, 2 h",lvl:"Professional",perf:true,note:"Troubleshooting 30%, Cluster Architecture 25%, Services & Networking 20%, Workloads & Scheduling 15%, Storage 10%. Curriculum updated 18 Feb 2025 (Helm, Kustomize, Gateway API, CRDs/operators)."},
+ CKAD:{n:"CNCF CKAD",code:"Certified Kubernetes Application Developer (K8s v1.35)",fmt:"Performance-based, 2 h",lvl:"Professional",perf:true,note:"App Environment, Config & Security 25%; Design & Build, Deployment, Services & Networking 20% each; Observability & Maintenance 15%."},
+ CKS:{n:"CNCF CKS",code:"Certified Kubernetes Security Specialist",fmt:"Performance-based, 2 h",lvl:"Specialist",perf:true,note:"Requires an active CKA. Cluster Setup 15%, Cluster Hardening 15%, System Hardening 10%, Microservice Vulnerabilities 20%, Supply Chain 20%, Monitoring & Runtime Security 20%."},
+ CCA:{n:"CNCF Cilium Certified Associate",code:"CCA",fmt:"60 MCQ, 90 min",lvl:"Associate",note:"Connecting, securing and observing clusters with Cilium (eBPF)."},
+ KDEV:{n:"LF Kernel Development badge",code:"LFD103 (free course + badge)",fmt:"Self-paced course, no exam",lvl:"Training credential",note:"No mainstream exam exists for kernel work. Credibility comes from accepted upstream patches."}
+};
+const PATHS={
+ ENT:{n:"Enterprise Infrastructure",roles:"Linux sysadmin, infrastructure engineer, identity and AD integration engineer",
+   desc:"Run, secure and automate Linux estates inside Windows-centric enterprises.",
+   core:["LNX-202","LNX-204","LNX-305","LNX-307","LNX-308","LNX-301","LNX-302","LNX-303","LNX-304","LNX-306","LNX-401"],
+   elective:["LNX-309","LNX-310"],
+   ladder:["LPLUS","LFCS","RHCSA","RHCE","LPIC2","L300","L303","EX362"],
+   mix:{lab:"reuse",cloud:"free",hw:"none"},
+   mixNote:"Free CI plus one PC you own (for a genuine Windows AD DC, Katello and AWX) plus AWS free credits."},
+ CN:{n:"Cloud-Native Platform",roles:"Platform engineer, SRE, Kubernetes administrator",
+   desc:"Build, network, secure and operate container platforms on Linux.",
+   core:["LNX-202","LNX-204","LNX-305","LNX-307","LNX-310","LNX-311","LNX-312","LNX-313","LNX-314","LNX-402"],
+   elective:["LNX-304","LNX-306","LNX-303","LNX-308"],
+   ladder:["LFCS","KCNA","CKA","CKAD","KCSA","CKS","CCA"],
+   mix:{lab:"none",cloud:"free",hw:"none"},
+   mixNote:"kind and kubeadm-in-VMs cover almost everything in free CI. Add AWS credits for managed Kubernetes. A self-hosted box is only needed for scale and soak tests."},
+ DEV:{n:"Linux Software Development",roles:"Backend or systems developer, DevOps developer, package maintainer",
+   desc:"Build, debug, package and ship native Linux software and services.",
+   core:["LNX-307","LNX-310","LNX-220","LNX-320","LNX-403"],
+   elective:["LNX-305","LNX-313","LNX-304","LNX-204"],
+   ladder:["LFCS","EX188","CKAD"],
+   mix:{lab:"none",cloud:"none",hw:"none"},
+   mixNote:"Free CI covers nearly everything. Only trustworthy performance profiling needs your own machine."},
+ KRN:{n:"Kernel & Low-Level Systems",roles:"Kernel or driver engineer, embedded Linux engineer, performance engineer",
+   desc:"Read, change, test and upstream Linux kernel code and drivers.",
+   core:["LNX-307","LNX-220","LNX-320","LNX-330","LNX-331","LNX-404"],
+   elective:["LNX-308","LNX-202","LNX-303"],
+   ladder:["LFCS","KDEV"],
+   mix:{lab:"reuse",cloud:"none",hw:"kit"},
+   mixNote:"virtme-ng boots every kernel in free CI. A PC you own runs multi-day syzkaller and benchmarks, and an ARM dev board covers real hardware bring-up."}
+};
+const TRUNK=["LNX-101","LNX-102","LNX-103","LNX-104","LNX-201","LNX-203"];
+const STAGES=[
+ {n:"Stage 0",t:"Foundations",goal:"Comfortable on the command line of any distribution."},
+ {n:"Stage 1",t:"Administrator",goal:"Runs one server correctly and persistently. End of the shared trunk."},
+ {n:"Stage 2",t:"Pathway core",goal:"First pathway-specific courses: automation, containers, programming."},
+ {n:"Stage 3",t:"Specialist",goal:"Deep specialism: identity, Kubernetes, system programming, kernel."},
+ {n:"Stage 4",t:"Master",goal:"One capstone per pathway, rebuilt and verified by CI."}
+];
+const MILESTONES=[["LE"],["LPLUS","LPIC1","LFCS","RHCSA"],["RHCE","LPIC2","L305","EX188","KCNA"],["L300","L303","EX362","L306","CKA","CKAD","KCSA","CKS","CCA","KDEV"],[]];
+
+const COURSES=[
+{code:"LNX-101",stage:0,title:"Linux Foundations & the Command Line",hours:40,pre:"None",why:"Builds shell fluency that every later lab assumes.",
+ certs:{LE:"P",LPIC1:"P",LPLUS:"P",LFCS:"P",RHCSA:"P"},
+ topics:[["Distributions, open-source licensing (GPL, copyleft)",1,"C"],["Shell navigation, globbing, quoting, history",3,"C"],["Files, links, FHS layout",3,"C"],["Text tools: grep, sed, awk, cut, sort, uniq, tr, xargs",3,"C"],["Redirection, pipes, tee",3,"C"],["Regular expressions (BRE/ERE)",2,"C"],["vi/vim and nano",2,"C"],["Permissions, ownership, umask, special bits",3,"C"],["Archiving and compression: tar, gzip, xz, zstd, cpio",2,"C"],["Getting help: man, info, --help",2,"C"]],
+ can:["Every task, graded in containers across five distro families"],cant:["Editor fluency itself; CI sees only the resulting file"],
+ raw:["Rocky Linux 'Learning Linux' and 'Learning bash' (CC BY-SA 4.0)","Debian Administrator's Handbook basics","The Linux Command Line, as reading only"]},
+{code:"LNX-102",stage:1,title:"System Administration Essentials",hours:60,pre:"LNX-101",why:"Core of LFCS, RHCSA and Linux+ domain 1.",
+ certs:{LPIC1:"P",LPLUS:"P",LFCS:"P",RHCSA:"P",LE:"S",LPIC2:"S"},
+ topics:[["Users, groups, sudo, password ageing",3,"C"],["Processes, signals, nice, job control",3,"C"],["systemd units, targets, dependencies, overrides",3,"V"],["Boot process, GRUB2, rescue targets, root reset",3,"V"],["journald, rsyslog, logrotate",3,"V"],["cron, at, systemd timers",3,"V"],["chrony and timedatectl",2,"V"],["Kernel modules and sysctl, persistent vs runtime",3,"V"],["tuned profiles (RHEL 10 objective)",2,"V"],["Proving changes survive a reboot",3,"V"],["Physical console and firmware setup",1,"H"]],
+ can:["Nested AlmaLinux/Rocky 10 and Ubuntu VMs with real systemd; reboot inside the VM, then verify"],cant:["Rebooting the runner; real firmware and serial consoles"],
+ raw:["RHEL 10 docs: 'Configuring basic system settings' (CC BY-SA 3.0)","Rocky Linux Admin Guide","Ubuntu Server docs"]},
+{code:"LNX-103",stage:1,title:"Storage & Filesystems",hours:50,pre:"LNX-102",why:"Storage is 20% of LFCS and a reliable source of RHCSA points.",
+ certs:{LPIC1:"P",LPIC2:"P",LPLUS:"P",LFCS:"P",RHCSA:"P",L306:"S"},
+ topics:[["Partitioning GPT/MBR",3,"V"],["ext4, XFS, Btrfs; fstab and mount units",3,"V"],["LVM: grow, snapshots, thin pools",4,"V"],["Swap files, zram",2,"V"],["Software RAID with mdadm",3,"V"],["Quotas, ACLs, xattrs",3,"V"],["NFS and SMB clients, autofs",3,"V"],["iSCSI target and initiator",2,"V"],["LUKS2 volumes",3,"V"],["Backup and restore: rsync, restic/borg",3,"C"],["Hardware RAID, FC SAN, multipath",1,"H"]],
+ can:["Virtual disks attached to nested VMs; simulated disk failure"],cant:["Hardware RAID, Fibre Channel, real disk failure"],
+ raw:["RHEL 10 docs: 'Managing storage devices', 'Configuring and managing LVM'","Debian Handbook: RAID and LVM"]},
+{code:"LNX-104",stage:1,title:"Software Packages on a Single Host",hours:30,pre:"LNX-101",why:"Groundwork for packaging and patching later.",
+ certs:{LPIC1:"P",LPLUS:"P",LFCS:"P",RHCSA:"P",LE:"S"},
+ topics:[["dnf/rpm: query, verify, history, undo",3,"C"],["apt/dpkg: sources, pinning, holds",3,"C"],["Repositories and GPG keys",3,"C"],["Flatpak remotes and packages (RHEL 10 objective)",3,"V"],["Building from source, shared libraries",2,"C"],["Dependency troubleshooting",3,"C"]],
+ can:["The whole course across distro containers"],cant:["Nothing significant"],
+ raw:["RHEL 10 docs: 'Managing software with the DNF tool'","Debian Handbook: APT"]},
+{code:"LNX-201",stage:1,title:"Linux Networking I",hours:50,pre:"LNX-102",why:"Networking is 25% of LFCS and the base for container networking.",
+ certs:{LPIC1:"P",LPIC2:"S",LPLUS:"P",LFCS:"P",RHCSA:"P"},
+ topics:[["TCP/IP, IPv4/IPv6, subnetting",3,"C"],["ip, ss, ethtool",3,"C"],["NetworkManager/nmcli, netplan, networkd",3,"V"],["Name resolution, systemd-resolved",3,"V"],["Routing and multi-NIC hosts",3,"V"],["firewalld, nftables",3,"V"],["OpenSSH: keys, ProxyJump, forwarding",3,"C"],["Troubleshooting: mtr, dig, tcpdump",3,"C"],["Wi-Fi and 802.1X",1,"H"]],
+ can:["Multi-VM topologies on isolated libvirt networks; namespaces"],cant:["Real switches, Wi-Fi, inbound internet traffic"],
+ raw:["RHEL 10 docs: 'Configuring and managing networking'","Ubuntu docs: netplan"]},
+{code:"LNX-203",stage:1,title:"Shell Scripting & Python for Sysadmins",hours:50,pre:"LNX-101",why:"Automation is 17% of Linux+ and the base for every pathway.",
+ certs:{LPIC1:"P",LPLUS:"P",LFCS:"S",RHCSA:"S",RHCE:"S",LE:"S"},
+ topics:[["Bash: tests, loops, functions, traps",4,"C"],["Strict mode, quoting, ShellCheck",3,"C"],["bats-core tests",3,"C"],["awk, jq, yq",3,"C"],["Python for ops",3,"C"],["Git workflow and review",3,"C"],["Scripts as systemd services and timers",2,"V"]],
+ can:["Everything: lint, unit and integration tests on each push"],cant:["Nothing significant"],
+ raw:["Rocky Linux 'Learning bash'","Python docs (link)"]},
+{code:"LNX-202",stage:2,title:"Advanced Linux Networking",hours:60,pre:"LNX-201",why:"LPIC-2 network services and the plumbing under clusters.",
+ certs:{LPIC2:"P",LPLUS:"S",LFCS:"S",L306:"S"},
+ topics:[["Bridges, VLANs, bonding (LACP between Linux peers)",3,"V"],["Namespaces, veth, VRF, policy routing",4,"C"],["IPv6: SLAAC, DHCPv6, radvd",3,"V"],["BIND9, Unbound, DNSSEC",3,"C"],["Kea DHCP",3,"C"],["HAProxy, keepalived VRRP",3,"V"],["WireGuard, IPsec",3,"V"],["tcpdump/tshark",3,"C"],["FRR (OSPF/BGP)",2,"C"],["Line-rate measurement",2,"S"],["Vendor-switch LACP, SR-IOV",1,"H"]],
+ can:["Routers, DNS, DHCP, VPN endpoints on one runner"],cant:["Vendor hardware and line-rate numbers"],
+ raw:["RHEL 10 networking guides","FRRouting docs (link)"]},
+{code:"LNX-204",stage:2,title:"Linux Security Fundamentals",hours:60,pre:"LNX-102, LNX-201",why:"SELinux and firewalls decide RHCSA results, and the base for CKS.",
+ certs:{LPIC1:"S",LPIC2:"P",LPLUS:"P",LFCS:"S",RHCSA:"P",L303:"S",KCSA:"S"},
+ topics:[["PAM, pwquality, faillock",3,"V"],["sudo policy",3,"C"],["SSH hardening, SSH certificates",3,"C"],["SELinux: contexts, booleans, audit2why",4,"V"],["AppArmor profiles",2,"V"],["nftables hardening",3,"V"],["auditd",3,"V"],["AIDE",2,"V"],["OpenSCAP scans and remediation",3,"V"],["TLS and openssl",3,"C"],["CVE and errata triage",2,"C"]],
+ can:["SELinux enforcing in RHEL-family VMs; OpenSCAP reports as artifacts"],cant:["Live attacker traffic, SOC work"],
+ raw:["RHEL 10 docs: 'Using SELinux', 'Security hardening'","DISA STIGs, NIST SP 800-53 (public domain)"]},
+{code:"LNX-305",stage:2,title:"Configuration Management with Ansible",hours:60,pre:"LNX-203, LNX-102",why:"Direct RHCE EX294 preparation.",
+ certs:{RHCE:"P",LPLUS:"S",LFCS:"S"},
+ topics:[["Inventories, variable precedence",4,"C"],["Playbooks, handlers, loops, Jinja2",4,"V"],["Roles, collections, execution environments",3,"C"],["Vault",3,"C"],["RHEL System Roles",3,"V"],["ansible-lint and Molecule",4,"C"],["Idempotence, check mode",3,"V"],["AWX / automation controller",2,"S"],["Managing Windows hosts",2,"S"]],
+ can:["A control node plus 4 VMs in one runner; Molecule matrices"],cant:["AWX on Kubernetes; Linux-to-Windows control across jobs"],
+ raw:["Rocky Linux 'Learning Ansible' (CC BY-SA 4.0)","RHEL docs: system roles","Ansible docs, linked only (GPLv3)"]},
+{code:"LNX-307",stage:2,title:"Observability, Performance & Troubleshooting",hours:50,pre:"LNX-102, LNX-103",why:"Shared by all four pathways; troubleshooting is 22% of Linux+ and 30% of CKA.",
+ certs:{LPLUS:"P",LPIC2:"P",LFCS:"S",RHCSA:"S",CKA:"S"},
+ topics:[["USE/RED methods, runbooks",3,"C"],["sysstat, vmstat, iostat, pidstat",3,"V"],["Prometheus, Grafana, alerting",3,"C"],["Central logging",3,"V"],["strace, perf, eBPF (bcc, bpftrace)",3,"V"],["kdump and crash",2,"V"],["Break/fix drills",4,"V"],["OOM and cgroups v2",3,"V"],["Reliable benchmarking",3,"S"],["Production on-call",2,"O"]],
+ can:["CI injects a fault, applies the learner's fix and proves recovery"],cant:["Trustworthy performance numbers; real on-call"],
+ raw:["RHEL 10 docs: monitoring and performance","Prometheus docs (link)"]},
+{code:"LNX-308",stage:2,title:"Virtualization with KVM & libvirt",hours:40,pre:"LNX-102, LNX-201",why:"Linux+ lists libvirt and virsh; LPIC-3 305 covers it in depth.",
+ certs:{L305:"P",LPLUS:"S",LFCS:"S"},
+ topics:[["KVM/QEMU, libvirt, virsh, virt-install",4,"V"],["Templates, snapshots, virt-customize",3,"V"],["VM networking: bridges, macvtap, VLANs",3,"V"],["virtio, hugepages, CPU pinning (functional)",2,"V"],["Live migration between hypervisors",3,"S"],["systemd-nspawn, LXC/Incus",2,"V"],["Nested virtualization, Firecracker microVMs",2,"V"],["Proxmox/oVirt clusters",1,"S"]],
+ can:["libvirt on the KVM-capable runner itself"],cant:["Two-hypervisor live migration, cluster management"],
+ raw:["RHEL 10 docs: 'Configuring and managing virtualization'","libvirt docs (link)"]},
+{code:"LNX-310",stage:2,title:"Containers in Depth",hours:50,pre:"LNX-102, LNX-201",why:"The bridge into Kubernetes, and how developers ship software.",
+ certs:{EX188:"P",KCNA:"S",L305:"S",CKAD:"S",LPLUS:"S"},
+ topics:[["Namespaces, cgroups v2, capabilities: a container by hand",4,"C"],["OCI image and runtime specs; runc, crun, containerd, CRI-O",3,"C"],["Podman rootless, pods, Quadlet units",4,"V"],["Docker Engine, BuildKit, Compose",3,"C"],["Containerfile craft: multi-stage, non-root, distroless",4,"C"],["Registries, Skopeo, mirrors",3,"C"],["Storage: overlayfs, volumes, SELinux labels",3,"V"],["Supply chain: SBOM, cosign signing, Trivy",3,"C"],["Debugging: nsenter, inspect, events",3,"C"],["Sandboxed runtimes: gVisor, Kata (needs KVM)",2,"V"],["Windows containers",1,"W"]],
+ can:["Everything except Windows images; Kata runs because the runner has KVM"],cant:["Nothing significant"],
+ raw:["RHEL 10 docs: 'Building, running, and managing containers'","Podman and OCI spec docs (Apache-2.0, verify)","Docker docs (licence unverified, link)"]},
+{code:"LNX-220",stage:2,title:"Linux Application Development",hours:60,pre:"LNX-203, LNX-104",why:"Native software on Linux: toolchains, debugging, systemd and packaging.",
+ certs:{EX188:"S",CKAD:"S"},
+ topics:[["gcc, clang, binutils, linking, ELF",3,"C"],["make, CMake, Meson",3,"C"],["Shared libraries, sonames, pkg-config",3,"C"],["gdb, core dumps, valgrind",4,"C"],["Sanitizers and static analysis",3,"C"],["Unit tests, coverage, fuzzing (libFuzzer/AFL++)",3,"C"],["C, Rust, Go and Python toolchains",3,"C"],["systemd integration: sd_notify, socket activation, journald",3,"V"],["D-Bus services, XDG conventions",2,"V"],["Packaging apps: RPM, DEB, Flatpak, OCI",3,"C"],["Profiling with perf and flame graphs (functional)",3,"V"],["GUI apps (GTK/Qt) under Xvfb",1,"C"]],
+ can:["Builds, tests, fuzzing and packaging across distros and compilers"],cant:["Trustworthy performance numbers"],
+ raw:["The Rust Programming Language book (MIT/Apache-2.0)","Fedora packaging guidelines (CC BY-SA, verify)","GNU make/gcc manuals (GFDL, link)","systemd man pages (link)"]},
+{code:"LNX-301",stage:3,title:"Identity, Directory & AD Integration",hours:60,pre:"LNX-204, LNX-305",why:"Core of EX362 and LPIC-3 300.",
+ certs:{EX362:"P",L300:"P",LPIC2:"S",LPLUS:"S"},
+ topics:[["LDAP servers and clients",3,"C"],["Kerberos, keytabs, GSSAPI SSH",3,"C"],["SSSD, nsswitch, PAM",4,"V"],["realmd/adcli joins to Samba AD DC",4,"V"],["Joining a genuine Windows AD",3,"S"],["FreeIPA/IdM: replicas, HBAC, sudo rules",4,"V"],["IdM to AD trust",3,"S"],["ID mapping, sssctl troubleshooting",3,"V"],["ansible-freeipa automation",3,"V"],["Smart-card login",1,"S"]],
+ can:["Samba AD DC container plus FreeIPA VMs"],cant:["Genuine Windows DC, forest trusts, GPO"],
+ raw:["RHEL docs: 'Integrating RHEL systems directly with Windows AD'","Samba wiki (link only)"]},
+{code:"LNX-302",stage:3,title:"Mixed Environments",hours:50,pre:"LNX-301",why:"Day-to-day Linux and Windows interop.",
+ certs:{L300:"P",LPIC2:"P",EX362:"S",LPLUS:"S"},
+ topics:[["Samba file server",4,"C"],["winbind vs SSSD members",3,"V"],["Samba AD DC replication",3,"C"],["SMB clients with Kerberos",3,"C"],["AD DNS and time",3,"C"],["PowerShell 7 and OpenSSH on Windows",3,"W"],["Windows clients and printing",2,"S"],["Ansible managing Windows",2,"S"],["NFSv4 with Kerberos",2,"V"],["Linux in a genuine AD estate",3,"S"]],
+ can:["Two Samba DCs plus members on one runner"],cant:["Cross-job Linux and Windows networking"],
+ raw:["Samba wiki (link)","Microsoft Learn: OpenSSH, AD DS (CC BY 4.0, verify)"]},
+{code:"LNX-303",stage:3,title:"Advanced Security & Compliance",hours:60,pre:"LNX-204, LNX-305",why:"LPIC-3 303 and regulated-industry work.",
+ certs:{L303:"P",LPLUS:"S",KCSA:"S"},
+ topics:[["X.509 PKI: CA, CRL, OCSP",4,"C"],["LUKS2, Clevis/Tang, TPM2 (swtpm)",3,"V"],["Secure Boot, signed modules",2,"V"],["IMA/EVM, lockdown",2,"V"],["Falco, auditd advanced",3,"V"],["Suricata, fail2ban",3,"V"],["OVAL, Trivy, SBOMs",3,"C"],["Compliance as code",4,"V"],["OpenBao/Vault, sops",3,"C"],["Linux forensics basics",2,"V"],["Long-term compliance drift",1,"O"]],
+ can:["Emulated TPM and Secure Boot in QEMU"],cant:["Hardware attestation, long-term drift"],
+ raw:["RHEL 10 docs: 'Security hardening'","NIST SPs (public domain)"]},
+{code:"LNX-304",stage:3,title:"Software Packages at Scale",hours:50,pre:"LNX-104, LNX-305",why:"Building, signing, mirroring and promoting software for fleets.",
+ certs:{LPLUS:"S",RHCE:"S",LPIC2:"S"},
+ topics:[["RPM: spec, rpmbuild, mock",4,"C"],["DEB: debhelper, sbuild",3,"C"],["Signing and key rotation",3,"C"],["createrepo_c, aptly, Pulp 3",3,"C"],["Dated snapshots",3,"C"],["Katello content views",3,"S"],["Patch rings",3,"V"],["bootc / image mode, rpm-ostree",3,"V"],["Image Builder",2,"V"],["Multi-week fleet rollouts",2,"O"]],
+ can:["Matrix package builds published to a test repo on GitHub Pages"],cant:["Full Katello stack; real multi-week rollouts"],
+ raw:["Fedora/RPM packaging guides (verify)","RHEL 10 docs: image builder, image mode"]},
+{code:"LNX-306",stage:3,title:"Provisioning & Server Lifecycle",hours:60,pre:"LNX-305, LNX-201",why:"Bare metal or cloud to decommission, as code.",
+ certs:{LPIC1:"S",RHCSA:"S",RHCE:"S",L305:"S",LPLUS:"S"},
+ topics:[["Kickstart, preseed, autoinstall",3,"V"],["PXE/iPXE/HTTP boot",3,"V"],["cloud-init",4,"V"],["Packer images",3,"V"],["OpenTofu with libvirt provider",3,"V"],["Foreman/MAAS bare metal",2,"S"],["Simulated Redfish/IPMI",2,"V"],["Leapp and release upgrades",3,"V"],["Drift detection, secure wipe",2,"V"],["Cloud provisioning",3,"K"],["Real BMC firmware",1,"H"]],
+ can:["PXE-booting VMs inside one runner; Packer → OpenTofu → verify"],cant:["Real bare metal and BMCs"],
+ raw:["RHEL 10 docs: Kickstart, upgrading to RHEL 10","cloud-init docs (verify)"]},
+{code:"LNX-309",stage:3,title:"High Availability & Clusters",hours:40,pre:"LNX-202, LNX-103",why:"Elective for LPIC-3 306.",
+ certs:{L306:"P"},
+ topics:[["Pacemaker/Corosync, fence_virsh",3,"V"],["DRBD, GFS2 awareness",2,"V"],["keepalived + HAProxy HA",3,"V"],["PostgreSQL replication",2,"C"],["DR drills",3,"V"],["Real power fencing",1,"H"]],
+ can:["A three-node cluster in VMs"],cant:["Physical fencing devices"],
+ raw:["RHEL docs: HA clusters"]},
+{code:"LNX-311",stage:3,title:"Kubernetes Administration",hours:70,pre:"LNX-310, LNX-201",why:"Direct CKA preparation.",
+ certs:{CKA:"P",KCNA:"P",CKS:"S",CKAD:"S"},
+ topics:[["Architecture: API server, etcd, scheduler, kubelet, CRI",3,"C"],["kubeadm install on 3 VMs; HA control-plane design",4,"V"],["Cluster upgrades, drain and cordon",4,"V"],["etcd backup and restore",4,"V"],["Scheduling: affinity, taints, resources, autoscaling",3,"C"],["Storage: PV/PVC, StorageClass, CSI",3,"C"],["RBAC, ServiceAccounts, certificates",3,"C"],["Helm and Kustomize",3,"C"],["CRDs and operators",3,"C"],["Troubleshooting nodes, control plane and apps",4,"V"],["Managed Kubernetes (EKS/AKS/GKE)",2,"K"],["Hundreds of nodes; long-lived upgrades",1,"S"]],
+ can:["kind multi-node clusters; kubeadm across 3 nested VMs; break/fix scenarios"],cant:["Large scale; managed control planes without an account"],
+ raw:["Kubernetes docs (CC BY 4.0)","kubeadm docs (CC BY 4.0)","CKA curriculum (map only)"]},
+{code:"LNX-312",stage:3,title:"Container & Kubernetes Networking",hours:50,pre:"LNX-311, LNX-202",why:"Pod networking from first principles up to eBPF datapaths and meshes.",
+ certs:{CCA:"P",CKA:"S",CKS:"S",KCNA:"S"},
+ topics:[["netns + veth + bridge + NAT: a container network by hand",4,"C"],["CNI spec; write a minimal CNI plugin",3,"C"],["Flannel, Calico, Cilium compared",3,"C"],["kube-proxy modes (iptables, IPVS, nftables), Service types",4,"C"],["eBPF datapath, kube-proxy replacement, Hubble",3,"C"],["Ingress and Gateway API",3,"C"],["NetworkPolicy and L7 CiliumNetworkPolicy",4,"C"],["CoreDNS and service discovery",3,"C"],["Service mesh: Istio ambient / Linkerd, mTLS",2,"C"],["MetalLB and BGP with FRR",3,"C"],["Cilium ClusterMesh across two kind clusters",2,"C"],["MTU, encapsulation overhead, throughput",2,"S"],["BGP to physical top-of-rack switches",1,"H"]],
+ can:["Every functional lab on kind, including CNI swaps and two clusters"],cant:["Throughput numbers and real fabrics"],
+ raw:["Kubernetes docs: networking (CC BY 4.0)","CNI spec (Apache-2.0)","Cilium docs (verify licence)"]},
+{code:"LNX-313",stage:3,title:"Kubernetes App Delivery & GitOps",hours:50,pre:"LNX-311",why:"Direct CKAD preparation.",
+ certs:{CKAD:"P",KCNA:"S",EX188:"S"},
+ topics:[["Pod design: init and sidecar containers",3,"C"],["Config, Secrets, SecurityContext, limits",4,"C"],["Probes, logs, kubectl debug",4,"C"],["Rolling, blue/green, canary",3,"C"],["Jobs and CronJobs",3,"C"],["Helm chart authoring and testing",3,"C"],["GitOps with Argo CD or Flux",3,"C"],["An operator with kubebuilder",2,"C"],["Prometheus metrics, OpenTelemetry",3,"C"],["Inner loop: Tilt/Skaffold, devcontainers",2,"C"]],
+ can:["The entire course on kind"],cant:["Nothing significant"],
+ raw:["Kubernetes docs: workloads (CC BY 4.0)","Argo CD and Flux docs (verify)"]},
+{code:"LNX-314",stage:3,title:"Kubernetes & Cloud-Native Security",hours:45,pre:"LNX-311, LNX-204",why:"Direct CKS and KCSA preparation.",
+ certs:{CKS:"P",KCSA:"P"},
+ topics:[["Cluster setup: kube-bench, metadata protection",3,"V"],["RBAC minimisation, API access",3,"C"],["AppArmor, seccomp, kernel attack surface",3,"V"],["Pod Security Admission, Kyverno/Gatekeeper",4,"C"],["Secrets encryption at rest",3,"V"],["Supply chain: cosign, SBOM, admission checks",4,"C"],["Falco and audit logs",3,"V"],["gVisor/Kata RuntimeClass",2,"V"],["mTLS and segmentation",3,"C"],["Production threat detection",1,"O"]],
+ can:["kubeadm VM clusters for node-level hardening; kind for policy"],cant:["Real production threats"],
+ raw:["Kubernetes docs: security (CC BY 4.0)","CIS Kubernetes Benchmark (reference only)"]},
+{code:"LNX-320",stage:3,title:"Linux System Programming",hours:70,pre:"LNX-220",why:"The syscall layer every runtime, database and kernel developer works against.",
+ certs:{KDEV:"S"},
+ topics:[["Syscalls, errno, glibc vs raw, strace",3,"C"],["File I/O, locking, mmap",4,"C"],["epoll and io_uring",3,"V"],["fork/exec/wait, sessions, daemons",4,"C"],["Signals, signalfd, timerfd",3,"C"],["pthreads, futexes, atomics, memory model",4,"C"],["IPC: pipes, Unix sockets (fd passing), shm, eventfd",4,"C"],["Sockets and non-blocking servers",4,"C"],["Capabilities, seccomp-bpf, namespaces, Landlock",3,"V"],["inotify/fanotify, netlink",2,"V"],["ptrace: build a tiny strace",2,"C"],["eBPF from user space: libbpf CO-RE",3,"V"],["NUMA and cache-effect measurement",2,"S"]],
+ can:["Unit and integration tests in containers; io_uring and BPF in VMs"],cant:["Trustworthy performance results"],
+ raw:["man-pages sections 2, 3, 7 (quote briefly)","Kernel userspace-api docs (GPL-2.0, link)","libbpf docs (verify)"]},
+{code:"LNX-330",stage:3,title:"Kernel Development I: Workflow & Tooling",hours:50,pre:"LNX-320 or strong C",why:"Matches the LFD103 syllabus: build, test and submit patches the upstream way.",
+ certs:{KDEV:"P"},
+ topics:[["Kernel tree, releases, stable/LTS, maintainers",2,"C"],["Kconfig, defconfig, localmodconfig, cross-compiling",4,"C"],["Boot testing with QEMU and virtme-ng",4,"V"],["In-tree and out-of-tree modules",3,"V"],["checkpatch, get_maintainer, sparse, Coccinelle",3,"C"],["format-patch, b4, send-email, list etiquette",3,"C"],["KUnit (UML)",4,"C"],["kselftest",3,"V"],["printk, dynamic debug, ftrace, KASAN, lockdep",3,"V"],["git bisect a regression",3,"V"],["A real upstream review cycle",2,"O"]],
+ can:["Build, boot and test learner kernels per push with virtme-ng"],cant:["The human review process on mailing lists"],
+ raw:["Kernel Documentation/process (GPL-2.0, link)","Bootlin kernel training materials (CC BY-SA 3.0)","LFD103 (free course, reference)"]},
+{code:"LNX-331",stage:3,title:"Kernel Internals & Device Drivers",hours:70,pre:"LNX-330",why:"Drivers, memory, concurrency and filesystems inside the kernel.",
+ certs:{KDEV:"S"},
+ topics:[["Character devices, file_operations, ioctl",4,"V"],["Device model, sysfs, platform drivers, device tree",3,"V"],["PCI driver for the QEMU 'edu' device",3,"V"],["Interrupts, softirqs, workqueues, timers",3,"V"],["Spinlocks, mutexes, RCU, lockdep",4,"V"],["Page allocator, slab, vmalloc, DMA API",3,"V"],["VFS: write a simple filesystem",3,"V"],["Network drivers and NAPI",2,"V"],["eBPF internals, sched_ext schedulers",2,"V"],["Rust for Linux modules",2,"V"],["arm64 cross-build, boot on QEMU virt",3,"V"],["Bring-up on a real board",2,"H"],["Kernel performance regressions",2,"S"]],
+ can:["Drivers against QEMU emulated devices; arm64 in QEMU"],cant:["Real hardware timing and DMA; benchmark-grade numbers"],
+ raw:["Bootlin kernel and driver training (CC BY-SA 3.0)","Linux Kernel Module Programming Guide (OSL-3.0, link; samples GPL-2.0)","Kernel Documentation (GPL-2.0, link)"]},
+{code:"LNX-401",stage:4,title:"Capstone: Enterprise Estate as Code",hours:80,pre:"Enterprise Stage 3",why:"Mixed, identity-integrated estate run through its full lifecycle.",
+ certs:{RHCE:"S",EX362:"S",L300:"S",L303:"S"},
+ topics:[["IdM + Samba AD + 6 mixed servers + repo + monitoring",4,"V"],["Against a genuine Windows AD with trust",4,"S"],["Provision, harden, patch, upgrade, decommission",4,"V"],["30-day operations simulation",3,"O"],["Baseline deployed to public cloud",3,"K"],["Post-incident review",3,"C"]],
+ can:["The core estate, rebuilt nightly in CI"],cant:["Genuine AD forest; month-long ops"],raw:["All prior courses"]},
+{code:"LNX-402",stage:4,title:"Capstone: Cloud-Native Platform",hours:80,pre:"Cloud-Native Stage 3",why:"Run a secure, observable, GitOps-managed platform through upgrades and failures.",
+ certs:{CKA:"S",CKAD:"S",CKS:"S",CCA:"S"},
+ topics:[["Two kubeadm clusters on VMs with Cilium and Gateway API",4,"V"],["GitOps for platform and apps with Argo CD",4,"C"],["Version upgrade and etcd restore drill",4,"V"],["Policy: PSA, Kyverno, signed images only",3,"C"],["Observability: Prometheus, OpenTelemetry, Hubble",3,"C"],["Same platform on managed Kubernetes",3,"K"],["Week-long soak and chaos test",2,"O"],["100+ node scale test",1,"S"]],
+ can:["The full platform rebuilt and verified in one CI run"],cant:["Soak tests and real scale"],raw:["All Cloud-Native courses"]},
+{code:"LNX-403",stage:4,title:"Capstone: Ship a Linux Service",hours:70,pre:"Developer Stage 3",why:"A production-grade daemon, from code to packages.",
+ certs:{EX188:"S",CKAD:"S"},
+ topics:[["A C or Rust epoll daemon with sd_notify and socket activation",4,"C"],["Fuzzing and sanitizers in CI",4,"C"],["Packages: RPM, DEB, Flatpak, OCI",3,"C"],["Hardened systemd unit (ProtectSystem, seccomp)",3,"V"],["Profiling and flame graphs",3,"S"],["Releases and user issues over time",2,"O"]],
+ can:["Build, fuzz, package and deploy-verify on each push"],cant:["Benchmark-grade numbers; long-term maintenance"],raw:["All Developer courses"]},
+{code:"LNX-404",stage:4,title:"Capstone: Upstream-Quality Kernel Work",hours:80,pre:"Kernel Stage 3",why:"A driver or patch series that would survive upstream review.",
+ certs:{KDEV:"S"},
+ topics:[["Driver for a QEMU device with KUnit tests",4,"V"],["Series passes checkpatch; boots on x86_64 and arm64",4,"V"],["Bisect and fix a planted regression",3,"V"],["Submit to a real subsystem list and address review",3,"O"],["Run on a real development board",2,"H"],["Multi-day syzkaller campaign",2,"S"]],
+ can:["Build, boot and test across architectures per push"],cant:["Maintainer acceptance; real hardware"],raw:["All Kernel courses"]}
+];
+COURSES.sort((a,b)=>a.stage-b.stage||a.code.localeCompare(b.code));
+const BY=Object.fromEntries(COURSES.map(c=>[c.code,c]));
+
+const SOURCES=[
+ ["Red Hat Enterprise Linux documentation","CC BY-SA 3.0","ok","Adapt with original URL; remove trademarks if modified","Yes","A"],
+ ["Rocky Linux documentation and books","CC BY-SA 4.0","ok","Adapt with attribution","Yes","A"],
+ ["Debian Administrator's Handbook","GPL-2+ / CC BY-SA 3.0","ok","Adapt under CC BY-SA","Yes","A"],
+ ["Ubuntu Server docs","CC BY-SA 3.0","ok","Adapt (check current footer)","Yes","A"],
+ ["Kubernetes documentation","CC BY 4.0","ok","Adapt with attribution; code samples Apache-2.0","Yes","A-compatible"],
+ ["Bootlin kernel and driver training materials","CC BY-SA 3.0","ok","Adapt with attribution","Yes","A"],
+ ["The Rust Programming Language book","MIT / Apache-2.0","ok","Adapt with notice","Yes","Permissive"],
+ ["Microsoft Learn (Windows Server, AD DS)","CC BY 4.0 in most repos (verify)","ok","Adapt with attribution","Yes","A-compatible"],
+ ["DISA STIGs, NIST SPs","US government works","ok","Adapt freely; cite","Yes","Public domain"],
+ ["ArchWiki, GNU manuals","GFDL 1.3","mid","Paraphrase or link","Separate volume only","B"],
+ ["Ansible community documentation","GPLv3","mid","Link; write original lessons","GPL appendix only","C"],
+ ["Linux kernel Documentation/","GPL-2.0","mid","Link; quote briefly","GPL appendix only","C"],
+ ["Linux Kernel Module Programming Guide","OSL-3.0 (samples GPL-2.0)","mid","Link; reuse samples in GPL labs","No","C"],
+ ["Linux man-pages project","Per-page licences","mid","Quote briefly, link","Short quotes","Ref"],
+ ["Samba wiki, FreeIPA, Docker, Cilium, Argo docs","Not verified","mid","Link only until checked","No (until verified)","Ref"],
+ ["The Linux Command Line (W. Shotts)","CC BY-NC-ND 3.0","no","Reading list only","No","Ref"],
+ ["CIS Benchmarks (incl. Kubernetes)","CC BY-NC-SA 4.0","no","Reference; commercial use needs CIS approval","No","Ref"],
+ ["Certification objectives (all vendors)","Vendor copyright","no","Map IDs; don't reprint","No","Ref"],
+ ["Your original lessons and labs","CC BY-SA 4.0 text / MIT or GPL-2.0 code","ok","The bulk of every course","Yes","A"]
+];
+const BOOKS=[
+ {t:"Linux from Zero",c:["LNX-101","LNX-102","LNX-104","LNX-203"],cert:"Linux Essentials, LPIC-1, Linux+",p:"All"},
+ {t:"Storage & Networking in Practice",c:["LNX-103","LNX-201","LNX-202"],cert:"LFCS, RHCSA, LPIC-2",p:"All"},
+ {t:"Automating & Securing Linux",c:["LNX-305","LNX-204","LNX-303"],cert:"RHCE, LPIC-3 303",p:"ENT"},
+ {t:"Linux in the Windows Enterprise",c:["LNX-301","LNX-302"],cert:"EX362, LPIC-3 300",p:"ENT"},
+ {t:"Running Linux Fleets",c:["LNX-304","LNX-306","LNX-307","LNX-308","LNX-309"],cert:"Linux+ domain 5, LPIC-3 305/306",p:"ENT"},
+ {t:"Containers & Kubernetes on Linux",c:["LNX-310","LNX-311","LNX-312","LNX-313","LNX-314"],cert:"CKA, CKAD, CKS, CCA, EX188",p:"CN"},
+ {t:"Programming Linux: Applications & System Calls",c:["LNX-220","LNX-320"],cert:"Portfolio; supports EX188",p:"DEV"},
+ {t:"Linux Kernel Development",c:["LNX-330","LNX-331"],cert:"LFD103 badge; upstream patches",p:"KRN"}
+];
+const REFS=[
+ ["GitHub Docs: GitHub-hosted runners reference","https://docs.github.com/en/actions/reference/runners/github-hosted-runners"],
+ ["GitHub Docs: Actions limits","https://docs.github.com/en/actions/reference/usage-limits-billing-and-administration"],
+ ["GitHub Blog: 4-vCPU runners for public repositories","https://github.blog/news-insights/product-news/github-hosted-runners-double-the-power-for-open-source/"],
+ ["ReactiveCircus android-emulator-runner (KVM udev rule)","https://github.com/ReactiveCircus/android-emulator-runner"],
+ ["Kernel Recipes 2024: virtme-ng in CI/CD","https://kernel-recipes.org/en/2024/virtme-ng/"],
+ ["sched_ext CI workflow using virtme-ng","https://gitea.hillion.co.uk/JakeHillion/scx/blame/commit/a3b5941c3a0facf2fe292af9942f8be5ed6942fd/.github/workflows/build-scheds.yml"],
+ ["SAMexpert: self-hosted runner charge postponed","https://samexpert.com/github-actions-pricing-backlash-2026/"],
+ ["Red Hat Blog: Major updates to Red Hat Certification (May 2026)","https://www.redhat.com/en/blog/validate-targeted-expertise-major-updates-red-hat-certification"],
+ ["Red Hat: EX362 Identity Management exam","https://www.redhat.com/en/services/training/ex362-red-hat-certified-specialist-identity-management-exam"],
+ ["Global Knowledge: EX188 Cloud-native Applications exam","https://www.globalknowledge.com/es-es/products/red_hat/ex188"],
+ ["Training Camp: CKA vs CKAD vs CKS (2025 CKA curriculum)","https://trainingcamp.com/articles/cka-vs-ckad-vs-cks-which-kubernetes-certification-to-take-first/"],
+ ["Training Camp: What is CKAD (v1.35, fee)","https://trainingcamp.com/what-is-ckad/"],
+ ["CNCF: Cilium Certified Associate","https://cncf.io/training/certification/cca"],
+ ["Linux Foundation: Kubestronaut bundles","https://training.linuxfoundation.org/?p=45951"],
+ ["Linux Foundation: LFD103 Beginner's Guide to Kernel Development","https://training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/"],
+ ["CompTIA Linux+ XK0-006 objectives","https://lecbyo.files.cmp.optimizely.com/download/90b9ac985c0e11f0b004a2a93c999a21"],
+ ["Linux Foundation: updated LFCS exam","https://training.linuxfoundation.org/?p=25993"],
+ ["LPI: LPIC-3 Mixed Environments","https://www.lpi.org/our-certifications/lpic-3-300/"],
+ ["Kubernetes website repo (CC BY 4.0)","https://awesome.ecosyste.ms/projects/github.com%2Fkubernetes%2Fwebsite"],
+ ["Kernel licensing rules (GPL-2.0)","https://kernelsources.org/source/xref/linux/Documentation/process/license-rules.rst"],
+ ["LKMPG repository (OSL-3.0)","https://github.com/sysprog21/lkmpg"],
+ ["Bootlin training materials (CC BY-SA 3.0)","https://github.com/bootlin/training-materials/"],
+ ["Red Hat documentation legal notice","https://docs.redhat.com/legal-notice"],
+ ["Rocky Linux documentation licence","https://docs.rockylinux.org/books/licence/"],
+ ["ArchWiki licence (GFDL 1.3)","https://wiki.archlinux.org/index.php/ArchWiki:General_disclaimer"],
+ ["NIST NCP: CIS Benchmark licence","https://ncp.nist.gov/checklist/665"],
+ ["samba-container (AD DC image)","https://github.com/samba-in-kubernetes/samba-container/"],
+ ["Microsoft Evaluation Center: Windows Server 2025","https://www.microsoft.com/evalcenter/download-windows-server-2025"],
+ ["AWS Free Tier credits","https://aws.amazon.com/about-aws/whats-new/2025/07/aws-free-tier-credits-month-free-plan/"],
+ ["Tom's Hardware: Hetzner price increase","https://www.tomshardware.com/tech-industry/hetzner-to-raise-prices-by-up-to-37-percent-from-april-1"]
+];
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const envTag=e=>`<span class="env ${e}" title="${esc(ENVS[e].d)}">${e} · ${esc(ENVS[e].n)}</span>`;
+const depthBar=d=>`<span class="depth" aria-label="Depth ${d} of 4, ${DEPTH[d][0]}">${[1,2,3,4].map(i=>`<i class="${i<=d?'f':''}"></i>`).join("")}</span> <small>${DEPTH[d][0]}</small>`;
+const GHA=new Set(["C","V","W"]);
+function cov(list,set){let t=0,c=0;list.forEach(co=>co.topics.forEach(([_,d,e])=>{t+=d;if(set.has(e))c+=d}));return t?c/t:0}
+function role(code,p){if(TRUNK.includes(code))return "core";if(!p)return "core";if(PATHS[p].core.includes(code))return "core";if(PATHS[p].elective.includes(code))return "elective";return null}
+function pathCourses(p,withEl){if(!p)return COURSES;return COURSES.filter(c=>{const r=role(c.code,p);return r==="core"||(withEl&&r==="elective")})}
+function pathTags(code){if(TRUNK.includes(code))return `<span class="ptag" style="background:var(--muted)">TRUNK</span>`;
+  return Object.keys(PATHS).map(k=>PATHS[k].core.includes(code)?`<span class="ptag ${k}">${k}</span>`:PATHS[k].elective.includes(code)?`<span class="ptag el ${k}" title="elective">${k}</span>`:"").join("")}
+const hrs=l=>l.reduce((a,c)=>a+c.hours,0);
+let curPath="";
+
+/* ---------- top stats ---------- */
+(function(){const t=COURSES.flatMap(c=>c.topics);
+$("#topstats").innerHTML=[[COURSES.length,"courses"],["4","pathways from one trunk"],[hrs(COURSES)+" h","total catalogue"],[t.length,"syllabus topics"],[Math.round(cov(COURSES,GHA)*100)+"%","gradable free on GitHub Actions"],[Object.keys(CERTS).length,"certifications mapped"],[BOOKS.length,"books"]]
+ .map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("")})();
+
+/* ---------- tabs ---------- */
+const TABS=[["path","Pathways"],["courses","Courses"],["testing","Testing matrix"],["costs","Cost calculator"],["content","Content curation"],["certs","Certifications"],["books","Books"],["sources","Sources"]];
+$("#tablist").innerHTML=TABS.map(([id,l])=>`<button role="tab" id="t-${id}" aria-controls="v-${id}" data-tab="${id}">${l}</button>`).join("");
+function show(id){if(!TABS.some(t=>t[0]===id))id="path";TABS.forEach(([t])=>{$("#v-"+t).classList.toggle("on",t===id);$("#t-"+t).setAttribute("aria-selected",t===id)})}
+$("#tablist").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(b){location.hash=b.dataset.tab;show(b.dataset.tab)}});
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+
+/* ---------- pathway selection (global) ---------- */
+const PCOL={ENT:"--p-ent",CN:"--p-cn",DEV:"--p-dev",KRN:"--p-krn"};
+document.querySelectorAll("[data-pathsel]").forEach(s=>{s.innerHTML=`<option value="">All pathways</option>`+Object.entries(PATHS).map(([k,p])=>`<option value="${k}">${esc(p.n)}</option>`).join("");
+ s.addEventListener("change",()=>setPath(s.value))});
+function setPath(p){curPath=p;
+ document.querySelectorAll("[data-pathsel]").forEach(s=>s.value=p);
+ document.querySelectorAll("#picker button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===p));
+ document.querySelectorAll(".pcard").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===p));
+ const sel=$("#calc-path");if(sel){sel.value=p;Object.assign(state,p?PATHS[p].mix:{lab:"reuse",cloud:"free",hw:"none"});syncRadios()}
+ renderStages();renderCourses();renderHeat();renderCertMatrix();calc();}
+
+/* ---------- path view ---------- */
+$("#picker").innerHTML=`<button type="button" data-p="" aria-pressed="true"><span class="dot"></span>All pathways</button>`+
+ Object.entries(PATHS).map(([k,p])=>`<button type="button" data-p="${k}" aria-pressed="false"><span class="dot" style="background:var(${PCOL[k]})"></span>${esc(p.n)}</button>`).join("");
+$("#picker").addEventListener("click",e=>{const b=e.target.closest("button[data-p]");if(b)setPath(b.dataset.p)});
+$("#trunk").innerHTML=`<div><h3>Shared trunk</h3><span class="note">Stages 0–1 · ${hrs(TRUNK.map(c=>BY[c]))} h · ${Math.round(cov(TRUNK.map(c=>BY[c]),GHA)*100)}% free in CI</span></div>
+ <div class="seq">${TRUNK.map(c=>`<button class="chip" style="width:auto" type="button" data-open="${c}"><span class="code">${c}</span> <span class="t" style="display:inline">${esc(BY[c].title)}</span></button>`).join("")}</div>`;
+$("#branch").innerHTML=Object.entries(PATHS).map(([k,p])=>{
+ const core=p.core.map(c=>BY[c]);const all=TRUNK.map(c=>BY[c]).concat(core);
+ return `<div class="pcard" role="button" tabindex="0" data-p="${k}" aria-pressed="false" style="--pc:var(${PCOL[k]})">
+  <div><span class="ptag ${k}">${k}</span><h3 style="margin-top:6px">${esc(p.n)}</h3><div class="roles">${esc(p.desc)} For: ${esc(p.roles)}.</div></div>
+  <div class="kv"><span><b>${hrs(all)} h</b> total</span><span><b>${hrs(core)} h</b> after trunk</span><span><b>${Math.round(cov(all,GHA)*100)}%</b> free in CI</span></div>
+  <div><h4>Core after the trunk</h4><ol>${core.map(c=>`<li><span class="mark P">${c.code}</span> ${esc(c.title)}</li>`).join("")}</ol></div>
+  <div class="el"><b>Electives:</b> ${p.elective.map(c=>`${c} ${esc(BY[c].title)}`).join(" · ")}</div>
+  <div><h4>Certification ladder</h4><div class="ladder" style="margin-top:6px">${p.ladder.map(x=>`<span class="pill ${CERTS[x].perf?'perf':''}">${esc(x==="KDEV"?"LFD103 badge":CERTS[x].n.replace("CNCF ","").replace("Red Hat ","").replace("Linux Foundation ",""))}</span>`).join('<span class="arrow">→</span>')}</div></div>
+  <div class="note"><b>Lab mix:</b> ${esc(p.mixNote)}</div>
+ </div>`}).join("");
+$("#branch").addEventListener("click",e=>{if(e.target.closest("[data-open]"))return;const c=e.target.closest(".pcard");if(c)setPath(curPath===c.dataset.p?"":c.dataset.p)});
+$("#branch").addEventListener("keydown",e=>{const c=e.target.closest(".pcard");if(c&&(e.key==="Enter"||e.key===" ")){e.preventDefault();setPath(curPath===c.dataset.p?"":c.dataset.p)}});
+function renderStages(){
+ $("#stages").innerHTML=STAGES.map((s,i)=>`<div class="stage">
+  <div><div class="num">${s.n}</div><h3>${s.t}</h3><div class="goal">${s.goal}</div></div>
+  ${COURSES.filter(c=>c.stage===i).map(c=>{const r=role(c.code,curPath);return `<button class="chip ${r===null?'dim':''} ${r==='elective'?'elective':''}" type="button" data-open="${c.code}"><span class="code">${c.code}</span><span class="t">${esc(c.title)}</span><span class="h">${c.hours} h · prereq ${esc(c.pre)}</span><span class="tags">${pathTags(c.code)}</span></button>`}).join("")}
+  ${MILESTONES[i].length?`<div class="cert-ms">${MILESTONES[i].map(k=>`<span class="pill ${CERTS[k].perf?'perf':''}" title="${esc(CERTS[k].code)}">${esc(CERTS[k].n)}</span>`).join("")}</div>`:`<div class="cert-ms"><span class="pill" style="white-space:normal">Portfolio: a capstone rebuilt by CI</span></div>`}
+ </div>`).join("")}
+$("#depthkey").innerHTML=[1,2,3,4].map(d=>`<tr><td style="white-space:nowrap">${depthBar(d)}</td><td>${DEPTH[d][1]}</td></tr>`).join("");
+$("#envkey").innerHTML=Object.keys(ENVS).map(e=>`<div class="item">${envTag(e)}<span>${esc(ENVS[e].d)}</span></div>`).join("");
+$("#envkey2").innerHTML=Object.keys(ENVS).map(e=>envTag(e)).join("");
+document.addEventListener("click",e=>{const b=e.target.closest("[data-open]");if(!b)return;e.stopPropagation();location.hash="courses";show("courses");
+ $("#f-stage").value="";$("#f-cert").value="";$("#f-q").value="";if(curPath&&!role(b.dataset.open,curPath))setPath("");else renderCourses();
+ const d=document.getElementById("c-"+b.dataset.open);if(d){d.open=true;d.scrollIntoView({block:"start"})}},true);
+
+/* ---------- courses ---------- */
+$("#f-stage").innerHTML+=STAGES.map((s,i)=>`<option value="${i}">${s.n}: ${s.t}</option>`).join("");
+$("#f-cert").innerHTML+=Object.entries(CERTS).map(([k,c])=>`<option value="${k}">${esc(c.n)}</option>`).join("");
+function covBar(c){const parts=["C","V","W","S","K","H","O"].map(e=>[e,c.topics.filter(t=>t[2]===e).reduce((a,t)=>a+t[1],0)]);const tot=parts.reduce((a,p)=>a+p[1],0);
+ return `<span class="bar" aria-hidden="true">${parts.filter(p=>p[1]).map(([e,w])=>`<i style="width:${w/tot*100}%;background:var(--${e.toLowerCase()})"></i>`).join("")}</span><small>${Math.round(cov([c],GHA)*100)}% free in CI</small>`}
+function renderCourses(){
+ const st=$("#f-stage").value,ce=$("#f-cert").value,q=$("#f-q").value.trim().toLowerCase();
+ const list=pathCourses(curPath,true).filter(c=>(st===""||c.stage==+st)&&(!ce||c.certs[ce])&&(!q||JSON.stringify(c).toLowerCase().includes(q)));
+ $("#courselist").innerHTML=list.length?list.map(c=>`<details class="course" id="c-${c.code}">
+  <summary><span class="ccode">${c.code}</span><span><span class="ctitle">${esc(c.title)}</span> ${pathTags(c.code)}<br><span class="csub">${STAGES[c.stage].n} · ${c.hours} h · prereq ${esc(c.pre)} · ${esc(c.why)}</span></span><span class="cov">${covBar(c)}</span></summary>
+  <div class="cbody">
+   <div class="tablebox"><table><thead><tr><th>Topic</th><th>Depth</th><th>Fully testable in</th></tr></thead><tbody>
+    ${c.topics.map(([t,d,e])=>`<tr><td>${esc(t)}</td><td style="white-space:nowrap">${depthBar(d)}</td><td>${envTag(e)}</td></tr>`).join("")}
+   </tbody></table></div>
+   <div class="two"><div><h4>GitHub Actions can grade</h4><ul class="tight yes">${c.can.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+    <div><h4>GitHub Actions can't grade</h4><ul class="tight no">${c.cant.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div></div>
+   <div class="two"><div><h4>Certification alignment</h4><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${Object.entries(c.certs).sort((a,b)=>a[1].localeCompare(b[1])).map(([k,v])=>`<span class="pill ${v==='P'?'perf':''}" title="${v==='P'?'Primary':'Supporting'}">${v} · ${esc(CERTS[k].n)}</span>`).join("")}</div></div>
+    <div><h4>Raw content to curate</h4><ul class="tight">${c.raw.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div></div>
+  </div></details>`).join(""):`<p class="note">No courses match those filters. Clear the search or choose "All".</p>`;
+}
+["#f-stage","#f-cert","#f-q"].forEach(s=>$(s).addEventListener("input",renderCourses));
+$("#expand-all").addEventListener("click",e=>{const ds=[...document.querySelectorAll("details.course")];const open=!ds.every(d=>d.open);ds.forEach(d=>d.open=open);e.target.textContent=open?"Collapse all":"Expand all"});
+
+/* ---------- heatmap ---------- */
+function renderHeat(){
+ const es=Object.keys(ENVS),list=pathCourses(curPath,false),colTot={};
+ let h=`<thead><tr><th>Course</th>${es.map(e=>`<th class="num">${envTag(e)}</th>`).join("")}<th class="num">Free in CI</th></tr></thead><tbody>`;
+ list.forEach(c=>{h+=`<tr><td><span class="mark P">${c.code}</span> ${esc(c.title)}</td>`;
+  es.forEach(e=>{const w=c.topics.filter(t=>t[2]===e).reduce((a,t)=>a+t[1],0);colTot[e]=(colTot[e]||0)+w;
+   h+=`<td class="cell ${w?'':'z'}" style="${w?`background:color-mix(in srgb,var(--${e.toLowerCase()}) ${Math.min(14+w*5,70)}%,transparent);color:var(--ink)`:''}">${w||"·"}</td>`});
+  h+=`<td class="num">${Math.round(cov([c],GHA)*100)}%</td></tr>`});
+ h+=`<tr><th>${curPath?esc(PATHS[curPath].n)+" core":"Whole catalogue"} (depth points)</th>${es.map(e=>`<th class="num">${colTot[e]||0}</th>`).join("")}<th class="num">${Math.round(cov(list,GHA)*100)}%</th></tr></tbody>`;
+ $("#heat").innerHTML=h}
+
+/* ---------- cost calculator ---------- */
+const OPTS=[
+ {id:"lab",label:"Self-hosted lab",choices:[
+   {v:"none",l:"None",s:"GitHub Actions only",one:0,mo:0,env:[]},
+   {v:"reuse",l:"Reuse a PC you own (32–64 GB RAM)",s:"Electricity only, about $5/mo",one:0,mo:5,env:["S","O"]},
+   {v:"buy",l:"Buy a used 64 GB mini-PC or workstation",s:"Estimate about $500 once + $6/mo power",one:500,mo:6,env:["S","O"]},
+   {v:"rent",l:"Rent a dedicated server",s:"About €47–60/mo after 2026 increases",one:0,mo:55,env:["S","O"]}]},
+ {id:"cloud",label:"Cloud account",choices:[
+   {v:"none",l:"None",s:"Cloud topics stay untested",one:0,mo:0,env:[]},
+   {v:"free",l:"AWS Free plan credits",s:"Up to $200, up to 6 months; $0 within credits",one:0,mo:0,env:["K"]},
+   {v:"payg",l:"Pay as you go during cloud modules",s:"Estimate $15/mo for about 3 months",one:45,mo:0,env:["K"]}]},
+ {id:"hw",label:"Hardware kit",choices:[
+   {v:"none",l:"Simulate instead",s:"Linux peers, virtual BMC, QEMU devices",one:0,mo:0,env:[]},
+   {v:"kit",l:"Pathway kit: LACP switch + USB NICs, or an ARM dev board",s:"Estimate about $100 once",one:100,mo:0,env:["H"]}]}
+];
+const state={lab:"reuse",cloud:"free",hw:"none"};
+$("#opts").innerHTML=`<div class="opt"><label for="calc-path" style="font-weight:600;font-size:14px">Pathway</label><select id="calc-path" data-pathsel></select></div>
+ <div class="opt"><span>GitHub Actions, public repo</span><label class="radio"><input type="checkbox" checked disabled id="gha-on"> <span>Always on<small>Container, VM, kind, virtme-ng and Windows labs. $0</small></span></label></div>`+
+ OPTS.map(o=>`<fieldset class="opt" style="border:0;padding:0;margin:0 0 14px"><legend style="font-weight:600;font-size:14px;margin-bottom:6px">${o.label}</legend>${o.choices.map(c=>`<label class="radio"><input type="radio" name="${o.id}" id="${o.id}-${c.v}" value="${c.v}"> <span>${esc(c.l)}<small>${esc(c.s)}</small></span></label>`).join("")}</fieldset>`).join("");
+const cps=$("#calc-path");cps.innerHTML=`<option value="">All pathways (whole catalogue)</option>`+Object.entries(PATHS).map(([k,p])=>`<option value="${k}">${esc(p.n)}</option>`).join("");
+cps.addEventListener("change",()=>setPath(cps.value));
+function syncRadios(){OPTS.forEach(o=>{const r=document.getElementById(`${o.id}-${state[o.id]}`);if(r)r.checked=true})}
+syncRadios();
+$("#opts").addEventListener("change",e=>{if(e.target.type==="radio"){state[e.target.name]=e.target.value;calc()}});
+function calc(){
+ const set=new Set(["C","V","W"]);let one=0,mo=0;
+ OPTS.forEach(o=>{const c=o.choices.find(x=>x.v===state[o.id]);c.env.forEach(e=>set.add(e));one+=c.one;mo+=c.mo});
+ const list=pathCourses(curPath,false),pct=cov(list,set)*100,yr=one+mo*12;
+ $("#calcstats").innerHTML=`<div class="stat"><b>${pct.toFixed(1)}%</b><span>testable, depth-weighted (${curPath?esc(PATHS[curPath].n)+" core":"whole catalogue"})</span></div><div class="stat"><b>$${yr.toLocaleString()}</b><span>estimated first-year cost</span></div><div class="stat"><b>$${mo}/mo</b><span>running cost</span></div>`;
+ const rec=curPath?PATHS[curPath].mix:{lab:"reuse",cloud:"free",hw:"none"};
+ const isRec=OPTS.every(o=>state[o.id]===rec[o.id]);
+ $("#calcrec").innerHTML=curPath?(isRec?`<b>This is the recommended mix for ${esc(PATHS[curPath].n)}.</b> ${esc(PATHS[curPath].mixNote)}`:`Recommended for ${esc(PATHS[curPath].n)}: ${esc(PATHS[curPath].mixNote)} Choose the pathway again to reload that mix.`)
+  :(isRec?`<b>Recommended mix for the whole catalogue:</b> free CI, one PC you already own and AWS free credits, about $60 in year one. Hardware-only topics are simulated.`:`For the whole catalogue, the recommended mix is to reuse a PC, use AWS free credits and simulate hardware, for about $60 in year one.`);
+ $("#calctable").innerHTML=`<thead><tr><th>Course</th><th class="num">Coverage</th><th>Bar</th></tr></thead><tbody>`+list.map(c=>{const p=cov([c],set)*100;return `<tr><td><span class="mark P">${c.code}</span> ${esc(c.title)}</td><td class="num">${p.toFixed(0)}%</td><td style="width:40%"><span class="bar" style="width:100%"><i style="width:${p}%;background:${p>=99.5?'var(--good)':p>=85?'var(--accent)':'var(--warn)'}"></i></span></td></tr>`}).join("")+`</tbody>`;
+ const miss=list.flatMap(c=>c.topics.filter(t=>!set.has(t[2])).map(t=>[c.code,t]));
+ $("#calcmiss").innerHTML=miss.length?miss.map(([c,t])=>`<li><span class="mark P">${c}</span> ${esc(t[0])} ${envTag(t[2])}</li>`).join(""):`<li>Nothing. Every topic can be tested with this mix.</li>`;
+}
+
+/* ---------- content ---------- */
+$("#srctable").innerHTML=`<thead><tr><th>Raw source</th><th>Licence</th><th>How to use it</th><th>OK in a commercial book?</th><th>Stream</th></tr></thead><tbody>`+
+ SOURCES.map(([n,l,k,u,b,s])=>`<tr><td>${esc(n)}</td><td><span class="lic ${k}">${esc(l)}</span></td><td>${esc(u)}</td><td>${esc(b)}</td><td class="mono">${esc(s)}</td></tr>`).join("")+`</tbody>`;
+
+/* ---------- certs ---------- */
+function renderCertMatrix(){
+ const list=pathCourses(curPath,true);
+ const keys=Object.keys(CERTS).filter(k=>list.some(c=>c.certs[k]));
+ $("#certmatrix").innerHTML=`<thead><tr><th>Course</th>${keys.map(k=>`<th class="num" title="${esc(CERTS[k].n)}">${k}</th>`).join("")}</tr></thead><tbody>`+
+  list.map(c=>`<tr><td><span class="mark P">${c.code}</span> ${esc(c.title)}</td>${keys.map(k=>`<td class="num"><span class="mark ${c.certs[k]||''}">${c.certs[k]||"·"}</span></td>`).join("")}</tr>`).join("")+`</tbody>`;
+ $("#certtable").innerHTML=`<thead><tr><th>Key</th><th>Certification</th><th>Current exam</th><th>Format</th><th>Level</th><th>Notes</th></tr></thead><tbody>`+
+  keys.map(k=>{const c=CERTS[k];return `<tr><td class="mono">${k}</td><td>${esc(c.n)}</td><td class="mono">${esc(c.code)}</td><td>${esc(c.fmt)}${c.perf?' <span class="pill perf">hands-on</span>':''}</td><td>${esc(c.lvl)}</td><td class="note">${esc(c.note)}</td></tr>`}).join("")+`</tbody>`;
+}
+
+/* ---------- books ---------- */
+$("#booklist").innerHTML=BOOKS.map((b,i)=>{const cs=b.c.map(x=>BY[x]);
+ return `<div class="card"><div style="display:flex;gap:8px;align-items:center"><span class="mark P">Volume ${i+1}</span>${b.p==="All"?`<span class="ptag" style="background:var(--muted)">TRUNK</span>`:`<span class="ptag ${b.p}">${b.p}</span>`}</div><h3 style="margin-top:4px">${esc(b.t)}</h3>
+ <p class="note" style="margin:4px 0 8px">${esc(b.cert)} · built from ${hrs(cs)} course hours</p>
+ <ul class="tight">${cs.map(c=>`<li><span class="mark P">${c.code}</span> ${esc(c.title)}</li>`).join("")}</ul>
+ <p class="note" style="margin-top:8px">${b.p==="KRN"?"Text CC BY-SA 4.0 (Bootlin-derived passages stay BY-SA); code GPL-2.0 so labs can be upstreamed.":"Text CC BY-SA 4.0, lab code MIT. Every chapter ends with CI-verified labs."}</p></div>`}).join("");
+
+/* ---------- refs ---------- */
+$("#reflist").innerHTML=REFS.map(([t,u])=>`<li><a href="${u}">${esc(t)}</a></li>`).join("");
+
+/* ---------- copy ---------- */
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-copy]");if(!b)return;
+ try{await navigator.clipboard.writeText(document.getElementById(b.dataset.copy).innerText);b.textContent="Copied"}catch(_){b.textContent="Select the text and copy it manually"}
+ setTimeout(()=>b.textContent="Copy YAML",2000)});
+
+setPath("");
+show(location.hash.slice(1));
+</script>
+</body>
+</html>

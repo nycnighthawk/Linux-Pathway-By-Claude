@@ -27,6 +27,7 @@ def run() -> None:
     }
     (SITE / "index.json").write_text(json.dumps({"meta": meta, "rows": rows}, ensure_ascii=False, separators=(",", ":")))
     shutil.copy2(ROOT / "web" / "index.html", SITE / "index.html")
+    shutil.copy2(ROOT / "web" / "report.html", SITE / "report.html")   # the curriculum report
     for f in (ROOT / "web" / "vendor").iterdir():
         shutil.copy2(f, SITE / "vendor" / f.name)
     print(f"[web] site/ written: {len(rows):,} records, index.json {(SITE / 'index.json').stat().st_size / 1e6:.1f} MB")

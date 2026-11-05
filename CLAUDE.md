@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Curated raw content and a searchable catalog for the Linux Mastery Path (4 pathways: ENT, CN, DEV, KRN; courses LNX-xxx).
-Full guide: docs/GETTING-STARTED.md. Decisions: RUBRIC.md, decisions/.
+Full guide: docs/GETTING-STARTED.md. Curriculum report: web/report.html (course scope and depth; don't read it whole, grep for the course id). Project prompts: docs/PROJECT-PROMPTS.md. Decisions: RUBRIC.md, decisions/.
 
 ## Save tokens
 - Don't open files under raw/ or catalog/chunks.jsonl wholesale (about 150 MB). Query instead:

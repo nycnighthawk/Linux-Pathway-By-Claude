@@ -33,7 +33,8 @@ You can skip the build: CI publishes `catalog.db` to the
 | `review/overrides.yaml` | Manual tag corrections and out-of-scope markers. These take precedence over auto-tags |
 | `decisions/` | One YAML record per curation decision, scored against [RUBRIC.md](RUBRIC.md). See the [decision log](decisions/DECISIONS.md) |
 | `tools/lpc/` | The toolchain: `sync` (git, Playwright crawl, packages, HTTP), `list`, `build`, `search`, `show`, `stats`, `gate`, `web`, `decisions`, `synth` (pack, check, status) |
-| `web/` | Source for the static search page (MiniSearch, vendored, MIT) |
+| `web/` | Static search page (MiniSearch, vendored, MIT) and `report.html`, the interactive curriculum report (pathways, courses, testability, certifications). Both are published with the site |
+| `docs/PROJECT-PROMPTS.md` | Paste-in prompts for running the synthesis as a Claude Code project |
 | `synth/` | Original knowledge syntheses, one per course topic (All rights reserved, `synth/LICENSE`). Topics are in `taxonomy/topics.yaml`; see [GETTING-STARTED §6](docs/GETTING-STARTED.md#6-knowledge-synthesis-original-course-text) |
 
 ### Modes and reuse
