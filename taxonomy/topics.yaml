@@ -294,3 +294,32 @@ topics:
   LNX-404-T04: {course: LNX-404, title: "Submit to a real subsystem list and address review", depth: 3, env: O}
   LNX-404-T05: {course: LNX-404, title: "Run on a real development board", depth: 2, env: H}
   LNX-404-T06: {course: LNX-404, title: "Multi-day syzkaller campaign", depth: 2, env: S}
+  LNX-315-T01: {course: LNX-315, title: "VFIO PCI passthrough and IOMMU groups", depth: 3, env: H}
+  LNX-315-T02: {course: LNX-315, title: "SR-IOV virtual functions for NICs and GPUs", depth: 2, env: H}
+  LNX-315-T03: {course: LNX-315, title: "Performance: NUMA, CPU pinning, hugepages, IOThreads, virtio-blk vs virtio-scsi", depth: 4, env: S}
+  LNX-315-T04: {course: LNX-315, title: "Disk images: qcow2 internals, backing chains, block jobs", depth: 3, env: V}
+  LNX-315-T05: {course: LNX-315, title: "Firmware and confidential VMs: OVMF, Secure Boot, vTPM, SEV-SNP, TDX", depth: 2, env: H}
+  LNX-315-T06: {course: LNX-315, title: "VirtualBox administration: VBoxManage, headless VMs, Guest Additions, networking", depth: 3, env: S}
+  LNX-315-T07: {course: LNX-315, title: "VirtualBox on the KVM backend; coexisting with QEMU/KVM", depth: 2, env: S}
+  LNX-315-T08: {course: LNX-315, title: "Image pipelines: Packer, virt-builder, cloud-init for KVM and VirtualBox", depth: 3, env: V}
+  LNX-315-T09: {course: LNX-315, title: "KubeVirt and OpenShift Virtualization: VMs on Kubernetes", depth: 3, env: V}
+  LNX-315-T10: {course: LNX-315, title: "Migrating from VMware: virt-v2v, migration toolkits", depth: 3, env: V}
+  LNX-315-T11: {course: LNX-315, title: "Live migration tuning: post-copy, auto-converge, dirty-rate limits", depth: 2, env: S}
+  LNX-332-T01: {course: LNX-332, title: "Hardware virtualization: VT-x/AMD-V, VMCS/VMCB, EPT/NPT, VM exits", depth: 3, env: V}
+  LNX-332-T02: {course: LNX-332, title: "The KVM API: /dev/kvm ioctls and a minimal C VMM", depth: 4, env: V}
+  LNX-332-T03: {course: LNX-332, title: "A Rust VMM with rust-vmm crates that boots Linux", depth: 4, env: V}
+  LNX-332-T04: {course: LNX-332, title: "Virtio from scratch: virtqueues and a device back end in your VMM", depth: 4, env: V}
+  LNX-332-T05: {course: LNX-332, title: "vhost and vhost-user: kernel and out-of-process back ends", depth: 3, env: V}
+  LNX-332-T06: {course: LNX-332, title: "QEMU device models: QOM, a PCI device, qtest", depth: 3, env: V}
+  LNX-332-T07: {course: LNX-332, title: "KVM internals: modified kvm.ko, tracing exits with perf kvm", depth: 3, env: V}
+  LNX-332-T08: {course: LNX-332, title: "Testing KVM: kvm-unit-tests and KVM selftests", depth: 3, env: V}
+  LNX-332-T09: {course: LNX-332, title: "Interrupt and timer virtualization: APICv, posted interrupts, MSI routing", depth: 2, env: V}
+  LNX-332-T10: {course: LNX-332, title: "VirtualBox from source: build OSE, VMM architecture, Main API and SDK", depth: 3, env: C}
+  LNX-332-T11: {course: LNX-332, title: "Patching VirtualBox's KVM backend", depth: 2, env: V}
+  LNX-332-T12: {course: LNX-332, title: "Upstreaming to KVM and QEMU: lists, style, review", depth: 2, env: O}
+  LNX-405-T01: {course: LNX-405, title: "A C or Rust VMM that boots Linux with virtio-blk and virtio-net, tested in CI", depth: 4, env: V}
+  LNX-405-T02: {course: LNX-405, title: "One image pipeline deploying to libvirt, VirtualBox and KubeVirt", depth: 3, env: V}
+  LNX-405-T03: {course: LNX-405, title: "Pinned, hugepage-backed VM that meets a latency target", depth: 3, env: S}
+  LNX-405-T04: {course: LNX-405, title: "VFIO passthrough of a real device", depth: 2, env: H}
+  LNX-405-T05: {course: LNX-405, title: "Feature or test for QEMU or KVM selftests, sent for review", depth: 3, env: O}
+  LNX-405-T06: {course: LNX-405, title: "VM-escape CVE analysis and mitigations write-up", depth: 3, env: C}

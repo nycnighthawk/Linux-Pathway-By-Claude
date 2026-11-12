@@ -1,0 +1,13 @@
+id: D-029
+title: Who merges PRs in the unattended project build
+decided_by: owner
+options:
+- name: Auto-merge when green
+- name: Auto-merge content, owner merges tooling
+- name: Owner merges every PR
+chosen: Auto-merge when green
+owner_answer: Auto-merge when green (Recommended)
+context: Later work items wait on earlier PRs being merged, so an unattended run needs merges. The thread that opened
+  a PR squash-merges it through the REST API once CI is green and every DONE check passes; never red, never a direct
+  push to main. Quality is backstopped by an Opus audit after every 6 production merges.
+date: '2026-11-12'
