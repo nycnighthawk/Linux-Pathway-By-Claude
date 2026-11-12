@@ -1,0 +1,18 @@
+id: D-028
+title: Virtualization specialization and extending KVM/VirtualBox
+decided_by: owner
+options:
+- name: Add a VIRT pathway
+- name: Add 2 courses, no new pathway
+- name: Deepen LNX-308 only
+- name: Add virtualization sources
+chosen: Add a VIRT pathway
+owner_answer: Add a VIRT pathway (Recommended)
+context: 'Gap found on review: virtualization was one operations course (LNX-308) with no KVM internals and no VirtualBox.
+  New pathway VIRT (Virtualization & Hypervisors): core LNX-202, 307, 308, 220, 320, 330, new LNX-315 Virtualization
+  Engineering (VFIO/SR-IOV, performance, confidential VMs, VirtualBox administration and its KVM backend, KubeVirt,
+  virt-v2v), new LNX-332 Hypervisor Development (KVM API, C and rust-vmm VMMs, virtio/vhost, QEMU device models,
+  KVM selftests, VirtualBox from source) and capstone LNX-405; electives LNX-331, 310, 311, 204, 309. Certification
+  ladder adds Red Hat EX316. Adding virtualization sources was not selected, so LNX-332 has no confidently tagged
+  catalog sections yet and its syntheses lean on cited web sources.'
+date: '2026-11-04'

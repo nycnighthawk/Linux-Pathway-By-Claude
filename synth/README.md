@@ -1,6 +1,6 @@
 # Topic syntheses
 
-One original synthesis per syllabus topic (`taxonomy/topics.yaml`, 292 topics). Each one follows `TEMPLATE.md`.
+One original synthesis per syllabus topic (`taxonomy/topics.yaml`, 321 topics). Each one follows `TEMPLATE.md`.
 Its body is grounded in catalog sections, cited by chunk id, plus cited web sources for history and trends.
 All rights reserved (see `LICENSE`).
 

@@ -1,6 +1,6 @@
 # Linux-Pathway-By-Claude
 
-This repo holds the curated raw content and searchable catalog behind the **Linux Mastery Path**. That curriculum is one shared trunk that branches into four pathways: Enterprise Infrastructure (ENT), Cloud-Native Platform (CN), Linux Software Development (DEV), and Kernel & Low-Level Systems (KRN).
+This repo holds the curated raw content and searchable catalog behind the **Linux Mastery Path**. That curriculum is one shared trunk that branches into five pathways: Enterprise Infrastructure (ENT), Cloud-Native Platform (CN), Linux Software Development (DEV), Kernel & Low-Level Systems (KRN), and Virtualization & Hypervisors (VIRT).
 
 The raw text comes from openly licensed upstream sources. Every file keeps its upstream licence and provenance. Each heading-level section is cataloged, auto-tagged to course codes (`LNX-xxx`), pathways and certifications, and indexed for full-text search. The course and book pipelines query the catalog instead of re-reading upstream docs.
 
@@ -33,7 +33,9 @@ You can skip the build: CI publishes `catalog.db` to the
 | `review/overrides.yaml` | Manual tag corrections and out-of-scope markers. These take precedence over auto-tags |
 | `decisions/` | One YAML record per curation decision, scored against [RUBRIC.md](RUBRIC.md). See the [decision log](decisions/DECISIONS.md) |
 | `tools/lpc/` | The toolchain: `sync` (git, Playwright crawl, packages, HTTP), `list`, `build`, `search`, `show`, `stats`, `gate`, `web`, `decisions`, `synth` (pack, check, status) |
-| `web/` | Source for the static search page (MiniSearch, vendored, MIT) |
+| `web/` | Static search page (MiniSearch, vendored, MIT) and `report.html`, the interactive curriculum report (pathways, courses, testability, certifications). Both are published with the site |
+| `web/playbook.html` | Interactive build playbook: ready-to-paste prompts and a 3-worker board for curating, synthesizing and producing every course |
+| `docs/PROJECT-PROMPTS.md` | Paste-in prompts for running the synthesis as a Claude Code project |
 | `synth/` | Original knowledge syntheses, one per course topic (All rights reserved, `synth/LICENSE`). Topics are in `taxonomy/topics.yaml`; see [GETTING-STARTED §6](docs/GETTING-STARTED.md#6-knowledge-synthesis-original-course-text) |
 
 ### Modes and reuse
