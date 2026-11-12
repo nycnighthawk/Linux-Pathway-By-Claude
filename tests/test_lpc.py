@@ -160,3 +160,17 @@ def test_pathways_and_topics_follow_the_taxonomy():
         assert set(c["pathways"]) <= set(ALL_PATHS) | {"TRUNK"}, code
     courses = {t["course"] for t in synth.topics().values()}
     assert courses == set(tax["courses"]), courses ^ set(tax["courses"])
+
+
+def test_build_plan_markdown_matches_playbook_block():
+    import json, re
+    root = Path(__file__).resolve().parents[1]
+    html = (root / "web" / "playbook.html").read_text()
+    block = re.search(r'id="build-plan">(.*?)</script>', html, re.S).group(1).replace("<\\/", "</")
+    plan = json.loads(block)
+    md = (root / "docs" / "BUILD-PLAN.md").read_text()
+    ids = re.findall(r"^\| \d+ \| `([^`]+)` \|", md, re.M)
+    assert ids == [i["id"] for i in plan["items"]], "run python3 tools/export_plan.py"
+    assert plan["max_threads"] == 3 and len(plan["instructions"]) < 16000
+    for i in plan["items"]:
+        assert all(d in ids for d in i["deps"]), i["id"]

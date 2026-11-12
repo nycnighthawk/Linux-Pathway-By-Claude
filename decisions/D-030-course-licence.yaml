@@ -1,0 +1,12 @@
+id: D-030
+title: Licences for produced courses
+decided_by: owner
+options:
+- name: Text All rights reserved, labs MIT/GPL-2.0
+- name: Text CC BY-SA 4.0, labs MIT/GPL-2.0
+- name: Text CC BY 4.0, labs MIT/GPL-2.0
+chosen: Text All rights reserved, labs MIT/GPL-2.0
+owner_answer: Text ARR, labs MIT/GPL (Recommended)
+context: Lesson, quiz and brief text follows synth/ (D-027). Lab code is MIT; kernel-module, KVM and QEMU lab code
+  is GPL-2.0 so it can link against or be upstreamed to GPL projects. Every lab source file carries an SPDX header.
+date: '2026-11-12'
