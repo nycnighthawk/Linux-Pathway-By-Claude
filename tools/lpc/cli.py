@@ -44,6 +44,13 @@ def main(argv=None):
     sy.add_argument("action", choices=["pack", "check", "status"])
     sy.add_argument("args", nargs="*", help="topic ids (pack) or files (check)")
 
+    pl = sub.add_parser("plan", help="resumable build plan: status | next | show | start | mark | park | finish")
+    pl.add_argument("action", choices=["status", "next", "show", "start", "mark", "park", "finish"])
+    pl.add_argument("item", nargs="?", help="work item id, e.g. T0 or LNX-101")
+    pl.add_argument("rest", nargs="*", help="mark: PHASE [UNIT ...]; park: REASON")
+    pl.add_argument("--until", nargs="*", default=[], help="park: item ids whose merge makes this item resumable")
+    pl.add_argument("-n", type=int, default=3, help="next: how many items")
+
     a = ap.parse_args(argv)
     if a.cmd == "sync":
         from . import sync
@@ -80,6 +87,27 @@ def main(argv=None):
             sys.exit(synth.check(a.args or None))
         else:
             synth.status()
+    elif a.cmd == "plan":
+        from . import plan
+        from .common import ROOT
+        if a.action not in ("status", "next") and not a.item:
+            sys.exit(f"lpc plan {a.action} needs a work item id")
+        if a.action == "status":
+            plan.status(ROOT)
+        elif a.action == "next":
+            print("\n".join(plan.next_items(ROOT, a.n, do_fetch=True)))
+        elif a.action == "show":
+            plan.show(ROOT, a.item)
+        elif a.action == "start":
+            plan.start(ROOT, a.item)
+        elif a.action == "mark":
+            if not a.rest:
+                sys.exit("lpc plan mark ITEM PHASE [UNIT ...]")
+            plan.mark(ROOT, a.item, a.rest[0], a.rest[1:] or None)
+        elif a.action == "park":
+            plan.park(ROOT, a.item, " ".join(a.rest) or "needs the owner", a.until)
+        else:
+            plan.finish(ROOT, a.item)
     elif a.cmd == "decisions":
         from . import decisions
         decisions.run()

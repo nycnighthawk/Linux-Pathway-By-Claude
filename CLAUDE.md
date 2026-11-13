@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Curated raw content and a searchable catalog for the Linux Mastery Path (5 pathways: ENT, CN, DEV, KRN, VIRT; courses LNX-xxx).
-Full guide: docs/GETTING-STARTED.md. Curriculum report: web/report.html (course scope and depth; don't read it whole, grep for the course id). Build plan (project prompts, work items, 3 workers max): docs/BUILD-PLAN.md, generated from web/playbook.html by `python3 tools/export_plan.py`. Decisions: RUBRIC.md, decisions/.
+Full guide: docs/GETTING-STARTED.md. Curriculum report: web/report.html (course scope and depth; don't read it whole, grep for the course id). Build plan: web/playbook.html (agent guide + 40 work items; exported to plan/build-plan.json and docs/BUILD-PLAN.md by `python3 tools/export_plan.py`). Resumable state: `bin/lpc plan status|show|start|mark|park|finish`. Decisions: RUBRIC.md, decisions/.
 
 ## Save tokens
 - Don't open files under raw/ or catalog/chunks.jsonl wholesale (about 150 MB). Query instead:
@@ -11,7 +11,7 @@ Full guide: docs/GETTING-STARTED.md. Curriculum report: web/report.html (course 
 - Code: tools/lpc/{sync,crawl,extract,tag,build,search,gate,web,decisions,synth}.py. Config: sources.yaml, taxonomy/{courses,topics}.yaml.
 
 ## Commands
-`bin/lpc sync -s <id>|-k <kind> [--update]` · `bin/lpc build` · `bin/lpc gate` · `bin/lpc decisions` · `bin/lpc web` · `bin/lpc synth pack|check|status` · `PYTHONPATH=tools pytest -q tests`
+`bin/lpc sync -s <id>|-k <kind> [--update]` · `bin/lpc build` · `bin/lpc gate` · `bin/lpc decisions` · `bin/lpc web` · `bin/lpc synth pack|check|status` · `bin/lpc plan status|show <ITEM>` · `PYTHONPATH=tools pytest -q tests`
 Before committing: `gate`, `decisions`, `build` (commit catalog/ and review/queue.csv), `synth check`, tests.
 
 ## Hard rules
@@ -23,7 +23,7 @@ Before committing: `gate`, `decisions`, `build` (commit catalog/ and review/queu
 - Synthesis (synth/, All rights reserved, D-023..D-027): six sections from synth/TEMPLATE.md, in order. Write every
   sentence in new words; never copy a sentence verbatim. No quotes of 6+ words. Cite `[src: id chunk]` / `[web: domain]`,
   2+ publishers. Start from `lpc synth pack <topic>`; `lpc synth check` must pass. Read packs, not raw/.
-- Git: branch from main and open a PR (REST: `gh api repos/nycnighthawk/Linux-Pathway-By-Claude/pulls`; GraphQL `gh pr create` is blocked). Never push to main. A build-plan thread squash-merges its own PR via REST once CI is green and its DONE checks pass (D-029); never merge red or force-push.
+- Git: branch from main and open a PR (REST: `gh api repos/nycnighthawk/Linux-Pathway-By-Claude/pulls`; GraphQL `gh pr create` is blocked). Never push to main. Build-plan work: one work item per branch build/<ITEM> with progress/<ITEM>.yaml, pushed after every unit; one PR per finished item, squash-merged by its thread once CI is green and its DONE checks pass (D-029, D-031); never merge red or force-push.
 - Output licences (D-030): course text (courses/) All rights reserved like synth/; lab code (labs/) MIT, kernel-module/KVM/QEMU lab code GPL-2.0, SPDX header in every lab source file.
 - Tag fixes go in review/overrides.yaml (with `by` and `why`). Keyword or threshold changes go in taxonomy/courses.yaml.
 

@@ -172,5 +172,9 @@ def test_build_plan_markdown_matches_playbook_block():
     ids = re.findall(r"^\| \d+ \| `([^`]+)` \|", md, re.M)
     assert ids == [i["id"] for i in plan["items"]], "run python3 tools/export_plan.py"
     assert plan["max_threads"] == 3 and len(plan["instructions"]) < 16000
+    import html as _html
+    guide = re.search(r'<pre id="agent-guide">(.*?)</pre>', html, re.S).group(1)
+    assert _html.unescape(guide) == plan["agent_guide"], "agent guide is not static text; run tools/export_plan.py"
+    assert json.loads((root / "plan" / "build-plan.json").read_text()) == plan
     for i in plan["items"]:
         assert all(d in ids for d in i["deps"]), i["id"]
