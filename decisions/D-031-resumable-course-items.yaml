@@ -1,0 +1,15 @@
+id: D-031
+title: 'Resumable build: one work item and one PR per course, state kept in git'
+decided_by: owner
+options:
+- name: One item per course (synthesis through production), PR when the course is done, state in git
+- name: Separate synthesis and production items (previous plan, 64 items)
+chosen: One item per course, PR when the course is done, state in git
+owner_answer: 'Owner request: upload the playbook and say build; resumable across usage limits; PR when a course
+  is done; course development resumable; works in a Claude Code project or locally.'
+context: '40 work items: T0 toolchain, T1a-T1e curation (one at a time, they rewrite catalog/), 28 courses, 5 capstones,
+  release. Each item works on branch build/<ITEM> with progress/<ITEM>.yaml, pushed after every unit (topic, lesson,
+  lab); bin/lpc plan status/start/mark/park/finish computes state from git, so any session resumes where another
+  stopped. Course items may start before T0 and park --until T0 when they reach lessons. Project instructions are
+  self-contained because Project settings do not show CLAUDE.md.'
+date: '2026-11-13'
