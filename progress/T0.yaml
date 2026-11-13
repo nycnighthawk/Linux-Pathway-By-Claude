@@ -10,19 +10,19 @@ phases:
     units: 0
     done: []
   schema:
-    state: todo
+    state: done
     units: 0
     done: []
   check:
-    state: todo
+    state: done
     units: 0
     done: []
   build:
-    state: todo
+    state: done
     units: 0
     done: []
   labs-harness:
-    state: todo
+    state: done
     units: 0
     done: []
   ci:
@@ -41,3 +41,7 @@ parked: null
 log:
 - 2026-11-13 started
 - '2026-11-13 licences: done'
+- '2026-11-13 schema: done'
+- '2026-11-13 check: done'
+- '2026-11-13 build: done'
+- '2026-11-13 labs-harness: done'

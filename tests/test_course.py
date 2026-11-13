@@ -65,7 +65,7 @@ def _write_course(root, **changes):
 
 
 def _errors(root, **kw):
-    return [i.msg for i in course.check(root, **kw) if i.level == "error"]
+    return [f"{i.where}: {i.msg}" for i in course.check(root, **kw) if i.level == "error"]
 
 
 # ------------------------------------------------------------------ schema and check
