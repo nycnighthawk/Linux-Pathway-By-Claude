@@ -6,9 +6,17 @@ started: '2026-11-13'
 updated: '2026-11-13'
 phases:
   sources:
-    state: todo
+    state: done
     units: 8
-    done: []
+    done:
+    - qemu
+    - libvirt
+    - virtualbox
+    - rust-vmm
+    - cloud-hypervisor
+    - firecracker
+    - kubevirt
+    - virtio-spec
   rebuild:
     state: todo
     units: 0
@@ -16,3 +24,4 @@ phases:
 parked: null
 log:
 - 2026-11-13 started
+- '2026-11-13 sources: qemu, libvirt, virtualbox, rust-vmm, cloud-hypervisor, firecracker, kubevirt, virtio-spec'
