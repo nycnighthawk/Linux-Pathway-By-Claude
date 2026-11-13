@@ -1,0 +1,47 @@
+title: "Quiz: kube-proxy modes and Service types"
+questions:
+  - id: virtual-ip
+    prompt: "What owns the virtual IP of a ClusterIP Service?"
+    choices:
+      - "A network interface on the node that runs the active kube-proxy"
+      - "Nothing; node packet-filter rules rewrite packets sent to it"
+      - "A dedicated proxy Pod that forwards every connection"
+      - "The first Pod that matches the Service selector"
+    answer: [1]
+    explain: "A virtual IP is only a match in the node's translation table. No interface holds it and no process listens on it, so the kernel rewrites the destination before routing."
+  - id: lookup-cost
+    prompt: "Why do the IPVS and nftables modes scale better than the classic iptables mode?"
+    choices:
+      - "They keep the Service table in a hash-based structure instead of a rule list that is walked in order"
+      - "They stop using connection tracking"
+      - "They send traffic through user space where it is easier to balance"
+      - "They remove the need for the control plane"
+    answer: [0]
+    explain: "Lookup in a hash table or a verdict map does not grow with the number of Services. All three modes still depend on conntrack, and none carries traffic in user space."
+  - id: conntrack
+    prompt: "A Pod behind a Service is replaced while a long-lived TCP connection is open. What keeps the connection pinned to the old backend?"
+    choices:
+      - "kube-proxy copies the bytes between client and Pod"
+      - "The client resolves the Service name again for every packet"
+      - "Connection tracking remembers the backend chosen for the first packet"
+      - "The Service is headless"
+    answer: [2]
+    explain: "The backend is chosen once per connection and conntrack applies the stored translation to later packets and to the replies."
+  - id: layers
+    prompt: "Which Service types add something on top of ClusterIP? Select all that apply."
+    choices:
+      - "NodePort"
+      - "LoadBalancer"
+      - "ExternalName"
+      - "Headless"
+    answer: [0, 1]
+    explain: "NodePort adds a port on every node and LoadBalancer adds an external balancer on top of that. ExternalName is only a DNS alias and a headless Service deliberately has no virtual IP."
+  - id: output-hook
+    prompt: "In the lab ruleset, a curl run on the node cannot reach the Service, although Pods can. What is the most likely fault?"
+    choices:
+      - "The verdict map has two entries instead of one"
+      - "The numgen expression uses mod 2"
+      - "The map lookup is only attached to the prerouting hook, not to the output hook"
+      - "The backends listen on port 8080"
+    answer: [2]
+    explain: "Packets created on the node never traverse the prerouting hook. They need the same lookup in a chain on the output hook."

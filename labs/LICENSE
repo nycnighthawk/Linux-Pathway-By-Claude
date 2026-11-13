@@ -1,0 +1,13 @@
+Lab code in this directory (labs/) is licensed as follows (decision D-030).
+
+1. MIT (default), the same licence as the rest of the tooling: see ../LICENSE.
+   SPDX-License-Identifier: MIT
+
+2. GNU General Public License, version 2 only, for every kernel-module, KVM and QEMU lab (labs whose course.yaml
+   entry has kind: kernel-module, kvm or qemu), because they link against or are derived from GPL-2.0 code.
+   SPDX-License-Identifier: GPL-2.0-only
+   Full text: https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+
+Every lab source file (setup, check, solution/**, scripts, code) starts with an SPDX-License-Identifier line for its
+licence. `bin/lpc course check` fails on a lab source file without one, or whose identifier differs from the
+licence declared for that lab. A lab's README.md is course text and follows ../courses/LICENSE.

@@ -1,0 +1,36 @@
+# Reference slice for the course toolchain (work item T0): one lesson, one lab and one quiz.
+# The full course is built by work item LNX-312, which sets coverage: full and adds every topic.
+id: LNX-312
+title: Container & Kubernetes Networking
+summary: How Pod and Service traffic actually reaches its target on a Linux node, and how to inspect, build and debug it.
+hours: 30
+coverage: partial
+outcomes:
+  - Explain how a Service gives a changing set of Pods one stable address
+  - Compare the iptables, IPVS and nftables modes of kube-proxy
+  - Choose the Service type that fits an exposure requirement
+  - Write and check a small nftables ruleset that behaves like one Service
+certifications:
+  - cert: CKA
+    objectives: ["Services and networking"]
+modules:
+  - id: services-data-plane
+    title: Services and the node data plane
+    lessons:
+      - topic: LNX-312-T04
+        title: kube-proxy modes and Service types
+        file: lessons/LNX-312-T04.md
+        minutes: 45
+labs:
+  - id: nft-service-map
+    topic: LNX-312-T04
+    title: A ClusterIP Service as an nftables verdict map
+    env: C
+    license: MIT
+    minutes: 30
+    packages: [nftables]
+quizzes:
+  - id: LNX-312-T04
+    topic: LNX-312-T04
+    title: "Quiz: kube-proxy modes and Service types"
+    file: quizzes/LNX-312-T04.yaml

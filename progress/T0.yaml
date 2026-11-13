@@ -1,0 +1,52 @@
+item: T0
+label: Course toolchain
+branch: build/T0
+state: done
+started: '2026-11-13'
+updated: '2026-11-13'
+phases:
+  licences:
+    state: done
+    units: 0
+    done: []
+  schema:
+    state: done
+    units: 0
+    done: []
+  check:
+    state: done
+    units: 0
+    done: []
+  build:
+    state: done
+    units: 0
+    done: []
+  labs-harness:
+    state: done
+    units: 0
+    done: []
+  ci:
+    state: done
+    units: 0
+    done: []
+  reference-slice:
+    state: done
+    units: 0
+    done: []
+  docs:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-13 started
+- '2026-11-13 licences: done'
+- '2026-11-13 schema: done'
+- '2026-11-13 check: done'
+- '2026-11-13 build: done'
+- '2026-11-13 labs-harness: done'
+- '2026-11-13 reference-slice: done'
+- '2026-11-13 ci: done'
+- '2026-11-13 docs: done'
+- 2026-11-13 finished
+finished: '2026-11-13'

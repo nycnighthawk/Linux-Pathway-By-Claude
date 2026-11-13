@@ -44,6 +44,14 @@ def main(argv=None):
     sy.add_argument("action", choices=["pack", "check", "status"])
     sy.add_argument("args", nargs="*", help="topic ids (pack) or files (check)")
 
+    co = sub.add_parser("course", help="courses: check | build | status | lab | matrix")
+    co.add_argument("action", choices=["check", "build", "status", "lab", "matrix"])
+    co.add_argument("args", nargs="*", help="check/build: [COURSE]; lab: COURSE [LAB]")
+    co.add_argument("--strict", action="store_true", help="check: partial coverage is an error too")
+    co.add_argument("--changed", metavar="REF", help="matrix: only labs changed since this git ref")
+    co.add_argument("--env", choices=["C", "V", "W"], help="matrix: only this environment")
+    co.add_argument("--notices", action="store_true", help="matrix: print ::notice lines for skipped labs")
+
     pl = sub.add_parser("plan", help="resumable build plan: status | next | show | start | mark | park | finish")
     pl.add_argument("action", choices=["status", "next", "show", "start", "mark", "park", "finish"])
     pl.add_argument("item", nargs="?", help="work item id, e.g. T0 or LNX-101")
@@ -87,6 +95,10 @@ def main(argv=None):
             sys.exit(synth.check(a.args or None))
         else:
             synth.status()
+    elif a.cmd == "course":
+        from . import course
+        from .common import ROOT
+        sys.exit(course.run(a, ROOT))
     elif a.cmd == "plan":
         from . import plan
         from .common import ROOT
