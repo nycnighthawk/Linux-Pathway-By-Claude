@@ -6352,6 +6352,791 @@ freeipa-docs,freeipa.readthedocs.io/en/latest/api/dnszone_mod.md,dnszone_mod,htt
 freeipa-docs,freeipa.readthedocs.io/en/latest/api/dnszone_remove_permission.md,dnszone_remove_permission,https://freeipa.readthedocs.io/en/latest/api/dnszone_remove_permission.html,NOASSERTION,link-only,outline,9,0,
 freeipa-docs,freeipa.readthedocs.io/en/latest/api/dnszone_show.md,dnszone_show,https://freeipa.readthedocs.io/en/latest/api/dnszone_show.html,NOASSERTION,link-only,outline,9,0,
 lfd103,training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/index.md,A Beginner’s Guide to Linux Kernel Development (LFD103),https://training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/,Proprietary,link-only,outline,1,0,LNX-330
+qemu-docs,docs/about/build-platforms.rst,Supported build platforms,https://www.qemu.org/docs/master/about/build-platforms.html,GPL-2.0-only,link-only,full,5,1230,LNX-308 LNX-104 LNX-220
+qemu-docs,docs/about/deprecated.rst,Deprecated features,https://www.qemu.org/docs/master/about/deprecated.html,GPL-2.0-only,link-only,full,59,2527,LNX-101 LNX-308 LNX-313
+qemu-docs,docs/about/emulation.rst,Emulation,https://www.qemu.org/docs/master/about/emulation.html,GPL-2.0-only,link-only,full,11,6187,LNX-308 LNX-101 LNX-320
+qemu-docs,docs/about/index.rst,About QEMU,https://www.qemu.org/docs/master/about.html,GPL-2.0-only,link-only,full,1,153,LNX-308
+qemu-docs,docs/about/license.rst,License,https://www.qemu.org/docs/master/about/license.html,GPL-2.0-only,link-only,full,2,48,LNX-308
+qemu-docs,docs/about/removed-features.rst,Removed features,https://www.qemu.org/docs/master/about/removed-features.html,GPL-2.0-only,link-only,full,219,6362,LNX-101 LNX-308 LNX-315
+qemu-docs,docs/devel/atomics.rst,Atomic operations in QEMU,https://www.qemu.org/docs/master/devel/atomics.html,GPL-2.0-only,link-only,full,8,2615,LNX-308 LNX-320 LNX-220
+qemu-docs,docs/devel/bitops.rst,Bitwise operations,https://www.qemu.org/docs/master/devel/bitops.html,GPL-2.0-only,link-only,full,1,18,
+qemu-docs,docs/devel/block-coroutine-wrapper.rst,block-coroutine-wrapper,https://www.qemu.org/docs/master/devel/block-coroutine-wrapper.html,GPL-2.0-only,link-only,full,3,314,LNX-203
+qemu-docs,docs/devel/build-environment.rst,Setup build environment,https://www.qemu.org/docs/master/devel/build-environment.html,GPL-2.0-only,link-only,full,5,644,LNX-104 LNX-220 LNX-308
+qemu-docs,docs/devel/build-system.rst,The QEMU build system architecture,https://www.qemu.org/docs/master/devel/build-system.html,GPL-2.0-only,link-only,full,13,3464,LNX-308 LNX-220 LNX-101
+qemu-docs,docs/devel/clocks.rst,Modelling a clock tree in QEMU,https://www.qemu.org/docs/master/devel/clocks.html,GPL-2.0-only,link-only,full,15,2842,LNX-308 LNX-332
+qemu-docs,docs/devel/code-of-conduct.rst,Code of Conduct,https://www.qemu.org/docs/master/devel/code-of-conduct.html,GPL-2.0-only,link-only,full,3,423,LNX-308
+qemu-docs,docs/devel/code-provenance.rst,Code provenance,https://www.qemu.org/docs/master/devel/code-provenance.html,GPL-2.0-only,link-only,full,14,2447,LNX-330 LNX-308 LNX-203
+qemu-docs,docs/devel/codebase.rst,Codebase,https://www.qemu.org/docs/master/devel/codebase.html,GPL-2.0-only,link-only,full,3,1724,LNX-308 LNX-220 LNX-310
+qemu-docs,docs/devel/conflict-resolution.rst,Conflict Resolution Policy,https://www.qemu.org/docs/master/devel/conflict-resolution.html,GPL-2.0-only,link-only,full,5,567,LNX-308
+qemu-docs,docs/devel/control-flow-integrity.rst,Control-Flow Integrity (CFI),https://www.qemu.org/docs/master/devel/control-flow-integrity.html,GPL-2.0-only,link-only,full,8,900,LNX-220 LNX-203
+qemu-docs,docs/devel/crypto.rst,Cryptography in QEMU,https://www.qemu.org/docs/master/devel/crypto.html,GPL-2.0-only,link-only,full,2,8,LNX-308
+qemu-docs,docs/devel/decodetree.rst,Decodetree Specification,https://www.qemu.org/docs/master/devel/decodetree.html,GPL-2.0-only,link-only,full,7,1337,LNX-102
+qemu-docs,docs/devel/docs.rst,QEMU Documentation,https://www.qemu.org/docs/master/devel/docs.html,GPL-2.0-only,link-only,full,2,494,LNX-308
+qemu-docs,docs/devel/ebpf_rss.rst,eBPF RSS virtio-net support,https://www.qemu.org/docs/master/devel/ebpf_rss.html,GPL-2.0-only,link-only,full,5,692,LNX-308 LNX-307 LNX-332
+qemu-docs,docs/devel/hexagon-l2vic.rst,Hexagon L2 Vectored Interrupt Controller,https://www.qemu.org/docs/master/devel/hexagon-l2vic.html,GPL-2.0-only,link-only,full,3,279,LNX-331
+qemu-docs,docs/devel/hexagon-sys.rst,Hexagon System Architecture,https://www.qemu.org/docs/master/devel/hexagon-sys.html,GPL-2.0-only,link-only,full,7,489,LNX-308
+qemu-docs,docs/devel/index-api.rst,Internal QEMU APIs,https://www.qemu.org/docs/master/devel/index-api.html,GPL-2.0-only,link-only,full,1,37,LNX-308
+qemu-docs,docs/devel/index-build.rst,QEMU Build System,https://www.qemu.org/docs/master/devel/index-build.html,GPL-2.0-only,link-only,full,1,45,LNX-308
+qemu-docs,docs/devel/index-internals.rst,Internal Subsystem Information,https://www.qemu.org/docs/master/devel/index-internals.html,GPL-2.0-only,link-only,full,2,57,
+qemu-docs,docs/devel/index-process.rst,QEMU Community Processes,https://www.qemu.org/docs/master/devel/index-process.html,GPL-2.0-only,link-only,full,2,43,LNX-308 LNX-330
+qemu-docs,docs/devel/index-tcg.rst,TCG Emulation,https://www.qemu.org/docs/master/devel/index-tcg.html,GPL-2.0-only,link-only,full,2,47,
+qemu-docs,docs/devel/index.rst,Developer Information,https://www.qemu.org/docs/master/devel.html,GPL-2.0-only,link-only,full,1,200,LNX-308
+qemu-docs,docs/devel/kconfig.rst,QEMU and Kconfig,https://www.qemu.org/docs/master/devel/kconfig.html,GPL-2.0-only,link-only,full,6,1897,LNX-308 LNX-330 LNX-102
+qemu-docs,docs/devel/loads-stores.rst,Load and Store APIs,https://www.qemu.org/docs/master/devel/loads-stores.html,GPL-2.0-only,link-only,full,17,2283,
+qemu-docs,docs/devel/lockcnt.rst,Locked Counters (aka ``QemuLockCnt``),https://www.qemu.org/docs/master/devel/lockcnt.html,GPL-2.0-only,link-only,full,4,1295,LNX-331
+qemu-docs,docs/devel/luks-detached-header.rst,LUKS volume with detached header,https://www.qemu.org/docs/master/devel/luks-detached-header.html,GPL-2.0-only,link-only,full,9,742,LNX-103 LNX-308
+qemu-docs,docs/devel/maintainers.rst,The Role of Maintainers,https://www.qemu.org/docs/master/devel/maintainers.html,GPL-2.0-only,link-only,full,6,588,LNX-330 LNX-308
+qemu-docs,docs/devel/memory.rst,The memory API,https://www.qemu.org/docs/master/devel/memory.html,GPL-2.0-only,link-only,full,10,2436,LNX-310 LNX-308
+qemu-docs,docs/devel/migration/CPR.rst,CheckPoint and Restart (CPR),https://www.qemu.org/docs/master/devel/migration/CPR.html,GPL-2.0-only,link-only,full,17,2148,LNX-308 LNX-315
+qemu-docs,docs/devel/migration/best-practices.rst,Best practices,https://www.qemu.org/docs/master/devel/migration/best-practices.html,GPL-2.0-only,link-only,full,3,221,
+qemu-docs,docs/devel/migration/compatibility.rst,Backwards compatibility,https://www.qemu.org/docs/master/devel/migration/compatibility.html,GPL-2.0-only,link-only,full,5,3288,LNX-308
+qemu-docs,docs/devel/migration/dirty-limit.rst,Dirty limit,https://www.qemu.org/docs/master/devel/migration/dirty-limit.html,GPL-2.0-only,link-only,full,1,432,LNX-308
+qemu-docs,docs/devel/migration/fast-snapshot-load.rst,Fast Snapshot Load,https://www.qemu.org/docs/master/devel/migration/fast-snapshot-load.html,GPL-2.0-only,link-only,full,8,422,LNX-103 LNX-332
+qemu-docs,docs/devel/migration/features.rst,Migration features,https://www.qemu.org/docs/master/devel/migration/features.html,GPL-2.0-only,link-only,full,1,31,
+qemu-docs,docs/devel/migration/index.rst,Migration,https://www.qemu.org/docs/master/devel/migration.html,GPL-2.0-only,link-only,full,1,24,
+qemu-docs,docs/devel/migration/main.rst,Migration framework,https://www.qemu.org/docs/master/devel/migration/main.html,GPL-2.0-only,link-only,full,18,3617,LNX-308 LNX-320 LNX-203
+qemu-docs,docs/devel/migration/mapped-ram.rst,Mapped-ram,https://www.qemu.org/docs/master/devel/migration/mapped-ram.html,GPL-2.0-only,link-only,full,5,710,LNX-308
+qemu-docs,docs/devel/migration/postcopy.rst,Postcopy,https://www.qemu.org/docs/master/devel/migration/postcopy.html,GPL-2.0-only,link-only,full,15,2175,LNX-315 LNX-308 LNX-332
+qemu-docs,docs/devel/migration/qatzip-compression.rst,QATzip Compression,https://www.qemu.org/docs/master/devel/migration/qatzip-compression.html,GPL-2.0-only,link-only,full,7,668,LNX-104 LNX-306
+qemu-docs,docs/devel/migration/qpl-compression.rst,QPL Compression,https://www.qemu.org/docs/master/devel/migration/qpl-compression.html,GPL-2.0-only,link-only,full,8,1311,LNX-306 LNX-101 LNX-102
+qemu-docs,docs/devel/migration/uadk-compression.rst,User Space Accelerator Development Kit (UADK) Compression,https://www.qemu.org/docs/master/devel/migration/uadk-compression.html,GPL-2.0-only,link-only,full,6,512,LNX-308
+qemu-docs,docs/devel/migration/vfio.rst,VFIO device migration,https://www.qemu.org/docs/master/devel/migration/vfio.html,GPL-2.0-only,link-only,full,8,1897,LNX-315 LNX-308
+qemu-docs,docs/devel/migration/virtio.rst,Virtio device migration,https://www.qemu.org/docs/master/devel/migration/virtio.html,GPL-2.0-only,link-only,full,4,356,LNX-308 LNX-332
+qemu-docs,docs/devel/migration/xbzrle.rst,XBZRLE (Xor Based Zero Run Length Encoding),https://www.qemu.org/docs/master/devel/migration/xbzrle.html,GPL-2.0-only,link-only,full,4,803,LNX-308
+qemu-docs,docs/devel/modules.rst,QEMU modules,https://www.qemu.org/docs/master/devel/modules.html,GPL-2.0-only,link-only,full,1,6,LNX-308
+qemu-docs,docs/devel/multi-process.rst,Multi-process QEMU,https://www.qemu.org/docs/master/devel/multi-process.html,GPL-2.0-only,link-only,full,19,6363,LNX-308 LNX-331 LNX-312
+qemu-docs,docs/devel/multi-thread-tcg.rst,Multi-threaded TCG,https://www.qemu.org/docs/master/devel/multi-thread-tcg.html,GPL-2.0-only,link-only,full,13,2227,LNX-308
+qemu-docs,docs/devel/multiple-iothreads.rst,Using Multiple ``IOThread``\ s,https://www.qemu.org/docs/master/devel/multiple-iothreads.html,GPL-2.0-only,link-only,full,6,882,LNX-315 LNX-203
+qemu-docs,docs/devel/pci.rst,PCI subsystem,https://www.qemu.org/docs/master/devel/pci.html,GPL-2.0-only,link-only,full,2,7,LNX-331
+qemu-docs,docs/devel/qapi-code-gen.rst,How to use the QAPI code generator,https://www.qemu.org/docs/master/devel/qapi-code-gen.html,GPL-2.0-only,link-only,full,30,9135,LNX-308 LNX-203 LNX-332
+qemu-docs,docs/devel/qapi-domain.rst,The Sphinx QAPI Domain,https://www.qemu.org/docs/master/devel/qapi-domain.html,GPL-2.0-only,link-only,full,27,3562,LNX-310 LNX-308
+qemu-docs,docs/devel/qdev-api.rst,QEMU Device (qdev) API Reference,https://www.qemu.org/docs/master/devel/qdev-api.html,GPL-2.0-only,link-only,full,2,9,LNX-332 LNX-308
+qemu-docs,docs/devel/qom-api.rst,QEMU Object Model (QOM) API Reference,https://www.qemu.org/docs/master/devel/qom-api.html,GPL-2.0-only,link-only,full,2,17,LNX-332 LNX-308
+qemu-docs,docs/devel/qom.rst,The QEMU Object Model (QOM),https://www.qemu.org/docs/master/devel/qom.html,GPL-2.0-only,link-only,full,10,1847,LNX-332 LNX-308
+qemu-docs,docs/devel/rcu.rst,Using RCU (Read-Copy-Update) for synchronization,https://www.qemu.org/docs/master/devel/rcu.html,GPL-2.0-only,link-only,full,9,1958,LNX-331
+qemu-docs,docs/devel/replay.rst,Execution Record/Replay,https://www.qemu.org/docs/master/devel/replay.html,GPL-2.0-only,link-only,full,13,2101,LNX-308
+qemu-docs,docs/devel/reset.rst,Reset in QEMU: the Resettable interface,https://www.qemu.org/docs/master/devel/reset.html,GPL-2.0-only,link-only,full,10,2363,LNX-308
+qemu-docs,docs/devel/rust.rst,Rust in QEMU,https://www.qemu.org/docs/master/devel/rust.html,GPL-2.0-only,link-only,full,13,2991,LNX-308 LNX-220 LNX-332
+qemu-docs,docs/devel/s390-cpu-topology.rst,QAPI interface for S390 CPU topology,https://www.qemu.org/docs/master/devel/s390-cpu-topology.html,GPL-2.0-only,link-only,full,5,480,LNX-308 LNX-332
+qemu-docs,docs/devel/s390-dasd-ipl.rst,Booting from real channel-attached devices on s390x,https://www.qemu.org/docs/master/devel/s390-dasd-ipl.html,GPL-2.0-only,link-only,full,4,1191,LNX-308
+qemu-docs,docs/devel/secure-coding-practices.rst,Secure Coding Practices,https://www.qemu.org/docs/master/devel/secure-coding-practices.html,GPL-2.0-only,link-only,full,8,670,LNX-308
+qemu-docs,docs/devel/ssi.rst,SSI devices and SPI flash models,https://www.qemu.org/docs/master/devel/ssi.html,GPL-2.0-only,link-only,full,7,877,LNX-331
+qemu-docs,docs/devel/stable-process.rst,QEMU and the stable process,https://www.qemu.org/docs/master/devel/stable-process.html,GPL-2.0-only,link-only,full,6,431,LNX-308 LNX-330
+qemu-docs,docs/devel/style.rst,QEMU Coding Style,https://www.qemu.org/docs/master/devel/style.html,GPL-2.0-only,link-only,full,23,4368,LNX-308 LNX-330 LNX-220
+qemu-docs,docs/devel/submitting-a-patch.rst,Submitting a Patch,https://www.qemu.org/docs/master/devel/submitting-a-patch.html,GPL-2.0-only,link-only,full,33,4506,LNX-330
+qemu-docs,docs/devel/submitting-a-pull-request.rst,Submitting a Pull Request,https://www.qemu.org/docs/master/devel/submitting-a-pull-request.html,GPL-2.0-only,link-only,full,2,655,LNX-203 LNX-330
+qemu-docs,docs/devel/tcg-icount.rst,TCG Instruction Counting,https://www.qemu.org/docs/master/devel/tcg-icount.html,GPL-2.0-only,link-only,full,5,578,
+qemu-docs,docs/devel/tcg-ops.rst,TCG Intermediate Representation,https://www.qemu.org/docs/master/devel/tcg-ops.html,GPL-2.0-only,link-only,full,29,4404,LNX-308 LNX-220 LNX-307
+qemu-docs,docs/devel/tcg-plugins.rst,QEMU TCG Plugins,https://www.qemu.org/docs/master/devel/tcg-plugins.html,GPL-2.0-only,link-only,full,10,1035,LNX-308
+qemu-docs,docs/devel/tcg.rst,Translator Internals,https://www.qemu.org/docs/master/devel/tcg.html,GPL-2.0-only,link-only,full,10,1515,LNX-308
+qemu-docs,docs/devel/testing/acpi-bits.rst,ACPI/SMBIOS testing using biosbits,https://www.qemu.org/docs/master/devel/testing/acpi-bits.html,GPL-2.0-only,link-only,full,3,1221,LNX-308 LNX-203
+qemu-docs,docs/devel/testing/blkdebug.rst,Block I/O error injection using ``blkdebug``,https://www.qemu.org/docs/master/devel/testing/blkdebug.html,GPL-2.0-only,link-only,full,6,879,LNX-308
+qemu-docs,docs/devel/testing/blkverify.rst,Block driver correctness testing with ``blkverify``,https://www.qemu.org/docs/master/devel/testing/blkverify.html,GPL-2.0-only,link-only,full,4,531,LNX-308
+qemu-docs,docs/devel/testing/ci.rst,Continuous Integration (CI),https://www.qemu.org/docs/master/devel/testing/ci.html,GPL-2.0-only,link-only,full,3,227,
+qemu-docs,docs/devel/testing/functional.rst,Functional testing with Python,https://www.qemu.org/docs/master/devel/testing/functional.html,GPL-2.0-only,link-only,full,19,2055,LNX-308
+qemu-docs,docs/devel/testing/fuzzing.rst,Fuzzing,https://www.qemu.org/docs/master/devel/testing/fuzzing.html,GPL-2.0-only,link-only,full,10,1907,LNX-220 LNX-332 LNX-308
+qemu-docs,docs/devel/testing/index.rst,Testing QEMU,https://www.qemu.org/docs/master/devel/testing.html,GPL-2.0-only,link-only,full,1,28,LNX-308
+qemu-docs,docs/devel/testing/main.rst,Testing in QEMU,https://www.qemu.org/docs/master/devel/testing/main.html,GPL-2.0-only,link-only,full,50,6624,LNX-308 LNX-310 LNX-220
+qemu-docs,docs/devel/testing/qgraph.rst,Qtest Driver Framework,https://www.qemu.org/docs/master/devel/testing/qgraph.html,GPL-2.0-only,link-only,full,11,2579,LNX-332 LNX-101 LNX-308
+qemu-docs,docs/devel/testing/qtest.rst,QTest Device Emulation Testing Framework,https://www.qemu.org/docs/master/devel/testing/qtest.html,GPL-2.0-only,link-only,full,5,590,LNX-332 LNX-308 LNX-220
+qemu-docs,docs/devel/tracing.rst,Tracing,https://www.qemu.org/docs/master/devel/tracing.html,GPL-2.0-only,link-only,full,19,2067,LNX-308 LNX-330
+qemu-docs,docs/devel/trivial-patches.rst,Trivial Patches,https://www.qemu.org/docs/master/devel/trivial-patches.html,GPL-2.0-only,link-only,full,6,252,LNX-330
+qemu-docs,docs/devel/uefi-vars.rst,UEFI variables,https://www.qemu.org/docs/master/devel/uefi-vars.html,GPL-2.0-only,link-only,full,5,382,LNX-308
+qemu-docs,docs/devel/ui.rst,QEMU UI subsystem,https://www.qemu.org/docs/master/devel/ui.html,GPL-2.0-only,link-only,full,2,6,LNX-308
+qemu-docs,docs/devel/vfio-iommufd.rst,IOMMUFD BACKEND usage with VFIO,https://www.qemu.org/docs/master/devel/vfio-iommufd.html,GPL-2.0-only,link-only,full,9,795,LNX-315 LNX-331
+qemu-docs,docs/devel/vfio-mdpy.rst,Testing VFIO display with mdev mdpy,https://www.qemu.org/docs/master/devel/vfio-mdpy.html,GPL-2.0-only,link-only,full,7,271,LNX-315 LNX-308 LNX-331
+qemu-docs,docs/devel/virtio-backends.rst,Writing VirtIO backends for QEMU,https://www.qemu.org/docs/master/devel/virtio-backends.html,GPL-2.0-only,link-only,full,7,753,LNX-308 LNX-332
+qemu-docs,docs/devel/writing-monitor-commands.rst,How to write monitor commands,https://www.qemu.org/docs/master/devel/writing-monitor-commands.html,GPL-2.0-only,link-only,full,14,2957,LNX-308 LNX-220
+qemu-docs,docs/devel/zoned-storage.rst,zoned-storage,https://www.qemu.org/docs/master/devel/zoned-storage.html,GPL-2.0-only,link-only,full,3,469,LNX-308
+qemu-docs,docs/glossary.rst,Glossary,https://www.qemu.org/docs/master/glossary.html,GPL-2.0-only,link-only,full,34,1274,LNX-308 LNX-332 LNX-220
+qemu-docs,docs/index.rst,Welcome to QEMU's documentation!,https://www.qemu.org/docs/master/.html,GPL-2.0-only,link-only,full,2,57,LNX-308
+qemu-docs,docs/interop/barrier.rst,Barrier client protocol,https://www.qemu.org/docs/master/interop/barrier.html,GPL-2.0-only,link-only,full,32,1000,
+qemu-docs,docs/interop/bitmaps.rst,Dirty Bitmaps and Incremental Backup,https://www.qemu.org/docs/master/interop/bitmaps.html,GPL-2.0-only,link-only,full,30,5565,LNX-103 LNX-308 LNX-306
+qemu-docs,docs/interop/dbus-display.rst,D-Bus display,https://www.qemu.org/docs/master/interop/dbus-display.html,GPL-2.0-only,link-only,full,2,83,LNX-220 LNX-308
+qemu-docs,docs/interop/dbus-vmstate.rst,D-Bus VMState,https://www.qemu.org/docs/master/interop/dbus-vmstate.html,GPL-2.0-only,link-only,full,1,157,LNX-220
+qemu-docs,docs/interop/dbus-vnc.rst,D-Bus VNC,https://www.qemu.org/docs/master/interop/dbus-vnc.html,GPL-2.0-only,link-only,full,1,52,LNX-220 LNX-308
+qemu-docs,docs/interop/dbus.rst,D-Bus,https://www.qemu.org/docs/master/interop/dbus.html,GPL-2.0-only,link-only,full,6,525,LNX-220 LNX-308
+qemu-docs,docs/interop/index.rst,System Emulation Management and Interoperability,https://www.qemu.org/docs/master/interop.html,GPL-2.0-only,link-only,full,1,73,LNX-332 LNX-308
+qemu-docs,docs/interop/live-block-operations.rst,Live Block Device Operations,https://www.qemu.org/docs/master/interop/live-block-operations.html,GPL-2.0-only,link-only,full,21,5231,LNX-103 LNX-308 LNX-304
+qemu-docs,docs/interop/nbd.rst,QEMU NBD protocol support,https://www.qemu.org/docs/master/interop/nbd.html,GPL-2.0-only,link-only,full,4,403,LNX-308
+qemu-docs,docs/interop/parallels.rst,Parallels Expandable Image File Format,https://www.qemu.org/docs/master/interop/parallels.html,GPL-2.0-only,link-only,full,7,1121,LNX-306
+qemu-docs,docs/interop/pr-helper.rst,Persistent reservation helper protocol,https://www.qemu.org/docs/master/interop/pr-helper.html,GPL-2.0-only,link-only,full,4,574,
+qemu-docs,docs/interop/prl-xml.rst,Parallels Disk Format,https://www.qemu.org/docs/master/interop/prl-xml.html,GPL-2.0-only,link-only,full,6,939,LNX-103
+qemu-docs,docs/interop/qcow2.rst,Qcow2 Image File Format,https://www.qemu.org/docs/master/interop/qcow2.html,GPL-2.0-only,link-only,full,19,5260,LNX-306 LNX-315 LNX-103
+qemu-docs,docs/interop/qed_spec.rst,QED Image File Format Specification,https://www.qemu.org/docs/master/interop/qed_spec.html,GPL-2.0-only,link-only,full,11,1110,LNX-306
+qemu-docs,docs/interop/qemu-ga-ref.rst,QEMU Guest Agent Protocol Reference,https://www.qemu.org/docs/master/interop/qemu-ga-ref.html,GPL-2.0-only,link-only,full,1,8,LNX-308
+qemu-docs,docs/interop/qemu-ga.rst,QEMU Guest Agent,https://www.qemu.org/docs/master/interop/qemu-ga.html,GPL-2.0-only,link-only,full,7,583,LNX-308
+qemu-docs,docs/interop/qemu-qmp-ref.rst,QEMU QMP Reference Manual,https://www.qemu.org/docs/master/interop/qemu-qmp-ref.html,GPL-2.0-only,link-only,full,2,12,LNX-308
+qemu-docs,docs/interop/qemu-storage-daemon-qmp-ref.rst,QEMU Storage Daemon QMP Reference Manual,https://www.qemu.org/docs/master/interop/qemu-storage-daemon-qmp-ref.html,GPL-2.0-only,link-only,full,1,12,LNX-308
+qemu-docs,docs/interop/qmp-spec.rst,QEMU Machine Protocol Specification,https://www.qemu.org/docs/master/interop/qmp-spec.html,GPL-2.0-only,link-only,full,18,2227,LNX-308 LNX-320
+qemu-docs,docs/interop/vfio-user.rst,vfio-user Protocol Specification,https://www.qemu.org/docs/master/interop/vfio-user.html,GPL-2.0-only,link-only,full,39,9437,LNX-315 LNX-320 LNX-331
+qemu-docs,docs/interop/vhost-user-gpu.rst,Vhost-user-gpu Protocol,https://www.qemu.org/docs/master/interop/vhost-user-gpu.html,GPL-2.0-only,link-only,full,9,814,LNX-332
+qemu-docs,docs/interop/vhost-user.rst,Vhost-user Protocol,https://www.qemu.org/docs/master/interop/vhost-user.html,GPL-2.0-only,link-only,full,29,11338,LNX-332 LNX-320 LNX-308
+qemu-docs,docs/interop/vhost-vdpa.rst,Vhost-vdpa Protocol,https://www.qemu.org/docs/master/interop/vhost-vdpa.html,GPL-2.0-only,link-only,full,2,73,LNX-332
+qemu-docs,docs/interop/virtio-balloon-stats.rst,Virtio balloon memory statistics,https://www.qemu.org/docs/master/interop/virtio-balloon-stats.html,GPL-2.0-only,link-only,full,1,423,LNX-308 LNX-332
+qemu-docs,docs/interop/vnc-ledstate-pseudo-encoding.rst,VNC LED state Pseudo-encoding,https://www.qemu.org/docs/master/interop/vnc-ledstate-pseudo-encoding.html,GPL-2.0-only,link-only,full,4,208,
+qemu-docs,docs/specs/acpi_cpu_hotplug.rst,QEMU<->ACPI BIOS CPU hotplug interface,https://www.qemu.org/docs/master/specs/acpi_cpu_hotplug.html,GPL-2.0-only,link-only,full,8,912,LNX-308
+qemu-docs,docs/specs/acpi_erst.rst,ACPI ERST DEVICE,https://www.qemu.org/docs/master/specs/acpi_erst.html,GPL-2.0-only,link-only,full,6,1025,
+qemu-docs,docs/specs/acpi_hest_ghes.rst,APEI tables generating and CPER record,https://www.qemu.org/docs/master/specs/acpi_hest_ghes.html,GPL-2.0-only,link-only,full,2,545,LNX-308 LNX-330
+qemu-docs,docs/specs/acpi_hw_reduced_hotplug.rst,QEMU and ACPI BIOS Generic Event Device interface,https://www.qemu.org/docs/master/specs/acpi_hw_reduced_hotplug.html,GPL-2.0-only,link-only,full,2,238,LNX-308
+qemu-docs,docs/specs/acpi_mem_hotplug.rst,QEMU<->ACPI BIOS memory hotplug interface,https://www.qemu.org/docs/master/specs/acpi_mem_hotplug.html,GPL-2.0-only,link-only,full,5,430,LNX-308
+qemu-docs,docs/specs/acpi_nvdimm.rst,QEMU<->ACPI BIOS NVDIMM interface,https://www.qemu.org/docs/master/specs/acpi_nvdimm.html,GPL-2.0-only,link-only,full,9,904,LNX-308
+qemu-docs,docs/specs/acpi_pci_hotplug.rst,QEMU<->ACPI BIOS PCI hotplug interface,https://www.qemu.org/docs/master/specs/acpi_pci_hotplug.html,GPL-2.0-only,link-only,full,6,190,LNX-308 LNX-331
+qemu-docs,docs/specs/aspeed-intc.rst,ASPEED Interrupt Controller,https://www.qemu.org/docs/master/specs/aspeed-intc.html,GPL-2.0-only,link-only,full,7,368,LNX-331
+qemu-docs,docs/specs/edu.rst,EDU device,https://www.qemu.org/docs/master/specs/edu.html,GPL-2.0-only,link-only,full,6,562,LNX-331 LNX-101
+qemu-docs,docs/specs/fsi.rst,IBM's Flexible Service Interface (FSI),https://www.qemu.org/docs/master/specs/fsi.html,GPL-2.0-only,link-only,full,1,763,LNX-312 LNX-308
+qemu-docs,docs/specs/fw_cfg.rst,QEMU Firmware Configuration (fw_cfg) Device,https://www.qemu.org/docs/master/specs/fw_cfg.html,GPL-2.0-only,link-only,full,9,1780,LNX-308
+qemu-docs,docs/specs/index.rst,System Emulation Guest Hardware Specifications,https://www.qemu.org/docs/master/specs.html,GPL-2.0-only,link-only,full,1,75,
+qemu-docs,docs/specs/iommu-testdev.rst,iommu-testdev — IOMMU test device for bare-metal testing,https://www.qemu.org/docs/master/specs/iommu-testdev.html,GPL-2.0-only,link-only,full,12,747,LNX-315 LNX-331 LNX-332
+qemu-docs,docs/specs/ivshmem-spec.rst,Device Specification for Inter-VM shared memory device,https://www.qemu.org/docs/master/specs/ivshmem-spec.html,GPL-2.0-only,link-only,full,8,1472,LNX-308 LNX-320 LNX-331
+qemu-docs,docs/specs/pci-ids.rst,PCI IDs for QEMU,https://www.qemu.org/docs/master/specs/pci-ids.html,GPL-2.0-only,link-only,full,3,508,LNX-308 LNX-331
+qemu-docs,docs/specs/pci-serial.rst,QEMU PCI serial devices,https://www.qemu.org/docs/master/specs/pci-serial.html,GPL-2.0-only,link-only,full,3,131,LNX-308 LNX-331
+qemu-docs,docs/specs/pci-testdev.rst,QEMU PCI test device,https://www.qemu.org/docs/master/specs/pci-testdev.html,GPL-2.0-only,link-only,full,1,242,LNX-308 LNX-331
+qemu-docs,docs/specs/ppc-spapr-hcalls.rst,sPAPR hypervisor calls,https://www.qemu.org/docs/master/specs/ppc-spapr-hcalls.html,GPL-2.0-only,link-only,full,3,473,LNX-308
+qemu-docs,docs/specs/ppc-spapr-hotplug.rst,sPAPR Dynamic Reconfiguration,https://www.qemu.org/docs/master/specs/ppc-spapr-hotplug.html,GPL-2.0-only,link-only,full,21,2652,LNX-331 LNX-308
+qemu-docs,docs/specs/ppc-spapr-numa.rst,NUMA mechanics for sPAPR (pseries machines),https://www.qemu.org/docs/master/specs/ppc-spapr-numa.html,GPL-2.0-only,link-only,full,9,2456,LNX-315 LNX-307 LNX-308
+qemu-docs,docs/specs/ppc-spapr-uv-hcalls.rst,Hypervisor calls and the Ultravisor,https://www.qemu.org/docs/master/specs/ppc-spapr-uv-hcalls.html,GPL-2.0-only,link-only,full,3,511,LNX-308 LNX-303
+qemu-docs,docs/specs/ppc-spapr-xive.rst,XIVE for sPAPR (pseries machines),https://www.qemu.org/docs/master/specs/ppc-spapr-xive.html,GPL-2.0-only,link-only,full,8,1409,LNX-308 LNX-331
+qemu-docs,docs/specs/ppc-xive.rst,POWER9 XIVE interrupt controller,https://www.qemu.org/docs/master/specs/ppc-xive.html,GPL-2.0-only,link-only,full,5,987,LNX-331 LNX-308
+qemu-docs,docs/specs/pvpanic.rst,PVPANIC DEVICE,https://www.qemu.org/docs/master/specs/pvpanic.html,GPL-2.0-only,link-only,full,7,311,LNX-331
+qemu-docs,docs/specs/rapl-msr.rst,RAPL MSR support,https://www.qemu.org/docs/master/specs/rapl-msr.html,GPL-2.0-only,link-only,full,6,1039,LNX-308 LNX-102
+qemu-docs,docs/specs/riscv-aia.rst,RISC-V AIA support for RISC-V machines,https://www.qemu.org/docs/master/specs/riscv-aia.html,GPL-2.0-only,link-only,full,3,469,LNX-308
+qemu-docs,docs/specs/riscv-debug.rst,RISC-V Debug support for RISC-V CPUs,https://www.qemu.org/docs/master/specs/riscv-debug.html,GPL-2.0-only,link-only,full,3,417,LNX-308
+qemu-docs,docs/specs/riscv-iommu.rst,RISC-V IOMMU support for RISC-V machines,https://www.qemu.org/docs/master/specs/riscv-iommu.html,GPL-2.0-only,link-only,full,4,653,LNX-315 LNX-331
+qemu-docs,docs/specs/rocker.rst,Rocker Network Switch Register Programming Guide,https://www.qemu.org/docs/master/specs/rocker.html,GPL-2.0-only,link-only,full,30,4539,LNX-201 LNX-331 LNX-202
+qemu-docs,docs/specs/s390x-secure-ipl.rst,s390 Secure IPL,https://www.qemu.org/docs/master/specs/s390x-secure-ipl.html,GPL-2.0-only,link-only,full,9,1185,LNX-204 LNX-308 LNX-203
+qemu-docs,docs/specs/sev-guest-firmware.rst,QEMU/Guest Firmware Interface for AMD SEV and SEV-ES,https://www.qemu.org/docs/master/specs/sev-guest-firmware.html,GPL-2.0-only,link-only,full,8,511,LNX-308 LNX-313
+qemu-docs,docs/specs/spdm.rst,QEMU Security Protocols and Data Models (SPDM) Support,https://www.qemu.org/docs/master/specs/spdm.html,GPL-2.0-only,link-only,full,5,642,LNX-308 LNX-101 LNX-204
+qemu-docs,docs/specs/standard-vga.rst,QEMU Standard VGA,https://www.qemu.org/docs/master/specs/standard-vga.html,GPL-2.0-only,link-only,full,5,306,LNX-308 LNX-331
+qemu-docs,docs/specs/tpm.rst,QEMU TPM Device,https://www.qemu.org/docs/master/specs/tpm.html,GPL-2.0-only,link-only,full,15,2971,LNX-308 LNX-303 LNX-101
+qemu-docs,docs/specs/virt-ctlr.rst,Virtual System Controller,https://www.qemu.org/docs/master/specs/virt-ctlr.html,GPL-2.0-only,link-only,full,1,147,
+qemu-docs,docs/specs/vmcoreinfo.rst,VMCoreInfo device,https://www.qemu.org/docs/master/specs/vmcoreinfo.html,GPL-2.0-only,link-only,full,3,266,LNX-308
+qemu-docs,docs/specs/vmgenid.rst,Virtual Machine Generation ID Device,https://www.qemu.org/docs/master/specs/vmgenid.html,GPL-2.0-only,link-only,full,7,1150,LNX-308
+qemu-docs,docs/specs/vmlaunchupdate.rst,VMLAUNCHUPDATE Interface Specification,https://www.qemu.org/docs/master/specs/vmlaunchupdate.html,GPL-2.0-only,link-only,full,7,1453,LNX-308
+qemu-docs,docs/specs/vmw_pvscsi-spec.rst,VMWare PVSCSI Device Interface,https://www.qemu.org/docs/master/specs/vmw_pvscsi-spec.html,GPL-2.0-only,link-only,full,11,433,LNX-308 LNX-331
+qemu-docs,docs/system/arm/aspeed.rst,Aspeed family boards,https://www.qemu.org/docs/master/system/arm/aspeed.html,GPL-2.0-only,link-only,full,19,2320,LNX-306 LNX-331 LNX-101
+qemu-docs,docs/system/arm/b-l475e-iot01a.rst,B-L475E-IOT01A IoT Node (``b-l475e-iot01a``),https://www.qemu.org/docs/master/system/arm/b-l475e-iot01a.html,GPL-2.0-only,link-only,full,4,209,LNX-311
+qemu-docs,docs/system/arm/bananapi_m2u.rst,Banana Pi BPI-M2U (``bpim2u``),https://www.qemu.org/docs/master/system/arm/bananapi_m2u.html,GPL-2.0-only,link-only,full,8,712,LNX-306 LNX-331
+qemu-docs,docs/system/arm/collie.rst,Sharp Zaurus SL-5500 (``collie``),https://www.qemu.org/docs/master/system/arm/collie.html,GPL-2.0-only,link-only,full,1,39,
+qemu-docs,docs/system/arm/cpu-features.rst,Arm CPU Features,https://www.qemu.org/docs/master/system/arm/cpu-features.html,GPL-2.0-only,link-only,full,18,3517,LNX-308
+qemu-docs,docs/system/arm/cubieboard.rst,Cubietech Cubieboard (``cubieboard``),https://www.qemu.org/docs/master/system/arm/cubieboard.html,GPL-2.0-only,link-only,full,1,40,
+qemu-docs,docs/system/arm/digic.rst,Canon A1100 (``canon-a1100``),https://www.qemu.org/docs/master/system/arm/digic.html,GPL-2.0-only,link-only,full,1,78,
+qemu-docs,docs/system/arm/emcraft-sf2.rst,Emcraft SmartFusion2 SOM kit (``emcraft-sf2``),https://www.qemu.org/docs/master/system/arm/emcraft-sf2.html,GPL-2.0-only,link-only,full,1,49,
+qemu-docs,docs/system/arm/emulation.rst,A-profile CPU architecture support,https://www.qemu.org/docs/master/system/arm/emulation.html,GPL-2.0-only,link-only,full,5,1739,LNX-308
+qemu-docs,docs/system/arm/exynos.rst,"Exynos4 boards (``nuri``, ``smdkc210``)",https://www.qemu.org/docs/master/system/arm/exynos.html,GPL-2.0-only,link-only,full,1,26,
+qemu-docs,docs/system/arm/imx25-pdk.rst,NXP i.MX25 PDK board (``imx25-pdk``),https://www.qemu.org/docs/master/system/arm/imx25-pdk.html,GPL-2.0-only,link-only,full,1,44,
+qemu-docs,docs/system/arm/imx8m.rst,"NXP i.MX 8M Plus and i.MX 8M Mini Evaluation Kits (``imx8mp-evk``, ``imx8mm-evk``)",https://www.qemu.org/docs/master/system/arm/imx8m.html,GPL-2.0-only,link-only,full,5,488,LNX-308
+qemu-docs,docs/system/arm/integratorcp.rst,Arm Integrator/CP (``integratorcp``),https://www.qemu.org/docs/master/system/arm/integratorcp.html,GPL-2.0-only,link-only,full,1,44,
+qemu-docs,docs/system/arm/kzm.rst,Kyoto Microcomputer KZM-ARM11-01 (``kzm``),https://www.qemu.org/docs/master/system/arm/kzm.html,GPL-2.0-only,link-only,full,1,41,
+qemu-docs,docs/system/arm/max78000.rst,Analog Devices max78000 board (``max78000fthr``),https://www.qemu.org/docs/master/system/arm/max78000.html,GPL-2.0-only,link-only,full,5,123,
+qemu-docs,docs/system/arm/mcimx6ul-evk.rst,NXP MCIMX6UL-EVK (``mcimx6ul-evk``),https://www.qemu.org/docs/master/system/arm/mcimx6ul-evk.html,GPL-2.0-only,link-only,full,1,22,
+qemu-docs,docs/system/arm/mcimx7d-sabre.rst,NXP MCIMX7D Sabre (``mcimx7d-sabre``),https://www.qemu.org/docs/master/system/arm/mcimx7d-sabre.html,GPL-2.0-only,link-only,full,1,16,
+qemu-docs,docs/system/arm/mps2.rst,"Arm MPS2 and MPS3 boards (``mps2-an385``, ``mps2-an386``, ``mps2-an500``, ``mps2-an505``, ``mps2-an511``, ``mps2-an521``, ``mps3-an524``, ``mps3-an536``, ``mps3-an547``, ``mps3-an555``)",https://www.qemu.org/docs/master/system/arm/mps2.html,GPL-2.0-only,link-only,full,2,635,LNX-308
+qemu-docs,docs/system/arm/musca.rst,"Arm Musca boards (``musca-a``, ``musca-b1``)",https://www.qemu.org/docs/master/system/arm/musca.html,GPL-2.0-only,link-only,full,1,104,
+qemu-docs,docs/system/arm/nrf.rst,Nordic nRF boards (``microbit``),https://www.qemu.org/docs/master/system/arm/nrf.html,GPL-2.0-only,link-only,full,4,165,
+qemu-docs,docs/system/arm/nuvoton.rst,"Nuvoton iBMC boards (``kudo-bmc``, ``mori-bmc``, ``npcm750-evb``, ``quanta-gbs-bmc``, ``quanta-gsj``, ``npcm845-evb``)",https://www.qemu.org/docs/master/system/arm/nuvoton.html,GPL-2.0-only,link-only,full,4,759,LNX-306
+qemu-docs,docs/system/arm/orangepi.rst,Orange Pi PC (``orangepi-pc``),https://www.qemu.org/docs/master/system/arm/orangepi.html,GPL-2.0-only,link-only,full,10,1457,LNX-306 LNX-308 LNX-331
+qemu-docs,docs/system/arm/raspi.rst,"Raspberry Pi boards (``raspi0``, ``raspi1ap``, ``raspi2b``, ``raspi3ap``, ``raspi3b``, ``raspi4b``)",https://www.qemu.org/docs/master/system/arm/raspi.html,GPL-2.0-only,link-only,full,3,160,LNX-308 LNX-331
+qemu-docs,docs/system/arm/realview.rst,"Arm Realview boards (``realview-eb``, ``realview-eb-mpcore``, ``realview-pb-a8``, ``realview-pbx-a9``)",https://www.qemu.org/docs/master/system/arm/realview.html,GPL-2.0-only,link-only,full,1,138,
+qemu-docs,docs/system/arm/sabrelite.rst,Boundary Devices SABRE Lite (``sabrelite``),https://www.qemu.org/docs/master/system/arm/sabrelite.html,GPL-2.0-only,link-only,full,5,522,LNX-331 LNX-101
+qemu-docs,docs/system/arm/sbsa.rst,Arm Server Base System Architecture Reference board (``sbsa-ref``),https://www.qemu.org/docs/master/system/arm/sbsa.html,GPL-2.0-only,link-only,full,6,419,LNX-308
+qemu-docs,docs/system/arm/stellaris.rst,"Stellaris boards (``lm3s6965evb``, ``lm3s811evb``)",https://www.qemu.org/docs/master/system/arm/stellaris.html,GPL-2.0-only,link-only,full,1,71,
+qemu-docs,docs/system/arm/stm32.rst,"STMicroelectronics STM32 boards (``netduino2``, ``netduinoplus2``, ``olimex-stm32-h405``, ``stm32vldiscovery``)",https://www.qemu.org/docs/master/system/arm/stm32.html,GPL-2.0-only,link-only,full,4,302,
+qemu-docs,docs/system/arm/sx1.rst,"Siemens SX1 (``sx1``, ``sx1-v1``)",https://www.qemu.org/docs/master/system/arm/sx1.html,GPL-2.0-only,link-only,full,1,73,
+qemu-docs,docs/system/arm/versatile.rst,"Arm Versatile boards (``versatileab``, ``versatilepb``)",https://www.qemu.org/docs/master/system/arm/versatile.html,GPL-2.0-only,link-only,full,2,275,
+qemu-docs,docs/system/arm/vexpress.rst,"Arm Versatile Express boards (``vexpress-a9``, ``vexpress-a15``)",https://www.qemu.org/docs/master/system/arm/vexpress.html,GPL-2.0-only,link-only,full,2,460,LNX-308
+qemu-docs,docs/system/arm/virt.rst,'virt' generic virtual platform (``virt``),https://www.qemu.org/docs/master/system/arm/virt.html,GPL-2.0-only,link-only,full,8,2308,LNX-308 LNX-331 LNX-315
+qemu-docs,docs/system/arm/vmapple.rst,VMApple machine emulation,https://www.qemu.org/docs/master/system/arm/vmapple.html,GPL-2.0-only,link-only,full,4,371,LNX-308
+qemu-docs,docs/system/arm/xenpvh.rst,Xen Device Emulation Backend (``xenpvh``),https://www.qemu.org/docs/master/system/arm/xenpvh.html,GPL-2.0-only,link-only,full,1,238,LNX-308
+qemu-docs,docs/system/arm/xlnx-versal-virt.rst,"AMD Versal Virt (``amd-versal-virt``, ``amd-versal2-virt``)",https://www.qemu.org/docs/master/system/arm/xlnx-versal-virt.html,GPL-2.0-only,link-only,full,7,1623,LNX-308
+qemu-docs,docs/system/arm/xlnx-zcu102.rst,Xilinx ZynqMP ZCU102 (``xlnx-zcu102``),https://www.qemu.org/docs/master/system/arm/xlnx-zcu102.html,GPL-2.0-only,link-only,full,2,72,
+qemu-docs,docs/system/arm/xlnx-zynq.rst,Xilinx Zynq board (``xilinx-zynq-a9``),https://www.qemu.org/docs/master/system/arm/xlnx-zynq.html,GPL-2.0-only,link-only,full,2,427,LNX-331 LNX-306 LNX-101
+qemu-docs,docs/system/authz.rst,Client authorization,https://www.qemu.org/docs/master/system/authz.html,GPL-2.0-only,link-only,full,9,1187,LNX-314 LNX-308 LNX-204
+qemu-docs,docs/system/barrier.rst,QEMU Barrier Client,https://www.qemu.org/docs/master/system/barrier.html,GPL-2.0-only,link-only,full,1,253,LNX-308
+qemu-docs,docs/system/bootindex.rst,Managing device boot order with bootindex properties,https://www.qemu.org/docs/master/system/bootindex.html,GPL-2.0-only,link-only,full,4,576,LNX-308
+qemu-docs,docs/system/confidential-guest-support.rst,Confidential Guest Support,https://www.qemu.org/docs/master/system/confidential-guest-support.html,GPL-2.0-only,link-only,full,4,248,LNX-308
+qemu-docs,docs/system/cpu-hotplug.rst,Virtual CPU hotplug,https://www.qemu.org/docs/master/system/cpu-hotplug.html,GPL-2.0-only,link-only,full,3,420,LNX-308 LNX-332
+qemu-docs,docs/system/device-emulation.rst,Device Emulation,https://www.qemu.org/docs/master/system/device-emulation.html,GPL-2.0-only,link-only,full,8,562,LNX-101
+qemu-docs,docs/system/devices/can.rst,CAN Bus Emulation Support,https://www.qemu.org/docs/master/system/devices/can.html,GPL-2.0-only,link-only,full,5,1249,LNX-308
+qemu-docs,docs/system/devices/canokey.rst,CanoKey QEMU,https://www.qemu.org/docs/master/system/devices/canokey.html,GPL-2.0-only,link-only,full,7,706,LNX-308 LNX-101 LNX-220
+qemu-docs,docs/system/devices/ccid.rst,Chip Card Interface Device (CCID),https://www.qemu.org/docs/master/system/devices/ccid.html,GPL-2.0-only,link-only,full,9,903,LNX-204 LNX-303 LNX-308
+qemu-docs,docs/system/devices/cxl.rst,Compute Express Link (CXL),https://www.qemu.org/docs/master/system/devices/cxl.html,GPL-2.0-only,link-only,full,14,3323,LNX-308 LNX-202
+qemu-docs,docs/system/devices/emmc.rst,eMMC Emulation,https://www.qemu.org/docs/master/system/devices/emmc.html,GPL-2.0-only,link-only,full,5,502,LNX-306
+qemu-docs,docs/system/devices/igb.rst,igb,https://www.qemu.org/docs/master/system/devices/igb.html,GPL-2.0-only,link-only,full,7,379,
+qemu-docs,docs/system/devices/ivshmem-flat.rst,Inter-VM Shared Memory Flat Device,https://www.qemu.org/docs/master/system/devices/ivshmem-flat.html,GPL-2.0-only,link-only,full,1,315,LNX-308 LNX-320 LNX-331
+qemu-docs,docs/system/devices/ivshmem.rst,Inter-VM Shared Memory device,https://www.qemu.org/docs/master/system/devices/ivshmem.html,GPL-2.0-only,link-only,full,3,325,LNX-308 LNX-320
+qemu-docs,docs/system/devices/keyboard.rst,Sparc32 keyboard,https://www.qemu.org/docs/master/system/devices/keyboard.html,GPL-2.0-only,link-only,full,2,377,
+qemu-docs,docs/system/devices/net.rst,Network emulation,https://www.qemu.org/docs/master/system/devices/net.html,GPL-2.0-only,link-only,full,13,1453,LNX-201 LNX-332 LNX-308
+qemu-docs,docs/system/devices/nvme.rst,NVMe Emulation,https://www.qemu.org/docs/master/system/devices/nvme.html,GPL-2.0-only,link-only,full,13,2128,LNX-103 LNX-310 LNX-308
+qemu-docs,docs/system/devices/scsi/index.rst,SCSI Devices,https://www.qemu.org/docs/master/system/devices/scsi.html,GPL-2.0-only,link-only,full,1,20,
+qemu-docs,docs/system/devices/scsi/migrate-pr.rst,SCSI Persistent Reservation Live Migration,https://www.qemu.org/docs/master/system/devices/scsi/migrate-pr.html,GPL-2.0-only,link-only,full,3,374,LNX-308
+qemu-docs,docs/system/devices/ufs.rst,UFS Emulation,https://www.qemu.org/docs/master/system/devices/ufs.html,GPL-2.0-only,link-only,full,6,431,
+qemu-docs,docs/system/devices/usb-u2f.rst,Universal Second Factor (U2F) USB Key Device,https://www.qemu.org/docs/master/system/devices/usb-u2f.html,GPL-2.0-only,link-only,full,3,496,LNX-204
+qemu-docs,docs/system/devices/usb.rst,USB emulation,https://www.qemu.org/docs/master/system/devices/usb.html,GPL-2.0-only,link-only,full,12,2376,LNX-204 LNX-101 LNX-308
+qemu-docs,docs/system/devices/vfio-user.rst,vfio-user,https://www.qemu.org/docs/master/system/devices/vfio-user.html,GPL-2.0-only,link-only,full,2,155,LNX-315
+qemu-docs,docs/system/devices/virtio/index.rst,VirtIO Devices,https://www.qemu.org/docs/master/system/devices/virtio.html,GPL-2.0-only,link-only,full,1,154,LNX-308 LNX-332
+qemu-docs,docs/system/devices/virtio/vhost-user-contrib.rst,vhost-user daemons in contrib,https://www.qemu.org/docs/master/system/devices/virtio/vhost-user-contrib.html,GPL-2.0-only,link-only,full,10,488,LNX-332
+qemu-docs,docs/system/devices/virtio/vhost-user.rst,vhost-user back ends,https://www.qemu.org/docs/master/system/devices/virtio/vhost-user.html,GPL-2.0-only,link-only,full,7,645,LNX-332
+qemu-docs,docs/system/devices/virtio/virtio-gpu.rst,VirtIO GPU,https://www.qemu.org/docs/master/system/devices/virtio/virtio-gpu.html,GPL-2.0-only,link-only,full,8,1200,LNX-308 LNX-332
+qemu-docs,docs/system/devices/virtio/virtio-pmem.rst,VirtIO Persistent Memory,https://www.qemu.org/docs/master/system/devices/virtio/virtio-pmem.html,GPL-2.0-only,link-only,full,7,381,LNX-308
+qemu-docs,docs/system/devices/virtio/virtio-snd.rst,VirtIO Sound,https://www.qemu.org/docs/master/system/devices/virtio/virtio-snd.html,GPL-2.0-only,link-only,full,5,216,LNX-308
+qemu-docs,docs/system/gdb.rst,GDB usage,https://www.qemu.org/docs/master/system/gdb.html,GPL-2.0-only,link-only,full,11,1397,LNX-220 LNX-320
+qemu-docs,docs/system/generic-loader.rst,Generic Loader,https://www.qemu.org/docs/master/system/generic-loader.html,GPL-2.0-only,link-only,full,5,619,
+qemu-docs,docs/system/guest-loader.rst,Guest Loader,https://www.qemu.org/docs/master/system/guest-loader.html,GPL-2.0-only,link-only,full,3,294,LNX-308
+qemu-docs,docs/system/guest-memfd.rst,guest-memfd support,https://www.qemu.org/docs/master/system/guest-memfd.html,GPL-2.0-only,link-only,full,4,419,LNX-308
+qemu-docs,docs/system/hexagon/boot.rst,Hexagon boot interface,https://www.qemu.org/docs/master/system/hexagon/boot.html,GPL-2.0-only,link-only,full,8,542,LNX-308
+qemu-docs,docs/system/hexagon/cdsp.rst,Board-specific boot firmware,https://www.qemu.org/docs/master/system/hexagon/cdsp.html,GPL-2.0-only,link-only,full,2,206,LNX-308
+qemu-docs,docs/system/hexagon/emulation.rst,Hexagon CPU architecture support,https://www.qemu.org/docs/master/system/hexagon/emulation.html,GPL-2.0-only,link-only,full,3,176,LNX-308
+qemu-docs,docs/system/hexagon/machines.rst,Hexagon machines,https://www.qemu.org/docs/master/system/hexagon/machines.html,GPL-2.0-only,link-only,full,5,182,LNX-308
+qemu-docs,docs/system/hexagon/operating-systems.rst,Booting guest operating systems,https://www.qemu.org/docs/master/system/hexagon/operating-systems.html,GPL-2.0-only,link-only,full,4,233,LNX-308
+qemu-docs,docs/system/hexagon/sdk-programs.rst,Running SDK programs,https://www.qemu.org/docs/master/system/hexagon/sdk-programs.html,GPL-2.0-only,link-only,full,6,703,LNX-308 LNX-220 LNX-101
+qemu-docs,docs/system/i386/amd-memory-encryption.rst,AMD Secure Encrypted Virtualization (SEV),https://www.qemu.org/docs/master/system/i386/amd-memory-encryption.html,GPL-2.0-only,link-only,full,9,1755,LNX-303 LNX-308 LNX-315
+qemu-docs,docs/system/i386/cpu.rst,cpu,https://www.qemu.org/docs/master/system/i386/cpu.html,GPL-2.0-only,link-only,full,1,6,
+qemu-docs,docs/system/i386/hyperv.rst,Hyper-V Enlightenments,https://www.qemu.org/docs/master/system/i386/hyperv.html,GPL-2.0-only,link-only,full,8,2271,LNX-308 LNX-332
+qemu-docs,docs/system/i386/kvm-pv.rst,Paravirtualized KVM features,https://www.qemu.org/docs/master/system/i386/kvm-pv.html,GPL-2.0-only,link-only,full,6,416,LNX-308
+qemu-docs,docs/system/i386/microvm.rst,'microvm' virtual platform (``microvm``),https://www.qemu.org/docs/master/system/i386/microvm.html,GPL-2.0-only,link-only,full,8,652,LNX-308
+qemu-docs,docs/system/i386/nitro-enclave.rst,'nitro-enclave' virtual machine (``nitro-enclave``),https://www.qemu.org/docs/master/system/i386/nitro-enclave.html,GPL-2.0-only,link-only,full,4,667,LNX-308 LNX-332
+qemu-docs,docs/system/i386/pc.rst,"i440fx PC (``pc-i440fx``, ``pc``)",https://www.qemu.org/docs/master/system/i386/pc.html,GPL-2.0-only,link-only,full,2,6,
+qemu-docs,docs/system/i386/sgx.rst,Software Guard eXtensions (SGX),https://www.qemu.org/docs/master/system/i386/sgx.html,GPL-2.0-only,link-only,full,10,1218,LNX-308 LNX-101 LNX-202
+qemu-docs,docs/system/i386/tdx.rst,Intel Trusted Domain eXtension (TDX),https://www.qemu.org/docs/master/system/i386/tdx.html,GPL-2.0-only,link-only,full,14,823,LNX-315 LNX-308 LNX-332
+qemu-docs,docs/system/i386/xen.rst,Xen HVM guest support,https://www.qemu.org/docs/master/system/i386/xen.html,GPL-2.0-only,link-only,full,7,940,LNX-308 LNX-201 LNX-101
+qemu-docs,docs/system/i386/xenpvh.rst,Xen PVH machine (``xenpvh``),https://www.qemu.org/docs/master/system/i386/xenpvh.html,GPL-2.0-only,link-only,full,3,295,
+qemu-docs,docs/system/igvm.rst,Independent Guest Virtual Machine (IGVM) support,https://www.qemu.org/docs/master/system/igvm.html,GPL-2.0-only,link-only,full,8,1086,LNX-308 LNX-315
+qemu-docs,docs/system/images.rst,Disk Images,https://www.qemu.org/docs/master/system/images.html,GPL-2.0-only,link-only,full,5,485,LNX-103 LNX-306 LNX-308
+qemu-docs,docs/system/index.rst,System Emulation,https://www.qemu.org/docs/master/system.html,GPL-2.0-only,link-only,full,2,89,LNX-308
+qemu-docs,docs/system/introduction.rst,Introduction,https://www.qemu.org/docs/master/system/introduction.html,GPL-2.0-only,link-only,full,4,1194,LNX-308 LNX-103
+qemu-docs,docs/system/invocation.rst,Invocation,https://www.qemu.org/docs/master/system/invocation.html,GPL-2.0-only,link-only,full,3,82,
+qemu-docs,docs/system/keys.rst,Keys in the graphical frontends,https://www.qemu.org/docs/master/system/keys.html,GPL-2.0-only,link-only,full,2,5,
+qemu-docs,docs/system/linuxboot.rst,Direct Linux Boot,https://www.qemu.org/docs/master/system/linuxboot.html,GPL-2.0-only,link-only,full,2,288,LNX-101
+qemu-docs,docs/system/loongarch/virt.rst,loongson3 virt generic platform (``virt``),https://www.qemu.org/docs/master/system/loongarch/virt.html,GPL-2.0-only,link-only,full,5,389,LNX-203 LNX-220 LNX-101
+qemu-docs,docs/system/managed-startup.rst,Managed start up options,https://www.qemu.org/docs/master/system/managed-startup.html,GPL-2.0-only,link-only,full,1,246,LNX-308 LNX-101
+qemu-docs,docs/system/monitor.rst,QEMU Monitor,https://www.qemu.org/docs/master/system/monitor.html,GPL-2.0-only,link-only,full,4,98,LNX-308
+qemu-docs,docs/system/multi-process.rst,Multi-process QEMU,https://www.qemu.org/docs/master/system/multi-process.html,GPL-2.0-only,link-only,full,4,296,LNX-308
+qemu-docs,docs/system/mux-chardev.rst,Keys in the character backend multiplexer,https://www.qemu.org/docs/master/system/mux-chardev.html,GPL-2.0-only,link-only,full,2,11,
+qemu-docs,docs/system/nitro.rst,AWS Nitro Enclaves,https://www.qemu.org/docs/master/system/nitro.html,GPL-2.0-only,link-only,full,9,720,LNX-306 LNX-308
+qemu-docs,docs/system/or1k/cpu-features.rst,CPU Features,https://www.qemu.org/docs/master/system/or1k/cpu-features.html,GPL-2.0-only,link-only,full,1,57,
+qemu-docs,docs/system/or1k/emulation.rst,OpenRISC 1000 CPU architecture support,https://www.qemu.org/docs/master/system/or1k/emulation.html,GPL-2.0-only,link-only,full,1,85,LNX-308
+qemu-docs,docs/system/or1k/or1k-sim.rst,Or1ksim board,https://www.qemu.org/docs/master/system/or1k/or1k-sim.html,GPL-2.0-only,link-only,full,5,146,
+qemu-docs,docs/system/or1k/virt.rst,'virt' generic virtual platform,https://www.qemu.org/docs/master/system/or1k/virt.html,GPL-2.0-only,link-only,full,5,225,
+qemu-docs,docs/system/ppc/amigang.rst,"AmigaNG boards (``amigaone``, ``pegasos1``, ``pegasos2``, ``sam460ex``)",https://www.qemu.org/docs/master/system/ppc/amigang.html,GPL-2.0-only,link-only,full,13,872,LNX-308
+qemu-docs,docs/system/ppc/embedded.rst,Embedded family boards,https://www.qemu.org/docs/master/system/ppc/embedded.html,GPL-2.0-only,link-only,full,1,19,
+qemu-docs,docs/system/ppc/powermac.rst,"PowerMac family boards (``g3beige``, ``mac99``)",https://www.qemu.org/docs/master/system/ppc/powermac.html,GPL-2.0-only,link-only,full,4,115,
+qemu-docs,docs/system/ppc/powernv.rst,"PowerNV family boards (``powernv8``, ``powernv9``, ``powernv10``, ``powernv11``)",https://www.qemu.org/docs/master/system/ppc/powernv.html,GPL-2.0-only,link-only,full,11,1247,LNX-308 LNX-320 LNX-306
+qemu-docs,docs/system/ppc/ppce500.rst,ppce500 generic platform (``ppce500``),https://www.qemu.org/docs/master/system/ppc/ppce500.html,GPL-2.0-only,link-only,full,8,932,LNX-308 LNX-331 LNX-201
+qemu-docs,docs/system/ppc/prep.rst,Prep machine (``40p``),https://www.qemu.org/docs/master/system/ppc/prep.html,GPL-2.0-only,link-only,full,2,55,
+qemu-docs,docs/system/ppc/pseries.rst,pSeries family boards (``pseries``),https://www.qemu.org/docs/master/system/ppc/pseries.html,GPL-2.0-only,link-only,full,14,1602,LNX-308 LNX-331
+qemu-docs,docs/system/pr-manager.rst,Persistent reservation managers,https://www.qemu.org/docs/master/system/pr-manager.html,GPL-2.0-only,link-only,full,3,481,LNX-308 LNX-320 LNX-103
+qemu-docs,docs/system/qemu-block-drivers.rst,QEMU block drivers reference,https://www.qemu.org/docs/master/system/qemu-block-drivers.html,GPL-2.0-only,link-only,full,5,27,LNX-308
+qemu-docs,docs/system/qemu-colo.rst,Qemu COLO Fault Tolerance,https://www.qemu.org/docs/master/system/qemu-colo.html,GPL-2.0-only,link-only,full,10,2204,LNX-308 LNX-309 LNX-320
+qemu-docs,docs/system/qemu-cpu-models.rst,QEMU / KVM CPU model configuration,https://www.qemu.org/docs/master/system/qemu-cpu-models.html,GPL-2.0-only,link-only,full,5,33,LNX-308
+qemu-docs,docs/system/qemu-manpage.rst,QEMU User Documentation,https://www.qemu.org/docs/master/system/qemu-manpage.html,GPL-2.0-only,link-only,full,7,149,LNX-308
+qemu-docs,docs/system/replay.rst,Record/replay,https://www.qemu.org/docs/master/system/replay.html,GPL-2.0-only,link-only,full,10,1385,LNX-103 LNX-308 LNX-201
+qemu-docs,docs/system/riscv/k230.rst,Kendryte K230 virt reference platform (``k230``),https://www.qemu.org/docs/master/system/riscv/k230.html,GPL-2.0-only,link-only,full,6,707,LNX-308 LNX-331
+qemu-docs,docs/system/riscv/microblaze-v-generic.rst,Microblaze-V generic board (``amd-microblaze-v-generic``),https://www.qemu.org/docs/master/system/riscv/microblaze-v-generic.html,GPL-2.0-only,link-only,full,2,200,LNX-308
+qemu-docs,docs/system/riscv/microchip-icicle-kit.rst,Microchip PolarFire SoC Icicle Kit (``microchip-icicle-kit``),https://www.qemu.org/docs/master/system/riscv/microchip-icicle-kit.html,GPL-2.0-only,link-only,full,5,612,LNX-308
+qemu-docs,docs/system/riscv/milkv-duo.rst,Milk-V Duo board (``milkv-duo``),https://www.qemu.org/docs/master/system/riscv/milkv-duo.html,GPL-2.0-only,link-only,full,4,255,
+qemu-docs,docs/system/riscv/mips.rst,Boards for RISC-V Processors by MIPS,https://www.qemu.org/docs/master/system/riscv/mips.html,GPL-2.0-only,link-only,full,2,113,
+qemu-docs,docs/system/riscv/riscv-server-ref.rst,RISC-V Server Platform Reference board (``riscv-server-ref``),https://www.qemu.org/docs/master/system/riscv/riscv-server-ref.html,GPL-2.0-only,link-only,full,2,375,LNX-101 LNX-308
+qemu-docs,docs/system/riscv/shakti-c.rst,Shakti C Reference Platform (``shakti_c``),https://www.qemu.org/docs/master/system/riscv/shakti-c.html,GPL-2.0-only,link-only,full,6,300,
+qemu-docs,docs/system/riscv/sifive_u.rst,SiFive HiFive Unleashed (``sifive_u``),https://www.qemu.org/docs/master/system/riscv/sifive_u.html,GPL-2.0-only,link-only,full,8,1988,LNX-308 LNX-101 LNX-330
+qemu-docs,docs/system/riscv/tt_atlantis.rst,Tenstorrent Atlantis (``tt-atlantis``),https://www.qemu.org/docs/master/system/riscv/tt_atlantis.html,GPL-2.0-only,link-only,full,4,193,LNX-308
+qemu-docs,docs/system/riscv/virt.rst,'virt' Generic Virtual Platform (``virt``),https://www.qemu.org/docs/master/system/riscv/virt.html,GPL-2.0-only,link-only,full,10,1344,LNX-308 LNX-315 LNX-330
+qemu-docs,docs/system/riscv/xiangshan-kunminghu.rst,BOSC Xiangshan Kunminghu FPGA prototype platform (``xiangshan-kunminghu``),https://www.qemu.org/docs/master/system/riscv/xiangshan-kunminghu.html,GPL-2.0-only,link-only,full,4,154,
+qemu-docs,docs/system/s390x/3270.rst,3270 devices,https://www.qemu.org/docs/master/system/s390x/3270.html,GPL-2.0-only,link-only,full,3,373,
+qemu-docs,docs/system/s390x/bootdevices.rst,Boot devices on s390x,https://www.qemu.org/docs/master/system/s390x/bootdevices.html,GPL-2.0-only,link-only,full,5,999,LNX-308 LNX-201
+qemu-docs,docs/system/s390x/cpacf.rst,CPACF Support,https://www.qemu.org/docs/master/system/s390x/cpacf.html,GPL-2.0-only,link-only,full,5,718,
+qemu-docs,docs/system/s390x/cpu-topology.rst,CPU topology on s390x,https://www.qemu.org/docs/master/system/s390x/cpu-topology.html,GPL-2.0-only,link-only,full,11,1315,LNX-101 LNX-308
+qemu-docs,docs/system/s390x/css.rst,The virtual channel subsystem,https://www.qemu.org/docs/master/system/s390x/css.html,GPL-2.0-only,link-only,full,2,525,LNX-308
+qemu-docs,docs/system/s390x/pcidevices.rst,PCI devices on s390x,https://www.qemu.org/docs/master/system/s390x/pcidevices.html,GPL-2.0-only,link-only,full,1,228,LNX-331
+qemu-docs,docs/system/s390x/protvirt.rst,Protected Virtualization on s390x,https://www.qemu.org/docs/master/system/s390x/protvirt.html,GPL-2.0-only,link-only,full,5,447,LNX-308 LNX-101
+qemu-docs,docs/system/s390x/secure-ipl.rst,s390 Secure IPL,https://www.qemu.org/docs/master/system/s390x/secure-ipl.html,GPL-2.0-only,link-only,full,16,701,LNX-101 LNX-204
+qemu-docs,docs/system/s390x/vfio-ap.rst,Adjunct Processor (AP) Device,https://www.qemu.org/docs/master/system/s390x/vfio-ap.html,GPL-2.0-only,link-only,full,15,5105,LNX-315 LNX-308 LNX-331
+qemu-docs,docs/system/s390x/vfio-ccw.rst,Subchannel passthrough via vfio-ccw,https://www.qemu.org/docs/master/system/s390x/vfio-ccw.html,GPL-2.0-only,link-only,full,4,419,LNX-315
+qemu-docs,docs/system/secrets.rst,Providing secret data to QEMU,https://www.qemu.org/docs/master/system/secrets.html,GPL-2.0-only,link-only,full,7,935,LNX-313 LNX-308
+qemu-docs,docs/system/security.rst,Security,https://www.qemu.org/docs/master/system/security.html,GPL-2.0-only,link-only,full,14,2465,LNX-308 LNX-204 LNX-332
+qemu-docs,docs/system/sriov.rst,Composable SR-IOV device,https://www.qemu.org/docs/master/system/sriov.html,GPL-2.0-only,link-only,full,2,286,LNX-315
+qemu-docs,docs/system/target-arm.rst,Arm System emulator,https://www.qemu.org/docs/master/system/target-arm.html,GPL-2.0-only,link-only,full,6,644,LNX-308
+qemu-docs,docs/system/target-avr.rst,AVR System emulator,https://www.qemu.org/docs/master/system/target-avr.html,GPL-2.0-only,link-only,full,2,209,LNX-220 LNX-101 LNX-102
+qemu-docs,docs/system/target-hexagon.rst,Hexagon System emulator,https://www.qemu.org/docs/master/system/target-hexagon.html,GPL-2.0-only,link-only,full,7,512,LNX-308
+qemu-docs,docs/system/target-i386.rst,x86 System emulator,https://www.qemu.org/docs/master/system/target-i386.html,GPL-2.0-only,link-only,full,5,89,
+qemu-docs,docs/system/target-loongarch.rst,LoongArch System emulator,https://www.qemu.org/docs/master/system/target-loongarch.html,GPL-2.0-only,link-only,full,3,68,LNX-308
+qemu-docs,docs/system/target-m68k.rst,ColdFire System emulator,https://www.qemu.org/docs/master/system/target-m68k.html,GPL-2.0-only,link-only,full,2,62,
+qemu-docs,docs/system/target-mips.rst,MIPS System emulator,https://www.qemu.org/docs/master/system/target-mips.html,GPL-2.0-only,link-only,full,3,343,LNX-308
+qemu-docs,docs/system/target-or1k.rst,OpenRISC System emulator,https://www.qemu.org/docs/master/system/target-or1k.html,GPL-2.0-only,link-only,full,6,416,LNX-308
+qemu-docs,docs/system/target-ppc.rst,PowerPC System emulator,https://www.qemu.org/docs/master/system/target-ppc.html,GPL-2.0-only,link-only,full,3,61,
+qemu-docs,docs/system/target-riscv.rst,RISC-V System emulator,https://www.qemu.org/docs/master/system/target-riscv.html,GPL-2.0-only,link-only,full,6,850,LNX-308
+qemu-docs,docs/system/target-rx.rst,RX System emulator,https://www.qemu.org/docs/master/system/target-rx.html,GPL-2.0-only,link-only,full,2,139,LNX-308
+qemu-docs,docs/system/target-s390x.rst,s390x System emulator,https://www.qemu.org/docs/master/system/target-s390x.html,GPL-2.0-only,link-only,full,4,150,LNX-308 LNX-315
+qemu-docs,docs/system/target-sparc.rst,Sparc32 System emulator,https://www.qemu.org/docs/master/system/target-sparc.html,GPL-2.0-only,link-only,full,2,245,LNX-308
+qemu-docs,docs/system/target-sparc64.rst,Sparc64 System emulator,https://www.qemu.org/docs/master/system/target-sparc64.html,GPL-2.0-only,link-only,full,2,162,
+qemu-docs,docs/system/target-xtensa.rst,Xtensa System emulator,https://www.qemu.org/docs/master/system/target-xtensa.html,GPL-2.0-only,link-only,full,2,94,
+qemu-docs,docs/system/targets.rst,QEMU System Emulator Targets,https://www.qemu.org/docs/master/system/targets.html,GPL-2.0-only,link-only,full,2,94,LNX-102 LNX-308
+qemu-docs,docs/system/tls.rst,TLS setup for network services,https://www.qemu.org/docs/master/system/tls.html,GPL-2.0-only,link-only,full,11,2828,LNX-204 LNX-201 LNX-312
+qemu-docs,docs/system/virtio-net-failover.rst,QEMU virtio-net standby (net_failover),https://www.qemu.org/docs/master/system/virtio-net-failover.html,GPL-2.0-only,link-only,full,6,462,LNX-308
+qemu-docs,docs/system/vm-templating.rst,QEMU VM templating,https://www.qemu.org/docs/master/system/vm-templating.html,GPL-2.0-only,link-only,full,9,747,LNX-308 LNX-332
+qemu-docs,docs/system/vnc-security.rst,VNC security,https://www.qemu.org/docs/master/system/vnc-security.html,GPL-2.0-only,link-only,full,10,1094,LNX-204 LNX-308 LNX-303
+qemu-docs,docs/system/whpx.rst,Windows Hypervisor Platform,https://www.qemu.org/docs/master/system/whpx.html,GPL-2.0-only,link-only,full,14,527,LNX-308 LNX-302 LNX-306
+qemu-docs,docs/tools/index.rst,Tools,https://www.qemu.org/docs/master/tools.html,GPL-2.0-only,link-only,full,2,39,LNX-308
+qemu-docs,docs/tools/qemu-img.rst,QEMU disk image utility,https://www.qemu.org/docs/master/tools/qemu-img.html,GPL-2.0-only,link-only,full,9,5909,LNX-308 LNX-103 LNX-306
+qemu-docs,docs/tools/qemu-nbd.rst,QEMU Disk Network Block Device Server,https://www.qemu.org/docs/master/tools/qemu-nbd.html,GPL-2.0-only,link-only,full,7,1348,LNX-103 LNX-308
+qemu-docs,docs/tools/qemu-pr-helper.rst,QEMU persistent reservation helper,https://www.qemu.org/docs/master/tools/qemu-pr-helper.html,GPL-2.0-only,link-only,full,4,361,LNX-308
+qemu-docs,docs/tools/qemu-storage-daemon.rst,QEMU Storage Daemon,https://www.qemu.org/docs/master/tools/qemu-storage-daemon.html,GPL-2.0-only,link-only,full,7,1592,LNX-308 LNX-332 LNX-320
+qemu-docs,docs/tools/qemu-trace-stap.rst,QEMU SystemTap trace tool,https://www.qemu.org/docs/master/tools/qemu-trace-stap.html,GPL-2.0-only,link-only,full,5,539,LNX-308
+qemu-docs,docs/tools/qemu-vmsr-helper.rst,QEMU virtual RAPL MSR helper,https://www.qemu.org/docs/master/tools/qemu-vmsr-helper.html,GPL-2.0-only,link-only,full,4,339,LNX-308
+qemu-docs,docs/tools/qemu-vnc.rst,QEMU standalone VNC server,https://www.qemu.org/docs/master/tools/qemu-vnc.html,GPL-2.0-only,link-only,full,9,1135,LNX-308 LNX-204 LNX-220
+qemu-docs,docs/user/index.rst,User Mode Emulation,https://www.qemu.org/docs/master/user.html,GPL-2.0-only,link-only,full,2,49,LNX-308
+qemu-docs,docs/user/main.rst,QEMU User space emulator,https://www.qemu.org/docs/master/user/main.html,GPL-2.0-only,link-only,full,14,1085,LNX-308 LNX-320 LNX-101
+libvirt-docs,docs/404.rst,404 page not found,https://libvirt.org/404.html,LGPL-2.1-or-later,link-only,full,1,68,LNX-308
+libvirt-docs,docs/acl.rst,Client access control,https://libvirt.org/acl.html,LGPL-2.1-or-later,link-only,full,4,462,LNX-308
+libvirt-docs,docs/aclpolkit.rst,Polkit access control,https://libvirt.org/aclpolkit.html,LGPL-2.1-or-later,link-only,full,20,1381,LNX-308
+libvirt-docs,docs/advanced-tests.rst,Advanced test suite usage,https://libvirt.org/advanced-tests.html,LGPL-2.1-or-later,link-only,full,1,934,LNX-308 LNX-220
+libvirt-docs,docs/api.rst,The libvirt API concepts,https://libvirt.org/api.html,LGPL-2.1-or-later,link-only,full,5,1687,LNX-308
+libvirt-docs,docs/api_extension.rst,Implementing a new API in Libvirt,https://libvirt.org/api_extension.html,LGPL-2.1-or-later,link-only,full,13,1881,LNX-308 LNX-330
+libvirt-docs,docs/apps.rst,Applications using libvirt,https://libvirt.org/apps.html,LGPL-2.1-or-later,link-only,full,14,2529,LNX-308 LNX-307 LNX-306
+libvirt-docs,docs/auditlog.rst,Audit log,https://libvirt.org/auditlog.html,LGPL-2.1-or-later,link-only,full,7,1342,LNX-308 LNX-314 LNX-204
+libvirt-docs,docs/auth.rst,Connection authentication,https://libvirt.org/auth.html,LGPL-2.1-or-later,link-only,full,6,1870,LNX-308 LNX-314 LNX-102
+libvirt-docs,docs/best-practices.rst,Best practices,https://libvirt.org/best-practices.html,LGPL-2.1-or-later,link-only,full,1,278,LNX-330 LNX-308
+libvirt-docs,docs/bindings.rst,Bindings for other languages and integration API modules,https://libvirt.org/bindings.html,LGPL-2.1-or-later,link-only,full,1,329,LNX-308
+libvirt-docs,docs/bugs.rst,Bug reporting,https://libvirt.org/bugs.html,LGPL-2.1-or-later,link-only,full,7,913,LNX-308 LNX-330
+libvirt-docs,docs/cgroups.rst,Control Groups Resource Management,https://libvirt.org/cgroups.html,LGPL-2.1-or-later,link-only,full,14,1421,LNX-308 LNX-102 LNX-307
+libvirt-docs,docs/ci-dashboard.rst,GitLab CI Dashboard,https://libvirt.org/ci-dashboard.html,LGPL-2.1-or-later,link-only,full,8,727,LNX-203 LNX-308
+libvirt-docs,docs/ci-runners.rst,GitLab CI Custom (Specific) Runners,https://libvirt.org/ci-runners.html,LGPL-2.1-or-later,link-only,full,4,673,LNX-203 LNX-308
+libvirt-docs,docs/ci.rst,Libvirt Continuous Integration,https://libvirt.org/ci.html,LGPL-2.1-or-later,link-only,full,7,330,LNX-308
+libvirt-docs,docs/clangd.rst,Using Clangd with Libvirt,https://libvirt.org/clangd.html,LGPL-2.1-or-later,link-only,full,1,376,LNX-308 LNX-220
+libvirt-docs,docs/coding-style.rst,Coding style,https://libvirt.org/coding-style.html,LGPL-2.1-or-later,link-only,full,22,4367,LNX-308 LNX-320 LNX-203
+libvirt-docs,docs/committer-guidelines.rst,Committer guidelines,https://libvirt.org/committer-guidelines.html,LGPL-2.1-or-later,link-only,full,1,264,LNX-330
+libvirt-docs,docs/compiling.rst,libvirt Installation,https://libvirt.org/compiling.html,LGPL-2.1-or-later,link-only,full,11,911,LNX-308 LNX-220
+libvirt-docs,docs/contact.rst,Contacting the project contributors,https://libvirt.org/contact.html,LGPL-2.1-or-later,link-only,full,4,453,LNX-308 LNX-330
+libvirt-docs,docs/contribute.rst,Contributing to libvirt,https://libvirt.org/contribute.html,LGPL-2.1-or-later,link-only,full,6,828,LNX-308
+libvirt-docs,docs/csharp.rst,C# API bindings,https://libvirt.org/csharp.html,LGPL-2.1-or-later,link-only,full,5,135,LNX-308 LNX-203
+libvirt-docs,docs/daemons.rst,Libvirt Daemons,https://libvirt.org/daemons.html,LGPL-2.1-or-later,link-only,full,22,4530,LNX-308 LNX-102 LNX-320
+libvirt-docs,docs/dbus.rst,D-Bus API bindings,https://libvirt.org/dbus.html,LGPL-2.1-or-later,link-only,full,4,318,LNX-220 LNX-308 LNX-203
+libvirt-docs,docs/docs.rst,Documentation,https://libvirt.org/docs.html,LGPL-2.1-or-later,link-only,full,4,712,LNX-308
+libvirt-docs,docs/downloads.rst,Downloads,https://libvirt.org/downloads.html,LGPL-2.1-or-later,link-only,full,13,1810,LNX-308 LNX-203 LNX-104
+libvirt-docs,docs/drivers.rst,Internal drivers,https://libvirt.org/drivers.html,LGPL-2.1-or-later,link-only,full,2,146,LNX-308
+libvirt-docs,docs/drvbhyve.rst,Bhyve driver,https://libvirt.org/drvbhyve.html,LGPL-2.1-or-later,link-only,full,37,3507,LNX-308 LNX-331 LNX-102
+libvirt-docs,docs/drvch.rst,Cloud Hypervisor driver,https://libvirt.org/drvch.html,LGPL-2.1-or-later,link-only,full,3,321,LNX-308
+libvirt-docs,docs/drvesx.rst,VMware ESX hypervisor driver,https://libvirt.org/drvesx.html,LGPL-2.1-or-later,link-only,full,25,3652,LNX-308 LNX-204
+libvirt-docs,docs/drvhyperv.rst,Microsoft Hyper-V hypervisor driver,https://libvirt.org/drvhyperv.html,LGPL-2.1-or-later,link-only,full,6,439,LNX-308 LNX-302
+libvirt-docs,docs/drvlxc.rst,LXC container driver,https://libvirt.org/drvlxc.html,LGPL-2.1-or-later,link-only,full,34,3725,LNX-308 LNX-310 LNX-101
+libvirt-docs,docs/drvnetwork.rst,Network driver,https://libvirt.org/drvnetwork.html,LGPL-2.1-or-later,link-only,full,3,61,LNX-308
+libvirt-docs,docs/drvnodedev.rst,Host device management,https://libvirt.org/drvnodedev.html,LGPL-2.1-or-later,link-only,full,9,1757,LNX-308 LNX-331 LNX-315
+libvirt-docs,docs/drvopenvz.rst,OpenVZ container driver,https://libvirt.org/drvopenvz.html,LGPL-2.1-or-later,link-only,full,7,469,LNX-310 LNX-308
+libvirt-docs,docs/drvqemu.rst,QEMU/KVM/HVF hypervisor driver,https://libvirt.org/drvqemu.html,LGPL-2.1-or-later,link-only,full,28,5523,LNX-308
+libvirt-docs,docs/drvsecret.rst,Secret information management,https://libvirt.org/drvsecret.html,LGPL-2.1-or-later,link-only,full,4,331,LNX-313
+libvirt-docs,docs/drvtest.rst,"Test ""mock"" driver",https://libvirt.org/drvtest.html,LGPL-2.1-or-later,link-only,full,2,98,LNX-304 LNX-308
+libvirt-docs,docs/drvvbox.rst,VirtualBox hypervisor driver,https://libvirt.org/drvvbox.html,LGPL-2.1-or-later,link-only,full,5,524,LNX-308 LNX-315
+libvirt-docs,docs/drvvirtuozzo.rst,Virtuozzo driver,https://libvirt.org/drvvirtuozzo.html,LGPL-2.1-or-later,link-only,full,4,188,LNX-308
+libvirt-docs,docs/drvvmware.rst,VMware Workstation / Player / Fusion hypervisors driver,https://libvirt.org/drvvmware.html,LGPL-2.1-or-later,link-only,full,4,245,LNX-308
+libvirt-docs,docs/drvxen.rst,libxl hypervisor driver for Xen,https://libvirt.org/drvxen.html,LGPL-2.1-or-later,link-only,full,15,1343,LNX-308 LNX-331 LNX-306
+libvirt-docs,docs/errors.rst,Handling of errors,https://libvirt.org/errors.html,LGPL-2.1-or-later,link-only,full,1,709,LNX-308
+libvirt-docs,docs/firewall.rst,Firewall and network filtering in libvirt,https://libvirt.org/firewall.html,LGPL-2.1-or-later,link-only,full,5,3572,LNX-308 LNX-201
+libvirt-docs,docs/format.rst,XML Format,https://libvirt.org/format.html,LGPL-2.1-or-later,link-only,full,2,175,LNX-308 LNX-101
+libvirt-docs,docs/formatbackup.rst,Backup XML format,https://libvirt.org/formatbackup.html,LGPL-2.1-or-later,link-only,full,4,1310,LNX-103 LNX-308
+libvirt-docs,docs/formatcaps.rst,Driver capabilities XML format,https://libvirt.org/formatcaps.html,LGPL-2.1-or-later,link-only,full,6,2312,LNX-308 LNX-320
+libvirt-docs,docs/formatcheckpoint.rst,Checkpoint XML format,https://libvirt.org/formatcheckpoint.html,LGPL-2.1-or-later,link-only,full,4,997,LNX-308 LNX-103
+libvirt-docs,docs/formatdomain.rst,Domain XML format,https://libvirt.org/formatdomain.html,LGPL-2.1-or-later,link-only,full,71,63660,LNX-308 LNX-103 LNX-315
+libvirt-docs,docs/formatdomaincaps.rst,Domain capabilities XML format,https://libvirt.org/formatdomaincaps.html,LGPL-2.1-or-later,link-only,full,11,3584,LNX-308 LNX-320
+libvirt-docs,docs/formatnetwork.rst,Network XML format,https://libvirt.org/formatnetwork.html,LGPL-2.1-or-later,link-only,full,20,8457,LNX-201 LNX-308 LNX-202
+libvirt-docs,docs/formatnetworkport.rst,Network port XML format,https://libvirt.org/formatnetworkport.html,LGPL-2.1-or-later,link-only,full,6,804,LNX-201 LNX-308
+libvirt-docs,docs/formatnode.rst,Node devices XML format,https://libvirt.org/formatnode.html,LGPL-2.1-or-later,link-only,full,8,2786,LNX-311 LNX-308 LNX-331
+libvirt-docs,docs/formatnwfilter.rst,Network Filters,https://libvirt.org/formatnwfilter.html,LGPL-2.1-or-later,link-only,full,24,8909,LNX-201 LNX-308 LNX-101
+libvirt-docs,docs/formatsecret.rst,Secret XML format,https://libvirt.org/formatsecret.html,LGPL-2.1-or-later,link-only,full,9,1684,LNX-313 LNX-308 LNX-103
+libvirt-docs,docs/formatsnapshot.rst,Snapshot XML format,https://libvirt.org/formatsnapshot.html,LGPL-2.1-or-later,link-only,full,5,2088,LNX-308 LNX-103
+libvirt-docs,docs/formatstorage.rst,Storage pool and volume XML format,https://libvirt.org/formatstorage.html,LGPL-2.1-or-later,link-only,full,20,5379,LNX-308 LNX-103 LNX-102
+libvirt-docs,docs/formatstoragecaps.rst,Storage Pool Capabilities XML format,https://libvirt.org/formatstoragecaps.html,LGPL-2.1-or-later,link-only,full,4,269,LNX-308 LNX-320
+libvirt-docs,docs/formatstorageencryption.rst,Storage volume encryption XML format,https://libvirt.org/formatstorageencryption.html,LGPL-2.1-or-later,link-only,full,8,980,LNX-303 LNX-308 LNX-103
+libvirt-docs,docs/glib-adoption.rst,Adoption of GLib APIs,https://libvirt.org/glib-adoption.html,LGPL-2.1-or-later,link-only,full,1,167,LNX-308
+libvirt-docs,docs/goals.rst,Terminology and goals,https://libvirt.org/goals.html,LGPL-2.1-or-later,link-only,full,1,476,LNX-308
+libvirt-docs,docs/golang.rst,Go Language bindings,https://libvirt.org/golang.html,LGPL-2.1-or-later,link-only,full,3,95,LNX-308
+libvirt-docs,docs/governance.rst,Project governance,https://libvirt.org/governance.html,LGPL-2.1-or-later,link-only,full,8,1965,LNX-308 LNX-330
+libvirt-docs,docs/hacking.rst,Contributing,https://libvirt.org/hacking.html,LGPL-2.1-or-later,link-only,full,8,976,LNX-308 LNX-330
+libvirt-docs,docs/hooks.rst,Hooks for specific system management,https://libvirt.org/hooks.html,LGPL-2.1-or-later,link-only,full,13,3134,LNX-308
+libvirt-docs,docs/index.rst,The virtualization API,https://libvirt.org/.html,LGPL-2.1-or-later,link-only,full,4,305,LNX-308
+libvirt-docs,docs/issue-handling.rst,Handling of gitlab issues,https://libvirt.org/issue-handling.html,LGPL-2.1-or-later,link-only,full,15,1053,LNX-203 LNX-308
+libvirt-docs,docs/kbase/backing_chains.rst,Disk image chains,https://libvirt.org/kbase/backing_chains.html,LGPL-2.1-or-later,link-only,full,10,1172,LNX-308 LNX-306 LNX-103
+libvirt-docs,docs/kbase/debuglogs.rst,Debug Logs,https://libvirt.org/kbase/debuglogs.html,LGPL-2.1-or-later,link-only,full,20,1970,LNX-308
+libvirt-docs,docs/kbase/domainstatecapture.rst,Domain state capture using Libvirt,https://libvirt.org/kbase/domainstatecapture.html,LGPL-2.1-or-later,link-only,full,6,2192,LNX-308 LNX-103
+libvirt-docs,docs/kbase/failed_connection_after_install.rst,Libvirt does not work after installation,https://libvirt.org/kbase/failed_connection_after_install.html,LGPL-2.1-or-later,link-only,full,5,292,LNX-308
+libvirt-docs,docs/kbase/index.rst,Knowledge base,https://libvirt.org/kbase.html,LGPL-2.1-or-later,link-only,full,4,526,LNX-308
+libvirt-docs,docs/kbase/internals/command.rst,Spawning processes / commands from libvirt drivers,https://libvirt.org/kbase/internals/command.html,LGPL-2.1-or-later,link-only,full,17,2210,LNX-308 LNX-320 LNX-102
+libvirt-docs,docs/kbase/internals/eventloop.rst,Libvirt's event loop,https://libvirt.org/kbase/internals/eventloop.html,LGPL-2.1-or-later,link-only,full,4,525,LNX-308 LNX-203
+libvirt-docs,docs/kbase/internals/incremental-backup.rst,Internals of incremental backup handling in qemu,https://libvirt.org/kbase/internals/incremental-backup.html,LGPL-2.1-or-later,link-only,full,10,1412,LNX-308 LNX-103 LNX-101
+libvirt-docs,docs/kbase/internals/locking.rst,Resource Lock Manager,https://libvirt.org/kbase/internals/locking.html,LGPL-2.1-or-later,link-only,full,9,717,LNX-308
+libvirt-docs,docs/kbase/internals/migration.rst,Libvirt migration internals,https://libvirt.org/kbase/internals/migration.html,LGPL-2.1-or-later,link-only,full,7,909,LNX-308
+libvirt-docs,docs/kbase/internals/overview.rst,libvirt API call overview,https://libvirt.org/kbase/internals/overview.html,LGPL-2.1-or-later,link-only,full,1,495,LNX-308
+libvirt-docs,docs/kbase/internals/qemu-event-handlers.rst,QEMU event handlers,https://libvirt.org/kbase/internals/qemu-event-handlers.html,LGPL-2.1-or-later,link-only,full,2,466,LNX-308
+libvirt-docs,docs/kbase/internals/qemu-migration.rst,QEMU Migration Phases,https://libvirt.org/kbase/internals/qemu-migration.html,LGPL-2.1-or-later,link-only,full,4,390,LNX-308
+libvirt-docs,docs/kbase/internals/qemu-threads.rst,QEMU Driver Threading: The Rules,https://libvirt.org/kbase/internals/qemu-threads.html,LGPL-2.1-or-later,link-only,full,4,1215,LNX-308
+libvirt-docs,docs/kbase/internals/rpc.rst,libvirt RPC infrastructure,https://libvirt.org/kbase/internals/rpc.html,LGPL-2.1-or-later,link-only,full,15,4033,LNX-308 LNX-303 LNX-201
+libvirt-docs,docs/kbase/kvm-realtime.rst,KVM Real Time Guest Config,https://libvirt.org/kbase/kvm-realtime.html,LGPL-2.1-or-later,link-only,full,6,1242,LNX-308
+libvirt-docs,docs/kbase/launch_security_sev.rst,Launch security with AMD SEV,https://libvirt.org/kbase/launch_security_sev.html,LGPL-2.1-or-later,link-only,full,15,2705,LNX-308 LNX-102 LNX-303
+libvirt-docs,docs/kbase/live_full_disk_backup.rst,Efficient live full disk backup,https://libvirt.org/kbase/live_full_disk_backup.html,LGPL-2.1-or-later,link-only,full,7,1075,LNX-103 LNX-308
+libvirt-docs,docs/kbase/locking-lockd.rst,"Virtual machine lock manager, virtlockd plugin",https://libvirt.org/kbase/locking-lockd.html,LGPL-2.1-or-later,link-only,full,5,782,LNX-308 LNX-103
+libvirt-docs,docs/kbase/locking-sanlock.rst,"Virtual machine lock manager, sanlock plugin",https://libvirt.org/kbase/locking-sanlock.html,LGPL-2.1-or-later,link-only,full,6,1033,LNX-308
+libvirt-docs,docs/kbase/locking.rst,Virtual machine lock manager,https://libvirt.org/kbase/locking.html,LGPL-2.1-or-later,link-only,full,2,209,LNX-308
+libvirt-docs,docs/kbase/memorydevices.rst,Memory devices,https://libvirt.org/kbase/memorydevices.html,LGPL-2.1-or-later,link-only,full,3,663,LNX-308
+libvirt-docs,docs/kbase/merging_disk_image_chains.rst,Merging disk image image chains,https://libvirt.org/kbase/merging_disk_image_chains.html,LGPL-2.1-or-later,link-only,full,5,891,LNX-103 LNX-306 LNX-308
+libvirt-docs,docs/kbase/qemu-core-dump.rst,Capturing core dumps for QEMU,https://libvirt.org/kbase/qemu-core-dump.html,LGPL-2.1-or-later,link-only,full,4,754,LNX-308 LNX-307
+libvirt-docs,docs/kbase/qemu-passthrough-security.rst,QEMU command-line passthrough,https://libvirt.org/kbase/qemu-passthrough-security.html,LGPL-2.1-or-later,link-only,full,7,1023,LNX-308 LNX-310
+libvirt-docs,docs/kbase/rpm-deployment.rst,RPM Deployment Guidance,https://libvirt.org/kbase/rpm-deployment.html,LGPL-2.1-or-later,link-only,full,9,2292,LNX-308 LNX-104
+libvirt-docs,docs/kbase/s390_protected_virt.rst,Protected Virtualization on s390,https://libvirt.org/kbase/s390_protected_virt.html,LGPL-2.1-or-later,link-only,full,8,1075,LNX-308 LNX-315
+libvirt-docs,docs/kbase/secureboot.rst,Secure Boot,https://libvirt.org/kbase/secureboot.html,LGPL-2.1-or-later,link-only,full,5,767,LNX-308 LNX-303
+libvirt-docs,docs/kbase/secureusage.rst,Secure Usage of Libvirt,https://libvirt.org/kbase/secureusage.html,LGPL-2.1-or-later,link-only,full,8,950,LNX-308 LNX-103 LNX-315
+libvirt-docs,docs/kbase/snapshots.rst,Snapshots,https://libvirt.org/kbase/snapshots.html,LGPL-2.1-or-later,link-only,full,3,212,LNX-103 LNX-308
+libvirt-docs,docs/kbase/systemtap.rst,Systemtap of Libvirt,https://libvirt.org/kbase/systemtap.html,LGPL-2.1-or-later,link-only,full,6,414,LNX-308
+libvirt-docs,docs/kbase/tlscerts.rst,TLS x509 certificate setup,https://libvirt.org/kbase/tlscerts.html,LGPL-2.1-or-later,link-only,full,11,2356,LNX-204 LNX-308 LNX-303
+libvirt-docs,docs/kbase/virtiofs.rst,Sharing files with Virtiofs,https://libvirt.org/kbase/virtiofs.html,LGPL-2.1-or-later,link-only,full,7,794,LNX-308 LNX-332
+libvirt-docs,docs/libvirt-go-xml.rst,Obsolete libvirt Go XML parsing API (no Go modules),https://libvirt.org/libvirt-go-xml.html,LGPL-2.1-or-later,link-only,full,2,178,LNX-308
+libvirt-docs,docs/libvirt-go.rst,Obsolete libvirt Go Language API (no Go modules),https://libvirt.org/libvirt-go.html,LGPL-2.1-or-later,link-only,full,2,202,LNX-308
+libvirt-docs,docs/logging.rst,Logging in the library and the daemon,https://libvirt.org/logging.html,LGPL-2.1-or-later,link-only,full,8,1272,LNX-307 LNX-308 LNX-102
+libvirt-docs,docs/macos.rst,macOS support,https://libvirt.org/macos.html,LGPL-2.1-or-later,link-only,full,4,109,LNX-308
+libvirt-docs,docs/manpages/index.rst,Libvirt Manual Pages,https://libvirt.org/manpages.html,LGPL-2.1-or-later,link-only,full,5,435,LNX-308
+libvirt-docs,docs/manpages/libvirt-guests.rst,libvirt-guests,https://libvirt.org/manpages/libvirt-guests.html,LGPL-2.1-or-later,link-only,full,9,674,LNX-308
+libvirt-docs,docs/manpages/libvirtd.rst,libvirtd,https://libvirt.org/manpages/libvirtd.html,LGPL-2.1-or-later,link-only,full,14,1150,LNX-308 LNX-102 LNX-320
+libvirt-docs,docs/manpages/virsh.rst,virsh,https://libvirt.org/manpages/virsh.html,LGPL-2.1-or-later,link-only,full,58,47746,LNX-308 LNX-103 LNX-201
+libvirt-docs,docs/manpages/virt-admin.rst,virt-admin,https://libvirt.org/manpages/virt-admin.html,LGPL-2.1-or-later,link-only,full,15,2254,LNX-308 LNX-101
+libvirt-docs,docs/manpages/virt-host-validate.rst,virt-host-validate,https://libvirt.org/manpages/virt-host-validate.html,LGPL-2.1-or-later,link-only,full,11,239,LNX-308
+libvirt-docs,docs/manpages/virt-login-shell.rst,virt-login-shell,https://libvirt.org/manpages/virt-login-shell.html,LGPL-2.1-or-later,link-only,full,12,469,LNX-101 LNX-102 LNX-310
+libvirt-docs,docs/manpages/virt-pki-query-dn.rst,virt-pki-query-dn,https://libvirt.org/manpages/virt-pki-query-dn.html,LGPL-2.1-or-later,link-only,full,11,185,LNX-303 LNX-308
+libvirt-docs,docs/manpages/virt-pki-validate.rst,virt-pki-validate,https://libvirt.org/manpages/virt-pki-validate.html,LGPL-2.1-or-later,link-only,full,11,254,LNX-303 LNX-308
+libvirt-docs,docs/manpages/virt-qemu-qmp-proxy.rst,virt-qemu-qmp-proxy,https://libvirt.org/manpages/virt-qemu-qmp-proxy.html,LGPL-2.1-or-later,link-only,full,11,410,LNX-308
+libvirt-docs,docs/manpages/virt-qemu-run.rst,virt-qemu-run,https://libvirt.org/manpages/virt-qemu-run.html,LGPL-2.1-or-later,link-only,full,11,445,LNX-308 LNX-313
+libvirt-docs,docs/manpages/virt-qemu-sev-validate.rst,virt-qemu-sev-validate,https://libvirt.org/manpages/virt-qemu-sev-validate.html,LGPL-2.1-or-later,link-only,full,13,3326,LNX-308
+libvirt-docs,docs/manpages/virt-sanlock-cleanup.rst,virt-sanlock-cleanup,https://libvirt.org/manpages/virt-sanlock-cleanup.html,LGPL-2.1-or-later,link-only,full,10,196,LNX-308
+libvirt-docs,docs/manpages/virt-ssh-helper.rst,virt-ssh-helper,https://libvirt.org/manpages/virt-ssh-helper.html,LGPL-2.1-or-later,link-only,full,11,190,LNX-308 LNX-201
+libvirt-docs,docs/manpages/virt-xml-validate.rst,virt-xml-validate,https://libvirt.org/manpages/virt-xml-validate.html,LGPL-2.1-or-later,link-only,full,11,436,LNX-308
+libvirt-docs,docs/manpages/virtbhyved.rst,virtbhyved,https://libvirt.org/manpages/virtbhyved.html,LGPL-2.1-or-later,link-only,full,13,542,LNX-308
+libvirt-docs,docs/manpages/virtinterfaced.rst,virtinterfaced,https://libvirt.org/manpages/virtinterfaced.html,LGPL-2.1-or-later,link-only,full,14,614,LNX-308 LNX-201 LNX-320
+libvirt-docs,docs/manpages/virtlockd.rst,virtlockd,https://libvirt.org/manpages/virtlockd.html,LGPL-2.1-or-later,link-only,full,13,504,LNX-308
+libvirt-docs,docs/manpages/virtlogd.rst,virtlogd,https://libvirt.org/manpages/virtlogd.html,LGPL-2.1-or-later,link-only,full,13,498,LNX-308
+libvirt-docs,docs/manpages/virtlxcd.rst,virtlxcd,https://libvirt.org/manpages/virtlxcd.html,LGPL-2.1-or-later,link-only,full,14,618,LNX-308
+libvirt-docs,docs/manpages/virtnetworkd.rst,virtnetworkd,https://libvirt.org/manpages/virtnetworkd.html,LGPL-2.1-or-later,link-only,full,14,613,LNX-308 LNX-320 LNX-102
+libvirt-docs,docs/manpages/virtnodedevd.rst,virtnodedevd,https://libvirt.org/manpages/virtnodedevd.html,LGPL-2.1-or-later,link-only,full,14,624,LNX-308 LNX-320 LNX-102
+libvirt-docs,docs/manpages/virtnwfilterd.rst,virtnwfilterd,https://libvirt.org/manpages/virtnwfilterd.html,LGPL-2.1-or-later,link-only,full,14,613,LNX-308 LNX-320 LNX-102
+libvirt-docs,docs/manpages/virtproxyd.rst,virtproxyd,https://libvirt.org/manpages/virtproxyd.html,LGPL-2.1-or-later,link-only,full,14,794,LNX-308 LNX-102 LNX-303
+libvirt-docs,docs/manpages/virtqemud.rst,virtqemud,https://libvirt.org/manpages/virtqemud.html,LGPL-2.1-or-later,link-only,full,14,786,LNX-308
+libvirt-docs,docs/manpages/virtsecretd.rst,virtsecretd,https://libvirt.org/manpages/virtsecretd.html,LGPL-2.1-or-later,link-only,full,14,629,LNX-308 LNX-313 LNX-320
+libvirt-docs,docs/manpages/virtstoraged.rst,virtstoraged,https://libvirt.org/manpages/virtstoraged.html,LGPL-2.1-or-later,link-only,full,14,624,LNX-308
+libvirt-docs,docs/manpages/virtvboxd.rst,virtvboxd,https://libvirt.org/manpages/virtvboxd.html,LGPL-2.1-or-later,link-only,full,14,611,LNX-308 LNX-315 LNX-320
+libvirt-docs,docs/manpages/virtvzd.rst,virtvzd,https://libvirt.org/manpages/virtvzd.html,LGPL-2.1-or-later,link-only,full,14,625,LNX-308 LNX-320 LNX-102
+libvirt-docs,docs/manpages/virtxend.rst,virtxend,https://libvirt.org/manpages/virtxend.html,LGPL-2.1-or-later,link-only,full,14,619,LNX-308 LNX-320 LNX-102
+libvirt-docs,docs/migration.rst,Guest migration,https://libvirt.org/migration.html,LGPL-2.1-or-later,link-only,full,21,3079,LNX-308 LNX-201 LNX-320
+libvirt-docs,docs/newreposetup.rst,Repository infrastructure setup,https://libvirt.org/newreposetup.html,LGPL-2.1-or-later,link-only,full,3,337,LNX-308 LNX-203 LNX-104
+libvirt-docs,docs/nss.rst,Libvirt NSS module,https://libvirt.org/nss.html,LGPL-2.1-or-later,link-only,full,9,681,LNX-308
+libvirt-docs,docs/pci-addresses.rst,PCI addresses in domain XML and guest OS,https://libvirt.org/pci-addresses.html,LGPL-2.1-or-later,link-only,full,8,1468,LNX-331 LNX-308 LNX-202
+libvirt-docs,docs/pci-hotplug.rst,PCI topology and hotplug,https://libvirt.org/pci-hotplug.html,LGPL-2.1-or-later,link-only,full,8,830,LNX-308 LNX-331
+libvirt-docs,docs/platforms.rst,Supported host platforms,https://libvirt.org/platforms.html,LGPL-2.1-or-later,link-only,full,5,521,LNX-308
+libvirt-docs,docs/programming-languages.rst,Programming languages,https://libvirt.org/programming-languages.html,LGPL-2.1-or-later,link-only,full,1,117,LNX-308
+libvirt-docs,docs/python.rst,Python API bindings,https://libvirt.org/python.html,LGPL-2.1-or-later,link-only,full,1,370,LNX-308
+libvirt-docs,docs/remote.rst,Remote support,https://libvirt.org/remote.html,LGPL-2.1-or-later,link-only,full,5,1241,LNX-308 LNX-201 LNX-204
+libvirt-docs,docs/secretencryption.rst,Secret storage and encryption,https://libvirt.org/secretencryption.html,LGPL-2.1-or-later,link-only,full,7,539,LNX-313 LNX-102 LNX-303
+libvirt-docs,docs/securityprocess.rst,Security Process,https://libvirt.org/securityprocess.html,LGPL-2.1-or-later,link-only,full,6,586,LNX-308 LNX-330 LNX-204
+libvirt-docs,docs/ssh-proxy.rst,Libvirt SSH proxy,https://libvirt.org/ssh-proxy.html,LGPL-2.1-or-later,link-only,full,3,397,LNX-308 LNX-201 LNX-102
+libvirt-docs,docs/storage.rst,Storage Management,https://libvirt.org/storage.html,LGPL-2.1-or-later,link-only,full,64,3161,LNX-308 LNX-103 LNX-302
+libvirt-docs,docs/strategy.rst,Project Strategy,https://libvirt.org/strategy.html,LGPL-2.1-or-later,link-only,full,2,831,LNX-308 LNX-101 LNX-220
+libvirt-docs,docs/styleguide.rst,Documentation style guide,https://libvirt.org/styleguide.html,LGPL-2.1-or-later,link-only,full,7,344,LNX-308
+libvirt-docs,docs/submitting-patches.rst,Submitting patches,https://libvirt.org/submitting-patches.html,LGPL-2.1-or-later,link-only,full,3,850,LNX-330
+libvirt-docs,docs/support.rst,Support guarantees,https://libvirt.org/support.html,LGPL-2.1-or-later,link-only,full,9,1751,LNX-308
+libvirt-docs,docs/testapi.rst,libvirt-test-API: Python based test suite,https://libvirt.org/testapi.html,LGPL-2.1-or-later,link-only,full,1,205,LNX-308
+libvirt-docs,docs/testing.rst,Testing,https://libvirt.org/testing.html,LGPL-2.1-or-later,link-only,full,10,969,LNX-310 LNX-308 LNX-102
+libvirt-docs,docs/testtck.rst,libvirt TCK : Technology Compatibility Kit,https://libvirt.org/testtck.html,LGPL-2.1-or-later,link-only,full,5,1092,LNX-308
+libvirt-docs,docs/uri.rst,Connection URIs,https://libvirt.org/uri.html,LGPL-2.1-or-later,link-only,full,13,1894,LNX-308 LNX-201 LNX-204
+libvirt-docs,docs/windows.rst,Windows support,https://libvirt.org/windows.html,LGPL-2.1-or-later,link-only,full,10,574,LNX-308 LNX-302 LNX-204
+virtualbox-docs,doc/manual/en_US/SDKRef.xml,Introduction,https://www.virtualbox.org/manual/SDKRef.html,GPL-3.0-only,link-only,full,98,28283,LNX-315 LNX-312 LNX-101
+virtualbox-docs,doc/manual/en_US/man_VBoxHeadless.xml,VBoxHeadless(1),https://www.virtualbox.org/manual/man_VBoxHeadless.html,GPL-3.0-only,link-only,full,7,515,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-adoptstate.xml,VBoxManage-adoptstate(1),https://www.virtualbox.org/manual/man_VBoxManage-adoptstate.html,GPL-3.0-only,link-only,full,6,176,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-bandwidthctl.xml,VBoxManage-bandwidthctl(1),https://www.virtualbox.org/manual/man_VBoxManage-bandwidthctl.html,GPL-3.0-only,link-only,full,9,644,LNX-315 LNX-102
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-checkmediumpwd.xml,VBoxManage-checkmediumpwd(1),https://www.virtualbox.org/manual/man_VBoxManage-checkmediumpwd.html,GPL-3.0-only,link-only,full,6,172,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-clipboard.xml,VBoxManage-clipboard(1),https://www.virtualbox.org/manual/man_VBoxManage-clipboard.html,GPL-3.0-only,link-only,full,17,2118,LNX-315 LNX-308
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-clonemedium.xml,VBoxManage-clonemedium(1),https://www.virtualbox.org/manual/man_VBoxManage-clonemedium.html,GPL-3.0-only,link-only,full,6,517,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-clonevm.xml,VBoxManage-clonevm(1),https://www.virtualbox.org/manual/man_VBoxManage-clonevm.html,GPL-3.0-only,link-only,full,7,668,LNX-315 LNX-103
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-closemedium.xml,VBoxManage-closemedium(1),https://www.virtualbox.org/manual/man_VBoxManage-closemedium.html,GPL-3.0-only,link-only,full,5,175,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-cloud.xml,VBoxManage-cloud(1),https://www.virtualbox.org/manual/man_VBoxManage-cloud.html,GPL-3.0-only,link-only,full,27,1849,LNX-315 LNX-306 LNX-201
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-cloudprofile.xml,VBoxManage-cloudprofile(1),https://www.virtualbox.org/manual/man_VBoxManage-cloudprofile.html,GPL-3.0-only,link-only,full,9,327,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-common.xml,VBoxManage(1),https://www.virtualbox.org/manual/man_VBoxManage-common.html,GPL-3.0-only,link-only,full,7,712,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-controlvm.xml,VBoxManage-controlvm(1),https://www.virtualbox.org/manual/man_VBoxManage-controlvm.html,GPL-3.0-only,link-only,full,57,5567,LNX-315 LNX-308 LNX-201
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-convertfromraw.xml,VBoxManage-convertfromraw(1),https://www.virtualbox.org/manual/man_VBoxManage-convertfromraw.html,GPL-3.0-only,link-only,full,7,660,LNX-315 LNX-103 LNX-306
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-createmedium.xml,VBoxManage-createmedium(1),https://www.virtualbox.org/manual/man_VBoxManage-createmedium.html,GPL-3.0-only,link-only,full,5,510,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-createvm.xml,VBoxManage-createvm(1),https://www.virtualbox.org/manual/man_VBoxManage-createvm.html,GPL-3.0-only,link-only,full,7,588,LNX-315 LNX-308
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-debugvm.xml,VBoxManage-debugvm(1),https://www.virtualbox.org/manual/man_VBoxManage-debugvm.html,GPL-3.0-only,link-only,full,20,1675,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-dhcpserver-dhcpoptions.xml,man_VBoxManage-dhcpserver-dhcpoptions,https://www.virtualbox.org/manual/man_VBoxManage-dhcpserver-dhcpoptions.html,GPL-3.0-only,link-only,full,1,850,LNX-201
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-dhcpserver.xml,VBoxManage-dhcpserver(1),https://www.virtualbox.org/manual/man_VBoxManage-dhcpserver.html,GPL-3.0-only,link-only,full,14,1899,LNX-315 LNX-201
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-discardstate.xml,VBoxManage-discardstate(1),https://www.virtualbox.org/manual/man_VBoxManage-discardstate.html,GPL-3.0-only,link-only,full,6,129,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-encryptmedium.xml,VBoxManage-encryptmedium(1),https://www.virtualbox.org/manual/man_VBoxManage-encryptmedium.html,GPL-3.0-only,link-only,full,5,435,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-encryptvm.xml,VBoxManage-encryptvm(1),https://www.virtualbox.org/manual/man_VBoxManage-encryptvm.html,GPL-3.0-only,link-only,full,10,438,LNX-315 LNX-204 LNX-308
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-export.xml,VBoxManage-export(1),https://www.virtualbox.org/manual/man_VBoxManage-export.html,GPL-3.0-only,link-only,full,7,976,LNX-315 LNX-308 LNX-310
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-extpack.xml,VBoxManage-extpack(1),https://www.virtualbox.org/manual/man_VBoxManage-extpack.html,GPL-3.0-only,link-only,full,8,324,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-getextradata.xml,VBoxManage-getextradata(1),https://www.virtualbox.org/manual/man_VBoxManage-getextradata.html,GPL-3.0-only,link-only,full,6,238,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-guestcontrol.xml,VBoxManage-guestcontrol(1),https://www.virtualbox.org/manual/man_VBoxManage-guestcontrol.html,GPL-3.0-only,link-only,full,26,3719,LNX-315 LNX-103
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-guestproperty.xml,VBoxManage-guestproperty(1),https://www.virtualbox.org/manual/man_VBoxManage-guestproperty.html,GPL-3.0-only,link-only,full,11,721,LNX-315 LNX-308
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-hostonlyif.xml,VBoxManage-hostonlyif(1),https://www.virtualbox.org/manual/man_VBoxManage-hostonlyif.html,GPL-3.0-only,link-only,full,8,462,LNX-315 LNX-201
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-hostonlynet.xml,VBoxManage-hostonlynet(1),https://www.virtualbox.org/manual/man_VBoxManage-hostonlynet.html,GPL-3.0-only,link-only,full,8,256,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-import.xml,VBoxManage-import(1),https://www.virtualbox.org/manual/man_VBoxManage-import.html,GPL-3.0-only,link-only,full,8,1580,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-list.xml,VBoxManage-list(1),https://www.virtualbox.org/manual/man_VBoxManage-list.html,GPL-3.0-only,link-only,full,37,1450,LNX-315 LNX-201 LNX-306
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-mediumio.xml,VBoxManage-mediumio(1),https://www.virtualbox.org/manual/man_VBoxManage-mediumio.html,GPL-3.0-only,link-only,full,8,304,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-mediumproperty.xml,VBoxManage-mediumproperty(1),https://www.virtualbox.org/manual/man_VBoxManage-mediumproperty.html,GPL-3.0-only,link-only,full,8,302,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-metrics.xml,VBoxManage-metrics(1),https://www.virtualbox.org/manual/man_VBoxManage-metrics.html,GPL-3.0-only,link-only,full,13,1145,LNX-315 LNX-307 LNX-305
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-modifymedium.xml,VBoxManage-modifymedium(1),https://www.virtualbox.org/manual/man_VBoxManage-modifymedium.html,GPL-3.0-only,link-only,full,6,698,LNX-315 LNX-103
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-modifynvram.xml,VBoxManage-modifynvram(1),https://www.virtualbox.org/manual/man_VBoxManage-modifynvram.html,GPL-3.0-only,link-only,full,14,449,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-modifyvm.xml,VBoxManage-modifyvm(1),https://www.virtualbox.org/manual/man_VBoxManage-modifyvm.html,GPL-3.0-only,link-only,full,21,7983,LNX-315 LNX-201 LNX-204
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-movevm.xml,VBoxManage-movevm(1),https://www.virtualbox.org/manual/man_VBoxManage-movevm.html,GPL-3.0-only,link-only,full,5,224,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-natnetwork.xml,VBoxManage-natnetwork(1),https://www.virtualbox.org/manual/man_VBoxManage-natnetwork.html,GPL-3.0-only,link-only,full,12,821,LNX-315 LNX-201 LNX-312
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-objtracker.xml,VBoxManage-objtracker(1),https://www.virtualbox.org/manual/man_VBoxManage-objtracker.html,GPL-3.0-only,link-only,full,7,128,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-registervm.xml,VBoxManage-registervm(1),https://www.virtualbox.org/manual/man_VBoxManage-registervm.html,GPL-3.0-only,link-only,full,6,185,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-setextradata.xml,VBoxManage-setextradata(1),https://www.virtualbox.org/manual/man_VBoxManage-setextradata.html,GPL-3.0-only,link-only,full,6,148,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-setproperty.xml,VBoxManage-setproperty(1),https://www.virtualbox.org/manual/man_VBoxManage-setproperty.html,GPL-3.0-only,link-only,full,6,503,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-sharedfolder.xml,VBoxManage-sharedfolder(1),https://www.virtualbox.org/manual/man_VBoxManage-sharedfolder.html,GPL-3.0-only,link-only,full,8,754,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-showmediuminfo.xml,VBoxManage-showmediuminfo(1),https://www.virtualbox.org/manual/man_VBoxManage-showmediuminfo.html,GPL-3.0-only,link-only,full,6,200,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-showvminfo.xml,VBoxManage-showvminfo(1),https://www.virtualbox.org/manual/man_VBoxManage-showvminfo.html,GPL-3.0-only,link-only,full,8,503,LNX-315 LNX-308
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-signova.xml,VBoxManage-signova(1),https://www.virtualbox.org/manual/man_VBoxManage-signova.html,GPL-3.0-only,link-only,full,4,308,LNX-315 LNX-204
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-snapshot.xml,VBoxManage-snapshot(1),https://www.virtualbox.org/manual/man_VBoxManage-snapshot.html,GPL-3.0-only,link-only,full,13,863,LNX-315 LNX-103 LNX-308
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-startvm.xml,VBoxManage-startvm(1),https://www.virtualbox.org/manual/man_VBoxManage-startvm.html,GPL-3.0-only,link-only,full,6,348,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-storageattach.xml,VBoxManage-storageattach(1),https://www.virtualbox.org/manual/man_VBoxManage-storageattach.html,GPL-3.0-only,link-only,full,7,1584,LNX-315 LNX-103 LNX-201
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-storagectl.xml,VBoxManage-storagectl(1),https://www.virtualbox.org/manual/man_VBoxManage-storagectl.html,GPL-3.0-only,link-only,full,6,331,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-unattended.xml,VBoxManage-unattended(1),https://www.virtualbox.org/manual/man_VBoxManage-unattended.html,GPL-3.0-only,link-only,full,6,728,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-unregistervm.xml,VBoxManage-unregistervm(1),https://www.virtualbox.org/manual/man_VBoxManage-unregistervm.html,GPL-3.0-only,link-only,full,6,171,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-updatecheck.xml,VBoxManage-updatecheck(1),https://www.virtualbox.org/manual/man_VBoxManage-updatecheck.html,GPL-3.0-only,link-only,full,7,288,LNX-315
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-usbdevsource.xml,vboxmanage-usbdevsource(1),https://www.virtualbox.org/manual/man_VBoxManage-usbdevsource.html,GPL-3.0-only,link-only,full,7,191,LNX-315 LNX-204
+virtualbox-docs,doc/manual/en_US/man_VBoxManage-usbfilter.xml,VBoxManage-usbfilter(1),https://www.virtualbox.org/manual/man_VBoxManage-usbfilter.html,GPL-3.0-only,link-only,full,9,940,LNX-315 LNX-204
+virtualbox-docs,doc/manual/en_US/man_vboximg-mount.xml,vboximg-mount(1),https://www.virtualbox.org/manual/man_vboximg-mount.html,GPL-3.0-only,link-only,full,8,1264,LNX-103 LNX-306
+rust-vmm-community,CONTRIBUTING.md,Contributing to rust-vmm,https://github.com/rust-vmm/community/blob/main/CONTRIBUTING.md,NOASSERTION,link-only,outline,6,0,LNX-332
+rust-vmm-community,INFRASTRUCTURE.md,rust-vmm Infrastructure,https://github.com/rust-vmm/community/blob/main/INFRASTRUCTURE.md,NOASSERTION,link-only,outline,7,0,LNX-332
+rust-vmm-community,MAINTAINERS.md,rust-vmm maintainers,https://github.com/rust-vmm/community/blob/main/MAINTAINERS.md,NOASSERTION,link-only,outline,13,0,LNX-332
+rust-vmm-community,README.md,The rust-vmm Community,https://github.com/rust-vmm/community/blob/main/README.md,NOASSERTION,link-only,outline,17,0,LNX-332
+rust-vmm-community,SECURITY.md,SECURITY,https://github.com/rust-vmm/community/blob/main/SECURITY.md,NOASSERTION,link-only,outline,1,0,LNX-332
+rust-vmm-community,docs/code_coverage.md,Code Covergae,https://github.com/rust-vmm/community/blob/main/docs/code_coverage.md,NOASSERTION,link-only,outline,5,0,LNX-332
+rust-vmm-community,docs/crate_release.md,Crate Release,https://github.com/rust-vmm/community/blob/main/docs/crate_release.md,NOASSERTION,link-only,outline,6,0,LNX-332 LNX-330
+rust-vmm-community,docs/handling_security_vulnerability_disclosures.md,Handling security events in rust-vmm,https://github.com/rust-vmm/community/blob/main/docs/handling_security_vulnerability_disclosures.md,NOASSERTION,link-only,outline,1,0,LNX-332
+rust-vmm-community,docs/readme.md,Development Documentation,https://github.com/rust-vmm/community/blob/main/docs/readme.md,NOASSERTION,link-only,outline,2,0,LNX-332
+rust-vmm-community,docs/setup_new_repo.md,Set Up Repository,https://github.com/rust-vmm/community/blob/main/docs/setup_new_repo.md,NOASSERTION,link-only,outline,5,0,LNX-332
+rust-vmm-community,docs/update-rust-toolchain.md,Update Rust Toolchain,https://github.com/rust-vmm/community/blob/main/docs/update-rust-toolchain.md,NOASSERTION,link-only,outline,1,0,LNX-220 LNX-332
+rust-vmm-community,docs/update-rust-vmm-ci.md,Updating the rust-vmm-ci,https://github.com/rust-vmm/community/blob/main/docs/update-rust-vmm-ci.md,NOASSERTION,link-only,outline,2,0,LNX-332
+cloud-hypervisor-docs,docs/amd_sev_snp.md,AMD SEV-SNP,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/amd_sev_snp.md,CC-BY-4.0,adapt,full,2,251,LNX-315 LNX-308 LNX-332
+cloud-hypervisor-docs,docs/api.md,Cloud Hypervisor API,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/api.md,CC-BY-4.0,adapt,full,9,1941,LNX-332 LNX-308 LNX-220
+cloud-hypervisor-docs,docs/balloon.md,Balloon,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/balloon.md,CC-BY-4.0,adapt,full,6,487,LNX-332
+cloud-hypervisor-docs,docs/building.md,Building Cloud Hypervisor,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/building.md,CC-BY-4.0,adapt,full,5,415,LNX-332 LNX-308 LNX-104
+cloud-hypervisor-docs,docs/coverage.md,Code coverage,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/coverage.md,CC-BY-4.0,adapt,full,6,330,LNX-310
+cloud-hypervisor-docs,docs/cpu.md,CPU,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/cpu.md,CC-BY-4.0,adapt,full,14,1872,LNX-332 LNX-308 LNX-311
+cloud-hypervisor-docs,docs/custom-image.md,How to create a custom Ubuntu image,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/custom-image.md,CC-BY-4.0,adapt,full,6,175,LNX-306 LNX-315
+cloud-hypervisor-docs,docs/debug-port.md,`cloud-hypervisor` debug IO ports,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/debug-port.md,CC-BY-4.0,adapt,full,7,597,LNX-308 LNX-101
+cloud-hypervisor-docs,docs/device_model.md,Device Model,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/device_model.md,CC-BY-4.0,adapt,full,23,1791,LNX-332 LNX-308 LNX-331
+cloud-hypervisor-docs,docs/disk_image_fuzzing.md,Disk image fuzzing,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/disk_image_fuzzing.md,CC-BY-4.0,adapt,full,6,574,LNX-220 LNX-306 LNX-103
+cloud-hypervisor-docs,docs/disk_locking.md,Disk Image Locking,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/disk_locking.md,CC-BY-4.0,adapt,full,5,427,LNX-103 LNX-306 LNX-332
+cloud-hypervisor-docs,docs/event-monitor.md,Event Monitor,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/event-monitor.md,CC-BY-4.0,adapt,full,4,411,LNX-332 LNX-308
+cloud-hypervisor-docs,docs/fs.md,How to use virtio-fs,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/fs.md,CC-BY-4.0,adapt,full,8,457,LNX-308 LNX-332
+cloud-hypervisor-docs,docs/fuzzing.md,Fuzzing in Cloud Hypervisor,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/fuzzing.md,CC-BY-4.0,adapt,full,4,78,LNX-220 LNX-332 LNX-308
+cloud-hypervisor-docs,docs/fw_cfg.md,Firmware Configuration (fw_cfg) Device,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/fw_cfg.md,CC-BY-4.0,adapt,full,7,757,LNX-101 LNX-315
+cloud-hypervisor-docs,docs/gdb.md,GDB Support,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/gdb.md,CC-BY-4.0,adapt,full,1,186,LNX-220
+cloud-hypervisor-docs,docs/generic-vhost-user.md,How to use generic vhost-user devices,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/generic-vhost-user.md,CC-BY-4.0,adapt,full,4,434,LNX-332
+cloud-hypervisor-docs,docs/heap-profiling.md,Heap profiling,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/heap-profiling.md,CC-BY-4.0,adapt,full,3,184,LNX-332
+cloud-hypervisor-docs,docs/hotplug.md,Cloud Hypervisor Hot Plug,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/hotplug.md,CC-BY-4.0,adapt,full,15,1582,LNX-332 LNX-308 LNX-331
+cloud-hypervisor-docs,docs/io_throttling.md,I/O Throttling,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/io_throttling.md,CC-BY-4.0,adapt,full,3,1138,LNX-308 LNX-332
+cloud-hypervisor-docs,docs/iommu.md,Virtual IOMMU,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/iommu.md,CC-BY-4.0,adapt,full,15,2196,LNX-315 LNX-308 LNX-332
+cloud-hypervisor-docs,docs/ivshmem.md,Inter-VM shared memory device,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/ivshmem.md,CC-BY-4.0,adapt,full,4,291,LNX-308 LNX-320
+cloud-hypervisor-docs,docs/landlock.md,Sandboxing using Landlock,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/landlock.md,CC-BY-4.0,adapt,full,8,575,LNX-320 LNX-101
+cloud-hypervisor-docs,docs/live_migration.md,Live Migration,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/live_migration.md,CC-BY-4.0,adapt,full,13,2440,LNX-308 LNX-332 LNX-204
+cloud-hypervisor-docs,docs/logging.md,Logging,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/logging.md,CC-BY-4.0,adapt,full,12,568,LNX-332
+cloud-hypervisor-docs,docs/macvtap-bridge.md,Using MACVTAP to Bridge onto Host Network,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/macvtap-bridge.md,CC-BY-4.0,adapt,full,1,249,LNX-201 LNX-202 LNX-102
+cloud-hypervisor-docs,docs/memory.md,Memory,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/memory.md,CC-BY-4.0,adapt,full,27,3315,LNX-315 LNX-332 LNX-308
+cloud-hypervisor-docs,docs/mshv.md,Microsoft Hypervisor,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/mshv.md,CC-BY-4.0,adapt,full,5,563,LNX-308 LNX-332 LNX-315
+cloud-hypervisor-docs,docs/performance_metrics.md,Performance Metrics,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/performance_metrics.md,CC-BY-4.0,adapt,full,5,387,LNX-307
+cloud-hypervisor-docs,docs/profiling.md,Profiling,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/profiling.md,CC-BY-4.0,adapt,full,4,258,
+cloud-hypervisor-docs,docs/releases.md,Release Documentation,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/releases.md,CC-BY-4.0,adapt,full,10,318,
+cloud-hypervisor-docs,docs/riscv.md,How to build and test Cloud Hypervisor on riscv64,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/riscv.md,CC-BY-4.0,adapt,full,19,626,LNX-332 LNX-308 LNX-306
+cloud-hypervisor-docs,docs/seccomp.md,Seccomp filtering,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/seccomp.md,CC-BY-4.0,adapt,full,7,518,LNX-320 LNX-332 LNX-310
+cloud-hypervisor-docs,docs/snapshot_restore.md,Snapshot and Restore,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/snapshot_restore.md,CC-BY-4.0,adapt,full,16,2808,LNX-103 LNX-308 LNX-332
+cloud-hypervisor-docs,docs/testing.md,Testing,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/testing.md,CC-BY-4.0,adapt,full,18,1509,LNX-308 LNX-310 LNX-307
+cloud-hypervisor-docs,docs/threat-model.md,Cloud Hypervisor Threat Model,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/threat-model.md,CC-BY-4.0,adapt,full,15,1819,LNX-332 LNX-308 LNX-315
+cloud-hypervisor-docs,docs/tpm.md,TPM,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/tpm.md,CC-BY-4.0,adapt,full,6,367,LNX-303
+cloud-hypervisor-docs,docs/tracing.md,Tracing,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/tracing.md,CC-BY-4.0,adapt,full,3,224,
+cloud-hypervisor-docs,docs/uefi.md,UEFI Boot,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/uefi.md,CC-BY-4.0,adapt,full,9,849,LNX-332 LNX-308 LNX-102
+cloud-hypervisor-docs,docs/vdpa.md,Virtio Data Path Acceleration,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/vdpa.md,CC-BY-4.0,adapt,full,8,623,LNX-332 LNX-308 LNX-315
+cloud-hypervisor-docs,docs/vfio-user.md,Cloud Hypervisor VFIO-user HOWTO,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/vfio-user.md,CC-BY-4.0,adapt,full,4,488,LNX-315 LNX-332 LNX-331
+cloud-hypervisor-docs,docs/vfio.md,Cloud Hypervisor VFIO HOWTO,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/vfio.md,CC-BY-4.0,adapt,full,14,1923,LNX-315 LNX-332 LNX-308
+cloud-hypervisor-docs,docs/vhost-user-blk-testing.md,How to test vhost-user-blk with SPDK,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/vhost-user-blk-testing.md,CC-BY-4.0,adapt,full,11,451,LNX-332
+cloud-hypervisor-docs,docs/vhost-user-net-testing.md,How to test Vhost-user net with OpenVSwitch/DPDK,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/vhost-user-net-testing.md,CC-BY-4.0,adapt,full,4,655,LNX-332
+cloud-hypervisor-docs,docs/virtiofs-root.md,HOWTO VirtioFS rootfs,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/virtiofs-root.md,CC-BY-4.0,adapt,full,5,527,LNX-101 LNX-201 LNX-102
+cloud-hypervisor-docs,docs/vsock.md,VSOCK support,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/vsock.md,CC-BY-4.0,adapt,full,10,545,LNX-320 LNX-308
+cloud-hypervisor-docs,docs/windows-kdcom-debugging.md,Windows Kernel Debugging over serial (KDCOM),https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/windows-kdcom-debugging.md,CC-BY-4.0,adapt,full,10,752,LNX-220 LNX-302 LNX-332
+cloud-hypervisor-docs,docs/windows-kdnet-debugging.md,Windows Kernel Debugging over virtio-net (KDNET),https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/windows-kdnet-debugging.md,CC-BY-4.0,adapt,full,11,1401,LNX-308 LNX-302 LNX-201
+cloud-hypervisor-docs,docs/windows.md,Windows Support,https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/windows.md,CC-BY-4.0,adapt,full,15,2034,LNX-302 LNX-308 LNX-306
+firecracker-docs,docs/RELEASE_POLICY.md,Firecracker Release Policy,https://github.com/firecracker-microvm/firecracker/blob/main/docs/RELEASE_POLICY.md,Apache-2.0,adapt,full,9,1278,LNX-308 LNX-330
+firecracker-docs,docs/api-change-runbook.md,Runbook for Firecracker API changes,https://github.com/firecracker-microvm/firecracker/blob/main/docs/api-change-runbook.md,Apache-2.0,adapt,full,13,1931,LNX-308 LNX-101 LNX-220
+firecracker-docs,docs/api_requests/actions.md,Actions API Request,https://github.com/firecracker-microvm/firecracker/blob/main/docs/api_requests/actions.md,Apache-2.0,adapt,full,7,429,LNX-308
+firecracker-docs,docs/api_requests/block-caching.md,Block device caching strategies,https://github.com/firecracker-microvm/firecracker/blob/main/docs/api_requests/block-caching.md,Apache-2.0,adapt,full,6,307,LNX-103
+firecracker-docs,docs/api_requests/block-discard.md,Block device discard,https://github.com/firecracker-microvm/firecracker/blob/main/docs/api_requests/block-discard.md,Apache-2.0,adapt,full,4,247,LNX-103
+firecracker-docs,docs/api_requests/block-io-engine.md,Block device IO engine,https://github.com/firecracker-microvm/firecracker/blob/main/docs/api_requests/block-io-engine.md,Apache-2.0,adapt,full,11,1069,LNX-103 LNX-307 LNX-308
+firecracker-docs,docs/api_requests/block-vhost-user.md,Vhost-user block device,https://github.com/firecracker-microvm/firecracker/blob/main/docs/api_requests/block-vhost-user.md,Apache-2.0,adapt,full,16,1795,LNX-332 LNX-103
+firecracker-docs,docs/api_requests/patch-block.md,Updating block devices after boot,https://github.com/firecracker-microvm/firecracker/blob/main/docs/api_requests/patch-block.md,Apache-2.0,adapt,full,6,845,LNX-103 LNX-308 LNX-330
+firecracker-docs,docs/api_requests/patch-network-interface.md,Updating A Network Interface,https://github.com/firecracker-microvm/firecracker/blob/main/docs/api_requests/patch-network-interface.md,Apache-2.0,adapt,full,2,231,LNX-201 LNX-330
+firecracker-docs,docs/ballooning.md,Using the balloon device with Firecracker,https://github.com/firecracker-microvm/firecracker/blob/main/docs/ballooning.md,Apache-2.0,adapt,full,10,3338,LNX-308 LNX-102
+firecracker-docs,docs/block.md,Using the Firecracker Virtio-block Device,https://github.com/firecracker-microvm/firecracker/blob/main/docs/block.md,Apache-2.0,adapt,full,21,1817,LNX-308 LNX-103
+firecracker-docs,docs/cpu_templates/boot-protocol.md,Boot protocol register settings,https://github.com/firecracker-microvm/firecracker/blob/main/docs/cpu_templates/boot-protocol.md,Apache-2.0,adapt,full,3,120,LNX-308
+firecracker-docs,docs/cpu_templates/cpu-template-helper.md,CPU template helper tool,https://github.com/firecracker-microvm/firecracker/blob/main/docs/cpu_templates/cpu-template-helper.md,Apache-2.0,adapt,full,10,1184,LNX-308
+firecracker-docs,docs/cpu_templates/cpu-templates.md,CPU templates,https://github.com/firecracker-microvm/firecracker/blob/main/docs/cpu_templates/cpu-templates.md,Apache-2.0,adapt,full,7,1518,LNX-308
+firecracker-docs,docs/cpu_templates/cpuid-normalization.md,CPUID normalization (x86_64 only),https://github.com/firecracker-microvm/firecracker/blob/main/docs/cpu_templates/cpuid-normalization.md,Apache-2.0,adapt,full,4,361,
+firecracker-docs,docs/design.md,Firecracker Design,https://github.com/firecracker-microvm/firecracker/blob/main/docs/design.md,Apache-2.0,adapt,full,16,1483,LNX-308 LNX-332 LNX-320
+firecracker-docs,docs/dev-machine-setup.md,Setting up a Development Environment for Firecracker,https://github.com/firecracker-microvm/firecracker/blob/main/docs/dev-machine-setup.md,Apache-2.0,adapt,full,8,1407,LNX-308 LNX-306
+firecracker-docs,docs/device-api.md,Device,https://github.com/firecracker-microvm/firecracker/blob/main/docs/device-api.md,Apache-2.0,adapt,full,8,3079,LNX-308 LNX-332
+firecracker-docs,docs/device-hotplug.md,Device Hotplugging [Developer Preview],https://github.com/firecracker-microvm/firecracker/blob/main/docs/device-hotplug.md,Apache-2.0,adapt,full,9,678,LNX-308 LNX-332
+firecracker-docs,docs/entropy.md,Using the Firecracker entropy device,https://github.com/firecracker-microvm/firecracker/blob/main/docs/entropy.md,Apache-2.0,adapt,full,4,337,LNX-308
+firecracker-docs,docs/formal-verification.md,Formal Verification in Firecracker,https://github.com/firecracker-microvm/firecracker/blob/main/docs/formal-verification.md,Apache-2.0,adapt,full,4,1396,LNX-308 LNX-220
+firecracker-docs,docs/fuzzing.md,Fuzzing,https://github.com/firecracker-microvm/firecracker/blob/main/docs/fuzzing.md,Apache-2.0,adapt,full,3,107,LNX-220
+firecracker-docs,docs/gdb-debugging.md,GDB Debugging with Firecracker,https://github.com/firecracker-microvm/firecracker/blob/main/docs/gdb-debugging.md,Apache-2.0,adapt,full,8,548,LNX-220 LNX-308
+firecracker-docs,docs/getting-started.md,Getting Started with Firecracker,https://github.com/firecracker-microvm/firecracker/blob/main/docs/getting-started.md,Apache-2.0,adapt,full,12,2137,LNX-308 LNX-201 LNX-101
+firecracker-docs,docs/hugepages.md,Backing Guest Memory by Huge Pages,https://github.com/firecracker-microvm/firecracker/blob/main/docs/hugepages.md,Apache-2.0,adapt,full,5,806,LNX-308 LNX-307
+firecracker-docs,docs/initrd.md,Creating and using an initrd for Firecracker,https://github.com/firecracker-microvm/firecracker/blob/main/docs/initrd.md,Apache-2.0,adapt,full,6,223,LNX-308
+firecracker-docs,docs/jailer.md,The Firecracker Jailer,https://github.com/firecracker-microvm/firecracker/blob/main/docs/jailer.md,Apache-2.0,adapt,full,8,2733,LNX-308 LNX-332 LNX-320
+firecracker-docs,docs/kernel-policy.md,Firecracker's Kernel Support Policy,https://github.com/firecracker-microvm/firecracker/blob/main/docs/kernel-policy.md,Apache-2.0,adapt,full,8,1205,LNX-308 LNX-101 LNX-331
+firecracker-docs,docs/logger.md,Firecracker logger Configuration,https://github.com/firecracker-microvm/firecracker/blob/main/docs/logger.md,Apache-2.0,adapt,full,5,318,LNX-308 LNX-101
+firecracker-docs,docs/memory-hotplug.md,Memory Hotplugging with virtio-mem,https://github.com/firecracker-microvm/firecracker/blob/main/docs/memory-hotplug.md,Apache-2.0,adapt,full,19,1890,LNX-308 LNX-103 LNX-332
+firecracker-docs,docs/metrics.md,Firecracker Metrics Configuration,https://github.com/firecracker-microvm/firecracker/blob/main/docs/metrics.md,Apache-2.0,adapt,full,11,1030,LNX-307 LNX-308 LNX-101
+firecracker-docs,docs/mmds/mmds-design.md,microVM Metadata Service,https://github.com/firecracker-microvm/firecracker/blob/main/docs/mmds/mmds-design.md,Apache-2.0,adapt,full,8,1902,LNX-201 LNX-308
+firecracker-docs,docs/mmds/mmds-user-guide.md,microVM Metadata Service,https://github.com/firecracker-microvm/firecracker/blob/main/docs/mmds/mmds-user-guide.md,Apache-2.0,adapt,full,11,2243,LNX-308 LNX-201 LNX-312
+firecracker-docs,docs/network-performance.md,Firecracker network performance numbers,https://github.com/firecracker-microvm/firecracker/blob/main/docs/network-performance.md,Apache-2.0,adapt,full,3,407,LNX-307 LNX-308 LNX-201
+firecracker-docs,docs/network-setup.md,Getting Started Firecracker Network Setup,https://github.com/firecracker-microvm/firecracker/blob/main/docs/network-setup.md,Apache-2.0,adapt,full,14,2656,LNX-308 LNX-201 LNX-202
+firecracker-docs,docs/nitro-sandboxes/README.md,Nitro Sandboxes,https://github.com/firecracker-microvm/firecracker/blob/main/docs/nitro-sandboxes/README.md,Apache-2.0,adapt,full,4,1108,LNX-308 LNX-310
+firecracker-docs,docs/nitro-sandboxes/comparison-with-kvm.md,Nitro Sandboxes compared with KVM microVMs,https://github.com/firecracker-microvm/firecracker/blob/main/docs/nitro-sandboxes/comparison-with-kvm.md,Apache-2.0,adapt,full,7,1269,LNX-308
+firecracker-docs,docs/nitro-sandboxes/features.md,Nitro Sandbox features,https://github.com/firecracker-microvm/firecracker/blob/main/docs/nitro-sandboxes/features.md,Apache-2.0,adapt,full,13,2224,LNX-308 LNX-315
+firecracker-docs,docs/nitro-sandboxes/getting-started.md,Getting started with Nitro Sandboxes,https://github.com/firecracker-microvm/firecracker/blob/main/docs/nitro-sandboxes/getting-started.md,Apache-2.0,adapt,full,25,2796,LNX-307 LNX-308 LNX-306
+firecracker-docs,docs/nitro-sandboxes/how-it-works.md,How Nitro Sandboxes work,https://github.com/firecracker-microvm/firecracker/blob/main/docs/nitro-sandboxes/how-it-works.md,Apache-2.0,adapt,full,9,1101,LNX-308
+firecracker-docs,docs/pmem.md,Using the Firecracker `virtio-pmem` device,https://github.com/firecracker-microvm/firecracker/blob/main/docs/pmem.md,Apache-2.0,adapt,full,12,1821,LNX-308
+firecracker-docs,docs/prod-host-setup.md,Production Host Setup Recommendations,https://github.com/firecracker-microvm/firecracker/blob/main/docs/prod-host-setup.md,Apache-2.0,adapt,full,19,3277,LNX-308 LNX-102 LNX-103
+firecracker-docs,docs/pvh.md,PVH boot mode,https://github.com/firecracker-microvm/firecracker/blob/main/docs/pvh.md,Apache-2.0,adapt,full,1,136,
+firecracker-docs,docs/rootfs-and-kernel-setup.md,Creating Custom rootfs and kernel Images,https://github.com/firecracker-microvm/firecracker/blob/main/docs/rootfs-and-kernel-setup.md,Apache-2.0,adapt,full,8,1228,LNX-306 LNX-308 LNX-220
+firecracker-docs,docs/seccomp.md,Seccomp in Firecracker,https://github.com/firecracker-microvm/firecracker/blob/main/docs/seccomp.md,Apache-2.0,adapt,full,4,551,LNX-320 LNX-308 LNX-310
+firecracker-docs,docs/seccompiler.md,Seccompiler - overview and user guide,https://github.com/firecracker-microvm/firecracker/blob/main/docs/seccompiler.md,Apache-2.0,adapt,full,10,900,LNX-320
+firecracker-docs,docs/snapshotting/handling-page-faults-on-snapshot-resume.md,Handling snapshot memory loading,https://github.com/firecracker-microvm/firecracker/blob/main/docs/snapshotting/handling-page-faults-on-snapshot-resume.md,Apache-2.0,adapt,full,8,1333,LNX-103 LNX-308 LNX-320
+firecracker-docs,docs/snapshotting/network-for-clones.md,Network Connectivity for Clones,https://github.com/firecracker-microvm/firecracker/blob/main/docs/snapshotting/network-for-clones.md,Apache-2.0,adapt,full,8,1565,LNX-201 LNX-202 LNX-310
+firecracker-docs,docs/snapshotting/random-for-clones.md,Entropy for Clones,https://github.com/firecracker-microvm/firecracker/blob/main/docs/snapshotting/random-for-clones.md,Apache-2.0,adapt,full,6,2214,LNX-308 LNX-102
+firecracker-docs,docs/snapshotting/snapshot-editor.md,Snapshot editor,https://github.com/firecracker-microvm/firecracker/blob/main/docs/snapshotting/snapshot-editor.md,Apache-2.0,adapt,full,6,341,LNX-103
+firecracker-docs,docs/snapshotting/snapshot-support.md,Firecracker Snapshotting,https://github.com/firecracker-microvm/firecracker/blob/main/docs/snapshotting/snapshot-support.md,Apache-2.0,adapt,full,26,5166,LNX-308 LNX-103 LNX-307
+firecracker-docs,docs/snapshotting/versioning.md,Firecracker snapshot versioning,https://github.com/firecracker-microvm/firecracker/blob/main/docs/snapshotting/versioning.md,Apache-2.0,adapt,full,12,941,LNX-308 LNX-103
+firecracker-docs,docs/tracing.md,Tracing,https://github.com/firecracker-microvm/firecracker/blob/main/docs/tracing.md,Apache-2.0,adapt,full,9,2537,LNX-308 LNX-307 LNX-220
+firecracker-docs,docs/vsock.md,Using the Firecracker Virtio-vsock Device,https://github.com/firecracker-microvm/firecracker/blob/main/docs/vsock.md,Apache-2.0,adapt,full,13,1220,LNX-308 LNX-320
+kubevirt-user-guide,docs/architecture/architecture.md,Architecture,https://kubevirt.io/user-guide/architecture/architecture/,Apache-2.0,adapt,full,19,2158,LNX-308 LNX-315 LNX-311
+kubevirt-user-guide,docs/architecture/general_technical_review.md,General Technical Review - KubeVirt / Incubation,https://kubevirt.io/user-guide/architecture/general_technical_review/,Apache-2.0,adapt,full,20,4060,LNX-315 LNX-311 LNX-308
+kubevirt-user-guide,docs/cluster_admin/activating_feature_gates.md,Activating and deactivating feature gates,https://kubevirt.io/user-guide/cluster_admin/activating_feature_gates/,Apache-2.0,adapt,full,6,597,LNX-315
+kubevirt-user-guide,docs/cluster_admin/annotations_and_labels.md,Annotations and labels,https://kubevirt.io/user-guide/cluster_admin/annotations_and_labels/,Apache-2.0,adapt,full,4,195,LNX-315 LNX-311
+kubevirt-user-guide,docs/cluster_admin/api_validation.md,API Validation,https://kubevirt.io/user-guide/cluster_admin/api_validation/,Apache-2.0,adapt,full,6,442,LNX-315 LNX-311
+kubevirt-user-guide,docs/cluster_admin/authorization.md,Authorization,https://kubevirt.io/user-guide/cluster_admin/authorization/,Apache-2.0,adapt,full,9,1102,LNX-315 LNX-311 LNX-314
+kubevirt-user-guide,docs/cluster_admin/confidential_computing.md,Confidential computing,https://kubevirt.io/user-guide/cluster_admin/confidential_computing/,Apache-2.0,adapt,full,15,865,LNX-315 LNX-308
+kubevirt-user-guide,docs/cluster_admin/customize_components.md,customize components,https://kubevirt.io/user-guide/cluster_admin/customize_components/,Apache-2.0,adapt,full,3,291,LNX-315 LNX-330
+kubevirt-user-guide,docs/cluster_admin/device_status_on_Arm64.md,Device Status on Arm64,https://kubevirt.io/user-guide/cluster_admin/device_status_on_Arm64/,Apache-2.0,adapt,full,1,185,LNX-315 LNX-331 LNX-308
+kubevirt-user-guide,docs/cluster_admin/feature_gate_status_on_Arm64.md,Feature Gate Status on Arm64,https://kubevirt.io/user-guide/cluster_admin/feature_gate_status_on_Arm64/,Apache-2.0,adapt,full,1,490,LNX-311 LNX-315 LNX-308
+kubevirt-user-guide,docs/cluster_admin/gitops.md,Managing KubeVirt with GitOps,https://kubevirt.io/user-guide/cluster_admin/gitops/,Apache-2.0,adapt,full,2,142,LNX-315 LNX-313
+kubevirt-user-guide,docs/cluster_admin/installation.md,Installation,https://kubevirt.io/user-guide/cluster_admin/installation/,Apache-2.0,adapt,full,16,1756,LNX-315 LNX-311 LNX-308
+kubevirt-user-guide,docs/cluster_admin/ksm.md,KSM Management,https://kubevirt.io/user-guide/cluster_admin/ksm/,Apache-2.0,adapt,full,4,431,LNX-315 LNX-311
+kubevirt-user-guide,docs/cluster_admin/migration_policies.md,Migration Policies,https://kubevirt.io/user-guide/cluster_admin/migration_policies/,Apache-2.0,adapt,full,5,807,LNX-315
+kubevirt-user-guide,docs/cluster_admin/node_maintenance.md,Node maintenance,https://kubevirt.io/user-guide/cluster_admin/node_maintenance/,Apache-2.0,adapt,full,13,1352,LNX-311 LNX-315 LNX-310
+kubevirt-user-guide,docs/cluster_admin/operations_on_Arm64.md,Arm64 Operations,https://kubevirt.io/user-guide/cluster_admin/operations_on_Arm64/,Apache-2.0,adapt,full,6,120,LNX-331 LNX-201 LNX-315
+kubevirt-user-guide,docs/cluster_admin/plugins.md,Plugins,https://kubevirt.io/user-guide/cluster_admin/plugins/,Apache-2.0,adapt,full,14,1780,LNX-315 LNX-310 LNX-313
+kubevirt-user-guide,docs/cluster_admin/scheduler.md,KubeVirt Scheduler,https://kubevirt.io/user-guide/cluster_admin/scheduler/,Apache-2.0,adapt,full,3,573,LNX-315 LNX-311 LNX-308
+kubevirt-user-guide,docs/cluster_admin/tekton_tasks.md,KubeVirt Tekton,https://kubevirt.io/user-guide/cluster_admin/tekton_tasks/,Apache-2.0,adapt,full,6,612,LNX-315 LNX-308
+kubevirt-user-guide,docs/cluster_admin/unresponsive_nodes.md,Unresponsive nodes,https://kubevirt.io/user-guide/cluster_admin/unresponsive_nodes/,Apache-2.0,adapt,full,5,515,LNX-311 LNX-315 LNX-305
+kubevirt-user-guide,docs/cluster_admin/updating_and_deletion.md,Updating and deletion,https://kubevirt.io/user-guide/cluster_admin/updating_and_deletion/,Apache-2.0,adapt,full,4,1003,LNX-315 LNX-311
+kubevirt-user-guide,docs/cluster_admin/virtual_machines_on_Arm64.md,Virtual Machines on Arm64,https://kubevirt.io/user-guide/cluster_admin/virtual_machines_on_Arm64/,Apache-2.0,adapt,full,15,207,LNX-331 LNX-308 LNX-315
+kubevirt-user-guide,docs/compute/client_passthrough.md,Client Passthrough,https://kubevirt.io/user-guide/compute/client_passthrough/,Apache-2.0,adapt,full,5,323,LNX-204 LNX-315 LNX-101
+kubevirt-user-guide,docs/compute/cpu_hotplug.md,CPU Hotplug,https://kubevirt.io/user-guide/compute/cpu_hotplug/,Apache-2.0,adapt,full,9,822,LNX-315 LNX-308 LNX-311
+kubevirt-user-guide,docs/compute/decentralized_live_migration.md,Decentralized live migration,https://kubevirt.io/user-guide/compute/decentralized_live_migration/,Apache-2.0,adapt,full,12,1827,LNX-308 LNX-315 LNX-102
+kubevirt-user-guide,docs/compute/dedicated_cpu_resources.md,Dedicated CPU resources,https://kubevirt.io/user-guide/compute/dedicated_cpu_resources/,Apache-2.0,adapt,full,7,1015,LNX-315 LNX-311 LNX-310
+kubevirt-user-guide,docs/compute/dra_gpu.md,Assigning GPUs with Dynamic Resource Allocation (DRA),https://kubevirt.io/user-guide/compute/dra_gpu/,Apache-2.0,adapt,full,7,811,LNX-315 LNX-311
+kubevirt-user-guide,docs/compute/host-devices.md,Host Devices Assignment,https://kubevirt.io/user-guide/compute/host-devices/,Apache-2.0,adapt,full,14,1503,LNX-315 LNX-204 LNX-331
+kubevirt-user-guide,docs/compute/hugepages.md,Hugepages support,https://kubevirt.io/user-guide/compute/hugepages/,Apache-2.0,adapt,full,3,93,LNX-308
+kubevirt-user-guide,docs/compute/live_migration.md,Live Migration,https://kubevirt.io/user-guide/compute/live_migration/,Apache-2.0,adapt,full,29,3836,LNX-308 LNX-315 LNX-313
+kubevirt-user-guide,docs/compute/mediated_devices_configuration.md,Mediated devices and virtual GPUs,https://kubevirt.io/user-guide/compute/mediated_devices_configuration/,Apache-2.0,adapt,full,9,679,LNX-311 LNX-315
+kubevirt-user-guide,docs/compute/memory_dump.md,Virtual machine memory dump,https://kubevirt.io/user-guide/compute/memory_dump/,Apache-2.0,adapt,full,9,753,LNX-308 LNX-315 LNX-311
+kubevirt-user-guide,docs/compute/memory_hotplug.md,Memory Hotplug,https://kubevirt.io/user-guide/compute/memory_hotplug/,Apache-2.0,adapt,full,7,489,LNX-315 LNX-308 LNX-311
+kubevirt-user-guide,docs/compute/node_assignment.md,Node assignment,https://kubevirt.io/user-guide/compute/node_assignment/,Apache-2.0,adapt,full,6,664,LNX-311 LNX-315
+kubevirt-user-guide,docs/compute/node_overcommit.md,Node overcommit,https://kubevirt.io/user-guide/compute/node_overcommit/,Apache-2.0,adapt,full,12,1550,LNX-311 LNX-315
+kubevirt-user-guide,docs/compute/numa.md,NUMA,https://kubevirt.io/user-guide/compute/numa/,Apache-2.0,adapt,full,12,1372,LNX-315 LNX-311 LNX-308
+kubevirt-user-guide,docs/compute/persistent_tpm_and_uefi_state.md,Persistent TPM and UEFI state,https://kubevirt.io/user-guide/compute/persistent_tpm_and_uefi_state/,Apache-2.0,adapt,full,9,720,LNX-303 LNX-315 LNX-308
+kubevirt-user-guide,docs/compute/resources_requests_and_limits.md,Resources requests and limits,https://kubevirt.io/user-guide/compute/resources_requests_and_limits/,Apache-2.0,adapt,full,10,830,LNX-310 LNX-315
+kubevirt-user-guide,docs/compute/run_strategies.md,Run Strategies,https://kubevirt.io/user-guide/compute/run_strategies/,Apache-2.0,adapt,full,6,553,LNX-315 LNX-308
+kubevirt-user-guide,docs/compute/virtual_hardware.md,Virtual hardware,https://kubevirt.io/user-guide/compute/virtual_hardware/,Apache-2.0,adapt,full,16,2617,LNX-315 LNX-308 LNX-307
+kubevirt-user-guide,docs/compute/vsock.md,VSOCK,https://kubevirt.io/user-guide/compute/vsock/,Apache-2.0,adapt,full,6,461,LNX-315 LNX-308 LNX-310
+kubevirt-user-guide,docs/compute/windows_virtio_drivers.md,Windows virtio drivers,https://kubevirt.io/user-guide/compute/windows_virtio_drivers/,Apache-2.0,adapt,full,7,842,LNX-308 LNX-302 LNX-315
+kubevirt-user-guide,docs/contributing.md,Contributing,https://kubevirt.io/user-guide/contributing/,Apache-2.0,adapt,full,8,758,LNX-315 LNX-203
+kubevirt-user-guide,docs/debug_virt_stack/debug.md,Debug,https://kubevirt.io/user-guide/debug_virt_stack/debug/,Apache-2.0,adapt,full,9,1150,LNX-315 LNX-311 LNX-308
+kubevirt-user-guide,docs/debug_virt_stack/launch-qemu-gdb.md,Launch QEMU with gdb and connect locally with gdb client,https://kubevirt.io/user-guide/debug_virt_stack/launch-qemu-gdb/,Apache-2.0,adapt,full,4,1059,LNX-220 LNX-308 LNX-310
+kubevirt-user-guide,docs/debug_virt_stack/launch-qemu-strace.md,Launch QEMU with strace,https://kubevirt.io/user-guide/debug_virt_stack/launch-qemu-strace/,Apache-2.0,adapt,full,4,1272,LNX-307 LNX-310 LNX-308
+kubevirt-user-guide,docs/debug_virt_stack/logging.md,Control libvirt logging for each component,https://kubevirt.io/user-guide/debug_virt_stack/logging/,Apache-2.0,adapt,full,1,547,LNX-308
+kubevirt-user-guide,docs/debug_virt_stack/privileged-node-debugging.md,Privileged debugging on the node,https://kubevirt.io/user-guide/debug_virt_stack/privileged-node-debugging/,Apache-2.0,adapt,full,7,1912,LNX-310 LNX-311 LNX-308
+kubevirt-user-guide,docs/debug_virt_stack/virsh-commands.md,Execute virsh commands in virt-launcher pod,https://kubevirt.io/user-guide/debug_virt_stack/virsh-commands/,Apache-2.0,adapt,full,1,294,LNX-308
+kubevirt-user-guide,docs/index.md,Welcome,https://kubevirt.io/user-guide//,Apache-2.0,adapt,full,6,244,LNX-315 LNX-311
+kubevirt-user-guide,docs/network/dns.md,DNS records,https://kubevirt.io/user-guide/network/dns/,Apache-2.0,adapt,full,1,488,LNX-201
+kubevirt-user-guide,docs/network/dra_networking.md,Connecting VMs to DRA-backed Networks,https://kubevirt.io/user-guide/network/dra_networking/,Apache-2.0,adapt,full,7,776,LNX-315 LNX-308 LNX-201
+kubevirt-user-guide,docs/network/hotplug/interfaces.md,Hotplug Network Interfaces,https://kubevirt.io/user-guide/network/hotplug/interfaces/,Apache-2.0,adapt,full,9,1433,LNX-315 LNX-201 LNX-308
+kubevirt-user-guide,docs/network/hotplug/nad_reference.md,Live update NAD Reference,https://kubevirt.io/user-guide/network/hotplug/nad_reference/,Apache-2.0,adapt,full,4,422,LNX-315 LNX-308 LNX-202
+kubevirt-user-guide,docs/network/interfaces_and_networks.md,Interfaces and Networks,https://kubevirt.io/user-guide/network/interfaces_and_networks/,Apache-2.0,adapt,full,19,4475,LNX-201 LNX-315 LNX-312
+kubevirt-user-guide,docs/network/istio_service_mesh.md,Istio service mesh,https://kubevirt.io/user-guide/network/istio_service_mesh/,Apache-2.0,adapt,full,9,686,LNX-312
+kubevirt-user-guide,docs/network/net_binding_plugins/macvtap.md,Macvtap binding,https://kubevirt.io/user-guide/network/net_binding_plugins/macvtap/,Apache-2.0,adapt,full,9,828,LNX-201 LNX-315 LNX-311
+kubevirt-user-guide,docs/network/net_binding_plugins/passt.md,Passt binding,https://kubevirt.io/user-guide/network/net_binding_plugins/passt/,Apache-2.0,adapt,full,10,1125,LNX-201 LNX-315 LNX-312
+kubevirt-user-guide,docs/network/net_binding_plugins/slirp.md,Slirp,https://kubevirt.io/user-guide/network/net_binding_plugins/slirp/,Apache-2.0,adapt,full,6,355,LNX-201 LNX-315 LNX-308
+kubevirt-user-guide,docs/network/network_binding_plugins.md,Network Binding Plugins,https://kubevirt.io/user-guide/network/network_binding_plugins/,Apache-2.0,adapt,full,9,1431,LNX-201 LNX-315 LNX-310
+kubevirt-user-guide,docs/network/networkpolicy.md,NetworkPolicy,https://kubevirt.io/user-guide/network/networkpolicy/,Apache-2.0,adapt,full,5,270,LNX-312
+kubevirt-user-guide,docs/network/service_objects.md,Service objects,https://kubevirt.io/user-guide/network/service_objects/,Apache-2.0,adapt,full,5,795,LNX-312 LNX-315 LNX-311
+kubevirt-user-guide,docs/quickstarts.md,quickstarts,https://kubevirt.io/user-guide/quickstarts/,Apache-2.0,adapt,full,1,46,LNX-315
+kubevirt-user-guide,docs/release_notes.md,KubeVirt release notes,https://kubevirt.io/user-guide/release_notes/,Apache-2.0,adapt,full,238,37072,LNX-315 LNX-308 LNX-311
+kubevirt-user-guide,docs/storage/clone_api.md,Clone API,https://kubevirt.io/user-guide/storage/clone_api/,Apache-2.0,adapt,full,10,1175,LNX-315 LNX-102 LNX-330
+kubevirt-user-guide,docs/storage/containerized_data_importer.md,Containerized Data Importer,https://kubevirt.io/user-guide/storage/containerized_data_importer/,Apache-2.0,adapt,full,11,1755,LNX-311 LNX-315 LNX-306
+kubevirt-user-guide,docs/storage/containerpath_volumes.md,ContainerPath Volumes,https://kubevirt.io/user-guide/storage/containerpath_volumes/,Apache-2.0,adapt,full,13,1252,LNX-315 LNX-313 LNX-310
+kubevirt-user-guide,docs/storage/csi_overlay.md,CSI Overlay for VM State PVCs,https://kubevirt.io/user-guide/storage/csi_overlay/,Apache-2.0,adapt,full,5,858,LNX-311 LNX-308 LNX-315
+kubevirt-user-guide,docs/storage/disks_and_volumes.md,"Filesystems, Disks and Volumes",https://kubevirt.io/user-guide/storage/disks_and_volumes/,Apache-2.0,adapt,full,28,8165,LNX-315 LNX-103 LNX-308
+kubevirt-user-guide,docs/storage/export_api.md,Export API,https://kubevirt.io/user-guide/storage/export_api/,Apache-2.0,adapt,full,11,4186,LNX-315 LNX-308 LNX-311
+kubevirt-user-guide,docs/storage/guestfs.md,Usage of libguestfs-tools and virtctl guestfs,https://kubevirt.io/user-guide/storage/guestfs/,Apache-2.0,adapt,full,3,1159,LNX-310 LNX-315 LNX-308
+kubevirt-user-guide,docs/storage/hotplug_volumes.md,Hotplug Volumes,https://kubevirt.io/user-guide/storage/hotplug_volumes/,Apache-2.0,adapt,full,18,989,LNX-315 LNX-103 LNX-308
+kubevirt-user-guide,docs/storage/migration_controller.md,KubeVirt Migration Controller,https://kubevirt.io/user-guide/storage/migration_controller/,Apache-2.0,adapt,full,8,526,LNX-315
+kubevirt-user-guide,docs/storage/snapshot_restore_api.md,Snapshot Restore API,https://kubevirt.io/user-guide/storage/snapshot_restore_api/,Apache-2.0,adapt,full,12,1913,LNX-103 LNX-315 LNX-311
+kubevirt-user-guide,docs/storage/volume_migration.md,Update volume strategy and volume migration,https://kubevirt.io/user-guide/storage/volume_migration/,Apache-2.0,adapt,full,10,1646,LNX-315 LNX-311 LNX-310
+kubevirt-user-guide,docs/user_workloads/accessing_virtual_machines.md,Accessing Virtual Machines,https://kubevirt.io/user-guide/user_workloads/accessing_virtual_machines/,Apache-2.0,adapt,full,9,1826,LNX-308 LNX-201 LNX-315
+kubevirt-user-guide,docs/user_workloads/basic_use.md,Basic use,https://kubevirt.io/user-guide/user_workloads/basic_use/,Apache-2.0,adapt,full,2,84,LNX-315 LNX-311
+kubevirt-user-guide,docs/user_workloads/boot_from_external_source.md,Booting From External Source,https://kubevirt.io/user-guide/user_workloads/boot_from_external_source/,Apache-2.0,adapt,full,3,673,LNX-315 LNX-310 LNX-102
+kubevirt-user-guide,docs/user_workloads/component_monitoring.md,Component monitoring,https://kubevirt.io/user-guide/user_workloads/component_monitoring/,Apache-2.0,adapt,full,7,666,LNX-307 LNX-315 LNX-311
+kubevirt-user-guide,docs/user_workloads/creating_it_pref.md,Creating Instance Types and Preferences by using virtctl,https://kubevirt.io/user-guide/user_workloads/creating_it_pref/,Apache-2.0,adapt,full,5,400,LNX-101 LNX-315
+kubevirt-user-guide,docs/user_workloads/creating_vms.md,Creating VirtualMachines by using virtctl,https://kubevirt.io/user-guide/user_workloads/creating_vms/,Apache-2.0,adapt,full,19,2203,LNX-306 LNX-308 LNX-313
+kubevirt-user-guide,docs/user_workloads/deploy_common_instancetypes.md,Deploy common-instancetypes,https://kubevirt.io/user-guide/user_workloads/deploy_common_instancetypes/,Apache-2.0,adapt,full,4,271,LNX-315 LNX-311
+kubevirt-user-guide,docs/user_workloads/guest_agent_information.md,Guest Agent information,https://kubevirt.io/user-guide/user_workloads/guest_agent_information/,Apache-2.0,adapt,full,3,545,LNX-308 LNX-315
+kubevirt-user-guide,docs/user_workloads/guest_operating_system_information.md,Guest Operating System Information,https://kubevirt.io/user-guide/user_workloads/guest_operating_system_information/,Apache-2.0,adapt,full,4,573,LNX-315 LNX-302 LNX-311
+kubevirt-user-guide,docs/user_workloads/hook-sidecar.md,Hook Sidecar Container,https://kubevirt.io/user-guide/user_workloads/hook-sidecar/,Apache-2.0,adapt,full,8,1126,LNX-310 LNX-313 LNX-315
+kubevirt-user-guide,docs/user_workloads/instancetypes.md,Instance types and preferences,https://kubevirt.io/user-guide/user_workloads/instancetypes/,Apache-2.0,adapt,full,19,3454,LNX-315 LNX-311 LNX-307
+kubevirt-user-guide,docs/user_workloads/legacy_windows.md,Running legacy Windows versions,https://kubevirt.io/user-guide/user_workloads/legacy_windows/,Apache-2.0,adapt,full,2,138,LNX-302 LNX-315
+kubevirt-user-guide,docs/user_workloads/lifecycle.md,Lifecycle,https://kubevirt.io/user-guide/user_workloads/lifecycle/,Apache-2.0,adapt,full,7,356,LNX-308 LNX-311
+kubevirt-user-guide,docs/user_workloads/liveness_and_readiness_probes.md,Liveness and Readiness Probes,https://kubevirt.io/user-guide/user_workloads/liveness_and_readiness_probes/,Apache-2.0,adapt,full,8,1695,LNX-313
+kubevirt-user-guide,docs/user_workloads/pool.md,VirtualMachinePool,https://kubevirt.io/user-guide/user_workloads/pool/,Apache-2.0,adapt,full,9,1132,LNX-315 LNX-311 LNX-308
+kubevirt-user-guide,docs/user_workloads/presets.md,Presets,https://kubevirt.io/user-guide/user_workloads/presets/,Apache-2.0,adapt,full,15,1619,LNX-315 LNX-311
+kubevirt-user-guide,docs/user_workloads/replicaset.md,VirtualMachineInstanceReplicaSet,https://kubevirt.io/user-guide/user_workloads/replicaset/,Apache-2.0,adapt,full,8,1011,LNX-315 LNX-311 LNX-312
+kubevirt-user-guide,docs/user_workloads/startup_scripts.md,Startup Scripts,https://kubevirt.io/user-guide/user_workloads/startup_scripts/,Apache-2.0,adapt,full,18,4946,LNX-306 LNX-315 LNX-313
+kubevirt-user-guide,docs/user_workloads/templates.md,Templates,https://kubevirt.io/user-guide/user_workloads/templates/,Apache-2.0,adapt,full,16,2801,LNX-315 LNX-308 LNX-306
+kubevirt-user-guide,docs/user_workloads/virtctl_client_tool.md,Download and Install the virtctl Command Line Interface,https://kubevirt.io/user-guide/user_workloads/virtctl_client_tool/,Apache-2.0,adapt,full,3,185,LNX-101 LNX-315 LNX-311
+kubevirt-user-guide,docs/user_workloads/virtual_machine_instances.md,Virtual Machines Instances,https://kubevirt.io/user-guide/user_workloads/virtual_machine_instances/,Apache-2.0,adapt,full,4,245,LNX-308 LNX-315
+kubevirt-user-guide,docs/user_workloads/vm_rollout_strategies.md,VM Rollout Strategies,https://kubevirt.io/user-guide/user_workloads/vm_rollout_strategies/,Apache-2.0,adapt,full,5,340,LNX-308 LNX-315
+kubevirt-user-guide,docs/user_workloads/vm_templates.md,VirtualMachine Templates,https://kubevirt.io/user-guide/user_workloads/vm_templates/,Apache-2.0,adapt,full,30,1735,LNX-315 LNX-308 LNX-310
+kubevirt-user-guide,docs/user_workloads/windows_virtio_drivers.md,Windows virtio drivers,https://kubevirt.io/user-guide/user_workloads/windows_virtio_drivers/,Apache-2.0,adapt,full,7,842,LNX-308 LNX-302 LNX-315
+virtio-spec,abstract.tex,abstract,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,acknowledgements.tex,Acknowledgements,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,5,0,LNX-332
+virtio-spec,admin-cmds-capabilities.tex,Device and driver capabilities,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,admin-cmds-device-parts.tex,Device parts,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,admin-cmds-legacy-interface.tex,Legacy Interfaces,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,admin-cmds-resource-objects.tex,Device resource objects,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,admin.tex,Device groups,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,3,0,LNX-332
+virtio-spec,changelog.tex,Revision History,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,conformance.tex,Conformance,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,2,0,LNX-332
+virtio-spec,content.tex,Basic Facilities of a Virtio Device,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,26,0,LNX-332
+virtio-spec,device-parts.tex,Device parts,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,9,0,LNX-332
+virtio-spec,introduction.tex,Introduction,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,8,0,LNX-332
+virtio-spec,ipr.tex,ipr,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,main.tex,main,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,newdevice.tex,Creating New Device Types,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,10,0,LNX-332
+virtio-spec,newtransport.tex,Creating New Transports,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,packed-ring.tex,Packed Virtqueues,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,20,0,LNX-332
+virtio-spec,shared-mem.tex,Shared Memory Regions,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,2,0,LNX-332
+virtio-spec,split-ring.tex,Split Virtqueues,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,21,0,LNX-332
+virtio-spec,title.tex,title,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,1,0,LNX-332
+virtio-spec,transport-ccw.tex,Virtio Over Channel I/O,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,16,0,LNX-332
+virtio-spec,transport-mmio.tex,Virtio Over MMIO,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,10,0,LNX-332
+virtio-spec,transport-pci.tex,Virtio Over PCI Bus,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,20,0,LNX-332 LNX-320 LNX-331
 samba-wiki,,Samba wiki,https://wiki.samba.org/,NOASSERTION,link-only,link,1,0,LNX-302
 tlcl,,The Linux Command Line (W. Shotts),https://linuxcommand.org/tlcl.php,CC-BY-NC-ND-3.0,excluded,link,1,0,LNX-101
 cis-benchmarks,,CIS Benchmarks,https://www.cisecurity.org/cis-benchmarks,CC-BY-NC-SA-4.0,excluded,link,1,0,

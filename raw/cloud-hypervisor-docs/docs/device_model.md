@@ -1,0 +1,268 @@
+# Device Model
+
+This document describes the device model supported by `cloud-hypervisor`.
+
+## Summary
+
+| Device                | Build configurable | Enabled by default | Runtime configurable |
+| :-------------------: | :----------------: | :----------------: | :------------------: |
+| Serial port           | :x:                | :heavy_check_mark: | :heavy_check_mark:   |
+| RTC/CMOS              | :x:                | :heavy_check_mark: | :x:                  |
+| I/O APIC              | :x:                | :heavy_check_mark: | :x:                  |
+| i8042 shutdown/reboot | :x:                | :heavy_check_mark: | :x:                  |
+| ACPI shutdown/reboot  | :x:                | :heavy_check_mark: | :x:                  |
+| virtio-blk            | :x:                | :x:                | :heavy_check_mark:   |
+| virtio-console        | :x:                | :x:                | :heavy_check_mark:   |
+| virtio-iommu          | :x:                | :x:                | :heavy_check_mark:   |
+| virtio-net            | :x:                | :x:                | :heavy_check_mark:   |
+| virtio-pmem           | :x:                | :x:                | :heavy_check_mark:   |
+| virtio-rng            | :x:                | :x:                | :heavy_check_mark:   |
+| virtio-vsock          | :x:                | :x:                | :heavy_check_mark:   |
+| vhost-user-blk        | :x:                | :x:                | :heavy_check_mark:   |
+| vhost-user-fs         | :x:                | :x:                | :heavy_check_mark:   |
+| vhost-user-net        | :x:                | :x:                | :heavy_check_mark:   |
+| VFIO                  | :x:                | :x:                | :heavy_check_mark:   |
+
+## Legacy devices
+
+### Serial port
+
+Simple emulation of a serial port by reading and writing to specific port I/O
+addresses. The serial port can be very useful to gather early logs from the
+operating system booted inside the VM.
+
+For x86_64, the default serial port is from an emulated 16550A device. It can
+be used as the default console for Linux when booting with the option
+`console=ttyS0`. For AArch64, the default serial port is from an emulated
+PL011 UART device. The related command line for AArch64 is `console=ttyAMA0`.
+
+This device is always built-in, and it is enabled by default with
+`--serial null`, which discards the output. It can be disabled with
+`--serial off`.
+
+The `--serial` parameter selects where the port is connected. Besides `off`,
+`null`, `tty`, `pty`, and `file=<path>`, the port can be exposed on a UNIX
+socket with `socket=<path>` or on a TCP listener with `tcp=<loopback_ip>:<port>`.
+The TCP backend only listens for incoming connections on loopback addresses,
+specified as IPv4 or IPv6 literals such as `127.0.0.1:4444` or `[::1]:4444`.
+Hostnames and port zero are not accepted. It does not connect out. Listening is the default
+and can be selected explicitly with `server=on`.
+Setting `server=off` is rejected because TCP client mode is not supported.
+It serves one client at a time and buffers output until a client connects.
+It accepts another client only after the current client disconnects.
+Boot does not wait for a client to connect. The same backends and options apply
+to the `virtio-console` device through the `--console` parameter.
+
+TCP console live migration requires the listener address to be available on the
+destination. Migration on the same host cannot reuse the address bound by the source.
+Overriding the destination console address is not currently supported.
+
+### RTC/CMOS
+
+For environments such as Windows or EFI which cannot rely on KVM clock, the
+emulation of this legacy device makes the platform usable.
+
+On x86-64, this device is always built-in and always enabled, and it cannot
+be disabled from the command line.
+
+For AArch64 machines, an ARM PrimeCell Real Time Clock (PL031) is implemented.
+This device is built-in by default for the AArch64 platform, and it is always
+enabled, and cannot be disabled from the command line.
+
+With ACPI, a separate Time and Alarm Device (TAD), identified as `ACPI000E`,
+provides the wall clock.
+Linux 7.1 or newer with `CONFIG_ACPI_TAD=y`, `CONFIG_RTC_CLASS=y` and
+`CONFIG_RTC_HCTOSYS=y` can use it to initialise the system clock without EFI
+runtime services. It supports reading and setting UTC time from 1900 to 9999;
+wake alarms are not supported. With `acpi=off`, Linux uses the
+PL031 device described in FDT.
+
+### I/O APIC
+
+`cloud-hypervisor` supports a so-called split IRQ chip implementation by
+implementing support for the [IOAPIC](https://wiki.osdev.org/IOAPIC).
+By moving part of the IRQ chip implementation from kernel space to user space,
+the IRQ chip emulation does not always run in a fully privileged mode.
+
+The device is always built-in and always enabled on x86-64.
+
+### i8042
+
+Simplified PS/2 port since it supports only one key to trigger a reboot or
+shutdown, depending on the ACPI support.
+
+This device is always built-in and always enabled on x86-64. Because ACPI is
+enabled by default, the handling of reboot/shutdown usually goes through the
+dedicated ACPI device.
+
+### ARM PrimeCell General Purpose Input/Output (PL061)
+
+Simplified ARM PrimeCell GPIO (PL061) implementation. Only supports key 3 to
+trigger a graceful shutdown of the AArch64 guest.
+
+### ACPI device
+
+This is a dedicated device for handling ACPI shutdown and reboot when ACPI is
+enabled.
+
+This device is always built-in and always enabled.
+
+## Virtio devices
+
+For all virtio devices listed below, only `virtio-pci` transport layer is
+supported. Cloud Hypervisor supports multiple PCI segments, and users can
+append `,pci_segment=<PCI_segment_number>` or `,pci_device_id=<PCI_device_ID>` to
+the device flag in the Cloud Hypervisor command line to assign devices to a specific
+PCI segment or into a specific device slot.
+
+### virtio-block
+
+The `virtio-blk` device exposes a block device to the guest. This device is
+usually used to boot the operating system running in the VM.
+
+This device is always built-in, and it is enabled based on the presence of the
+flag `--disk`.
+
+The `guest_block_size` parameter of `--disk` overrides the logical block size
+advertised to the guest, so an image keeps the geometry it was built for
+regardless of the backing storage. It applies to every image format backend and
+must be a power of 2 between 512 and 64KiB.
+
+With buffered I/O the host page cache absorbs any alignment difference. Under
+`direct=on`, overrides below the backing block size are rejected for writable
+disks and for read-only raw and fixed VHD disks.
+
+Raw and fixed VHD data requests under `direct=on` must have offsets and total
+lengths aligned to the backing file's direct I/O requirement. Unaligned requests
+return a virtio-block I/O error, including reads from read-only disks. Unaligned
+guest memory buffers are handled with an aligned memory buffer.
+
+### virtio-console
+
+`cloud-hypervisor` exposes a `virtio-console` device to the guest. Although
+using this device as a guest console can potentially cut some early boot
+messages, it can reduce the guest boot time and provides a complete console
+implementation.
+
+This device is always built-in, and it is enabled by default to provide a guest
+console. It can be disabled, switching back to the legacy serial port by
+selecting `--serial tty --console off` from the command line.
+
+### virtio-iommu
+
+As we want to improve our nested guests support, we added support for exposing
+a [paravirtualized IOMMU](iommu.md) device through virtio. This allows for a
+safer nested virtio and directly assigned devices support.
+
+This device is always built-in, and it is enabled based on the presence of the
+parameter `iommu=on` in any of the virtio or VFIO devices. If at least one of
+these devices needs to be connected to the paravirtualized IOMMU, the
+`virtio-iommu` device will be created.
+
+### virtio-net
+
+The `virtio-net` device provides network connectivity for the guest, as it
+creates a network interface connected to a TAP interface automatically created
+by the `cloud-hypervisor` on the host.
+
+This device is always built-in, and it is enabled based on the presence of the
+flag `--net`.
+
+### virtio-pmem
+
+The `virtio-pmem` implementation emulates a virtual persistent memory device
+that `cloud-hypervisor` can e.g. boot from. Booting from a `virtio-pmem` device
+allows bypassing the guest page cache and improve the guest memory footprint.
+
+This device is always built-in, and it is enabled based on the presence of the
+flag `--pmem`.
+
+### virtio-rng
+
+A VM does not generate entropy like a real machine would, which is an issue
+when workloads running in the guest need random numbers to be generated. The
+`virtio-rng` device provides entropy to the guest by relying on the generator
+that can be found on the host. By default, the chosen source of entropy is
+`/dev/urandom`.
+
+This device is always built-in, and it is always enabled. The `--rng` flag can
+be used to change the source of entropy.
+
+### virtio-vsock
+
+In order to more efficiently and securely communicate between host and guest,
+we added a hybrid implementation of the [VSOCK](http://man7.org/linux/man-pages/man7/vsock.7.html)
+socket address family over virtio.
+Credits go to the [Firecracker](https://github.com/firecracker-microvm/firecracker/blob/master/docs/vsock.md)
+project as our implementation is a copy of theirs.
+
+This device is always built-in, and it is enabled based on the presence of the
+flag `--vsock`.
+
+## Vhost-user devices
+
+Vhost-user devices are virtio backends running outside of the VMM, as its own
+separate process. They are usually used to bring more flexibility and increased
+isolation.
+
+### vhost-user-blk
+
+As part of the general effort to offload paravirtualized I/O to external
+processes, we added support for vhost-user-blk backends. This enables
+`cloud-hypervisor` users to plug a `vhost-user` based block device (e.g. SPDK)
+into the VMM as their virtio block backend.
+
+This device is always built-in, and it is enabled when `vhost_user=true` and
+`socket` are provided to the `--disk` parameter.
+
+### vhost-user-fs
+
+`cloud-hypervisor` supports the [virtio-fs](https://virtio-fs.gitlab.io/)
+shared file system, allowing for an efficient and reliable way of sharing
+a filesystem between the host and the cloud-hypervisor guest.
+
+See our [filesystem sharing](fs.md) documentation for more details on how to
+use virtio-fs with cloud-hypervisor.
+
+This device is always built-in, and it is enabled based on the presence of the
+flag `--fs`.
+
+### vhost-user-net
+
+As part of the general effort to offload paravirtualized I/O to external
+processes, we added support for [vhost-user-net](https://access.redhat.com/solutions/3394851)
+backends. This enables `cloud-hypervisor` users to plug a `vhost-user` based
+networking device (e.g. DPDK) into the VMM as their virtio network backend.
+
+This device is always built-in, and it is enabled when `vhost_user=true` and
+`socket` are provided to the `--net` parameter.
+
+### vhost-user-generic
+
+This is a generic vhost-user device. The main use case is to provide a
+vhost-user device that Cloud Hypervisor doesn't support natively. However,
+there is nothing preventing its use for devices that Cloud Hypervisor does
+support. For instance, the tag of a virtio-fs device can be set on the
+virtiofsd command line, whereas the built-in virtio-fs support
+requires the tag to be set in Cloud Hypervisor's command line.
+
+If the backend negotiates the `VHOST_USER_PROTOCOL_F_CONFIG` feature,
+all configuration space access will be handled by it.  Otherwise,
+writes will be ignored and reads will return 0xFF. Cloud Hypervisor
+warns if this happens.
+
+This device is always built-in, and it is enabled when the
+`--generic-vhost-user` flag is passed.
+See [the generic vhost-user documentation](generic-vhost-user.md) for more details.
+
+## VFIO
+
+VFIO (Virtual Function I/O) is a kernel framework that exposes direct device
+access to userspace. `cloud-hypervisor` uses VFIO to directly assign host
+physical devices into its guest.
+
+See our [VFIO documentation](vfio.md) for more details on how to directly
+assign host devices to `cloud-hypervisor` guests.
+
+VFIO support is always built-in. A physical device can be passed through with
+the `--device` flag.

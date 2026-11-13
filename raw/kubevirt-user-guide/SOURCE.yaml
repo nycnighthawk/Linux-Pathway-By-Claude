@@ -1,0 +1,14 @@
+id: kubevirt-user-guide
+name: KubeVirt user guide
+license: Apache-2.0
+license_note: null
+mode: full
+reuse: adapt
+stream: Permissive
+retrieved: '2026-11-13'
+upstream: https://github.com/kubevirt/user-guide
+pin: 00756dd6ae0508675265013990d4de890df9b1b3
+upstream_commit_date: '2026-11-12'
+license_file_upstream: LICENSE
+text_files: 99
+figures: 14

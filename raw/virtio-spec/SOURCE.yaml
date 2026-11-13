@@ -1,0 +1,14 @@
+id: virtio-spec
+name: VIRTIO specification (OASIS)
+license: NOASSERTION
+license_note: OASIS IPR Policy, Non-Assertion Mode (LICENSE.md); not an open-content
+  licence. Headings only (D-006).
+mode: outline
+reuse: link-only
+stream: Ref
+retrieved: '2026-11-13'
+upstream: https://github.com/oasis-tcs/virtio-spec
+pin: bb1dd2e1fe89b862f38f15873d835a698b196f89
+upstream_commit_date: '2026-06-01'
+license_file_upstream: LICENSE.md
+outline_files: 23

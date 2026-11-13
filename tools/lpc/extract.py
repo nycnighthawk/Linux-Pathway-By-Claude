@@ -217,6 +217,38 @@ def parse_cac(text: str, rel: str):
     return title, [_sec(1, title, rid, [f"{kind} id: {rid}", *meta, *body])]
 
 
+# ---------------------------------------------------------------- DITA
+def parse_dita(text: str, rel: str):
+    """DITA topics (VirtualBox manual): the topic title, then one section per <section> or nested topic."""
+    from bs4 import BeautifulSoup
+
+    text = re.sub(r"<!DOCTYPE[^>]*>|<\?[^>]*\?>", "", text, flags=re.S)
+    soup = BeautifulSoup(text, "html.parser")
+    root = soup.find(["topic", "concept", "task", "reference", "troubleshooting"])
+    if root is None:
+        return Path(rel).stem, [_sec(1, Path(rel).stem, "", [soup.get_text(" ", strip=False)])]
+    nested = ["section", "topic", "concept", "task", "reference", "troubleshooting"]
+
+    def own(el):
+        body = [c.get_text(" ", strip=False) if hasattr(c, "get_text") else str(c)
+                for c in el.children if getattr(c, "name", None) not in (*nested, "title")]
+        return re.sub(r"[ \t]+", " ", re.sub(r"\n\s*\n+", "\n\n", "".join(body))).strip()
+
+    def walk(el, depth):
+        t = el.find("title", recursive=False)
+        heading = t.get_text(" ", strip=True) if t else Path(rel).stem
+        secs.append(_sec(min(depth, MAX_LEVEL), heading, el.get("id"), [own(el)]))
+        for ch in el.find_all(nested, recursive=False):
+            walk(ch, depth + 1)
+        for body in el.find_all(["body", "conbody", "taskbody", "refbody"], recursive=False):
+            for ch in body.find_all(nested, recursive=False):
+                walk(ch, depth + 1)
+
+    secs: list = []
+    walk(root, 1)
+    return secs[0]["heading"], secs
+
+
 # ---------------------------------------------------------------- router
 def parse_file(path: Path, rel: str, src: dict | None = None):
     text = path.read_text(encoding="utf-8", errors="replace")
@@ -229,6 +261,8 @@ def parse_file(path: Path, rel: str, src: dict | None = None):
         title, secs = parse_tex(text, rel)
     elif suf == ".xml":
         title, secs = parse_docbook(text, rel)
+    elif suf == ".dita":
+        title, secs = parse_dita(text, rel)
     elif rel.endswith(("rule.yml", "group.yml")):
         title, secs = parse_cac(text, rel)
     else:
