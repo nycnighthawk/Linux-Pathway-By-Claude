@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT
+table ip kubeproxy_lab {
+    map services {
+        type ipv4_addr . inet_proto . inet_service : verdict
+        elements = {
+            10.96.0.10 . tcp . 80 : goto svc-web
+        }
+    }
+
+    chain svc-web {
+        meta l4proto tcp dnat to numgen random mod 2 map { 0 : 10.244.1.5 . 8080, 1 : 10.244.2.7 . 8080 }
+    }
+
+    chain prerouting {
+        type nat hook prerouting priority dstnat; policy accept;
+        ip daddr . meta l4proto . th dport vmap @services
+    }
+
+    chain output {
+        type nat hook output priority -100; policy accept;
+        ip daddr . meta l4proto . th dport vmap @services
+    }
+}

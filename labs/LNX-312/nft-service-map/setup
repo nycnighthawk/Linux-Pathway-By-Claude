@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Create the starting state: a skeleton ruleset in the work directory.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > service.nft <<'NFT'
+# SPDX-License-Identifier: MIT
+table ip kubeproxy_lab {
+    map services {
+        type ipv4_addr . inet_proto . inet_service : verdict
+        # TODO 1: add elements = { ... } so the Service key points at chain svc-web
+    }
+
+    chain svc-web {
+        # TODO 2: DNAT tcp traffic to web-0 or web-1 with numgen random mod 2
+    }
+
+    chain prerouting {
+        type nat hook prerouting priority dstnat; policy accept;
+        # TODO 3: look packets up in @services
+    }
+
+    chain output {
+        type nat hook output priority -100; policy accept;
+        # TODO 3: the same lookup for traffic that starts on this node
+    }
+}
+NFT

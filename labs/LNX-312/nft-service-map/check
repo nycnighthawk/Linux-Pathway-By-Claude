@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade service.nft in $LAB_DIR. Exit 0 only if every requirement holds.
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+
+[ -f service.nft ] || { echo "FAIL: service.nft not found in $PWD"; exit 1; }
+rules=$(sed -e 's/#.*$//' service.nft | tr -s ' \t' ' ')      # strip comments, squeeze blanks
+flat=$(printf '%s' "$rules" | tr '\n' ' ' | tr -s ' ')
+
+# 4. the file parses and checks against the kernel (dry run)
+if out=$(nft -c -f service.nft 2>&1); then ok "nft -c accepts the file"; else fail "nft -c rejects the file: $out"; fi
+
+# 1. map element
+if printf '%s' "$flat" | grep -Eq '10\.96\.0\.10 \. tcp \. 80 : goto svc-web'; then
+  ok "10.96.0.10 . tcp . 80 goes to chain svc-web"
+else fail "services has no element '10.96.0.10 . tcp . 80 : goto svc-web'"; fi
+
+# 2. DNAT with numgen to both pods, port 8080
+chain=$(printf '%s' "$flat" | grep -Eo 'chain svc-web \{[^}]*(\{[^}]*\}[^}]*)*\}' | head -1)
+if printf '%s' "$chain" | grep -Eq 'dnat to numgen random mod 2 map'; then ok "svc-web picks a backend with numgen random mod 2"
+else fail "svc-web needs: dnat to numgen random mod 2 map { ... }"; fi
+for ep in '10\.244\.1\.5 \. 8080' '10\.244\.2\.7 \. 8080'; do
+  printf '%s' "$chain" | grep -Eq "$ep" && ok "backend ${ep//\\/} present" || fail "svc-web map is missing backend ${ep//\\/}"
+done
+printf '%s' "$chain" | grep -Eq 'tcp|l4proto' && ok "svc-web is limited to TCP" || fail "svc-web should match TCP before it translates (meta l4proto tcp)"
+
+# 3. both hooks use the map
+for h in prerouting output; do
+  body=$(printf '%s' "$flat" | grep -Eo "chain $h \{[^}]*\}" | head -1)
+  if printf '%s' "$body" | grep -Eq 'ip daddr \. (meta l4proto|ip protocol) \. (th|tcp) dport vmap @services'; then ok "$h looks up @services"
+  else fail "chain $h needs: ip daddr . meta l4proto . th dport vmap @services"; fi
+done
+
+exit $bad

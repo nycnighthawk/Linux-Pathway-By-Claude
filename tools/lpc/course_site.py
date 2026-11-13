@@ -208,7 +208,7 @@ def _build_course(root: Path, base: Path, cid: str, d: dict, tax: dict) -> None:
                 + f'<h2 id="grade">Grade it</h2>'
                 + ('<p>A script named <code>check</code> grades your work. From a clone of the repository run:</p>'
                    f'<code class="cmd">{E(cmd)}</code><p>That command proves the check fails on the starting state and passes with the reference solution; '
-                   f'to grade your own attempt, run <code>labs/{E(cid)}/{E(lab["id"])}/check</code> in the lab working directory.</p>'
+                   f'to grade your own attempt, run <code>LAB_DIR=$PWD labs/{E(cid)}/{E(lab["id"])}/check</code> from your working directory.</p>'
                    if graded else '<p>This lab is not graded in CI. Follow the steps above by hand and compare with the checklist in the README.</p>')
                 + f'<details><summary>Show the reference solution</summary>{"".join(sol)}</details>'
                 + f'<p><button type="button" data-mark="{E(key, quote=True)}" data-label-off="Mark lab as done" data-label-on="Done: click to undo" aria-pressed="false">Mark lab as done</button></p>')

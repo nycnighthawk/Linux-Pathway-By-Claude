@@ -153,3 +153,48 @@ sections yet, so its syntheses rely mostly on cited web sources until virtualiza
 A run is one Claude session. Owner time is mostly fact review: roughly 10 minutes per topic. Capstones are best
 written last, because they draw on the finished course syntheses.
 
+
+## 7. Producing a course
+
+A course turns the syntheses of one course (section 6) into a browser-ready course: lessons, quizzes with instant
+feedback and labs graded by a script. Course text is All rights reserved (`courses/LICENSE`); lab code is MIT, or
+GPL-2.0-only for kernel-module, KVM and QEMU labs (`labs/LICENSE`, D-030). The worked example is `courses/LNX-312/` with
+`labs/LNX-312/nft-service-map/`.
+
+**Layout**
+
+```
+courses/<COURSE>/course.yaml          outcomes, modules (lessons by topic id), labs, quizzes, certification refs, hours
+courses/<COURSE>/lessons/<id>.md      lesson text; links may use lab:<id>, quiz:<id>, lesson:<topic>
+courses/<COURSE>/quizzes/<id>.yaml    questions: id, prompt, choices, answer (0-based indexes), explain
+labs/<COURSE>/<lab>/                  README.md, setup, check (executable), solution/ ; SPDX header in every source file
+courses/course.schema.json, quiz.schema.json   the schemas `course check` validates against
+```
+
+Set `coverage: partial` in `course.yaml` while a course is in progress (missing topics only warn); remove it, or use
+`course check --strict`, for the finished course, which needs a lesson for every topic in `taxonomy/topics.yaml`.
+The `certifications` block names certs from `taxonomy/courses.yaml`; objective ids are checked against
+`objectives/<cert>.yml` once that file exists.
+
+**Commands**
+
+| Command | Does |
+|---|---|
+| `bin/lpc course check [COURSE] [--strict]` | schema, topic coverage, links, quiz keys, lab layout, SPDX headers (fails on any error) |
+| `bin/lpc course build [COURSE]` | check, then write `site/courses/` (static HTML, one CSS and one JS file, no network calls) |
+| `bin/lpc course status` | lessons, quizzes, labs and coverage per course |
+| `bin/lpc course lab COURSE [LAB]` | harness: runs `setup`, proves `check` fails, applies `solution/`, proves `check` passes |
+| `bin/lpc course matrix [--changed REF] [--env C\|V\|W] [--notices]` | CI matrix of labs |
+
+**Lab contract.** `setup` and `check` run with the working directory set to a fresh `$LAB_DIR`; `$LAB_SRC` is a copy of
+the lab directory. `check` exits 0 only when the task is solved and prints one line per requirement. The solution is
+either `solution/apply` (an executable run in `$LAB_DIR`) or files that are copied over `$LAB_DIR`. List the apt
+packages a container lab needs under `packages:` in `course.yaml`.
+
+**Environments in CI** (`.github/workflows/labs.yml`, runs only for changed labs): C container, V nested KVM VM, W Windows
+runner. S, K, H and O labs are not run; the job prints a notice and the README is followed by hand. The `course` job in
+`catalog.yml` checks and builds all courses, and the Pages deploy publishes `site/courses/` next to the catalog.
+A PR that only touches `progress/**` triggers nothing heavy.
+
+**Producing one course:** write the syntheses (section 6), then for each topic a lesson in your own words, a quiz of
+5 or more questions, and a lab where the topic's `env` allows one; run `check`, `lab` and `build` as you go; open one PR.

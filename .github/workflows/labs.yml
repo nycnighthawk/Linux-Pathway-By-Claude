@@ -1,0 +1,97 @@
+name: labs
+
+# Runs the labs that a pull request changed, each in its own environment (see report: envs).
+#   C  container           ubuntu container with NET_ADMIN
+#   V  nested KVM VM       ubuntu runner with /dev/kvm enabled
+#   W  Windows runner      windows-2025
+#   S, K, H, O             skipped with a notice (self-hosted, cloud, hardware, time or human): follow the README
+# Path filter: progress/** alone, docs and catalog changes trigger nothing here.
+on:
+  pull_request:
+    paths: ["labs/**", "courses/*/course.yaml", "tools/lpc/course.py", ".github/workflows/labs.yml"]
+  workflow_dispatch:       # a manual run grades every lab
+
+permissions:
+  contents: read
+
+env:
+  PYTHONPATH: tools
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      c: ${{ steps.m.outputs.c }}
+      v: ${{ steps.m.outputs.v }}
+      w: ${{ steps.m.outputs.w }}
+    steps:
+      - uses: actions/checkout@v6
+        with: {lfs: false, fetch-depth: 0}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - id: m
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          arg="--changed ${BASE:-HEAD~1}"
+          if [ "${{ github.event_name }}" = workflow_dispatch ]; then arg=""; fi
+          for e in C V W; do
+            echo "$(echo $e | tr A-Z a-z)=$(bin/lpc course matrix $arg --env $e)" >> "$GITHUB_OUTPUT"
+          done
+          bin/lpc course matrix $arg --notices
+
+  container:
+    needs: plan
+    if: ${{ toJson(fromJson(needs.plan.outputs.c).include) != '[]' }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan.outputs.c) }}
+    container:
+      image: ubuntu:24.04
+      options: --cap-add NET_ADMIN
+    name: C ${{ matrix.course }}/${{ matrix.lab }}
+    steps:
+      - run: apt-get update -qq && apt-get install -y -qq git python3 python3-yaml python3-jsonschema ${{ matrix.packages }}
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - run: bin/lpc course lab ${{ matrix.course }} ${{ matrix.lab }}
+
+  vm:
+    needs: plan
+    if: ${{ toJson(fromJson(needs.plan.outputs.v).include) != '[]' }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan.outputs.v) }}
+    name: V ${{ matrix.course }}/${{ matrix.lab }}
+    steps:
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - name: Enable nested KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+          ls -l /dev/kvm
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq qemu-system-x86 qemu-utils ${{ matrix.packages }}
+      - run: bin/lpc course lab ${{ matrix.course }} ${{ matrix.lab }}
+
+  windows:
+    needs: plan
+    if: ${{ toJson(fromJson(needs.plan.outputs.w).include) != '[]' }}
+    runs-on: windows-2025
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.plan.outputs.w) }}
+    name: W ${{ matrix.course }}/${{ matrix.lab }}
+    steps:
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: python -m lpc course lab ${{ matrix.course }} ${{ matrix.lab }}

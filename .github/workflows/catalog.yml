@@ -17,7 +17,7 @@ on:
         description: "Job to run (all = every job)"
         type: choice
         default: all
-        options: [all, test, gate, decisions, build, site, synth]
+        options: [all, test, gate, decisions, build, site, synth, course]
 
 permissions:
   contents: read
@@ -41,6 +41,7 @@ jobs:
       decisions: ${{ steps.f.outputs.decisions }}
       site: ${{ steps.f.outputs.site }}
       synth: ${{ steps.f.outputs.synth }}
+      course: ${{ steps.f.outputs.course }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -53,7 +54,8 @@ jobs:
             tools: [tools/**, tests/**, bin/**, requirements.txt, .github/workflows/catalog.yml]
             content: [raw/**, sources.yaml, taxonomy/**, review/overrides.yaml]
             decisions: [decisions/**, RUBRIC.md]
-            site: [web/**, catalog/**]
+            site: [web/**, catalog/**, courses/**, labs/**]
+            course: [courses/**, labs/**, taxonomy/topics.yaml, tools/lpc/course*, tools/lpc/course_assets/**, requirements.txt]
             synth: [synth/**, taxonomy/topics.yaml]
 
   test:
@@ -130,6 +132,20 @@ jobs:
       - run: bin/lpc build        # the 8-gram check needs the full-text index
       - run: bin/lpc synth check
 
+  course:
+    # Check (schema, coverage, links, quiz keys, lab layout, SPDX) and build every course. Labs run in labs.yml.
+    needs: changes
+    if: inputs.job == 'all' || inputs.job == 'course' || (github.event_name != 'workflow_dispatch' && (needs.changes.outputs.course == 'true' || needs.changes.outputs.tools == 'true'))
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with: {lfs: false}
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: bin/lpc course check
+      - run: bin/lpc course build
+
   site:
     needs: changes
     if: inputs.job == 'all' || inputs.job == 'site' || (github.event_name != 'workflow_dispatch' && (needs.changes.outputs.site == 'true' || needs.changes.outputs.tools == 'true'))
@@ -141,6 +157,7 @@ jobs:
         with: {python-version: "3.12", cache: pip}
       - run: pip install -r requirements.txt
       - run: bin/lpc web          # reads the committed catalog/; no rebuild needed
+      - run: bin/lpc course build # adds site/courses
       - uses: actions/upload-pages-artifact@v4
         if: github.ref == 'refs/heads/main'
         with:

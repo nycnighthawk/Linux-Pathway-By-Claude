@@ -1,7 +1,7 @@
 item: T0
 label: Course toolchain
 branch: build/T0
-state: in-progress
+state: done
 started: '2026-11-13'
 updated: '2026-11-13'
 phases:
@@ -26,15 +26,15 @@ phases:
     units: 0
     done: []
   ci:
-    state: todo
+    state: done
     units: 0
     done: []
   reference-slice:
-    state: todo
+    state: done
     units: 0
     done: []
   docs:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -45,3 +45,8 @@ log:
 - '2026-11-13 check: done'
 - '2026-11-13 build: done'
 - '2026-11-13 labs-harness: done'
+- '2026-11-13 reference-slice: done'
+- '2026-11-13 ci: done'
+- '2026-11-13 docs: done'
+- 2026-11-13 finished
+finished: '2026-11-13'
