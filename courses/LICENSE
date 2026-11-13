@@ -1,0 +1,8 @@
+Copyright (c) 2026 Han Chen. All rights reserved.
+
+The course text in this directory (courses/): course.yaml files, lessons, quiz banks and anything else under
+courses/ except tooling (decision D-030). No licence is granted to copy, modify or redistribute it without written
+permission from the copyright holder. This is the same position as the syntheses in ../synth/.
+
+Courses cite, but do not reproduce, third-party material. Cited sources keep their own licences (see ../NOTICE.md).
+Lab code lives in ../labs/ under its own licence (see ../labs/LICENSE).
