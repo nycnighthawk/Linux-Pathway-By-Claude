@@ -190,6 +190,14 @@ source_priors:
   disa-stig: {LNX-303: 4, LNX-204: 3}
   nist-sp800-53: {LNX-303: 6}
   nist-sp800-guides: {LNX-303: 3, LNX-204: 3}
+  qemu-docs: {LNX-332: 3, LNX-308: 2}
+  libvirt-docs: {LNX-308: 4, LNX-315: 2}
+  virtualbox-docs: {LNX-315: 4, LNX-332: 1}
+  kubevirt-user-guide: {LNX-315: 4, LNX-311: 1}
+  firecracker-docs: {LNX-332: 3, LNX-308: 2}
+  cloud-hypervisor-docs: {LNX-332: 4, LNX-315: 2}
+  rust-vmm-community: {LNX-332: 6}
+  virtio-spec: {LNX-332: 6}
 
 # Tagging thresholds (implementation constants, documented here so they're reviewable).
 thresholds:

@@ -20,6 +20,14 @@ docker-docs,"Docker documentation (engine, build, compose)",Apache-2.0,full,adap
 ms-learn-adds,Microsoft Learn: AD DS and OpenSSH for Windows,CC-BY-4.0,full,adapt,A-compatible,2026-11-01:pages=200,2026-11-01,2160
 freeipa-docs,FreeIPA documentation,NOASSERTION,outline,link-only,Ref,2026-11-01:pages=200,2026-11-01,1975
 lfd103,LFD103 A Beginner's Guide to Linux Kernel Development (course page),Proprietary,outline,link-only,Ref,2026-11-01:pages=1,2026-11-01,1
+qemu-docs,"QEMU documentation (system emulation, devel, interop, specs)",GPL-2.0-only,full,link-only,C,e9fa1f66f0d47c74b6766e1b8b87ad7c2a9394d5,2026-11-13,2521
+libvirt-docs,libvirt documentation (website sources),LGPL-2.1-or-later,full,link-only,C,ed41b1f053fe1d6d279908ffdc1e376174fbf9d5,2026-11-13,1527
+virtualbox-docs,"VirtualBox user manual, SDK reference and VBoxManage reference",GPL-3.0-only,full,link-only,C,b6bea72111fcff48f31c57c9f66365b1d3301bb9,2026-11-13,668
+rust-vmm-community,rust-vmm community documentation,NOASSERTION,outline,link-only,Ref,d3d1c560fb8b9afc8afe6c26a7e79d4fd134144b,2026-11-13,66
+cloud-hypervisor-docs,Cloud Hypervisor documentation,CC-BY-4.0,full,adapt,A,5aab3e7da1a028e9a51ac6958db47674ea0d0e2b,2026-11-13,427
+firecracker-docs,Firecracker documentation,Apache-2.0,full,adapt,Permissive,cc88013eadcf432da1b37d47d445b7e8bcc3046e,2026-11-13,499
+kubevirt-user-guide,KubeVirt user guide,Apache-2.0,full,adapt,Permissive,00756dd6ae0508675265013990d4de890df9b1b3,2026-11-13,1088
+virtio-spec,VIRTIO specification (OASIS),NOASSERTION,outline,link-only,Ref,bb1dd2e1fe89b862f38f15873d835a698b196f89,2026-11-13,162
 samba-wiki,Samba wiki,NOASSERTION,link,link-only,Ref,,,1
 tlcl,The Linux Command Line (W. Shotts),CC-BY-NC-ND-3.0,link,excluded,Ref,,,1
 cis-benchmarks,CIS Benchmarks,CC-BY-NC-SA-4.0,link,excluded,Ref,,,1

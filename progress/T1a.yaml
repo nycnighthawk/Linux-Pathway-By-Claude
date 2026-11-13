@@ -1,7 +1,7 @@
 item: T1a
 label: Virtualization sources
 branch: build/T1a
-state: in-progress
+state: done
 started: '2026-11-13'
 updated: '2026-11-13'
 phases:
@@ -18,10 +18,13 @@ phases:
     - kubevirt
     - virtio-spec
   rebuild:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
 log:
 - 2026-11-13 started
 - '2026-11-13 sources: qemu, libvirt, virtualbox, rust-vmm, cloud-hypervisor, firecracker, kubevirt, virtio-spec'
+- '2026-11-13 rebuild: done'
+- 2026-11-13 finished
+finished: '2026-11-13'

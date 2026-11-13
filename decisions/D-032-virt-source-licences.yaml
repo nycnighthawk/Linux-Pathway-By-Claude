@@ -1,0 +1,21 @@
+id: D-032
+title: Modes and reuse for the virtualization sources (T1a)
+decided_by: claude
+options:
+- name: "Per-source licence: Apache and CC BY adapt; GPL/LGPL full text but link-only; unlicensed or OASIS outline only"
+  r1: 5
+  r2: 5
+  r3: 5
+  r4: 4
+  r5: 5
+  r6: 4
+- name: Store every source in full and mark all as adaptable
+  r1: 1
+  r2: 5
+  r3: 5
+  r4: 5
+  r5: 5
+  r6: 3
+chosen: "Per-source licence: Apache and CC BY adapt; GPL/LGPL full text but link-only; unlicensed or OASIS outline only"
+justification: "Checked upstream on 2026-11-13. firecracker and kubevirt user guide are Apache-2.0 (stream Permissive, adapt). Cloud Hypervisor docs are CC-BY-4.0 per .reuse/dep5 (stream A, adapt). QEMU (GPL-2.0), libvirt (LGPL-2.1+) and the VirtualBox manual and SDK reference (GPL-3.0) are copyleft, so they are stored in full for search but reuse is link-only, as for other GPL and GFDL sources. The rust-vmm community repo has no licence file and the VIRTIO specification is published under the OASIS IPR policy in Non-Assertion Mode, which is not an open-content licence, so both are outline-only (D-006). Storing everything as adaptable would breach D-004."
+date: '2026-11-13'
