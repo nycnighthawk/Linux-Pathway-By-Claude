@@ -1,0 +1,15 @@
+id: libvirt-docs
+name: libvirt documentation (website sources)
+license: LGPL-2.1-or-later
+license_note: libvirt is LGPL-2.1+ (docs/governance.rst); the website sources carry
+  no separate licence. Link-only.
+mode: full
+reuse: link-only
+stream: C
+retrieved: '2026-11-13'
+upstream: https://github.com/libvirt/libvirt
+pin: ed41b1f053fe1d6d279908ffdc1e376174fbf9d5
+upstream_commit_date: '2026-11-13'
+license_file_upstream: COPYING.LESSER
+text_files: 157
+figures: 0

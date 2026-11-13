@@ -1,0 +1,115 @@
+# Firmware Configuration (fw_cfg) Device
+
+The `fw_cfg` device is a QEMU-compatible device that allows the hypervisor to pass configuration and data to the guest operating system. This is particularly useful for firmware to access information like ACPI tables, kernel images, initramfs, kernel command lines, and other arbitrary data blobs.
+
+Cloud Hypervisor implements the `fw_cfg` device with DMA-enabled access.
+
+## Purpose
+
+The `fw_cfg` device serves as a generic information channel between the VMM and the guest. It can be used to:
+
+*   Load the kernel, initramfs, and kernel command line for direct kernel boot with firmware.
+*   Provide ACPI tables to the guest firmware or OS.
+*   Pass custom configuration files or data blobs (e.g., attestation data, SEV-SNP launch secrets) to the guest.
+*   Supply an E820 memory map to the guest.
+
+## Enabling `fw_cfg`
+
+The `fw_cfg` device requires the `fw_cfg` feature at build time. It is not
+enabled by default or in the release binaries:
+
+```bash
+cargo build --features fw_cfg
+```
+
+## Firmware-Assisted Direct Kernel Boot
+
+Providing both `--firmware` and `--kernel` requires `--fw-cfg-config`. The
+firmware becomes the initial payload and receives the kernel, command line,
+initramfs, and ACPI tables selected by `--fw-cfg-config`. For example, an
+AArch64 guest without an initramfs can be booted with:
+
+```bash
+cloud-hypervisor \
+    --firmware /path/to/CLOUDHV_EFI.fd \
+    --kernel /path/to/Image \
+    --cmdline "console=ttyAMA0 root=/dev/vda1" \
+    --disk path=/path/to/rootfs.raw,image_type=raw \
+    --serial tty \
+    --console off \
+    --fw-cfg-config initramfs=off
+```
+
+The firmware must support loading a kernel through the QEMU-compatible
+`fw_cfg` interface. Cloud Hypervisor's EDK II firmware provides this support.
+Options in `--fw-cfg-config` default to enabled, so explicitly disable any
+payload component that is not supplied.
+
+## Guest Kernel Configuration
+
+For the guest Linux kernel to recognize and use the `fw_cfg` device via sysfs, the following kernel configuration option must be enabled:
+
+*   `CONFIG_FW_CFG_SYSFS=y`
+
+This option allows the kernel to expose `fw_cfg` entries under `/sys/firmware/qemu_fw_cfg/by_name/`.
+
+## Command Line Options
+
+The `fw_cfg` device is configured using the `--fw-cfg-config` command-line option.
+
+**Parameters:**
+*   `e820=on|off`: (Default: `on` on x86-64) Whether to add the E820 memory map
+    to `fw_cfg` as `etc/e820`. AArch64 has no E820 map and ignores this option.
+*   `kernel=on|off`: (Default: `on`) Whether to add the kernel image (specified by `--kernel`) to `fw_cfg`.
+*   `cmdline=on|off`: (Default: `on`) Whether to add the kernel command line (specified by `--cmdline`) to `fw_cfg`.
+*   `initramfs=on|off`: (Default: `on`) Whether to add the initramfs image (specified by `--initramfs`) to `fw_cfg`.
+*   `acpi_table=on|off`: (Default: `on`) Whether to add generated ACPI tables to `fw_cfg`.
+*   `items=[... : ...]`: A list of custom key-value pairs to be exposed via `fw_cfg`. Multiple items are separated by `:`.
+    *   `name=<guest_sysfs_path>`: The path under which the item will appear in the guest's sysfs (e.g., `opt/org.example/my-data`).
+    *   `file=<host_file_path>`: The path to a file on the host whose content will be provided to the guest for this item.
+    *   `string=<value>`: An inline string value to provide to the guest for this item. Each item must have exactly one of `file` or `string`, not both.
+
+**Example Usage:**
+
+1.  **Direct kernel boot with custom `fw_cfg` entries:**
+
+    ```bash
+    cloud-hypervisor \
+        --kernel /path/to/vmlinux \
+        --cmdline "console=hvc0 root=/dev/vda1" \
+        --disk path=/path/to/rootfs.img,image_type=raw \
+        --fw-cfg-config initramfs=off,items=[name=opt/org.mycorp/setup_info,file=/tmp/guest_setup.txt] \
+        ...
+    ```
+    In the guest, `/tmp/guest_setup.txt` from the host will be accessible at `/sys/firmware/qemu_fw_cfg/by_name/opt/org.mycorp/setup_info/raw`.
+
+2.  **Inline string items (e.g., OVMF MMIO64 configuration for GPU passthrough):**
+
+    ```bash
+    cloud-hypervisor \
+        --firmware /path/to/OVMF.fd \
+        --disk path=/path/to/rootfs.img,image_type=raw \
+        --device path=/sys/bus/pci/devices/0000:41:00.0 \
+        --fw-cfg-config kernel=off,cmdline=off,initramfs=off,items=[name=opt/ovmf/X-PciMmio64Mb,string=262144] \
+        ...
+    ```
+    The string `262144` is passed directly to the guest as the content of `opt/ovmf/X-PciMmio64Mb`.
+
+3.  **Disabling `fw_cfg`:**
+
+    Omit `--fw-cfg-config`. The device is only created when this option is
+    passed.
+
+## Accessing `fw_cfg` Items in the Guest
+
+If `CONFIG_FW_CFG_SYSFS` is enabled in the guest kernel, items added to `fw_cfg` can be accessed via sysfs.
+
+For example, an item added with `name=opt/org.example/my-data` will be available at:
+`/sys/firmware/qemu_fw_cfg/by_name/opt/org.example/my-data/raw`
+
+The `raw` file contains the content of the host file or the inline string.
+
+The kernel, initramfs, and command line use fixed `fw_cfg` selectors without
+file names, so they do not appear under `by_name`. Other standard items have
+predefined names: `etc/e820` for the E820 memory map, and `acpi/tables`,
+`acpi/rsdp`, and `etc/table-loader` for the ACPI tables.

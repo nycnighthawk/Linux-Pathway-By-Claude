@@ -1,0 +1,14 @@
+id: firecracker-docs
+name: Firecracker documentation
+license: Apache-2.0
+license_note: null
+mode: full
+reuse: adapt
+stream: Permissive
+retrieved: '2026-11-13'
+upstream: https://github.com/firecracker-microvm/firecracker
+pin: cc88013eadcf432da1b37d47d445b7e8bcc3046e
+upstream_commit_date: '2026-11-13'
+license_file_upstream: LICENSE
+text_files: 54
+figures: 0

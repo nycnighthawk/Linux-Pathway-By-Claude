@@ -1,0 +1,354 @@
+# CPU
+
+Cloud Hypervisor has many options when it comes to the creation of virtual
+CPUs. This document aims to explain what Cloud Hypervisor is capable of and
+how it can be used to meet the needs of very different use cases.
+
+## Options
+
+`CpusConfig` or what is known as `--cpus` from the CLI perspective is the way
+to set vCPUs options for Cloud Hypervisor. See `cloud-hypervisor --help` for
+the syntax and `CpusConfig` in the
+[OpenAPI spec](../vmm/src/api/openapi/cloud-hypervisor.yaml) for the JSON
+structure.
+
+### `boot`
+
+Number of vCPUs present at boot time.
+
+This option allows defining a specific number of vCPUs to be present at the
+time the VM is started. If this option is not specified, it takes the
+default value of `1`, starting the VM with a single vCPU.
+
+Value is an unsigned integer of 32 bits.
+
+_Example_
+
+```
+--cpus boot=2
+```
+
+### `max`
+
+Maximum number of vCPUs.
+
+This option defines the maximum number of vCPUs that can be assigned to the VM.
+In particular, this option is used when looking for CPU hotplug as it provides
+an indication about how many vCPUs might be needed later during the runtime of
+the VM.
+For instance, if booting the VM with 2 vCPUs and a maximum of 6 vCPUs, it means
+up to 4 vCPUs can be added later at runtime by resizing the VM.
+
+The value must be greater than or equal to the number of boot vCPUs.
+The value is an unsigned integer of 32 bits.
+
+By default this option takes the value of `boot`, meaning vCPU hotplug is not
+expected and can't be performed.
+
+_Example_
+
+```
+--cpus max=3
+```
+
+### `topology`
+
+Topology of the guest platform.
+
+This option gives the user a way to describe the exact topology that should be
+exposed to the guest. It can be useful to describe to the guest the same
+topology found on the host as it allows for proper usage of the resources and
+is a way to achieve better performance.
+
+The topology is described through the following syntax:
+
+```
+topology=<threads_per_core>:<cores_per_die>:<dies_per_package>:<packages>
+```
+
+_Example_
+
+```
+--cpus boot=2,topology=1:1:2:1
+```
+
+### `kvm_hyperv`
+
+Enable KVM Hyper-V emulation.
+
+When turned on, this option relies on KVM to emulate the synthetic interrupt
+controller (SynIC) along with synthetic timers expected by a Windows guest.
+A Windows guest usually runs on top of Microsoft Hyper-V, therefore expects
+these synthetic devices to be present. That's why KVM provides a way to emulate
+them and avoids failures running a Windows guest with Cloud Hypervisor.
+
+By default this option is turned off.
+
+_Example_
+
+```
+--cpus kvm_hyperv=on
+```
+
+### `kvm_hint_realtime`
+
+Advertise `KVM_HINTS_REALTIME` (`EDX` bit 0 of CPUID leaf `0x4000_0001`) to
+the guest. This tells the guest that every vCPU runs on a dedicated host CPU,
+like QEMU's `kvm-hint-dedicated`. A Linux guest then disables the paravirtual
+spinlock, TLB flush and scheduler yield paths and can enable the
+`cpuidle-haltpoll` driver, which lowers idle wake-up latency at the cost of
+busy-polling.
+
+Only enable this option when each vCPU is pinned to its own host CPU, for
+example with `affinity`, and nothing else runs there. It is available on
+x86-64 with KVM only and cannot be combined with `kvm_hyperv`.
+
+By default this option is turned off.
+
+_Example_
+
+```
+--cpus boot=4,affinity=[0@[8],1@[9],2@[10],3@[11]],kvm_hint_realtime=on
+```
+
+### `max_phys_bits`
+
+Maximum size for guest's addressable space.
+
+This option defines the maximum number of physical bits for all vCPUs, which
+sets a limit for the size of the guest's addressable space. This is mainly
+useful for debugging purposes.
+
+The value is an unsigned integer of 8 bits. It must be between 32 and 64, inclusive.
+
+_Example_
+
+```
+--cpus max_phys_bits=40
+```
+
+### `affinity`
+
+Affinity of each vCPU.
+
+This option gives the user a way to provide the host CPU set associated with
+each vCPU. It is useful for achieving CPU pinning, ensuring multiple VMs won't
+affect the performance of each other. It might also be used in the context of
+NUMA as it is a way of making sure the VM can run on a specific host NUMA node.
+In general, this option is used to increase the performance of a VM depending
+on the host platform and the type of workload running in the guest.
+
+The affinity is described through the following syntax:
+
+```
+affinity=[<vcpu_id1>@[<host_cpu_id1>, <host_cpu_id2>], <vcpu_id2>@[<host_cpu_id3>, <host_cpu_id4>]]
+```
+
+The outer brackets define the list of vCPUs. And for each vCPU, the inner
+brackets attached to `@` define the list of host CPUs the vCPU is allowed to
+run onto.
+
+Multiple values can be provided to define each list. Each value is a
+platform-native unsigned integer (`usize`).
+
+For instance, if one needs to run vCPU 0 on host CPUs from 0 to 4, the syntax
+using `-` will help define a contiguous range with `affinity=[0@[0-4]]`. The
+same example could also be described with `affinity=[0@[0,1,2,3,4]]`.
+
+A combination of both `-` and `,` separators is useful when one might need to
+describe a list containing host CPUs from 0 to 99 and the host CPU 255, as it
+could simply be described with `affinity=[0@[0-99,255]]`.
+
+As soon as one tries to describe a list of values, `[` and `]` must be used to
+demarcate the list.
+
+By default each vCPU runs on the entire host CPU set.
+
+_Example_
+
+```
+--cpus boot=3,affinity=[0@[2,3],1@[0,1]]
+```
+
+In this example, assuming the host has 4 CPUs, vCPU 0 will run exclusively on
+host CPUs 2 and 3, while vCPU 1 will run exclusively on host CPUs 0 and 1.
+Because nothing is defined for vCPU 2, it can run on any of the 4 host CPUs.
+
+### `features`
+
+Set of CPU features to enable.
+
+This option allows the user to enable a set of CPU features that are disabled
+by default otherwise.
+
+The currently available feature set is: `amx`. It is available on x86-64 only,
+and other architectures reject any feature.
+
+The `amx` feature will enable the x86 extension adding hardware units for
+matrix operations (int and float dot products). The goal of the extension is to
+provide performance enhancements for these common operations.
+
+_Example_
+
+```
+--cpus features=amx
+```
+
+In this example the amx CPU feature will be enabled for the VMM.
+
+### `nested`
+
+Enable nested virtualization (default off). Nested virtualization is needed to
+access hardware virtualization from a guest. This option is available on x86_64
+(KVM & MSHV) and aarch64 (KVM only).
+
+_Example_
+
+```
+--cpus nested=on
+```
+
+#### KVM aarch64 host requirements
+
+On `aarch64`, nested virtualization is supported if the kernel has `KVM_CAP_ARM_EL2`.
+This can be enabled on the kernel command line by specifying `kvm-arm.mode=nested`.
+Nested virtualization is supported only on hardware with `FEAT_NV2` and a host
+kernel in VHE mode.
+
+### `core_scheduling`
+
+Core scheduling mode for vCPU threads.
+
+This option controls Linux core scheduling (`PR_SCHED_CORE`) for vCPU threads,
+which prevents untrusted tasks from sharing SMT siblings. This mitigates
+side-channel attacks (e.g. MDS, L1TF) between vCPU threads.
+
+Three modes are available:
+
+- `vm` (default): All vCPU threads share a single core scheduling cookie.
+  vCPUs may be co-scheduled on SMT siblings of the same core, providing
+  better performance while still isolating VM threads from host tasks.
+- `vcpu`: Each vCPU thread gets its own unique cookie. No two vCPUs can
+  share SMT siblings, providing the strongest isolation between vCPUs at
+  the cost of performance.
+- `off`: No core scheduling is applied.
+
+If the host kernel is built without `CONFIG_SCHED_CORE`, the option has no
+effect and Cloud Hypervisor logs a warning. On hosts without SMT, the option
+silently has no effect.
+
+_Example_
+
+```
+--cpus boot=2,core_scheduling=vm
+```
+
+In this example, both vCPUs will share the same core scheduling cookie,
+allowing them to be co-scheduled on SMT siblings while preventing host
+threads from sharing those siblings.
+
+### `profile`
+
+CPU profiles are experimental. They are under active development and no
+guarantees are made about their stability.
+
+Select the CPU profile used to configure guest CPUID and MSRs. `host` is the
+default. A file profile describes the CPU capabilities required by the guest,
+which are checked against the host when creating or restoring the VM.
+
+File profiles are supported on x86-64 with KVM. Other architectures and MSHV
+support `host` only.
+
+CLI selectors are case-insensitive; the file path retains its original case.
+
+Load a profile with:
+
+```shell
+--cpus boot=2,profile=path:/path/to/cpu_profile.json
+```
+
+Paths may be absolute or relative to the current working directory. Quote the
+value when a path contains commas or brackets:
+
+```shell
+--cpus 'boot=2,profile="path:/path/to/cpu,profile.json"'
+```
+
+The configuration contains only the profile path. The file is read whenever
+the VM's CPUs are created, including reboot, snapshot restore, and migration
+at the destination. Keep the file available and unchanged across these
+operations. For restore or migration on another host, provide the same
+contents at the configured path there.
+
+The JSON file has two required sections:
+
+- `cpuid.adjustments` contains `[parameters, adjustment]` pairs. Parameters
+  specify `leaf`, an inclusive `sub_leaf` range with `start` and `end`, and a
+  `register` (`EAX`, `EBX`, `ECX`, or `EDX`). Each adjustment has `mask` and
+  `replacements` fields. Registers without an adjustment are cleared.
+- `msr.adjustments` contains `[address, adjustment]` pairs for feature MSRs.
+  `msr.required_msrs` lists the MSR addresses required by the profile.
+
+Both adjustment types compute `(host_value & mask) | replacements`. Leaves,
+sub-leaves, MSR addresses, masks and replacement values are hexadecimal strings
+with a `0x` prefix. CPUID values and MSR addresses are 32-bit; MSR values are
+64-bit. Normal VM settings, including topology, AMX, Hyper-V and nested
+virtualization, still apply.
+
+The JSON API accepts `"Host"` or an object with a `"File"` key whose value is
+the profile path, such as `{"File": "/path/to/cpu_profile.json"}`. See the
+`CpuProfileConfig` schema in
+[the OpenAPI definition](../vmm/src/api/openapi/cloud-hypervisor.yaml).
+
+### `x-cpuid-overrides` (experimental, x86-64 only)
+
+This option is experimental and may change between releases.
+
+Replace the register values returned by selected CPUID leaves and subleaves.
+This can be used to adjust the CPU information exposed to a guest when
+preparing for snapshot/restore or migration between different hosts.
+
+Each entry contains six unsigned 32-bit values in this order:
+`leaf,subleaf,eax,ebx,ecx,edx`. All values must use `0x`-prefixed hexadecimal
+notation. An entry replaces all four registers of every matching leaf and
+subleaf, or adds a new entry if none exists. Entries are applied in order, so
+the last override for a given leaf and subleaf wins. By default the list is
+empty.
+
+_Example_
+
+```
+--cpus 'boot=2,x-cpuid-overrides=[[0x80000002,0x0,0x0,0x0,0x0,0x0]]'
+```
+
+The corresponding JSON CPU configuration is:
+
+```json
+{
+  "boot_vcpus": 2,
+  "max_vcpus": 2,
+  "x-cpuid-overrides": [
+    {
+      "leaf": "0x80000002",
+      "subleaf": "0x0",
+      "eax": "0x0",
+      "ebx": "0x0",
+      "ecx": "0x0",
+      "edx": "0x0"
+    }
+  ]
+}
+```
+
+Overrides are applied to the common CPUID after the selected CPU profile
+and Cloud Hypervisor's normal adjustments. Per-vCPU adjustments, including
+APIC IDs and CPU topology, are applied afterwards and may change overridden
+values. Snapshot and migration compatibility checks use the overridden
+common CPUID.
+
+Overrides can be used with any CPU profile.
+Cloud Hypervisor does not validate overridden values against host CPU
+capabilities or update related CPUID leaves or MSRs. The caller must ensure
+that the resulting CPU description is consistent and supported by every
+host on which the VM will run. Overrides alone do not guarantee snapshot
+or migration compatibility.

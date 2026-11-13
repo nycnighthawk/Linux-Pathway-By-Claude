@@ -1,0 +1,14 @@
+id: rust-vmm-community
+name: rust-vmm community documentation
+license: NOASSERTION
+license_note: The community repo has no LICENSE file; rust-vmm crates are Apache-2.0
+  OR BSD-3-Clause, but this repo's text is not declared. Headings only (D-006).
+mode: outline
+reuse: link-only
+stream: Ref
+retrieved: '2026-11-13'
+upstream: https://github.com/rust-vmm/community
+pin: d3d1c560fb8b9afc8afe6c26a7e79d4fd134144b
+upstream_commit_date: '2026-07-21'
+license_file_upstream: null
+outline_files: 12

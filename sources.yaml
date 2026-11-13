@@ -361,6 +361,114 @@ sources:
     reuse: link-only
     stream: Ref
 
+  # ---- T1a: virtualization sources for the VIRT pathway (D-028) ----
+  - id: qemu-docs
+    name: QEMU documentation (system emulation, devel, interop, specs)
+    kind: git
+    repo: https://github.com/qemu/qemu
+    include: ["/docs/**/*.rst", "/docs/**/*.txt", "/COPYING"]
+    exclude_regex: '(^|/)(conf|requirements)\.|\.inc$'
+    url_template: "https://www.qemu.org/docs/master/{path_no_ext_strip_docs}.html"
+    license: GPL-2.0-only
+    license_note: "COPYING is GPL-2.0; most docs/ files carry no separate notice, so the project licence applies. Link-only."
+    mode: full
+    reuse: link-only
+    stream: C
+    pin: e9fa1f66f0d47c74b6766e1b8b87ad7c2a9394d5
+
+  - id: libvirt-docs
+    name: libvirt documentation (website sources)
+    kind: git
+    repo: https://github.com/libvirt/libvirt
+    include: ["/docs/*.rst", "/docs/kbase/**/*.rst", "/docs/manpages/*.rst", "/COPYING.LESSER"]
+    url_template: "https://libvirt.org/{path_no_ext_strip_docs}.html"
+    license: LGPL-2.1-or-later
+    license_file: COPYING.LESSER
+    license_note: "libvirt is LGPL-2.1+ (docs/governance.rst); the website sources carry no separate licence. Link-only."
+    mode: full
+    reuse: link-only
+    stream: C
+    pin: ed41b1f053fe1d6d279908ffdc1e376174fbf9d5
+
+  - id: virtualbox-docs
+    name: VirtualBox user manual, SDK reference and VBoxManage reference
+    kind: git
+    repo: https://github.com/VirtualBox/virtualbox
+    include: ["/doc/manual/en_US/dita/topics/*.dita", "/doc/manual/en_US/SDKRef.xml", "/doc/manual/en_US/man_*.xml", "/COPYING"]
+    url_template: "https://www.virtualbox.org/manual/{stem}.html"
+    license: GPL-3.0-only
+    license_note: "VirtualBox base packages are GPL-3.0-only (dual CDDL-1.0 for part of the code). The manual sources carry no separate licence. The SDK reference is doc/manual/en_US/SDKRef.xml. Link-only."
+    mode: full
+    reuse: link-only
+    stream: C
+    pin: b6bea72111fcff48f31c57c9f66365b1d3301bb9
+
+  - id: rust-vmm-community
+    name: rust-vmm community documentation
+    kind: git
+    repo: https://github.com/rust-vmm/community
+    include: ["/*.md", "/docs/**/*.md"]
+    url_template: "https://github.com/rust-vmm/community/blob/main/{path}"
+    license: NOASSERTION
+    license_note: "The community repo has no LICENSE file; rust-vmm crates are Apache-2.0 OR BSD-3-Clause, but this repo's text is not declared. Headings only (D-006)."
+    mode: outline
+    reuse: link-only
+    stream: Ref
+    pin: d3d1c560fb8b9afc8afe6c26a7e79d4fd134144b
+
+  - id: cloud-hypervisor-docs
+    name: Cloud Hypervisor documentation
+    kind: git
+    repo: https://github.com/cloud-hypervisor/cloud-hypervisor
+    include: ["/docs/*.md", "/LICENSES/CC-BY-4.0.txt"]
+    url_template: "https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/{path}"
+    license: CC-BY-4.0
+    license_file: LICENSES/CC-BY-4.0.txt
+    license_note: "Per .reuse/dep5 the docs/*.md files are CC-BY-4.0; code is Apache-2.0."
+    mode: full
+    reuse: adapt
+    stream: A
+    pin: 5aab3e7da1a028e9a51ac6958db47674ea0d0e2b
+
+  - id: firecracker-docs
+    name: Firecracker documentation
+    kind: git
+    repo: https://github.com/firecracker-microvm/firecracker
+    include: ["/docs/**/*.md", "/LICENSE"]
+    url_template: "https://github.com/firecracker-microvm/firecracker/blob/main/{path}"
+    license: Apache-2.0
+    mode: full
+    reuse: adapt
+    stream: Permissive
+    pin: cc88013eadcf432da1b37d47d445b7e8bcc3046e
+
+  - id: kubevirt-user-guide
+    name: KubeVirt user guide
+    kind: git
+    repo: https://github.com/kubevirt/user-guide
+    include: ["/docs/**/*.md", "/LICENSE"]
+    figures: ["png", "jpg", "jpeg", "svg"]
+    url_template: "https://kubevirt.io/user-guide/{path_no_ext_strip_docs}/"
+    license: Apache-2.0
+    mode: full
+    reuse: adapt
+    stream: Permissive
+    pin: 00756dd6ae0508675265013990d4de890df9b1b3
+
+  - id: virtio-spec
+    name: VIRTIO specification (OASIS)
+    kind: git
+    repo: https://github.com/oasis-tcs/virtio-spec
+    include: ["/*.tex", "/LICENSE.md"]
+    exclude_regex: '(^|/)(cl-|diffpreamble|headerfile|listings|specvars|virtio\.tex|virtio-html|commands)'
+    url_template: "https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html#{anchor}"
+    license: NOASSERTION
+    license_note: "OASIS IPR Policy, Non-Assertion Mode (LICENSE.md); not an open-content licence. Headings only (D-006)."
+    mode: outline
+    reuse: link-only
+    stream: Ref
+    pin: bb1dd2e1fe89b862f38f15873d835a698b196f89
+
   # ---- link-only catalog stubs: nothing fetched, but findable in search ----
   - {id: samba-wiki, name: Samba wiki, kind: none, url: "https://wiki.samba.org/", license: NOASSERTION, mode: link, reuse: link-only, stream: Ref}
   - {id: tlcl, name: "The Linux Command Line (W. Shotts)", kind: none, url: "https://linuxcommand.org/tlcl.php", license: CC-BY-NC-ND-3.0, mode: link, reuse: excluded, stream: Ref}

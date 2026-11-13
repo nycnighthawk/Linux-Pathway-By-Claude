@@ -178,3 +178,13 @@ def test_build_plan_markdown_matches_playbook_block():
     assert json.loads((root / "plan" / "build-plan.json").read_text()) == plan
     for i in plan["items"]:
         assert all(d in ids for d in i["deps"]), i["id"]
+
+
+def test_dita_topic_sections(tmp_path):
+    doc = _parse(tmp_path, "t.dita", "<?xml version='1.0'?>\n<!DOCTYPE topic PUBLIC \"x\" \"topic.dtd\">\n"
+                 '<topic id="net"><title><?oxy_comment_start a="b"?>Networking<?oxy_comment_end?></title>'
+                 '<body><p>Intro text.</p><section id="nat"><title>NAT mode</title><p>NAT body.</p></section></body></topic>')
+    assert doc["title"] == "Networking"
+    assert [s["heading"] for s in doc["sections"]] == ["Networking", "NAT mode"]
+    assert "Intro text." in doc["sections"][0]["text"] and "NAT body." in doc["sections"][1]["text"]
+    assert doc["sections"][1]["anchor"] == "nat"

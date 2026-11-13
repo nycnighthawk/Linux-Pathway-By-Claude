@@ -1,0 +1,6 @@
+rust-vmm community documentation
+Licence: NOASSERTION
+
+The community repo has no LICENSE file; rust-vmm crates are Apache-2.0 OR BSD-3-Clause, but this repo's text is not declared. Headings only (D-006).
+
+Curated into Linux-Pathway-By-Claude by `lpc sync`. See SOURCE.yaml for provenance.

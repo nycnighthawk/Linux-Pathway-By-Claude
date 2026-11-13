@@ -1,0 +1,14 @@
+id: cloud-hypervisor-docs
+name: Cloud Hypervisor documentation
+license: CC-BY-4.0
+license_note: Per .reuse/dep5 the docs/*.md files are CC-BY-4.0; code is Apache-2.0.
+mode: full
+reuse: adapt
+stream: A
+retrieved: '2026-11-13'
+upstream: https://github.com/cloud-hypervisor/cloud-hypervisor
+pin: 5aab3e7da1a028e9a51ac6958db47674ea0d0e2b
+upstream_commit_date: '2026-11-13'
+license_file_upstream: LICENSES/CC-BY-4.0.txt
+text_files: 49
+figures: 0

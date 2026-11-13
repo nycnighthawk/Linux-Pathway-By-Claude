@@ -1,0 +1,15 @@
+id: qemu-docs
+name: QEMU documentation (system emulation, devel, interop, specs)
+license: GPL-2.0-only
+license_note: COPYING is GPL-2.0; most docs/ files carry no separate notice, so the
+  project licence applies. Link-only.
+mode: full
+reuse: link-only
+stream: C
+retrieved: '2026-11-13'
+upstream: https://github.com/qemu/qemu
+pin: e9fa1f66f0d47c74b6766e1b8b87ad7c2a9394d5
+upstream_commit_date: '2026-11-13'
+license_file_upstream: COPYING
+text_files: 353
+figures: 0

@@ -1,0 +1,427 @@
+# Live Migration
+
+Cloud Hypervisor supports live migration over two transport channels:
+
+| Transport          | When to use it                                                                  |
+|--------------------|---------------------------------------------------------------------------------|
+| TCP/TLS stream     | Migration between hosts. It also works on one host.                             |
+| UNIX domain socket | Migration between VMMs on the same host.                                        |
+
+See [Migration Parameters](#migration-parameters) for all options of
+`send-migration` and `receive-migration`.
+
+> :warning: The following examples place sockets in /tmp. This is done for
+> simplicity and should not be done in production.
+
+## UNIX Domain Socket Migration
+
+UNIX domain sockets are suited for same host migrations, especially when
+combined with `memory_mode=memfds`. This is particularly useful for VMM
+live upgrades with minimal VM downtime. We call this mode "local migration".
+
+If `memory_mode=memfds` is omitted, the migration defaults to copying guest
+memory instead. UNIX domain socket transport may be proxied via a socket proxy
+(e.g. `socat`) for advanced custom use cases.
+
+Launch the source VM (on the host machine):
+
+```console
+$ target/release/cloud-hypervisor \
+    --kernel ~/workloads/vmlinux \
+    --disk path=~/workloads/focal.raw,image_type=raw \
+    --cpus boot=1 --memory size=1G,shared=on \
+    --cmdline "root=/dev/vda1 console=ttyS0"  \
+    --serial tty --console off --api-socket=/tmp/api1
+```
+
+Launch the destination VM from the same directory (on the host machine):
+
+```console
+$ target/release/cloud-hypervisor --api-socket=/tmp/api2
+```
+
+Get ready for receiving migration for the destination VM (on the host
+machine):
+
+```console
+$ target/release/ch-remote --api-socket=/tmp/api2 receive-migration receiver_url=unix:/tmp/sock
+```
+
+Start to send migration for the source VM (on the host machine):
+
+```console
+$ target/release/ch-remote --api-socket=/tmp/api1 send-migration destination_url=unix:/tmp/sock,memory_mode=memfds
+```
+
+`send-migration` only starts the migration and returns immediately, so its exit
+status does not tell whether the migration succeeded. Use the [events](#events)
+to observe the result. Once the migration has finished, the destination VM is
+running while the source VM is terminated gracefully.
+
+## TCP/TLS Migration
+
+TCP/TLS migration is intended for migration from one machine (`src`) to
+another (`dst`) across the network. The connection uses mutual TLS
+(mTLS): both sides authenticate each other with certificates, and all
+migration data is encrypted. To keep it simple, we will use a minimal VM
+setup without storage. Same host TCP/TLS migration is also supported.
+
+> [!WARNING]
+> For development and testing, you can omit `tls_dir` on both sides to
+> use plain TCP. The migration is then unencrypted, with the receiver
+> accepting arbitrary connections. See the
+> [threat model](threat-model.md#live-migration-and-snapshots) for why
+> migration peers must be trusted.
+
+### Preparation
+
+Make sure that `src` and `dst` can reach each other via the
+network. You should be able to ping each machine. Also each machine
+should have an open TCP port.
+
+Both machines need TLS certificates and keys as described in
+[Encryption](#encryption).
+
+You will need a kernel and initramfs for a minimal Linux system. For
+this example, we will use the Debian netboot image.
+
+Resources that the VM configuration references, such as the kernel, the
+initramfs, and disk images, must be available at the same paths on both
+machines. The destination needs them to restore the VM and to reboot it
+later. We will use `/var/images` for the kernel and initramfs:
+
+```console
+src $ export DEBIAN=https://ftp.debian.org/debian/dists/stable/main/installer-amd64/current/images/netboot/debian-installer/amd64
+src $ mkdir -p /var/images
+src $ curl $DEBIAN/linux > /var/images/linux
+src $ curl $DEBIAN/initrd.gz > /var/images/initrd
+```
+
+Repeat the above steps on the destination host.
+
+### Performing a TCP/TLS Migration
+
+#### Starting the Receiver VM
+
+On the receiver side, we prepare an empty VM:
+
+```console
+dst $ cloud-hypervisor --api-socket /tmp/api
+```
+
+In a different terminal, prepare to receive the migration:
+
+```console
+dst $ ch-remote --api-socket=/tmp/api receive-migration receiver_url=tcp:0.0.0.0:{port},tls_dir=/path/to/dst-tls
+```
+
+#### Starting the Sender VM
+
+Let's start the VM on the source machine:
+
+```console
+src $ cloud-hypervisor \
+        --serial tty --console off \
+        --cpus boot=2 --memory size=4G \
+        --kernel /var/images/linux \
+        --initramfs /var/images/initrd \
+        --cmdline "console=ttyS0" \
+        --api-socket /tmp/api
+```
+
+After a few seconds the VM should be up and you can interact with it.
+
+#### Performing the Migration
+
+Initiate the migration over TCP/TLS:
+
+```console
+src $ ch-remote --api-socket=/tmp/api send-migration destination_url=tcp:{dst}:{port},tls_dir=/path/to/src-tls
+```
+
+With migration parameters:
+
+```console
+src $ ch-remote --api-socket=/tmp/api send-migration destination_url=tcp:{dst}:{port},tls_dir=/path/to/src-tls,downtime_ms=200,timeout_s=3600,timeout_strategy=cancel
+```
+
+> Replace {dst}:{port} with the actual host name or IP address and port of
+> your destination host. For a same-host migration, use `localhost`.
+
+`send-migration` only starts the migration, see [Events](#events) for observing
+the result. After the migration has finished, the VM continues running on the
+destination host and the source VM instance terminates normally. All ongoing
+processes and connections within the VM should remain intact after the
+migration. See
+[Network Announcements After Resume](#network-announcements-after-resume) for
+the announcement behavior after a VM resumes.
+
+#### Encryption
+
+TCP migration can be protected with TLS by passing `tls_dir=<path>` to
+both `receive-migration` and `send-migration`.
+
+The destination host needs a directory containing:
+
+- `ca-cert.pem`: the CA certificate used to verify source certificates
+- `server-cert.pem`: the certificate presented by the destination
+- `server-key.pem`: the private key for `server-cert.pem`
+
+The source host needs a directory containing:
+
+- `ca-cert.pem`: the CA certificate used to verify the destination
+  certificate
+- `client-cert.pem`: the certificate presented by the source
+- `client-key.pem`: the private key for `client-cert.pem`
+
+Protect the private key files with file mode `0600` to reduce the risk
+of accidental disclosure:
+
+```console
+$ chmod 600 server-key.pem client-key.pem
+```
+
+Current TCP migration uses mutual TLS (mTLS) authentication. The source
+verifies the destination certificate against `ca-cert.pem` and presents
+`client-cert.pem` and `client-key.pem`. The destination presents
+`server-cert.pem` and `server-key.pem`, and only accepts client
+certificates that chain to `ca-cert.pem`. The destination certificate
+must be valid for the host name or IP address in `destination_url`. The
+destination accepts every client certificate issued by this CA, so use a
+CA dedicated to migration.
+
+TLS encryption is only supported with `tcp:<host>:<port>` migration
+URLs, not with UNIX domain socket migration.
+
+The commands below describe how to create the encryption material necessary
+to perform a same-host TCP migration with TLS.
+
+##### Setup the Certificate Authority
+
+First, set up the CA with a private key and a self-signed certificate.
+
+```console
+$ certtool --generate-privkey \
+           --outfile ca-key.pem
+```
+
+To generate the certificate, provide at least your organization name in a template file, for example `ca.info`:
+
+```text
+cn = Name of your organization
+ca
+cert_signing_key
+```
+
+Then you can create the certificate:
+
+```console
+$ certtool --generate-self-signed \
+           --load-privkey ca-key.pem \
+           --template ca.info \
+           --outfile ca-cert.pem
+```
+
+##### Issuing host certificates
+
+Generate a private key and a certificate for each side. Cloud Hypervisor enforces mTLS, thus you also need a key for the migration sender.
+
+The certificates also require template data. You can use separate templates for sender and receiver, but this example uses a single template, `hosts.info`, for a same-host migration. For migration between hosts, set `cn`, `dns_name`, and `ip_address` to the destination host. The source can use the same template, as the destination does not check the name of the client certificate:
+
+```text
+organization = Name of your organization
+cn = localhost
+tls_www_server
+tls_www_client
+signing_key
+dns_name = localhost
+ip_address = 127.0.0.1
+```
+
+Then you can create the necessary files for the client (migration sender):
+
+```console
+$ certtool --generate-privkey \
+           --outfile client-key.pem
+
+$ certtool --generate-certificate \
+           --load-ca-certificate ca-cert.pem \
+           --load-ca-privkey ca-key.pem \
+           --load-privkey client-key.pem \
+           --template hosts.info \
+           --outfile client-cert.pem
+```
+
+And the necessary files for the server (migration receiver):
+
+```console
+$ certtool --generate-privkey \
+           --outfile server-key.pem
+
+$ certtool --generate-certificate \
+           --load-ca-certificate ca-cert.pem \
+           --load-ca-privkey ca-key.pem \
+           --load-privkey server-key.pem \
+           --template hosts.info \
+           --outfile server-cert.pem
+```
+
+For a same-host test, place these files, except `ca-key.pem`, in a single directory and use that directory as `tls_dir` for both commands. The CA key is only needed to issue certificates and does not belong in a `tls_dir`.
+
+## Migration Parameters
+
+Cloud Hypervisor supports additional parameters to control the
+migration process. Via the API or `ch-remote`, you may specify the
+following parameters. Unless marked otherwise, they apply to
+`send-migration`.
+
+- `destination_url <url>`: \
+  Where to send the VM to: `tcp:<host>:<port>` or `unix:<path>`.
+- `receiver_url <url>` (`receive-migration`): \
+  Where to listen for the migration: `tcp:<host>:<port>` or `unix:<path>`.
+- `tls_dir <path>` (both sides): \
+  Directory with the TLS certificates and keys, see
+  [Encryption](#encryption). Only supported with `tcp:` URLs. If omitted on
+  both sides, the migration uses plain TCP, which is only intended for
+  development and testing.
+- `downtime_ms <milliseconds>`: \
+  The maximum downtime the migration aims for, in milliseconds.
+  Defaults to `300ms`.
+- `timeout_s <seconds>`: \
+  The timeout for the migration (maximum total duration), in seconds.
+  Defaults to `3600s` (one hour).
+- `timeout_strategy <strategy>` (`[cancel, ignore]`): \
+  The strategy to apply when the migration timeout is reached.
+  Cancel will abort the migration and keep the VM running on the source.
+  Ignore will proceed with the migration regardless of the downtime requirement.
+  Defaults to `cancel`.
+- `connections <amount>`: \
+  The number of parallel TCP connections to use for migration.
+  Must be between `1` and `128`. Defaults to `1`.
+  Multiple connections are not supported with UNIX domain socket migration.
+- `memory_mode <memfds|precopy|postcopy>`: \
+  Memory transfer mode. `memfds` passes the guest memory backing file
+  descriptors over a UNIX socket. It requires every guest memory region to use
+  shared memory or hugepage backing. `postcopy` (experimental) resumes the
+  destination first and faults guest pages in on demand over a dedicated
+  connection. It requires every vhost-user backend to support the `PAGEFAULT`
+  protocol feature. Defaults to `precopy`. `postcopy` is not supported with:
+  - VFIO devices
+  - vDPA devices
+  - vfio-user devices
+  - memory prefault (`prefault=on`)
+  - multiple connections (`connections` greater than `1`)
+- `preserve_source <on|off>`: \
+  Keep the source VM in a paused state after migration completes. This is only
+  supported with `memory_mode=memfds` and defaults to `off`.
+- `zone_updates <list of zone updates>` (`receive-migration`): \
+  A list of updates to apply to memory zones on the receiver side. For example,
+  this can be used to remap memory zones to another NUMA node. Each zone update
+  has the form `zone_id@host_numa_node`.
+- `vfio_fds <list of id@fd>` and `iommufd_fd <fd>` (`receive-migration`): \
+  File descriptors opened on the destination for migratable VFIO devices, see
+  [Destination File Descriptors](vfio.md#destination-file-descriptors).
+- `background_fetch_pages <on|off>` (`receive-migration`): \
+  For postcopy migration and on-demand restore, keep fetching the remaining
+  guest pages in the background after the VM resumed. With `off`, only the
+  pages that the guest or the VMM access are fetched. Defaults to `on`.
+
+## Connection Timeouts
+
+Cloud Hypervisor detects unresponsive migration peers with fixed timeouts,
+independent of `timeout_s`, the timeout of the migration itself:
+
+- Connection setup on the destination (10 seconds): \
+  Setting up an incoming connection, including the TLS handshake, must not
+  stall. A failing additional connection (see `connections`) is dropped, a
+  failing main connection fails the migration.
+- Sender reads and writes (120 seconds): \
+  A hung destination fails the migration and the source VM resumes. This
+  also applies to the TLS handshake and to prefaulting the guest memory on
+  the destination. The final handover of the VM and the postcopy fault
+  connection are exempt.
+- Dead peers (120 seconds): \
+  TCP keepalive and `TCP_USER_TIMEOUT` detect a peer whose host or network is
+  gone, or that stops reading.
+
+## Network Announcements After Resume
+
+After a VM resumes from migration, snapshot restore, or any other path
+that restores a previously paused VM, Cloud Hypervisor asks supported
+network devices to announce the VM from its new host. For `virtio-net`,
+the current implementation sets `VIRTIO_NET_S_ANNOUNCE`, raises a config
+interrupt, retries that request a few times in the background, and also
+sends host-side RARP announcements on the TAP interfaces. A guest
+re-announcement therefore only happens when the guest negotiated
+`VIRTIO_NET_F_GUEST_ANNOUNCE`. For `vhost-user-net`, the current implementation
+only uses the guest announcement path.
+
+## Migrating VMs with VFIO Devices
+
+VMs with migratable VFIO devices, for example NIC VFs bound to
+`mlx5_vfio_pci`, can be live migrated. The opaque device state is captured
+during the downtime window and the destination receives new device file
+descriptors through the `vfio_fds` and `iommufd_fd` options of
+`receive-migration`.
+
+See [Live Migration of VFIO Devices](vfio.md#live-migration-of-vfio-devices)
+for the requirements, the dirty tracking behavior, and an example.
+
+## Migrating VMs with vDPA Devices
+
+vDPA backends must support suspend for migration. The source device is
+suspended before memory transfer because vDPA dirty tracking is not available.
+An aborted migration resumes the device on the source, which requires backend
+support for resume.
+
+## Behavior on Failed Migrations
+
+If migration fails before the VM is transferred to the destination, Cloud
+Hypervisor makes every possible effort to resume the VM on the source and keep
+it usable.
+
+
+## Version Compatibility
+
+Starting with `v54`, Cloud Hypervisor guarantees migration compatibility from
+the previous two versions ("n-2"), e.g. `v54` accepts migrations from `v52` and
+`v53`. Upgrades spanning more major versions might work. It is, however,
+strongly recommended to do incremental upgrades, e.g., `v54 -> v56 -> v58`.
+Backward migrations, such as `v54 -> v52`, are **not** supported. Experimental
+features, such as `memory_mode=postcopy`, are excluded from this guarantee.
+
+New VMM functionality is designed in a way that it does not cause any
+incompatibility for VMs coming from older versions of Cloud Hypervisor. If new
+features are added to existing device models or the VMM, the corresponding
+device-specific config falls back to safe false/disabled values. Hence, only
+newly spawned VMs will be able to use new functionality, while being able to run
+VMs first spawned in older versions of Cloud Hypervisor.
+
+**Beware** that reliable usage in a **heterogeneous fleet** need the use of a
+matching **CPU profile**, which are available since `v55`. The progress is
+tracked in
+[#7086](https://github.com/cloud-hypervisor/cloud-hypervisor/issues/7068).
+
+## Events
+
+To observe live migrations, we recommend observing events from the
+[event monitor](./event-monitor.md). The relevant events for migrations are:
+
+- Sender
+  - `vm.migration-starting`: Migration worker is beginning the send attempt.
+  - `vm.migration-started`: Receiver acknowledged the migration start request.
+  - `vm.migration-memory-iteration`: A precopy iteration finished. Can appear
+    multiple times and solely signals forward progress.
+  - `vm.migration-cancelled`: Migration was cancelled.
+  - `vm.migration-finished`: Migration completed successfully.
+  - `vm.migration-failed`: Migration worker returned an error.
+- Receiver
+  - `vm.migration-receive-ready`: Migration listener is ready to accept a
+    connection.
+  - `vm.migration-receive-starting`: Migration connection was accepted.
+  - `vm.migration-receive-started`: Sender's migration start request was
+    acknowledged.
+  - `vm.migration-receive-finished`: Migration was received and the VM resumed
+    successfully.
+  - `vm.migration-receive-failed`: The migration failed or the sender aborted
+    the migration.

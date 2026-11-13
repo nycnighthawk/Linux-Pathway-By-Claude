@@ -1,0 +1,16 @@
+id: virtualbox-docs
+name: VirtualBox user manual, SDK reference and VBoxManage reference
+license: GPL-3.0-only
+license_note: VirtualBox base packages are GPL-3.0-only (dual CDDL-1.0 for part of
+  the code). The manual sources carry no separate licence. The SDK reference is doc/manual/en_US/SDKRef.xml.
+  Link-only.
+mode: full
+reuse: link-only
+stream: C
+retrieved: '2026-11-13'
+upstream: https://github.com/VirtualBox/virtualbox
+pin: b6bea72111fcff48f31c57c9f66365b1d3301bb9
+upstream_commit_date: '2026-10-20'
+license_file_upstream: COPYING
+text_files: 493
+figures: 0
