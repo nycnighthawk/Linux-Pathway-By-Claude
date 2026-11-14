@@ -16,6 +16,7 @@ phases:
     - LNX-202-T05
     - LNX-202-T06
     - LNX-202-T07
+    - LNX-202-T08
   lessons:
     state: todo
     units: 11
@@ -42,3 +43,4 @@ log:
 - '2026-11-14 synth: LNX-202-T05'
 - '2026-11-14 synth: LNX-202-T06'
 - '2026-11-14 synth: LNX-202-T07'
+- '2026-11-14 synth: LNX-202-T08'
