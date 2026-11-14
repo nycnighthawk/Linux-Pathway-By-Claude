@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a generated capture file and an empty answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import socket, struct
+
+def csum(b):
+    if len(b) % 2: b += b"\0"
+    s = sum(struct.unpack("!%dH" % (len(b) // 2), b))
+    while s >> 16: s = (s & 0xFFFF) + (s >> 16)
+    return (~s) & 0xFFFF
+
+CMAC, SMAC, DMAC = b"\x02\0\0\0\0\x05", b"\x02\0\0\0\0\x0a", b"\x02\0\0\0\0\x35"
+ident = [1]
+
+def ip(src, dst, proto, payload):
+    ident[0] += 1
+    h = struct.pack("!BBHHHBBH4s4s", 0x45, 0, 20 + len(payload), ident[0], 0x4000, 64, proto, 0, socket.inet_aton(src), socket.inet_aton(dst))
+    h = h[:10] + struct.pack("!H", csum(h)) + h[12:]
+    return h + payload
+
+def tcp(src, dst, sp, dp, seq, ack, flags, data=b""):
+    h = struct.pack("!HHIIBBHHH", sp, dp, seq, ack, 5 << 4, flags, 65535, 0, 0)
+    pseudo = socket.inet_aton(src) + socket.inet_aton(dst) + struct.pack("!BBH", 0, 6, len(h) + len(data))
+    c = csum(pseudo + h + data)
+    h = h[:16] + struct.pack("!H", c) + h[18:]
+    return ip(src, dst, 6, h + data)
+
+def udp(src, dst, sp, dp, data):
+    h = struct.pack("!HHHH", sp, dp, 8 + len(data), 0)
+    pseudo = socket.inet_aton(src) + socket.inet_aton(dst) + struct.pack("!BBH", 0, 17, len(h) + len(data))
+    h = h[:6] + struct.pack("!H", csum(pseudo + h + data) or 0xFFFF)
+    return ip(src, dst, 17, h + data)
+
+def eth(smac, dmac, payload):
+    return dmac + smac + b"\x08\x00" + payload
+
+C, S, D = "10.0.0.5", "10.0.0.10", "10.0.0.53"
+SYN, SA, A, PA, FA, RA = 0x02, 0x12, 0x10, 0x18, 0x11, 0x14
+pk, t = [], [1700000000.0]
+
+def add(frame):
+    t[0] += 0.01
+    pk.append((t[0], frame))
+
+def toS(*a): add(eth(CMAC, SMAC, tcp(C, S, *a)))
+def toC(*a): add(eth(SMAC, CMAC, tcp(S, C, *a)))
+
+def http_flow(sport, path, status, body):
+    req = ("GET %s HTTP/1.1\r\nHost: www.lab.example\r\n\r\n" % path).encode()
+    resp = ("HTTP/1.1 %s\r\nContent-Length: %d\r\n\r\n" % (status, len(body))).encode() + body
+    c, s = 1000, 5000
+    toS(sport, 80, c, 0, SYN); toC(80, sport, s, c + 1, SA); toS(sport, 80, c + 1, s + 1, A)
+    toS(sport, 80, c + 1, s + 1, PA, req)
+    toC(80, sport, s + 1, c + 1 + len(req), PA, resp)
+    return c + 1 + len(req), s + 1, resp
+
+# flow 1: 200 response whose single segment is sent twice (a retransmission)
+c, s, resp = http_flow(40001, "/index.html", "200 OK", b"x" * 200)
+toC(80, 40001, s, c, PA, resp)
+toS(40001, 80, c, s + len(resp), A)
+toS(40001, 80, c, s + len(resp), FA); toC(80, 40001, s + len(resp), c + 1, FA); toS(40001, 80, c + 1, s + len(resp) + 1, A)
+# flow 2: 404
+c, s, resp = http_flow(40002, "/missing", "404 Not Found", b"nope")
+toS(40002, 80, c, s + len(resp), A)
+# flow 3: a request to a closed port gets a reset
+toS(40003, 8080, 7000, 0, SYN); toC(8080, 40003, 0, 7001, RA)
+# DNS: a query and an NXDOMAIN answer
+q = struct.pack("!HHHHHH", 0x1234, 0x0100, 1, 0, 0, 0) + b"\x03www\x03lab\x07example\x00" + struct.pack("!HH", 1, 1)
+r = struct.pack("!HHHHHH", 0x1234, 0x8183, 1, 0, 0, 0) + b"\x03www\x03lab\x07example\x00" + struct.pack("!HH", 1, 1)
+add(eth(CMAC, DMAC, udp(C, D, 53123, 53, q)))
+add(eth(DMAC, CMAC, udp(D, C, 53, 53123, r)))
+
+with open("capture.pcap", "wb") as f:
+    f.write(struct.pack("<IHHiIII", 0xA1B2C3D4, 2, 4, 0, 0, 65535, 1))
+    for ts, fr in pk:
+        f.write(struct.pack("<IIII", int(ts), int((ts % 1) * 1e6), len(fr), len(fr)) + fr)
+PY
+cat > answers.txt <<'A'
+# SPDX-License-Identifier: MIT
+# Answer each question from capture.pcap with tshark (see README.md). Replace each ?.
+tcp_streams=?
+http_requests=?
+retransmissions=?
+refused_port=?
+dns_name=?
+dns_rcode=?
+A

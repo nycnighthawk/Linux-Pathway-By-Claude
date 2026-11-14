@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Recompute every answer from the capture with tshark and compare it with answers.txt.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+command -v tshark >/dev/null || { echo "FAIL: tshark is not installed (package tshark)"; exit 1; }
+[ -f capture.pcap ] && [ -f answers.txt ] || { echo "FAIL: capture.pcap or answers.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+want_streams=$(tshark -r capture.pcap -T fields -e tcp.stream -Y tcp 2>/dev/null | sort -u | wc -l)
+want_reqs=$(tshark -r capture.pcap -Y http.request 2>/dev/null | wc -l)
+want_retr=$(tshark -r capture.pcap -Y tcp.analysis.retransmission 2>/dev/null | wc -l)
+want_port=$(tshark -r capture.pcap -Y 'tcp.flags.reset == 1' -T fields -e tcp.srcport 2>/dev/null | head -1)
+want_name=$(tshark -r capture.pcap -Y 'dns.flags.response == 1' -T fields -e dns.qry.name 2>/dev/null | head -1)
+want_rcode=$(tshark -r capture.pcap -Y 'dns.flags.response == 1' -T fields -e dns.flags.rcode 2>/dev/null | head -1)
+cmp1() { if [ "$(get "$1")" = "$2" ]; then ok "$1 = $2"; else fail "$1 is '$(get "$1")'; recount it from the capture (hint: $3)"; fi; }
+cmp1 tcp_streams "$want_streams" "tshark -r capture.pcap -q -z conv,tcp"
+cmp1 http_requests "$want_reqs" "display filter http.request"
+cmp1 retransmissions "$want_retr" "display filter tcp.analysis.retransmission"
+cmp1 refused_port "$want_port" "display filter tcp.flags.reset == 1, field tcp.srcport"
+cmp1 dns_name "$want_name" "display filter dns.flags.response == 1, field dns.qry.name"
+cmp1 dns_rcode "$want_rcode" "field dns.flags.rcode (0 = no error, 3 = name does not exist)"
+exit "$bad"
