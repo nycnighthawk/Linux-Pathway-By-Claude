@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a parent block, four requirements and an empty plan to fill in.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > plan.txt <<'PLAN'
+# SPDX-License-Identifier: MIT
+# Address plan for the parent block 10.40.0.0/22. Replace each ? with a value (see README.md).
+users=?
+servers=?
+mgmt=?
+link=?
+users_broadcast=?
+servers_netmask=?
+mgmt_last_host=?
+users_v6=?
+servers_v6=?
+mgmt_v6=?
+PLAN

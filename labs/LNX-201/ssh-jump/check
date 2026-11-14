@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade ssh_config: effective options through ssh -G, then a live connection that must pass through the bastion.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f ssh_config ] || { echo "FAIL: ssh_config not found in $PWD"; exit 1; }
+for f in bastion.pid target.pid; do
+  [ -s "$f" ] && kill -0 "$(cat "$f")" 2>/dev/null || { echo "FAIL: the lab sshd ($f) is not running; run setup again"; exit 1; }
+done
+g=$(ssh -F ssh_config -G target 2>&1)
+printf '%s\n' "$g" | grep -qiE '^proxyjump (.*@)?(bastion|127\.0\.0\.1)(:2201)?$' && ok "target uses ProxyJump through the bastion" || fail "target needs: ProxyJump bastion"
+printf '%s\n' "$g" | grep -qi "^identityfile .*keys/id_lab$" && ok "IdentityFile is keys/id_lab" || fail "target needs IdentityFile keys/id_lab (relative to the lab directory or absolute)"
+printf '%s\n' "$g" | grep -qi '^identitiesonly yes$' && ok "IdentitiesOnly yes" || fail "add IdentitiesOnly yes so only the lab key is offered"
+printf '%s\n' "$g" | grep -qi '^stricthostkeychecking true$' && ok "StrictHostKeyChecking yes" || fail "add StrictHostKeyChecking yes"
+printf '%s\n' "$g" | grep -qi '^userknownhostsfile .*known_hosts$' && ok "UserKnownHostsFile known_hosts" || fail "add UserKnownHostsFile known_hosts"
+out=$(ssh -F ssh_config -o BatchMode=yes -o ConnectTimeout=5 target 'echo reached-target' 2>&1)
+if [ "$out" = "reached-target" ]; then ok "ssh target prints the marker"; else fail "ssh target did not work: $out"; fi
+if grep -q "server_request_direct_tcpip: .*target 127.0.0.2 port 2202" bastion.log 2>/dev/null; then ok "the bastion log shows a forward to 127.0.0.2:2202"
+else fail "the bastion did not forward the connection (is the jump host really used?)"; fi
+exit $bad

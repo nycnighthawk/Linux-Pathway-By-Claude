@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+me=$(id -un)
+cat > ssh_config <<CFG
+# SPDX-License-Identifier: MIT
+Host *
+    IdentityFile $PWD/keys/id_lab
+    IdentitiesOnly yes
+    StrictHostKeyChecking yes
+    UserKnownHostsFile $PWD/known_hosts
+
+Host bastion
+    HostName 127.0.0.1
+    Port 2201
+    User $me
+
+Host target
+    HostName 127.0.0.2
+    Port 2202
+    User $me
+    ProxyJump bastion
+CFG

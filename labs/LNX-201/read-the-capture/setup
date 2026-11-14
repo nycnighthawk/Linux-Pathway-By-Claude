@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a recorded capture (lab.pcap) of one client's traffic and an empty answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import socket, struct
+def csum(b):
+    if len(b) % 2: b += b"\0"
+    s = sum(struct.unpack("!%dH" % (len(b) // 2), b))
+    while s >> 16: s = (s & 0xFFFF) + (s >> 16)
+    return (~s) & 0xFFFF
+def ip4(src, dst, proto, payload, ident):
+    h = struct.pack("!BBHHHBBH4s4s", 0x45, 0, 20 + len(payload), ident, 0x4000, 64, proto, 0, socket.inet_aton(src), socket.inet_aton(dst))
+    h = h[:10] + struct.pack("!H", csum(h)) + h[12:]
+    return h + payload
+def tcp(src, dst, sp, dp, seq, ack, flags):
+    t = struct.pack("!HHIIBBHHH", sp, dp, seq, ack, 5 << 4, flags, 64240, 0, 0)
+    ph = socket.inet_aton(src) + socket.inet_aton(dst) + struct.pack("!BBH", 0, 6, len(t))
+    t = t[:16] + struct.pack("!H", csum(ph + t)) + t[18:]
+    return t
+def udp(src, dst, sp, dp, data):
+    u = struct.pack("!HHHH", sp, dp, 8 + len(data), 0) + data
+    ph = socket.inet_aton(src) + socket.inet_aton(dst) + struct.pack("!BBH", 0, 17, len(u))
+    c = csum(ph + u) or 0xFFFF
+    return u[:6] + struct.pack("!H", c) + u[8:]
+def eth(a, b, payload): return bytes.fromhex(a.replace(":", "")) + bytes.fromhex(b.replace(":", "")) + b"\x08\x00" + payload
+CM, SM, DM = "52:54:00:aa:00:10", "52:54:00:bb:00:20", "52:54:00:cc:00:53"
+C, S, D = "192.0.2.10", "192.0.2.20", "192.0.2.53"
+def qname(n): return b"".join(bytes([len(p)]) + p.encode() for p in n.split(".")) + b"\0"
+def dns(ident, name, reply):
+    flags = 0x8183 if reply else 0x0100          # response with rcode 3 (NXDOMAIN), or a plain query
+    return struct.pack("!HHHHHH", ident, flags, 1, 0, 0, 0) + qname(name) + struct.pack("!HH", 1, 1)
+pk = []
+def add(t, frame): pk.append((t, frame))
+# 1. a refused connection: SYN to 8080, RST+ACK back
+add(0.000, eth(CM, SM, ip4(C, S, 6, tcp(C, S, 40001, 8080, 1000, 0, 0x02), 1)))
+add(0.001, eth(SM, CM, ip4(S, C, 6, tcp(S, C, 8080, 40001, 0, 1001, 0x14), 2)))
+# 2. a silent drop: three SYNs to 443 with growing gaps and no answer
+for i, t in enumerate((0.500, 1.500, 3.500)):
+    add(t, eth(CM, SM, ip4(C, S, 6, tcp(C, S, 40002, 443, 5000, 0, 0x02), 10 + i)))
+# 3. a lookup that fails: query for app.lab.test, NXDOMAIN back
+add(4.000, eth(CM, DM, ip4(C, D, 17, udp(C, D, 53123, 53, dns(0x1234, "app.lab.test", False)), 20)))
+add(4.002, eth(DM, CM, ip4(D, C, 17, udp(D, C, 53, 53123, dns(0x1234, "app.lab.test", True)), 21)))
+with open("lab.pcap", "wb") as f:
+    f.write(struct.pack("<IHHiIII", 0xA1B2C3D4, 2, 4, 0, 0, 65535, 1))
+    for t, fr in pk:
+        f.write(struct.pack("<IIII", 1700000000 + int(t), int((t % 1) * 1e6), len(fr), len(fr)) + fr)
+PY
+cat > answers.txt <<'ANS'
+# SPDX-License-Identifier: MIT
+# Fill in each ? from lab.pcap (see README.md). Do not capture anything: read the file with tcpdump -r.
+refused_port=?
+silent_port=?
+syn_count_silent=?
+dns_server=?
+dns_name=?
+dns_status=?
+ANS
