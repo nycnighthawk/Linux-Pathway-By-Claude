@@ -1,0 +1,30 @@
+item: LNX-201
+label: Linux Networking I
+branch: build/LNX-201
+state: in-progress
+started: '2026-11-14'
+updated: '2026-11-14'
+phases:
+  synth:
+    state: todo
+    units: 9
+    done: []
+  lessons:
+    state: todo
+    units: 9
+    done: []
+  quizzes:
+    state: todo
+    units: 9
+    done: []
+  labs:
+    state: todo
+    units: 9
+    done: []
+  checks:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-14 started
