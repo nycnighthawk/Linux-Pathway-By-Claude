@@ -1,0 +1,72 @@
+title: 'Quiz: bats-core tests'
+questions:
+- id: run-vars
+  prompt: After run cmd in bats, where is the exit status?
+  choices:
+  - $rc
+  - $result
+  - $status
+  - $?
+  answer:
+  - 2
+  explain: run stores the status in $status and the output in $output; $? would reflect run itself.
+- id: tmpdir
+  prompt: Which variable gives a fresh directory for each test?
+  choices:
+  - TMPDIR
+  - BATS_RUN_TMPDIR
+  - BATS_TEST_TMPDIR
+  - BATS_FILE_TMPDIR
+  answer:
+  - 2
+  explain: BATS_FILE_TMPDIR is shared by all tests in a file, so per-test isolation needs BATS_TEST_TMPDIR.
+- id: test-fails
+  prompt: When does an @test fail?
+  choices:
+  - When it takes more than a second
+  - When a command in it returns non-zero
+  - Only when run is used
+  - When it prints text
+  answer:
+  - 1
+  explain: Tests run with errexit semantics, so a failed [ ] or any failing command fails the test.
+- id: setup-file
+  prompt: What does setup_file do?
+  choices:
+  - Runs once before the first test of the file
+  - Runs before every test
+  - Runs after the last test
+  - Installs bats
+  answer:
+  - 0
+  explain: setup runs per test; setup_file once per file.
+- id: mutation
+  prompt: How do you check that a test suite can fail?
+  choices:
+  - Add more assertions at random
+  - Delete the oldest test
+  - Break the code on purpose and confirm a test fails
+  - Run it twice
+  answer:
+  - 2
+  explain: A mutant that survives shows a behaviour no test pins down.
+- id: select
+  prompt: Which command runs only tests whose names match a pattern?
+  choices:
+  - bats --filter 'rotate' test/
+  - bats -r test/
+  - bats --tap test/
+  - bats --count test/
+  answer:
+  - 0
+  explain: --filter selects tests by regular expression on the name.
+- id: stderr
+  prompt: How do you capture stderr separately from stdout with run?
+  choices:
+  - run --separate-stderr cmd
+  - run -e cmd
+  - run 2>&1 cmd
+  - run --stderr cmd
+  answer:
+  - 0
+  explain: By default run merges both into $output; the flag adds $stderr.
