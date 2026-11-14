@@ -28,6 +28,10 @@ cloud-hypervisor-docs,Cloud Hypervisor documentation,CC-BY-4.0,full,adapt,A,5aab
 firecracker-docs,Firecracker documentation,Apache-2.0,full,adapt,Permissive,cc88013eadcf432da1b37d47d445b7e8bcc3046e,2026-11-13,499
 kubevirt-user-guide,KubeVirt user guide,Apache-2.0,full,adapt,Permissive,00756dd6ae0508675265013990d4de890df9b1b3,2026-11-13,1088
 virtio-spec,VIRTIO specification (OASIS),NOASSERTION,outline,link-only,Ref,bb1dd2e1fe89b862f38f15873d835a698b196f89,2026-11-13,162
+python-docs,"Python documentation (tutorial, library, reference, HOWTOs)",PSF-2.0,full,adapt,Permissive,ba935775f31b841f4eaa39095051f1a25aaad959,2026-11-14,3230
+rust-book,The Rust Programming Language (the Rust Book),MIT OR Apache-2.0,full,adapt,Permissive,2771df165f092a4fbb9f46b5b2e7450f19010adb,2026-11-14,469
+clusterlabs-docs,"ClusterLabs Pacemaker documentation (Explained, Administration, Clusters from Scratch)",CC-BY-SA-4.0,full,adapt,A,781f4f3c499f210e2bb4d12e7ab5f1a65c61ab47,2026-11-14,406
+git-docs,"Git documentation (user manual, tutorials, man pages, technical notes)",GPL-2.0-only,full,link-only,C,7fb6055e678f800320d8ab8cd8f201d9493d1ba0,2026-11-14,0
 samba-wiki,Samba wiki,NOASSERTION,link,link-only,Ref,,,1
 tlcl,The Linux Command Line (W. Shotts),CC-BY-NC-ND-3.0,link,excluded,Ref,,,1
 cis-benchmarks,CIS Benchmarks,CC-BY-NC-SA-4.0,link,excluded,Ref,,,1
