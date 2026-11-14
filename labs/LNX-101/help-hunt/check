@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade answers.txt in $LAB_DIR.
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f answers.txt ] || { echo "FAIL: answers.txt not found in $PWD"; exit 1; }
+
+want='retries_default=5
+quiet_flag=-q
+config_error_exit=4
+help_stream=stdout
+manual_section_file_formats=5
+cd_kind=builtin'
+
+got=$(grep -v '^#' answers.txt | sed -e 's/[[:space:]]//g' -e '/^$/d')
+for key in retries_default quiet_flag config_error_exit help_stream manual_section_file_formats cd_kind; do
+    w=$(printf '%s\n' "$want" | grep "^$key=")
+    g=$(printf '%s\n' "$got" | grep "^$key=" | head -1)
+    [ "$g" = "$w" ] && ok "$key" || fail "$key is wrong or missing (got '${g:-nothing}')"
+done
+exit $bad

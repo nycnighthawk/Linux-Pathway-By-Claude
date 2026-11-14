@@ -1,0 +1,53 @@
+title: "Quiz: Distributions and open-source licensing"
+questions:
+  - id: distro-adds
+    prompt: "What does a distribution add to the Linux kernel?"
+    choices:
+      - "Only a graphical desktop"
+      - "A C library, tools, init system, package manager and a promise to build, test and patch the combination"
+      - "A different kernel for each package"
+      - "A licence that replaces the licences of its components"
+    answer: [1]
+    explain: "A distribution bundles the parts, tests them together and commits to a support window. It does not relicense components."
+  - id: using-vs-distributing
+    prompt: "A company modifies GPL software and runs it only on its own servers, never handing a copy to anyone. What does the GPL require?"
+    choices:
+      - "Nothing: the source obligation starts when a copy is distributed"
+      - "Publishing the source on the internet"
+      - "Buying a commercial licence"
+      - "Sending the changes to the original author"
+    answer: [0]
+    explain: "Using is not distributing. Only passing a copy outside the organisation creates the source obligation (the AGPL is the network exception)."
+  - id: agpl
+    prompt: "Which licence also asks for source when users merely reach your modified copy over a network?"
+    choices: ["MIT", "LGPL", "AGPL", "BSD"]
+    answer: [2]
+    explain: "AGPL is the network copyleft licence."
+  - id: permissive-set
+    prompt: "Which of these are permissive licences? Select all that apply."
+    choices: ["MIT", "Apache-2.0", "GPL", "BSD"]
+    answer: [0, 1, 3]
+    explain: "MIT, BSD and Apache-2.0 only ask you to keep the notice. The GPL is strong copyleft."
+  - id: zfs
+    prompt: "Why is ZFS not part of the mainline kernel?"
+    choices:
+      - "It is too slow"
+      - "Its CDDL licence cannot be combined with the GPL in one work"
+      - "It only runs on other operating systems"
+      - "It has no maintainers"
+    answer: [1]
+    explain: "The licences are incompatible for shipping together, so ZFS on Linux is built outside the kernel tree."
+  - id: os-release
+    prompt: "Which file names the running distribution and its release?"
+    choices: ["/etc/os-release", "/proc/version", "/boot/vmlinuz", "/var/log/dist"]
+    answer: [0]
+    explain: "/etc/os-release holds NAME, ID and VERSION_ID."
+  - id: support-window
+    prompt: "What is the main product difference between otherwise similar distributions?"
+    choices:
+      - "The color of the logo"
+      - "The length of the support window in which fixes arrive"
+      - "The shell"
+      - "The number of man pages"
+    answer: [1]
+    explain: "Choosing a distribution is mostly choosing its support and update policy."

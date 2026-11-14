@@ -1,0 +1,65 @@
+title: "Quiz: Archiving and compression"
+questions:
+  - id: separation
+    prompt: "What is the benefit of keeping the archiver and the compressor separate?"
+    choices:
+      - "Any compressor works on any stream, so improvements need no change to tar"
+      - "Archives become smaller"
+      - "tar can then encrypt"
+      - "It avoids pipes"
+    answer: [0]
+    explain: "Packaging and shrinking are different jobs that join through a pipe."
+  - id: extract-elsewhere
+    prompt: "Which command extracts site.tar.zst into /scratch?"
+    choices:
+      - "tar -xf site.tar.zst -C /scratch"
+      - "tar -cf site.tar.zst /scratch"
+      - "tar -tf site.tar.zst /scratch"
+      - "zstd site.tar.zst /scratch"
+    answer: [0]
+    explain: "-x extracts, -f names the archive and -C changes directory first."
+  - id: cpio-inside
+    prompt: "Why is the cpio command run from inside the rootfs directory?"
+    choices:
+      - "So init appears at the top level of the archive"
+      - "cpio cannot read absolute paths"
+      - "To make the archive smaller"
+      - "The kernel requires the directory name rootfs"
+    answer: [0]
+    explain: "Names are stored as given, so listing from inside gives ./init rather than rootfs/init."
+  - id: precompressed
+    prompt: "What happens if you compress a JPEG or an existing .gz file again?"
+    choices:
+      - "It shrinks a lot"
+      - "It barely shrinks, so time is wasted"
+      - "It becomes encrypted"
+      - "It is corrupted"
+    answer: [1]
+    explain: "Compressed data has little redundancy left."
+  - id: verify
+    prompt: "Which steps verify a backup archive? Select all that apply."
+    choices:
+      - "zstd -t on the compressed file"
+      - "Listing it with tar -t"
+      - "Extracting to a scratch directory and running diff -r"
+      - "Checking its size with ls"
+    answer: [0, 1, 2]
+    explain: "Size alone proves nothing. Test, list and compare a restore."
+  - id: untrusted
+    prompt: "What is a sound precaution before extracting an archive you did not make?"
+    choices:
+      - "List it first and extract in an empty scratch directory as an unprivileged user"
+      - "Extract it as root to avoid permission errors"
+      - "Use -P to keep absolute names"
+      - "Rename it to .tar"
+    answer: [0]
+    explain: "Members can have ../ components, absolute names or links pointing outside the target."
+  - id: spaces
+    prompt: "How do you build a tar archive of files whose names contain spaces from a find result?"
+    choices:
+      - "find ... -print0 | tar --null -T - -cf out.tar"
+      - "find ... | tar -cf out.tar"
+      - "tar -cf out.tar $(find ...)"
+      - "find ... | xargs echo"
+    answer: [0]
+    explain: "A null-separated list survives any character in a name."

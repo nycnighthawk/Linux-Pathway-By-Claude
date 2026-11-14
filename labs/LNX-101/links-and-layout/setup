@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a small deployment tree with a missing hard link, a missing symlink and a broken symlink.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf tree fhs.txt
+mkdir -p tree/app-1.0/bin tree/app-2.0/bin tree/data tree/shared tree/etc
+printf 'v1\n' > tree/app-1.0/bin/app
+printf 'v2\n' > tree/app-2.0/bin/app
+printf 'records\n' > tree/data/data.txt
+printf 'setting=1\n' > tree/shared/app.conf
+ln -s ../elsewhere/app.conf tree/etc/app.conf        # broken: the target does not exist
+cat > fhs.txt <<'TXT'
+# SPDX-License-Identifier: MIT
+# TODO: replace each ? with the absolute directory that the standard layout uses for that purpose.
+config=?
+logs=?
+persistent-temp=?
+local-software=?
+boot-files=?
+TXT

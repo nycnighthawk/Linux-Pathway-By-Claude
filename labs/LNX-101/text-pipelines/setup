@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a web log, an account file, a mail excerpt, files with spaces in their names, and a task file.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf files
+cat > access.log <<'LOG'
+10.0.0.5 - - [01/Nov/2026:10:00:01 +0000] "GET /index.html HTTP/1.1" 200 512
+10.0.0.9 - - [01/Nov/2026:10:00:02 +0000] "GET /a.css HTTP/1.1" 200 128
+10.0.0.5 - - [01/Nov/2026:10:00:03 +0000] "GET /missing HTTP/1.1" 404 64
+10.0.0.2 - - [01/Nov/2026:10:00:04 +0000] "GET /index.html HTTP/1.1" 200 512
+10.0.0.5 - - [01/Nov/2026:10:00:05 +0000] "POST /api HTTP/1.1" 500 32
+10.0.0.9 - - [01/Nov/2026:10:00:06 +0000] "POST /api HTTP/1.1" 503 32
+10.0.0.5 - - [01/Nov/2026:10:00:07 +0000] "GET /a.css HTTP/1.1" 200 128
+10.0.0.2 - - [01/Nov/2026:10:00:08 +0000] "GET /index.html HTTP/1.1" 200 512
+10.0.0.7 - - [01/Nov/2026:10:00:09 +0000] "GET /old HTTP/1.1" 301 0
+10.0.0.5 - - [01/Nov/2026:10:00:10 +0000] "GET /index.html HTTP/1.1" 200 512
+10.0.0.9 - - [01/Nov/2026:10:00:11 +0000] "GET /a.css HTTP/1.1" 200 128
+10.0.0.3 - - [01/Nov/2026:10:00:12 +0000] "GET /index.html HTTP/1.1" 200 512
+10.0.0.5 - - [01/Nov/2026:10:00:13 +0000] "POST /api HTTP/1.1" 502 32
+10.0.0.9 - - [01/Nov/2026:10:00:14 +0000] "GET /index.html HTTP/1.1" 200 512
+10.0.0.2 - - [01/Nov/2026:10:00:15 +0000] "GET /nothing HTTP/1.1" 404 64
+LOG
+cat > users.txt <<'PW'
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+svc:x:998:998:service:/var/lib/svc:/usr/sbin/nologin
+alice:x:1000:1000:Alice:/home/alice:/bin/bash
+bob:x:1001:1001:Bob:/home/bob:/bin/bash
+carol:x:1002:1002:Carol:/home/carol:/bin/zsh
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+PW
+cat > mail.txt <<'MAIL'
+contact: jane.doe@example.com
+cc: ops-team@example.org and bob@example.com
+no address on this line
+MAIL
+mkdir files
+printf 'a\nb\n'          > 'files/first file.txt'
+printf 'a\nb\nc\n'       > 'files/second file.txt'
+printf 'a\nb\nc\nd\ne\n'  > 'files/third file.txt'
+cat > pipelines.sh <<'SH'
+# SPDX-License-Identifier: MIT
+# Each function runs in the lab directory. Replace every TODO with a pipeline of standard tools.
+
+# 1. Print the three most frequent client addresses in access.log as "COUNT ADDRESS", busiest first.
+top_ips() {
+    : TODO
+}
+
+# 2. Print how many requests in access.log had a status of 500 or more (status is the 9th space-separated field).
+server_errors() {
+    : TODO
+}
+
+# 3. Print the login names in users.txt whose numeric user id is 1000 or more and below 65534, one per line, sorted.
+real_users() {
+    : TODO
+}
+
+# 4. Print mail.txt with the part of every address before the @ replaced by ***, leaving everything else unchanged.
+redact() {
+    : TODO
+}
+
+# 5. Print the total number of lines in all files under files/ (the names contain spaces).
+total_lines() {
+    : TODO
+}
+SH

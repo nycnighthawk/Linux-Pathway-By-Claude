@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Reference solution.
+set -eu
+chgrp labteam proj
+chmod 2770 proj
+chmod 1777 drop
+chmod 600 secret.key
+chmod 755 tool.sh
+printf '# SPDX-License-Identifier: MIT\numask 027\n' > umask.lab
+{ echo '# SPDX-License-Identifier: MIT'; find bin -type f -perm -4000 -printf '%f\n' | sort; } > suid.txt

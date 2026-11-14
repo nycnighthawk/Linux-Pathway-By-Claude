@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+HISTCONTROL=ignoreboth
+HISTSIZE=10000
+shopt -s histappend

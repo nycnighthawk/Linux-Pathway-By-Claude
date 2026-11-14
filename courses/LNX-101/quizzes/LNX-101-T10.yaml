@@ -1,0 +1,45 @@
+title: "Quiz: Getting help on the machine itself"
+questions:
+  - id: file-format-page
+    prompt: "Which command opens the manual page for the account-file format rather than the passwd command?"
+    choices: ["man passwd", "man 5 passwd", "man -k passwd", "info passwd"]
+    answer: [1]
+    explain: "Section 5 holds file formats; section 1 holds user commands."
+  - id: by-task
+    prompt: "You know the task but not the command name. What do you use?"
+    choices: ["man -k word (apropos)", "man -f word", "type -t word", "help word"]
+    answer: [0]
+    explain: "-k searches the names and descriptions. It needs a built index, so run mandb if it returns nothing."
+  - id: cd-help
+    prompt: "Why does man cd often show nothing useful, and what do you use instead?"
+    choices:
+      - "cd is a shell builtin; use help cd or the shell's page"
+      - "cd is removed from Linux; use pushd"
+      - "man only covers files; use info cd"
+      - "The page is in section 9"
+    answer: [0]
+    explain: "Builtins have no page of their own. type -t cd prints builtin."
+  - id: fastest
+    prompt: "Which layer of help is fastest and always matches the installed program?"
+    choices: ["The usage text from --help", "An info manual", "A web forum", "A vendor PDF"]
+    answer: [0]
+    explain: "It comes from the binary itself and needs no extra package."
+  - id: section-numbers
+    prompt: "Which manual section holds administration commands?"
+    choices: ["1", "5", "7", "8"]
+    answer: [3]
+    explain: "1 user commands, 5 file formats, 7 conventions, 8 administration."
+  - id: synopsis
+    prompt: "In a synopsis, what do square brackets mean?"
+    choices: ["The item is optional", "The item is required", "The item is a file name", "The item is deprecated"]
+    answer: [0]
+    explain: "Brackets mark optional parts, an ellipsis a repeatable part and a bar an alternative."
+  - id: minimal
+    prompt: "Which are sound ideas when documentation is not installed, such as in a container image? Select all that apply."
+    choices:
+      - "Use the --help usage text"
+      - "Install the documentation package"
+      - "Read the page on another machine with the same version"
+      - "Guess the flag from another tool"
+    answer: [0, 1, 2]
+    explain: "Guessing flags from other tools is how destructive mistakes happen."

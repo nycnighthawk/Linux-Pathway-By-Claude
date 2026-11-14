@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Reference solution.
+set -eu
+ln tree/data/data.txt tree/shared/data.hard
+ln -s app-2.0 tree/current
+ln -sfn ../shared/app.conf tree/etc/app.conf
+cat > fhs.txt <<'TXT'
+# SPDX-License-Identifier: MIT
+config=/etc
+logs=/var/log
+persistent-temp=/var/tmp
+local-software=/usr/local
+boot-files=/boot
+TXT

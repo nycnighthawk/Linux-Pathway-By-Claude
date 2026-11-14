@@ -1,0 +1,61 @@
+title: "Quiz: Permissions, ownership, umask and special bits"
+questions:
+  - id: umask027
+    prompt: "A program asks for mode 666 and the umask is 027. What mode does the new file get?"
+    choices: ["640", "644", "600", "750"]
+    answer: [0]
+    explain: "666 minus the bits in 027 gives 640. A directory asking for 777 would get 750."
+  - id: setgid-dir
+    prompt: "What does the setgid bit do on a directory?"
+    choices:
+      - "New entries inherit the directory's group"
+      - "Files in it run as root"
+      - "Only the owner may delete entries"
+      - "It hides the directory"
+    answer: [0]
+    explain: "That is why a team directory uses mode 2770 with the team group."
+  - id: sticky-tmp
+    prompt: "Why can you not remove another user's file from /tmp although the directory is world-writable?"
+    choices:
+      - "The sticky bit lets only the file owner, the directory owner or root remove entries"
+      - "/tmp is read-only"
+      - "Files in /tmp are immutable"
+      - "Deleting needs execute on the file"
+    answer: [0]
+    explain: "Mode 1777: everyone may add; only owners may remove."
+  - id: find-suid
+    prompt: "Which command lists the setuid files on the root file system?"
+    choices:
+      - "find / -xdev -type f -perm -4000"
+      - "ls -l /"
+      - "chmod -R u+s /"
+      - "stat -c %a /"
+    answer: [0]
+    explain: "-perm -4000 matches files with the setuid bit set; -xdev stays on one file system."
+  - id: parent-x
+    prompt: "A file is readable by you but you get permission denied. What should you check first?"
+    choices:
+      - "namei -l on the path, for a parent directory without x"
+      - "The file's checksum"
+      - "The shell history"
+      - "The umask"
+    answer: [0]
+    explain: "Searching each directory on the path needs x. namei -l shows all of them."
+  - id: x-bit
+    prompt: "What does chmod -R g+rX tree do?"
+    choices:
+      - "Adds read for the group everywhere, and execute only on directories and files already executable"
+      - "Makes every file executable"
+      - "Removes execute"
+      - "Changes the owner"
+    answer: [0]
+    explain: "Capital X is conditional execute, which keeps plain files non-executable."
+  - id: chown-rule
+    prompt: "Which statements about changing ownership are true? Select all that apply."
+    choices:
+      - "Only the superuser can give a file to another user"
+      - "An owner may change the group to any group they belong to"
+      - "Users and groups are stored as numbers on disk"
+      - "chmod -R 777 is a good fix for service errors"
+    answer: [0, 1, 2]
+    explain: "777 is never a fix; find the real cause."

@@ -1,0 +1,45 @@
+title: "Quiz: Editing text with vi, vim and nano"
+questions:
+  - id: leave-insert
+    prompt: "Which key leaves insert mode in vim?"
+    choices: ["Enter", "Esc", "Ctrl-x", "Tab"]
+    answer: [1]
+    explain: "Esc returns to normal mode, where every key is a command."
+  - id: quit-nosave
+    prompt: "Which command quits vim without saving?"
+    choices: [":wq", ":q!", ":w", "ZZ"]
+    answer: [1]
+    explain: ":q! discards changes. :wq and ZZ save first."
+  - id: c2w
+    prompt: "What does c2w do in normal mode?"
+    choices:
+      - "Changes two words: deletes them and enters insert mode"
+      - "Copies two words"
+      - "Changes to the second window"
+      - "Counts two words"
+    answer: [0]
+    explain: "c is the change operator, 2 the count and w the word motion."
+  - id: confirm-subst
+    prompt: "Which ex command replaces old with new in the whole file, asking before each change?"
+    choices: [":%s/old/new/g", ":%s/old/new/gc", ":s/old/new/", ":g/old/d"]
+    answer: [1]
+    explain: "The c flag asks for confirmation; % is the whole file and g every match on a line."
+  - id: sudoedit
+    prompt: "Why is sudoedit preferred over sudo vim?"
+    choices:
+      - "The editor, with its plugins and shell escapes, runs as you, not as root"
+      - "It is faster"
+      - "It works without a terminal"
+      - "It removes the swap file"
+    answer: [0]
+    explain: "sudoedit edits a temporary copy as your user and writes the result back."
+  - id: editor-vars
+    prompt: "In which order do tools such as crontab -e look for the editor?"
+    choices: ["EDITOR, then VISUAL", "VISUAL, then EDITOR, then a default", "The default, then VISUAL", "Only EDITOR"]
+    answer: [1]
+    explain: "VISUAL is checked first, then EDITOR, then the distribution default."
+  - id: nano-save
+    prompt: "In nano, which key writes out (saves) the file?"
+    choices: ["^O", "^X", "^W", "^K"]
+    answer: [0]
+    explain: "^O writes out, ^X exits, ^W searches and ^K cuts a line."

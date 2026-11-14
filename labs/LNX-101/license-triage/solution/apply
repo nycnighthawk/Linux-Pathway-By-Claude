@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Reference solution: apply the rules of the README to components.csv with awk, then name the system.
+set -eu
+awk -F, 'NR==1 { print "component,family,source_offer"; next }
+{
+  s = $2; fam = "permissive"
+  if (s ~ /^AGPL/) fam = "network-copyleft"
+  else if (s ~ /^GPL/) fam = "strong-copyleft"
+  else if (s ~ /^LGPL|^MPL|^CDDL/) fam = "weak-copyleft"
+  offer = "no"
+  if (fam == "strong-copyleft" || fam == "weak-copyleft") { if ($3 == "yes") offer = "yes" }
+  if (fam == "network-copyleft") { if ($3 == "yes" || $4 == "yes") offer = "yes" }
+  print $1 "," fam "," offer
+}' components.csv > decision.csv
+. /etc/os-release
+echo "$ID $VERSION_ID" > distro.txt

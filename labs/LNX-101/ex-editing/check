@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade keys.vim, nano_keys.txt and editor.env in $LAB_DIR.
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+
+if [ -f keys.vim ] && [ -f before.txt ]; then
+    tmp=$(mktemp -d); cp before.txt "$tmp/work.txt"
+    ( cd "$tmp" && timeout 20 vim -Es -u NONE -N work.txt < "$OLDPWD/keys.vim" >/dev/null 2>&1 )
+    want=$(printf '%s\n' '# service configuration' 'name = demo' 'port = 9090' 'host = new.example.org' 'backup_host = new.example.org' '[extra]')
+    if [ "$(cat "$tmp/work.txt")" = "$want" ]; then ok "keys.vim produces the wanted file"
+    else
+        fail "keys.vim does not produce the wanted file; the result was:"
+        sed -e 's/^/      |/' "$tmp/work.txt"
+    fi
+    rm -rf "$tmp"
+else fail "keys.vim or before.txt is missing"; fi
+
+if [ -f nano_keys.txt ]; then
+    got=$(grep -v '^#' nano_keys.txt | sed -e 's/[[:space:]]//g' | sort)
+    want=$(printf '%s\n' 'exit=^X' 'search=^W' 'write_out=^O' | sort)
+    [ "$got" = "$want" ] && ok "nano_keys.txt" || fail "nano_keys.txt answers are wrong"
+else fail "nano_keys.txt missing"; fi
+
+if [ -f editor.env ]; then
+    got=$(bash --norc --noprofile -c 'unset EDITOR; source ./editor.env >/dev/null 2>&1; printf "%s" "$EDITOR"; case "$-" in *x*) ;; esac' 2>/dev/null)
+    case "$got" in
+      vim|vi|nano|/usr/bin/vim|/usr/bin/nano|/usr/bin/vi) ok "editor.env sets EDITOR to $got" ;;
+      *) fail "editor.env must export EDITOR as vim, vi or nano (got '$got')" ;;
+    esac
+    exported=$(bash --norc --noprofile -c 'source ./editor.env >/dev/null 2>&1; env | grep -c "^EDITOR="' 2>/dev/null)
+    [ "$exported" = 1 ] || fail "EDITOR must be exported so that other programs see it"
+else fail "editor.env missing"; fi
+exit $bad

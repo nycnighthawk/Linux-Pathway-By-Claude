@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the tree/ and fhs.txt in $LAB_DIR.
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+
+# 1. hard link: tree/shared/data.hard is a second name for tree/data/data.txt
+if [ -f tree/shared/data.hard ] && [ ! -L tree/shared/data.hard ] \
+   && [ "$(stat -c %i tree/shared/data.hard)" = "$(stat -c %i tree/data/data.txt)" ] \
+   && [ "$(stat -c %h tree/data/data.txt)" -ge 2 ]; then ok "hard link shares the inode of data.txt"
+else fail "tree/shared/data.hard must be a hard link (same inode, link count 2) to tree/data/data.txt"; fi
+
+# 2. symlink: tree/current points, relatively, at app-2.0
+if [ -L tree/current ] && [ "$(readlink tree/current)" = app-2.0 ] && [ "$(cat tree/current/bin/app 2>/dev/null)" = v2 ]; then
+  ok "tree/current is a relative symlink to app-2.0"
+else fail "tree/current must be a symbolic link whose target text is exactly app-2.0"; fi
+
+# 3. broken link repaired so that it resolves to shared/app.conf, still as a relative link
+if [ -L tree/etc/app.conf ] && [ -e tree/etc/app.conf ] && [ "$(readlink tree/etc/app.conf)" = ../shared/app.conf ]; then
+  ok "tree/etc/app.conf resolves to shared/app.conf"
+else fail "tree/etc/app.conf must be a symlink to ../shared/app.conf that resolves"; fi
+
+# 4. the original data and config were not replaced by copies
+[ "$(stat -c %h tree/shared/app.conf)" = 1 ] && [ -f tree/shared/app.conf ] && ok "shared/app.conf is still the real file" \
+  || fail "tree/shared/app.conf must remain the single real file"
+
+# 5. layout answers
+want='config=/etc
+logs=/var/log
+persistent-temp=/var/tmp
+local-software=/usr/local
+boot-files=/boot'
+if [ -f fhs.txt ]; then
+  got=$(grep -v '^#' fhs.txt | sed -e 's/[[:space:]]*$//' | grep -v '^$')
+  [ "$got" = "$want" ] && ok "fhs.txt answers" || { fail "fhs.txt answers are wrong or incomplete"; diff <(printf '%s\n' "$want") <(printf '%s\n' "$got") | head -6; }
+else fail "fhs.txt not found"; fi
+exit $bad

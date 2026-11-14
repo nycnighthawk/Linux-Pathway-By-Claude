@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the modes, groups, umask file and setuid list in $LAB_DIR.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+mode() { stat -c %a "$1" 2>/dev/null; }
+
+[ "$(mode proj) $(stat -c %G proj 2>/dev/null)" = '2770 labteam' ] && ok "proj is 2770, group labteam" \
+  || fail "proj must be mode 2770 (setgid, group rwx, no access for others) with group labteam; it is $(mode proj) $(stat -c %G proj 2>/dev/null)"
+[ "$(mode drop)" = 1777 ] && ok "drop is 1777" || fail "drop must be mode 1777 (world-writable with the sticky bit); it is $(mode drop)"
+[ "$(mode secret.key)" = 600 ] && [ "$(stat -c %U secret.key)" = root ] && ok "secret.key is 600" \
+  || fail "secret.key must be mode 600 and owned by root; it is $(mode secret.key)"
+[ "$(mode tool.sh)" = 755 ] && ok "tool.sh is 755" || fail "tool.sh must be mode 755; it is $(mode tool.sh)"
+
+if [ -f umask.lab ]; then
+    t=$(mktemp -d)
+    got=$(cd "$t" && bash --norc --noprofile -c 'source "$1" >/dev/null 2>&1; touch f; mkdir d; stat -c %a f d | tr "\n" " "' _ "$OLDPWD/umask.lab" 2>/dev/null)
+    rm -rf "$t"
+    [ "$got" = '640 750 ' ] && ok "umask.lab gives 640 files and 750 directories" || fail "umask.lab gives file/directory modes '$got', expected '640 750'"
+else fail "umask.lab missing"; fi
+
+if [ -f suid.txt ]; then
+    got=$(grep -v '^#' suid.txt | sed -e 's/[[:space:]]//g' -e '/^$/d')
+    want=$(find bin -type f -perm -4000 -printf '%f\n' | sort)
+    [ "$got" = "$want" ] && ok "suid.txt lists the setuid files" || fail "suid.txt must list exactly the files in bin/ with the setuid bit, sorted"
+else fail "suid.txt missing"; fi
+
+# the setuid files must be left alone: the task is to report them, not to change them
+[ "$(mode bin/backup)" = 4755 ] && [ "$(mode bin/mount-helper)" = 4750 ] && ok "bin/ left unchanged" || fail "do not change the files in bin/"
+exit $bad

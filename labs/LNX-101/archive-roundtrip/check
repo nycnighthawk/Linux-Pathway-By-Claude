@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the archives and the restored tree in $LAB_DIR.
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+
+# 1. backup.tar.zst: a zstd-compressed tar of site/ with relative names, keeping the link and the hard link
+if [ -f backup.tar.zst ] && zstd -t -q backup.tar.zst 2>/dev/null; then
+    list=$(zstd -dc backup.tar.zst | tar -tvf - 2>/dev/null)
+    if zstd -dc backup.tar.zst | tar -tf - 2>/dev/null | grep -q '^/'; then fail "backup.tar.zst has absolute member names"
+    elif ! printf '%s\n' "$list" | grep -q 'readme.link -> readme.txt'; then fail "backup.tar.zst does not keep readme.link as a symbolic link"
+    elif ! printf '%s\n' "$list" | grep -qE 'readme.hard link to .*readme.txt'; then fail "backup.tar.zst does not record readme.hard as a hard link"
+    else ok "backup.tar.zst is a zstd tar with relative names, a symlink and a hard link"; fi
+else fail "backup.tar.zst missing or not a valid zstd file"; fi
+
+# 2. restore/: extraction of the archive reproduces the tree, including the script's mode
+if [ -d restore/site ] && diff -r site restore/site >/dev/null 2>&1; then
+    [ "$(stat -c %a restore/site/bin/run.sh)" = 755 ] && [ -L restore/site/docs/readme.link ] \
+      && [ "$(stat -c %i restore/site/docs/readme.txt)" = "$(stat -c %i restore/site/docs/readme.hard)" ] \
+      && ok "restore/site matches site/ (mode, symlink and hard link kept)" \
+      || fail "restore/site must keep mode 755 on run.sh, the symlink, and the hard link"
+else fail "restore/site missing or different from site/"; fi
+
+# 3. spaces.tar: names with spaces, built from a null-separated list
+if [ -f spaces.tar ]; then
+    got=$(tar -tf spaces.tar | sort | tr '\n' '|')
+    want='site/docs/my notes.txt|site/docs/other notes.txt|'
+    [ "$got" = "$want" ] && ok "spaces.tar holds exactly the two files with spaces" || fail "spaces.tar must hold exactly the two files whose names contain a space (got $got)"
+else fail "spaces.tar missing"; fi
+
+# 4. initramfs.cpio.gz: gzip-compressed cpio archive, newc format, containing init
+if [ -f initramfs.cpio.gz ] && gzip -t initramfs.cpio.gz 2>/dev/null; then
+    if gzip -dc initramfs.cpio.gz | head -c 6 | grep -q '^070701$' && gzip -dc initramfs.cpio.gz | cpio -t 2>/dev/null | grep -qx 'init'; then
+        ok "initramfs.cpio.gz is a gzip newc archive with ./init at its root"
+    else fail "initramfs.cpio.gz must be a newc-format cpio archive (magic 070701) with init at the root"; fi
+else fail "initramfs.cpio.gz missing or not valid gzip"; fi
+exit $bad

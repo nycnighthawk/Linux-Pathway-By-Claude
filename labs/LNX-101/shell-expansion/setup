@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a data directory with awkward file names and a task file with TODOs.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf data
+mkdir data
+cd data
+printf 'alpha\n'      > a.txt
+printf 'bravo\n'      > b.txt
+printf 'hidden\n'     > .hidden.txt
+printf 'two words\n'  > 'my notes.txt'
+printf 'dash\n'       > ./-rf.txt
+printf 'shouty\n'     > x.TXT
+printf 'one\n'        > 'report 1.log'
+printf 'two\n'        > 'report 2.log'
+printf 'ten\n'        > 'report 10.log'
+cd ..
+cat > tasks.sh <<'SH'
+# SPDX-License-Identifier: MIT
+# Each function runs with the working directory set to data/. Replace every TODO.
+# Do not hard-code file names where a pattern will do, and quote every expansion.
+
+# 1. Print the names of the visible *.txt files (lower-case extension, not hidden), one per line.
+visible_txt() {
+    : TODO
+}
+
+# 2. Print how many "report N.log" files have a single-character N (so not the one with 10).
+count_short_reports() {
+    : TODO
+}
+
+# 3. Print this exact text, with no shell expansion: $HOME is "home" (dollar sign and double quotes included).
+literal_text() {
+    : TODO
+}
+
+# 4. Print the contents of the file named "my notes.txt".
+show_notes() {
+    : TODO
+}
+
+# 5. Delete the file named -rf.txt (its name starts with a dash) and nothing else.
+remove_dash_file() {
+    : TODO
+}
+SH
+cat > bashrc.lab <<'RC'
+# SPDX-License-Identifier: MIT
+# TODO 6: set history so that (a) lines starting with a space and duplicate lines are not recorded,
+# (b) the in-memory list holds 10000 entries, and (c) the history file is appended to, not overwritten.
+RC

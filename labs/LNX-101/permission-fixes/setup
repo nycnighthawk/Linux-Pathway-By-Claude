@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: files and directories with the wrong modes. Needs root (it creates a group).
+set -eu
+cd "${LAB_DIR:-.}"
+[ "$(id -u)" = 0 ] || { echo "setup: run as root (the lab creates a group)"; exit 1; }
+groupadd -f labteam
+rm -rf proj drop secret.key tool.sh bin suid.txt umask.lab
+mkdir proj drop bin
+chmod 755 proj drop
+printf 'PRIVATE KEY MATERIAL\n' > secret.key; chmod 644 secret.key
+printf '#!/bin/sh\necho tool\n' > tool.sh;    chmod 644 tool.sh
+for f in backup report mount-helper clean; do printf '#!/bin/sh\necho %s\n' "$f" > "bin/$f"; done
+chmod 4755 bin/backup
+chmod 0755 bin/report
+chmod 4750 bin/mount-helper
+chmod 2755 bin/clean
+printf '# SPDX-License-Identifier: MIT\n# TODO: umask setting for new files and directories\n' > umask.lab
+printf '# SPDX-License-Identifier: MIT\n# TODO: names of the files in bin/ that have the set-user-identifier bit, one per line, sorted\n' > suid.txt

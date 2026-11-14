@@ -1,0 +1,219 @@
+id: LNX-101
+title: Linux Foundations & the Command Line
+summary: 'The vocabulary, tools and habits of working at a Linux prompt: the shell, files and permissions, text processing, editing, archiving
+  and finding help.'
+hours: 40
+coverage: full
+outcomes:
+- Explain what a distribution is and what the main licence families require of someone who redistributes software
+- Move around the file tree and name sets of files with globs, quoting every expansion correctly
+- Build pipelines from grep, sed, awk, cut, sort, uniq, tr and xargs and wire streams with redirection and tee
+- Write and debug basic and extended regular expressions
+- Edit files with vim or nano and set the editor that other tools launch
+- Read and set permissions, ownership, umask and the special bits, and reason about who can access a file
+- Archive, compress and restore a directory tree without losing links, modes or ownership
+- Find the right manual page, option or example without leaving the terminal
+certifications:
+- cert: LE
+  objectives:
+  - '1.1'
+  - '1.2'
+  - '1.3'
+  - '1.4'
+  - '2.1'
+  - '2.2'
+  - '2.3'
+  - '2.4'
+  - '3.1'
+  - '3.2'
+  - '4.1'
+  - '4.3'
+  - '5.1'
+  - '5.3'
+  - '5.4'
+- cert: LPIC1
+  objectives:
+  - '103.1'
+  - '103.2'
+  - '103.3'
+  - '103.4'
+  - '103.7'
+  - '103.8'
+  - '104.5'
+  - '104.6'
+  - '104.7'
+  - '105.1'
+  - '110.1'
+- cert: LPLUS
+  objectives:
+  - D1
+  - D2
+- cert: LFCS
+  objectives:
+  - D4
+  - D5
+- cert: RHCSA
+  objectives:
+  - D1
+  - D10
+modules:
+- id: orientation
+  title: 'Orientation: distributions, licences and help'
+  lessons:
+  - topic: LNX-101-T01
+    title: Distributions and open-source licensing
+    file: lessons/LNX-101-T01.md
+    minutes: 45
+  - topic: LNX-101-T10
+    title: Getting help on the system
+    file: lessons/LNX-101-T10.md
+    minutes: 40
+- id: shell-and-files
+  title: The shell and the file tree
+  lessons:
+  - topic: LNX-101-T02
+    title: 'Navigating the shell: globbing, quoting and history'
+    file: lessons/LNX-101-T02.md
+    minutes: 60
+  - topic: LNX-101-T03
+    title: Files, links and the directory layout
+    file: lessons/LNX-101-T03.md
+    minutes: 55
+- id: text-and-editing
+  title: Working with text
+  lessons:
+  - topic: LNX-101-T05
+    title: Redirection, pipes and tee
+    file: lessons/LNX-101-T05.md
+    minutes: 55
+  - topic: LNX-101-T04
+    title: Text tools that compose
+    file: lessons/LNX-101-T04.md
+    minutes: 65
+  - topic: LNX-101-T06
+    title: Regular expressions (BRE and ERE)
+    file: lessons/LNX-101-T06.md
+    minutes: 60
+  - topic: LNX-101-T07
+    title: Editing text with vi, vim and nano
+    file: lessons/LNX-101-T07.md
+    minutes: 55
+- id: access-and-bundles
+  title: Access control and archives
+  lessons:
+  - topic: LNX-101-T08
+    title: Permissions, ownership, umask and special bits
+    file: lessons/LNX-101-T08.md
+    minutes: 60
+  - topic: LNX-101-T09
+    title: Archiving and compression
+    file: lessons/LNX-101-T09.md
+    minutes: 60
+labs:
+- id: license-triage
+  topic: LNX-101-T01
+  title: Triage a component inventory by licence
+  env: C
+  license: MIT
+  minutes: 30
+- id: help-hunt
+  topic: LNX-101-T10
+  title: Find answers in help text and the manual
+  env: C
+  license: MIT
+  minutes: 25
+- id: shell-expansion
+  topic: LNX-101-T02
+  title: Make the shell expand exactly what you mean
+  env: C
+  license: MIT
+  minutes: 45
+- id: links-and-layout
+  topic: LNX-101-T03
+  title: Links, a dangling link and the standard layout
+  env: C
+  license: MIT
+  minutes: 40
+- id: stream-plumbing
+  topic: LNX-101-T05
+  title: Wire streams the right way round
+  env: C
+  license: MIT
+  minutes: 40
+- id: text-pipelines
+  topic: LNX-101-T04
+  title: Answer log questions with pipelines
+  env: C
+  license: MIT
+  minutes: 50
+- id: regex-workout
+  topic: LNX-101-T06
+  title: Write patterns that match exactly the right lines
+  env: C
+  license: MIT
+  minutes: 45
+- id: ex-editing
+  topic: LNX-101-T07
+  title: Edit a file with an ex script
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - vim
+- id: permission-fixes
+  topic: LNX-101-T08
+  title: Repair modes, groups and special bits
+  env: C
+  license: MIT
+  minutes: 45
+- id: archive-roundtrip
+  topic: LNX-101-T09
+  title: Archive, compress and restore a tree faithfully
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - zstd
+  - cpio
+  - xz-utils
+quizzes:
+- id: LNX-101-T01
+  topic: LNX-101-T01
+  title: 'Quiz: Distributions and open-source licensing'
+  file: quizzes/LNX-101-T01.yaml
+- id: LNX-101-T10
+  topic: LNX-101-T10
+  title: 'Quiz: Getting help on the system'
+  file: quizzes/LNX-101-T10.yaml
+- id: LNX-101-T02
+  topic: LNX-101-T02
+  title: 'Quiz: Navigating the shell: globbing, quoting and history'
+  file: quizzes/LNX-101-T02.yaml
+- id: LNX-101-T03
+  topic: LNX-101-T03
+  title: 'Quiz: Files, links and the directory layout'
+  file: quizzes/LNX-101-T03.yaml
+- id: LNX-101-T05
+  topic: LNX-101-T05
+  title: 'Quiz: Redirection, pipes and tee'
+  file: quizzes/LNX-101-T05.yaml
+- id: LNX-101-T04
+  topic: LNX-101-T04
+  title: 'Quiz: Text tools that compose'
+  file: quizzes/LNX-101-T04.yaml
+- id: LNX-101-T06
+  topic: LNX-101-T06
+  title: 'Quiz: Regular expressions (BRE and ERE)'
+  file: quizzes/LNX-101-T06.yaml
+- id: LNX-101-T07
+  topic: LNX-101-T07
+  title: 'Quiz: Editing text with vi, vim and nano'
+  file: quizzes/LNX-101-T07.yaml
+- id: LNX-101-T08
+  topic: LNX-101-T08
+  title: 'Quiz: Permissions, ownership, umask and special bits'
+  file: quizzes/LNX-101-T08.yaml
+- id: LNX-101-T09
+  topic: LNX-101-T09
+  title: 'Quiz: Archiving and compression'
+  file: quizzes/LNX-101-T09.yaml

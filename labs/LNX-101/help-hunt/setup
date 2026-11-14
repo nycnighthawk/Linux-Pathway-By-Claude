@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a small command with built-in help, and an answer sheet to fill in.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > syncer <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+usage() {
+cat <<'USAGE'
+Usage: syncer [OPTION]... SOURCE DEST
+Copy SOURCE to DEST and report what changed.
+
+  -q, --quiet            print nothing except errors
+  -r, --retries=N        retry a failed transfer N times (default 5)
+  -t, --timeout=SECS     give up on a stalled transfer after SECS seconds (default 30)
+  -n, --dry-run          show what would be done without doing it
+      --help             show this help and exit
+      --version          show the version and exit
+
+Exit status:
+  0  everything was copied
+  2  invalid option or missing argument
+  4  the configuration file could not be read
+  7  at least one transfer failed after all retries
+USAGE
+}
+case "${1:-}" in
+  --help) usage; exit 0 ;;
+  --version) echo "syncer 2.4"; exit 0 ;;
+  *) usage >&2; exit 2 ;;
+esac
+SH
+chmod +x syncer
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ? from syncer --help, the shell, or the manual; keep the key=value layout.\nretries_default=?\nquiet_flag=?\nconfig_error_exit=?\nhelp_stream=?\nmanual_section_file_formats=?\ncd_kind=?\n' > answers.txt

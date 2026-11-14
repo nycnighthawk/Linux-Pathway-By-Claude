@@ -1,0 +1,53 @@
+title: "Quiz: Redirection, pipes and tee"
+questions:
+  - id: stderr-fd
+    prompt: "Which file descriptor number is standard error?"
+    choices: ["0", "1", "2", "3"]
+    answer: [2]
+    explain: "0 is standard input, 1 standard output, 2 standard error."
+  - id: order
+    prompt: "What does cmd 2>&1 > f do?"
+    choices:
+      - "Sends both streams to f"
+      - "Sends standard error to the terminal and only standard output to f"
+      - "Sends standard output to the terminal and standard error to f"
+      - "Discards both streams"
+    answer: [1]
+    explain: "Redirections run left to right. Descriptor 2 is copied from 1 while 1 still points at the terminal."
+  - id: both-to-file
+    prompt: "Which command sends both streams to f in any POSIX shell?"
+    choices: ["cmd 2>&1 > f", "cmd > f 2>&1", "cmd >& f 2", "cmd 1>2 > f"]
+    answer: [1]
+    explain: "Point 1 at the file first, then copy it onto 2."
+  - id: sudo-echo
+    prompt: "Why does sudo echo x > /root/file fail for an ordinary user, and what works?"
+    choices:
+      - "echo needs a terminal; use script"
+      - "The shell opens the file as you before sudo runs; use echo x | sudo tee /root/file"
+      - "sudo does not run builtins"
+      - "Files under /root cannot be written"
+    answer: [1]
+    explain: "The redirection is done by your shell. With tee, the file is opened by a process that runs under sudo."
+  - id: pipestatus
+    prompt: "What does PIPESTATUS contain after false | true in bash?"
+    choices: ["0", "1", "1 0", "0 1"]
+    answer: [2]
+    explain: "It lists each stage in order: false exited 1, true exited 0."
+  - id: frozen
+    prompt: "Why can tail -f log | grep x | cut -d' ' -f2 look frozen?"
+    choices:
+      - "cut waits for a file"
+      - "grep block-buffers its output when it is not a terminal"
+      - "tail only prints at exit"
+      - "pipes hold data until they are full of text"
+    answer: [1]
+    explain: "Use grep --line-buffered or stdbuf to flush each line."
+  - id: sort-same-file
+    prompt: "sort data > data leaves data empty. Why?"
+    choices:
+      - "The shell truncated the file before sort could read it"
+      - "sort deletes its input"
+      - "The file was locked"
+      - "sort writes to standard error"
+    answer: [0]
+    explain: "The shell opens the output with truncation first. Write to a new file and then move it."

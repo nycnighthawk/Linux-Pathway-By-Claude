@@ -1,0 +1,57 @@
+title: "Quiz: Text tools that compose"
+questions:
+  - id: sort-before-uniq
+    prompt: "Why must sort come before uniq -c when counting frequencies?"
+    choices:
+      - "uniq only collapses adjacent duplicates"
+      - "uniq cannot read pipes"
+      - "sort removes blank lines"
+      - "uniq needs numeric input"
+    answer: [0]
+    explain: "uniq compares neighbouring lines, so equal lines must be next to each other."
+  - id: null-safe
+    prompt: "Which pair makes find and xargs safe for file names with spaces?"
+    choices: ["-name and -n", "-print0 and -0", "-exec and -p", "-type f and -I"]
+    answer: [1]
+    explain: "Null separators cannot occur in a name, so they survive spaces and newlines."
+  - id: awk-vs-cut
+    prompt: "When is awk a better choice than cut?"
+    choices:
+      - "When you need a condition on a field or arithmetic across lines"
+      - "Never; cut is always faster"
+      - "Only for binary files"
+      - "When fields are separated by a single character"
+    answer: [0]
+    explain: "cut only extracts columns. awk can test fields, sum and count."
+  - id: locale-sort
+    prompt: "How do you make sort output stable across machines?"
+    choices: ["sort -f", "LC_ALL=C sort", "sort -R", "sort --stable only"]
+    answer: [1]
+    explain: "Collation order depends on the locale; LC_ALL=C gives byte order."
+  - id: pipefail
+    prompt: "By default, what is the exit status of a pipeline?"
+    choices:
+      - "The status of the first command"
+      - "The status of the last command"
+      - "The sum of all statuses"
+      - "Failure if any stage failed"
+    answer: [1]
+    explain: "Only the last stage counts unless you use set -o pipefail."
+  - id: leave-pipeline
+    prompt: "Which situations call for a script or a real parser rather than a pipeline? Select all that apply."
+    choices:
+      - "CSV with quoted commas"
+      - "JSON or YAML data"
+      - "Counting lines in a log"
+      - "Fields containing embedded newlines"
+    answer: [0, 1, 3]
+    explain: "Line tools break on quoting and structure. Counting lines is exactly what pipelines do well."
+  - id: sed-i-mac
+    prompt: "A sed -i command copied from a Mac fails on Linux. Why?"
+    choices:
+      - "GNU and BSD sed treat the -i suffix argument differently"
+      - "Linux has no sed"
+      - "sed -i is not allowed on Linux"
+      - "The Mac used a different shell"
+    answer: [0]
+    explain: "BSD sed needs a suffix argument after -i, GNU sed takes it attached or omitted."
