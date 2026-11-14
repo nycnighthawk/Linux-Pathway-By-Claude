@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the sources line, the pins and the answers by asking apt itself.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+export APT_CONFIG="$PWD/apt.conf"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+if [ -s sources.list ] && grep -qE '^deb .*file:' sources.list; then
+    ok "sources.list names the local repository"
+    apt-get update >/dev/null 2>&1 && ok "apt-get update works with the private configuration" || fail "apt-get update failed (the repository is unsigned: mark the source trusted)"
+else
+    fail "write sources.list with a deb line for the local repository (file: URI, flat layout)"
+fi
+cand() { apt-cache policy "$1" 2>/dev/null | sed -n 's/^  Candidate: //p'; }
+c1=$(cand labtool)
+[ "$c1" = 1.0-1 ] && ok "labtool candidate is 1.0-1 although 2.0-1 exists" || fail "pin labtool so that the candidate is 1.0-1 (now: ${c1:-none})"
+c2=$(cand labextra)
+{ [ "$c2" = "(none)" ] || [ -z "$c2" ]; } && ok "labextra has no candidate (priority below zero)" || fail "give labextra a negative pin priority so it is never installed (now: $c2)"
+if [ -s preferences ] && grep -q '^Pin-Priority:' preferences; then ok "preferences file has stanzas"; else fail "write the pins in the preferences file"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get candidate_view_command)" in "apt-cache policy"|"apt policy") ok "policy command" ;; *) fail "candidate_view_command: the command that prints installed, candidate and priorities" ;; esac
+[ "$(get force_downgrade_priority)" = 1000 ] && ok "1000" || fail "force_downgrade_priority: the priority at and above which apt installs even a downgrade"
+[ "$(get default_source_priority)" = 500 ] && ok "500" || fail "default_source_priority: priority of an ordinary source"
+[ "$(get hold_command)" = "apt-mark hold" ] && ok "hold" || fail "hold_command: the apt tool command that holds a package"
+exit $bad

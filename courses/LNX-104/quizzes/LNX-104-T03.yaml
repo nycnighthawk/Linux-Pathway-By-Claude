@@ -1,0 +1,72 @@
+title: 'Quiz: Repositories and GPG keys'
+questions:
+- id: gpgcheck
+  prompt: What does gpgcheck=1 verify in a dnf repository?
+  choices:
+  - Package signatures
+  - The repomd.xml signature
+  - TLS certificates
+  - Disk usage
+  answer:
+  - 0
+  explain: gpgcheck covers packages; repo_gpgcheck covers the signed metadata.
+- id: hash-chain
+  prompt: How does APT make one signature cover every package?
+  choices:
+  - Every deb carries its own certificate
+  - The mirror signs each download
+  - dpkg signs the status file
+  - A signed Release file lists checksums of the Packages indexes, which list package checksums
+  answer:
+  - 3
+  explain: Release is signed; it carries the checksums of the indexes, which carry the checksums of the packages.
+- id: nokey
+  prompt: What does NOKEY in rpm -K output mean?
+  choices:
+  - The package is corrupted
+  - The package is unsigned
+  - The key expired
+  - The signature is well formed but the key is not imported
+  answer:
+  - 3
+  explain: BAD would mean altered content; NOKEY means no matching key in the rpm database.
+- id: signed-by
+  prompt: Why prefer signed-by on one source over apt-key add?
+  choices:
+  - The key then applies to that source only
+  - It is faster
+  - It removes the need for HTTPS
+  - It works offline only
+  answer:
+  - 0
+  explain: A global keyring lets any trusted key vouch for any repository.
+- id: trusted-yes
+  prompt: When is [trusted=yes] acceptable?
+  choices:
+  - Never needed on Debian
+  - Only for a local repository you built yourself
+  - For any vendor mirror
+  - For security repositories
+  answer:
+  - 1
+  explain: It disables verification for that source, so reserve it for content you created.
+- id: fingerprint
+  prompt: What should you do before accepting a vendor key?
+  choices:
+  - Import it with -y in automation
+  - Copy it to /tmp
+  - Compare its fingerprint with a second channel such as the vendor's site
+  - Accept any key from HTTPS
+  answer:
+  - 2
+  explain: A fingerprint checked through an independent channel protects against a substituted key.
+- id: list-keys
+  prompt: Which command lists keys imported into the rpm database?
+  choices:
+  - dnf repolist
+  - gpg --list-secret-keys
+  - rpm -qa 'gpg-pubkey*'
+  - rpm -V gpg
+  answer:
+  - 2
+  explain: Imported keys appear as gpg-pubkey pseudo-packages.

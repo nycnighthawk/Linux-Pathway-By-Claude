@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a remote definition file with an embedded signing key, and a blank answer sheet. No remote is configured.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf gnupg xdg repo lab.flatpakrepo answers.txt
+mkdir -p repo
+mkdir -m 700 gnupg
+GNUPGHOME="$PWD/gnupg" gpg --batch --quiet --passphrase '' --quick-generate-key 'Lab Remote <remote@example.invalid>' rsa2048 sign never >/dev/null 2>&1
+key=$(GNUPGHOME="$PWD/gnupg" gpg --batch --export | base64 -w0)
+printf '[Flatpak Repo]\nTitle=Lab repository\nUrl=file://%s/repo\nGPGKey=%s\n' "$PWD" "$key" > lab.flatpakrepo
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nremote_details_option=?\nsystem_installation_dir=?\nunused_cleanup_command=?\noverride_command=?\n' > answers.txt

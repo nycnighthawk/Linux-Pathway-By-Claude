@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a throw-away signing key, an unsigned package in a repository, and a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src hello.spec rpmbuild gnupg repo unsigned rpmdb lab.repo RPM-GPG-KEY-lab answers.txt
+mkdir -p src repo unsigned rpmdb
+printf '#!/bin/sh\n# SPDX-License-Identifier: MIT\necho signed hello\n' > src/hello.sh
+cat > hello.spec <<'SPEC'
+# SPDX-License-Identifier: MIT
+Name:       hello
+Version:    1.0
+Release:    1
+Summary:    Tiny package for the signing lab
+License:    MIT
+BuildArch:  noarch
+Source0:    hello.sh
+
+%description
+A script that is built unsigned, then signed in the lab.
+
+%install
+mkdir -p %{buildroot}/usr/bin
+install -m 0755 %{SOURCE0} %{buildroot}/usr/bin/hello
+
+%files
+/usr/bin/hello
+SPEC
+rpmbuild --define "_topdir $PWD/rpmbuild" --define "_sourcedir $PWD/src" -bb hello.spec >/dev/null 2>&1
+cp rpmbuild/RPMS/noarch/hello-1.0-1.noarch.rpm repo/
+cp rpmbuild/RPMS/noarch/hello-1.0-1.noarch.rpm unsigned/
+mkdir -m 700 gnupg
+export GNUPGHOME="$PWD/gnupg"
+gpg --batch --quiet --passphrase '' --quick-generate-key 'Lab Signer <lab@example.invalid>' rsa2048 sign never >/dev/null 2>&1
+gpg --batch --armor --export 'Lab Signer' > RPM-GPG-KEY-lab
+createrepo_c repo >/dev/null 2>&1
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nmetadata_signature_option=?\nlist_keys_command=?\nkey_package_prefix=?\nverify_signature_command=?\n' > answers.txt

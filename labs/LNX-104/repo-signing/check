@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: the repository package is signed and verifies against the imported key, the copy stays unsigned, lab.repo is strict.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+pkg=repo/hello-1.0-1.noarch.rpm
+out=$(rpm --dbpath "$PWD/rpmdb" -K "$pkg" 2>&1)
+case "$out" in
+    *"signatures OK"*) ok "the repository package verifies against the imported key" ;;
+    *NOKEY*) fail "the package is signed but its key is not in rpmdb/ (rpm --dbpath ... --import)" ;;
+    *) fail "sign repo/hello-1.0-1.noarch.rpm with rpmsign --addsign and import the public key into rpmdb/" ;;
+esac
+u=$(rpm --dbpath "$PWD/rpmdb" -K unsigned/hello-1.0-1.noarch.rpm 2>&1)
+case "$u" in *"signatures OK"*) fail "unsigned/hello-1.0-1.noarch.rpm must stay unsigned (it is the control)" ;; *) ok "the control copy is not accepted" ;; esac
+if [ -s repo/repodata/repomd.xml ]; then
+    ok "repository metadata exists"
+    zcat -f repo/repodata/*primary.xml* 2>/dev/null | grep -q '<name>hello</name>' && ok "metadata lists hello" || fail "re-run createrepo_c on repo/ after changing the package"
+else fail "repo/repodata is missing (createrepo_c repo)"; fi
+if [ -s lab.repo ]; then
+    g=$(grep -E '^gpgcheck=' lab.repo | head -1 | cut -d= -f2)
+    k=$(grep -E '^gpgkey=' lab.repo | head -1 | cut -d= -f2-)
+    b=$(grep -E '^baseurl=' lab.repo | head -1 | cut -d= -f2-)
+    [ "$g" = 1 ] && ok "gpgcheck=1" || fail "lab.repo needs gpgcheck=1"
+    [ -f "${k#file://}" ] && ok "gpgkey points at an existing key file" || fail "lab.repo needs gpgkey=file:///absolute/path/to/RPM-GPG-KEY-lab"
+    [ "${b#file://}" = "$PWD/repo" ] && ok "baseurl points at repo/" || fail "lab.repo needs baseurl=file://$PWD/repo"
+    grep -qE '^\[[^]]+\]' lab.repo && grep -qE '^enabled=1' lab.repo && ok "section and enabled=1" || fail "lab.repo needs a [section] header and enabled=1"
+else fail "write lab.repo (a dnf repository definition)"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get metadata_signature_option)" = repo_gpgcheck ] && ok "repo_gpgcheck" || fail "metadata_signature_option: the .repo option that verifies repomd.xml"
+case "$(get list_keys_command)" in "rpm -qa gpg-pubkey*"|"rpm -qa 'gpg-pubkey*'") ok "list keys" ;; *) fail "list_keys_command: the rpm query that lists imported keys" ;; esac
+[ "$(get key_package_prefix)" = gpg-pubkey ] && ok "gpg-pubkey" || fail "key_package_prefix: the name rpm gives to an imported key"
+case "$(get verify_signature_command)" in "rpm -K"|"rpm --checksig"|"rpmkeys -K"|"rpmkeys --checksig") ok "checksig" ;; *) fail "verify_signature_command: the rpm option that checks digests and signature" ;; esac
+exit $bad

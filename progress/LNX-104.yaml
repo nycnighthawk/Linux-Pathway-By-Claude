@@ -1,7 +1,7 @@
 item: LNX-104
 label: Software Packages on a Single Host
 branch: build/LNX-104
-state: in-progress
+state: done
 started: '2026-11-14'
 updated: '2026-11-14'
 phases:
@@ -16,19 +16,37 @@ phases:
     - LNX-104-T05
     - LNX-104-T06
   lessons:
-    state: todo
+    state: done
     units: 6
-    done: []
+    done:
+    - LNX-104-T01
+    - LNX-104-T02
+    - LNX-104-T03
+    - LNX-104-T04
+    - LNX-104-T05
+    - LNX-104-T06
   quizzes:
-    state: todo
+    state: done
     units: 6
-    done: []
+    done:
+    - LNX-104-T01
+    - LNX-104-T02
+    - LNX-104-T03
+    - LNX-104-T04
+    - LNX-104-T05
+    - LNX-104-T06
   labs:
-    state: todo
+    state: done
     units: 6
-    done: []
+    done:
+    - LNX-104-T01
+    - LNX-104-T02
+    - LNX-104-T03
+    - LNX-104-T04
+    - LNX-104-T05
+    - LNX-104-T06
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -40,3 +58,9 @@ log:
 - '2026-11-14 synth: LNX-104-T04'
 - '2026-11-14 synth: LNX-104-T05'
 - '2026-11-14 synth: LNX-104-T06'
+- '2026-11-14 lessons: LNX-104-T01, LNX-104-T02, LNX-104-T03, LNX-104-T04, LNX-104-T05, LNX-104-T06'
+- '2026-11-14 labs: LNX-104-T01, LNX-104-T02, LNX-104-T03, LNX-104-T04, LNX-104-T05, LNX-104-T06'
+- '2026-11-14 quizzes: LNX-104-T01, LNX-104-T02, LNX-104-T03, LNX-104-T04, LNX-104-T05, LNX-104-T06'
+- '2026-11-14 checks: done'
+- 2026-11-14 finished
+finished: '2026-11-14'

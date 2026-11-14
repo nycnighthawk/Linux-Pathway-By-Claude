@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: package built, installed into the private root, the binary tampered with, answers match rpm -V.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+r=$(ls rpmbuild/RPMS/noarch/hello-1.0-1.noarch.rpm 2>/dev/null)
+[ -n "$r" ] && ok "package built: $r" || fail "build rpmbuild/RPMS/noarch/hello-1.0-1.noarch.rpm with rpmbuild -bb"
+if [ -d root ] && [ "$(rpm --root "$PWD/root" -q --qf '%{NAME}-%{VERSION}-%{RELEASE}\n' hello 2>/dev/null)" = hello-1.0-1 ]; then
+    ok "hello-1.0-1 is in the private rpm database"
+    line=$(rpm --root "$PWD/root" -V hello 2>/dev/null | grep ' /usr/bin/hello$' || true)
+    flags=${line%% *}
+    case "$flags" in S[.M]5*|SM5*) ok "rpm -V reports size and digest changes for the binary ($flags)" ;; *) fail "append a line to root/usr/bin/hello and chmod it to 0700 so rpm -V reports S, M and 5" ;; esac
+    case "$flags" in SM5*) ok "mode change reported" ;; *) fail "chmod 0700 root/usr/bin/hello so rpm -V also reports a mode change" ;; esac
+    conf=$(rpm --root "$PWD/root" -V hello 2>/dev/null | grep ' /etc/hello.conf$' || true)
+    [ -z "$conf" ] && ok "configuration file untouched" || fail "leave root/etc/hello.conf as installed"
+else
+    fail "install the package with: rpm --root \$PWD/root -i --nodeps --nosignature <file>"
+fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ -n "${flags:-}" ] && [ "$(get binary_flags)" = "${flags:-x}" ] && ok "binary_flags" || fail "binary_flags: the nine-character field rpm -V printed for the binary"
+[ "$(get digest_flag)" = 5 ] && ok "digest_flag" || fail "digest_flag: the character that marks a digest change"
+[ "$(get mode_flag)" = M ] && ok "mode_flag" || fail "mode_flag: the letter for permissions or file type changes"
+[ "$(get config_file_marker)" = c ] && ok "config marker" || fail "config_file_marker: the category letter rpm -V prints for configuration files"
+[ "$(get owner_package)" = hello ] && ok "owner_package" || fail "owner_package: the package name that rpm -qf reports for /usr/bin/hello"
+exit $bad
