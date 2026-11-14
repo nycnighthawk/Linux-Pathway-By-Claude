@@ -1,7 +1,7 @@
 item: T1b
 label: Thin-course sources
 branch: build/T1b
-state: in-progress
+state: done
 started: '2026-11-14'
 updated: '2026-11-14'
 phases:
@@ -14,10 +14,13 @@ phases:
     - clusterlabs
     - git-docs
   rebuild:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
 log:
 - 2026-11-14 started
 - '2026-11-14 sources: python-docs, rust-book, clusterlabs, git-docs'
+- '2026-11-14 rebuild: done'
+- 2026-11-14 finished
+finished: '2026-11-14'
