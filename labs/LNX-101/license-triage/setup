@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a component inventory to classify.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > components.csv <<'CSV'
+component,spdx,distributed,network_service
+zlibish,MIT,yes,no
+shellkit,GPL-3.0-or-later,yes,no
+coretools,GPL-2.0-only,no,no
+libparse,LGPL-2.1-or-later,yes,no
+webcache,Apache-2.0,yes,no
+dashboard,AGPL-3.0-only,no,yes
+fsmodule,CDDL-1.0,yes,no
+tinyhttp,BSD-3-Clause,yes,yes
+formats,MPL-2.0,yes,no
+reportgen,AGPL-3.0-only,no,no
+CSV
+rm -f decision.csv distro.txt

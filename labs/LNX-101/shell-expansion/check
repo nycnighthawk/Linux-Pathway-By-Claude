@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade tasks.sh and bashrc.lab in $LAB_DIR.
+set -u
+export LC_ALL=C
+here=$(pwd)
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+
+[ -f tasks.sh ] || { echo "FAIL: tasks.sh not found in $PWD"; exit 1; }
+
+# Run one function in a fresh copy of data/ so tasks cannot disturb each other.
+run_fn() {
+    local fn=$1 tmp
+    tmp=$(mktemp -d)
+    cp -a data "$tmp/data"
+    ( cd "$tmp/data" && bash -c 'source "$1"; "$2"' _ "$here/tasks.sh" "$fn" 2>/dev/null ) > "$tmp/out"
+    cat "$tmp/out"
+    if [ "$fn" = remove_dash_file ]; then ls -A "$tmp/data" > "$tmp/ls"; cat "$tmp/ls" >> "$tmp/out"; fi
+    rm -rf "$tmp"
+}
+
+got=$(run_fn visible_txt)
+want=$(printf '%s\n' -rf.txt a.txt b.txt 'my notes.txt')
+[ "$got" = "$want" ] && ok "visible_txt" || fail "visible_txt printed: $(printf '%s' "$got" | tr '\n' '|')"
+
+got=$(run_fn count_short_reports | tr -d ' ')
+[ "$got" = 2 ] && ok "count_short_reports" || fail "count_short_reports printed '$got', expected 2"
+
+got=$(run_fn literal_text)
+[ "$got" = '$HOME is "home"' ] && ok "literal_text" || fail "literal_text printed: $got"
+
+got=$(run_fn show_notes)
+[ "$got" = 'two words' ] && ok "show_notes" || fail "show_notes printed: $got"
+
+tmp=$(mktemp -d); cp -a data "$tmp/data"
+( cd "$tmp/data" && bash -c 'source "$1"; remove_dash_file' _ "$here/tasks.sh" >/dev/null 2>&1 )
+left=$(ls -A "$tmp/data" | sort | tr '\n' '|')
+want='.hidden.txt|a.txt|b.txt|my notes.txt|report 1.log|report 10.log|report 2.log|x.TXT|'
+[ "$left" = "$want" ] && ok "remove_dash_file removed only -rf.txt" || fail "after remove_dash_file the directory holds: $left"
+rm -rf "$tmp"
+
+if [ -f bashrc.lab ]; then
+    out=$(bash --norc --noprofile -c 'source ./bashrc.lab; printf "%s|%s|" "$HISTCONTROL" "$HISTSIZE"; shopt -q histappend && echo on || echo off' 2>/dev/null)
+    case "$out" in
+      ignoreboth\|10000\|on|ignorespace:ignoredups\|10000\|on|ignoredups:ignorespace\|10000\|on) ok "bashrc.lab history settings" ;;
+      *) fail "bashrc.lab gives HISTCONTROL|HISTSIZE|histappend = $out" ;;
+    esac
+else
+    fail "bashrc.lab not found"
+fi
+exit $bad

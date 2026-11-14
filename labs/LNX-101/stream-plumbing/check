@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade plumbing.sh in $LAB_DIR. Every function runs in its own scratch directory.
+set -u
+here=$(pwd)
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f plumbing.sh ] || { echo "FAIL: plumbing.sh not found in $PWD"; exit 1; }
+
+# run_fn NAME [TIMES]: runs the function in a scratch dir (copy of ./noisy) and leaves the dir in $scratch.
+run_fn() {
+    scratch=$(mktemp -d)
+    cp noisy "$scratch/noisy"
+    local i
+    for i in $(seq 1 "${2:-1}"); do
+        out=$( cd "$scratch" && bash -c 'source "$1"; "$2"' _ "$here/plumbing.sh" "$1" 2>/dev/null )
+    done
+}
+
+run_fn split_streams
+[ "$(cat "$scratch/out.txt" 2>/dev/null)" = "$(printf 'out 1\nout 2\nout 3')" ] && [ "$(cat "$scratch/err.txt" 2>/dev/null)" = "$(printf 'err 1\nerr 2')" ] \
+  && ok "split_streams" || fail "split_streams: out.txt must hold the three out lines and err.txt the two err lines"
+
+run_fn merge_streams
+n=$(wc -l < "$scratch/both.txt" 2>/dev/null || echo 0)
+{ [ "$n" = 5 ] && grep -q '^out 1$' "$scratch/both.txt" && grep -q '^err 2$' "$scratch/both.txt"; } \
+  && ok "merge_streams" || fail "merge_streams: both.txt must contain all five lines"
+
+run_fn append_log 3
+[ "$(cat "$scratch/log.txt" 2>/dev/null)" = "$(printf 'run finished\nrun finished\nrun finished')" ] \
+  && ok "append_log appends" || fail "append_log called three times must leave three lines"
+
+run_fn tee_copy
+{ [ "$(printf '%s' "$out" | tr -d ' ')" = 3 ] && [ "$(cat "$scratch/copy.txt" 2>/dev/null)" = "$(printf 'out 1\nout 2\nout 3')" ]; } \
+  && ok "tee_copy" || fail "tee_copy must print 3 and leave the three out lines in copy.txt (got '$out')"
+
+run_fn pipeline_status
+[ "$out" = 1 ] && ok "pipeline_status" || fail "pipeline_status printed '$out', expected 1"
+
+run_fn make_conf
+[ "$(cat "$scratch/app.conf" 2>/dev/null)" = "$(printf 'mode=fast\nretries=3\nname=lab')" ] \
+  && ok "make_conf" || fail "make_conf: app.conf must hold exactly the three lines"
+exit $bad

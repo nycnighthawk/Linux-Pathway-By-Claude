@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a noisy program that writes to both output streams, and a task file.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > noisy <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+echo "out 1"
+echo "err 1" >&2
+echo "out 2"
+echo "err 2" >&2
+echo "out 3"
+SH
+chmod +x noisy
+cat > plumbing.sh <<'SH'
+# SPDX-License-Identifier: MIT
+# Each function runs in a fresh, empty directory that contains a copy of ./noisy. Replace every TODO.
+
+# 1. Run ./noisy with its standard output in out.txt and its standard error in err.txt.
+split_streams() {
+    : TODO
+}
+
+# 2. Run ./noisy with both streams in both.txt.
+merge_streams() {
+    : TODO
+}
+
+# 3. Add the line "run finished" to the end of log.txt (create it if needed). Each call adds one more line.
+append_log() {
+    : TODO
+}
+
+# 4. Run ./noisy, hide its error messages, save a copy of what it printed in copy.txt
+#    and print the number of lines that passed through.
+tee_copy() {
+    : TODO
+}
+
+# 5. With the pipeline-failure option on, run: false | true   and print the exit status of that pipeline.
+pipeline_status() {
+    : TODO
+}
+
+# 6. Write app.conf using a here-document with exactly these three lines: mode=fast, retries=3, name=lab.
+make_conf() {
+    : TODO
+}
+SH

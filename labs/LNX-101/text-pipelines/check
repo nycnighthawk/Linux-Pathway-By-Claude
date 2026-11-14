@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade pipelines.sh in $LAB_DIR.
+set -u
+export LC_ALL=C
+here=$(pwd)
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f pipelines.sh ] || { echo "FAIL: pipelines.sh not found in $PWD"; exit 1; }
+
+run_fn() { ( cd "$here" && bash -c 'source ./pipelines.sh; "$1"' _ "$1" 2>/dev/null ); }
+squeeze() { sed -e 's/^[[:space:]]*//' -e 's/[[:space:]][[:space:]]*/ /g' -e 's/[[:space:]]*$//'; }
+
+got=$(run_fn top_ips | squeeze)
+want=$(printf '%s\n' '6 10.0.0.5' '4 10.0.0.9' '3 10.0.0.2')
+[ "$got" = "$want" ] && ok "top_ips" || fail "top_ips printed: $(printf '%s' "$got" | tr '\n' '|')"
+
+got=$(run_fn server_errors | squeeze)
+[ "$got" = 3 ] && ok "server_errors" || fail "server_errors printed '$got', expected 3"
+
+got=$(run_fn real_users)
+[ "$got" = "$(printf 'alice\nbob\ncarol')" ] && ok "real_users" || fail "real_users printed: $(printf '%s' "$got" | tr '\n' '|')"
+
+got=$(run_fn redact)
+want=$(printf '%s\n' 'contact: ***@example.com' 'cc: ***@example.org and ***@example.com' 'no address on this line')
+[ "$got" = "$want" ] && ok "redact" || fail "redact printed: $(printf '%s' "$got" | tr '\n' '|')"
+
+got=$(run_fn total_lines | squeeze)
+[ "$got" = 10 ] && ok "total_lines" || fail "total_lines printed '$got', expected 10"
+exit $bad

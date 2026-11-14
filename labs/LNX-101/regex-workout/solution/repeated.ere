@@ -1,0 +1,2 @@
+# SPDX-License-Identifier: MIT
+(^|[^[:alnum:]])([[:alnum:]]+) \2([^[:alnum:]]|$)

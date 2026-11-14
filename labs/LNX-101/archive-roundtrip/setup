@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a small tree with a link, a hard link, a script and names containing spaces.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf site restore rootfs backup.tar.zst spaces.tar initramfs.cpio.gz
+mkdir -p site/bin site/docs
+printf '#!/bin/sh\necho hello\n' > site/bin/run.sh; chmod 755 site/bin/run.sh
+for i in 1 2 3 4 5 6 7 8; do printf 'line %s of a compressible document\n' $i; done > site/docs/readme.txt
+ln site/docs/readme.txt site/docs/readme.hard
+ln -s readme.txt site/docs/readme.link
+printf 'spaced\n' > 'site/docs/my notes.txt'
+printf 'second\n' > 'site/docs/other notes.txt'
+mkdir -p rootfs/dev rootfs/proc
+printf '#!/bin/sh\necho init\n' > rootfs/init; chmod 755 rootfs/init

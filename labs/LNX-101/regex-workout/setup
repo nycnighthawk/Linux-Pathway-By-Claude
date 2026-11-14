@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: five empty pattern files to fill in.
+set -eu
+cd "${LAB_DIR:-.}"
+for f in ipv4.ere date.ere hex.ere repeated.ere digits.bre; do
+    printf '# SPDX-License-Identifier: MIT\n# TODO: put exactly one pattern on the first line that is not a comment.\n' > "$f"
+done

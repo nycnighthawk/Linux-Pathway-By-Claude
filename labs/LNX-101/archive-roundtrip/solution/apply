@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Reference solution.
+set -eu
+tar -cf - site | zstd -q -o backup.tar.zst
+mkdir -p restore
+zstd -dc backup.tar.zst | tar -xpf - -C restore
+find site -name '* *' -type f -print0 | tar --null -T - -cf spaces.tar
+( cd rootfs && find . -mindepth 1 | sed 's|^\./||' | cpio -o -H newc --quiet ) | gzip -9 > initramfs.cpio.gz

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade decision.csv and distro.txt in $LAB_DIR. Exit 0 only if every requirement holds.
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+
+# Expected family and source-offer decision for every component of components.csv.
+expect="zlibish,permissive,no
+shellkit,strong-copyleft,yes
+coretools,strong-copyleft,no
+libparse,weak-copyleft,yes
+webcache,permissive,no
+dashboard,network-copyleft,yes
+fsmodule,weak-copyleft,yes
+tinyhttp,permissive,no
+formats,weak-copyleft,yes
+reportgen,network-copyleft,no"
+
+if [ -f decision.csv ]; then
+  got=$(grep -v '^#' decision.csv | tr -d '\r' | sed -e '1{/^component,/d}' | sort)
+  want=$(printf '%s\n' "$expect" | sort)
+  if [ "$got" = "$want" ]; then ok "decision.csv matches the expected classification"
+  else
+    fail "decision.csv differs from the expected rows (header line: component,family,source_offer)"
+    diff <(printf '%s\n' "$want") <(printf '%s\n' "$got") | head -8
+  fi
+  head -1 decision.csv | grep -q '^component,family,source_offer$' && ok "header is correct" || fail "first line must be: component,family,source_offer"
+else
+  fail "decision.csv not found in $PWD"
+fi
+
+if [ -f distro.txt ]; then
+  # shellcheck disable=SC1091
+  . /etc/os-release
+  [ "$(grep -v '^#' distro.txt | head -1)" = "$ID $VERSION_ID" ] && ok "distro.txt names this system" \
+    || fail "distro.txt first line must be the ID and VERSION_ID of this system from /etc/os-release, separated by a space"
+else
+  fail "distro.txt not found in $PWD"
+fi
+exit $bad

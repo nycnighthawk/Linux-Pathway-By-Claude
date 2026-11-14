@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the five pattern files in $LAB_DIR against fixed lists of lines that must and must not match.
+set -u
+export LC_ALL=C
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+
+pattern_of() { grep -v '^#' "$1" 2>/dev/null | sed -e '/^[[:space:]]*$/d' | head -1; }
+
+# test FILE MODE(-E|-G) ANCHOR(-x|"") "must match lines" "must not match lines"   (lines separated by |)
+test_pat() {
+    local file=$1 mode=$2 anchor=$3 yes=$4 no=$5 pat line miss=0
+    pat=$(pattern_of "$file")
+    if [ -z "$pat" ]; then fail "$file has no pattern yet"; return; fi
+    local IFS='|'
+    for line in $yes; do
+        printf '%s\n' "$line" | grep $mode $anchor -e "$pat" >/dev/null 2>&1 || { echo "      should match:     '$line'"; miss=1; }
+    done
+    for line in $no; do
+        if printf '%s\n' "$line" | grep $mode $anchor -e "$pat" >/dev/null 2>&1; then echo "      should NOT match: '$line'"; miss=1; fi
+    done
+    [ $miss = 0 ] && ok "$file" || fail "$file does not separate the lines correctly"
+}
+
+test_pat ipv4.ere   -E -x '0.0.0.0|192.168.0.1|255.255.255.255|10.20.30.40|1.2.3.4' \
+                          '256.1.1.1|1.2.3|1.2.3.4.5|01.2.3.4|a.b.c.d|1.2.3.4 |300.300.300.300|1..2.3'
+test_pat date.ere   -E -x '2026-01-31|1999-12-01|2024-02-29|2030-10-15' \
+                          '2026-13-01|2026-00-10|2026-01-32|26-01-01|2026-1-1|2026/01/01|2026-01-00'
+test_pat hex.ere    -E -x '0x1|0xFF|0xdeadbeef|0x0A1b2C3d|0x10' \
+                          '0x|0xg1|ff|0x123456789|1x23|0X1F'
+test_pat repeated.ere -E '' 'this is is a test|go go go|the the cat|a b b c' \
+                          'this is a test|island is|no repeats here|a b c d'
+test_pat digits.bre -G -x '12;|123456;|42;|9999;' \
+                          '1;|12|12:|a12;|123 456;|;'
+exit $bad

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a file to transform, and three answer files to fill in.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > before.txt <<'TXT'
+# service configuration
+name = demo
+debug = true   
+port = 8080
+DEBUG_LEVEL = 3
+host = old.example.com
+backup_host = old.example.com   
+TXT
+printf '" SPDX-License-Identifier: MIT\n" TODO: ex commands, one per line (lines starting with a double quote are comments), that turn before.txt into the wanted result and save it.\n' > keys.vim
+printf '# SPDX-License-Identifier: MIT\n# TODO: replace each ? with the nano key that does the job, written like ^X (control plus a letter).\nwrite_out=?\nexit=?\nsearch=?\n' > nano_keys.txt
+printf '# SPDX-License-Identifier: MIT\n# TODO: one line that sets the default editor for other programs, for example: export EDITOR=...\n' > editor.env
