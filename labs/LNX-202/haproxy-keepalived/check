@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Test HAProxy live with two throw-away backends (balancing and failover) and test keepalived's configuration.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+for c in haproxy keepalived python3 curl; do command -v "$c" >/dev/null || { echo "FAIL: $c is not installed (packages haproxy, keepalived, python3, curl)"; exit 1; }; done
+[ -f haproxy.cfg ] && [ -f keepalived.conf ] || { echo "FAIL: haproxy.cfg or keepalived.conf is missing; run setup"; exit 1; }
+# ---- keepalived (configuration test only)
+iface=$(ip -o link | awk -F': ' '/MULTICAST/ && $2 !~ /^(lo|veth|docker|br-)/ {sub(/@.*/,"",$2); print $2; exit}')
+if [ -z "$iface" ]; then echo "skip: no multicast interface for the keepalived test"; else
+  t=$(mktemp); sed "s/\beth0\b/$iface/g" keepalived.conf > "$t"
+  if keepalived -t -f "$t" >"$t.out" 2>&1; then ok "keepalived -t accepts keepalived.conf"; else fail "keepalived -t rejects the file: $(tail -2 "$t.out" | tr '\n' ' ')"; fi
+  rm -f "$t" "$t.out"
+fi
+grep -Eq '^\s*enable_script_security' keepalived.conf && ok "enable_script_security is set" || fail "set enable_script_security in global_defs (scripts run as root otherwise unsafe)"
+grep -Eq 'vrrp_script\s+\S+' keepalived.conf && grep -Eq '^\s*track_script' keepalived.conf && ok "a tracked health script is defined" || fail "define a vrrp_script and reference it in track_script"
+grep -Eq '^\s*weight\s+-[0-9]+' keepalived.conf && ok "the script lowers the priority (negative weight)" || fail "give vrrp_script a negative weight"
+grep -Eq '^\s*virtual_router_id\s+[0-9]+' keepalived.conf && grep -Eq '192\.0\.2\.80/24' keepalived.conf && ok "virtual router id and the address 192.0.2.80/24" || fail "set virtual_router_id and virtual_ipaddress 192.0.2.80/24"
+p=$(awk '/^\s*priority\s+/{print $2; exit}' keepalived.conf)
+[ -n "${p:-}" ] && [ "$p" -gt 100 ] && ok "priority $p is above the default 100" || fail "this is the primary node: priority must be above 100"
+# ---- haproxy
+haproxy -c -f haproxy.cfg >/dev/null 2>&1 && ok "haproxy -c accepts haproxy.cfg" || { fail "haproxy -c rejects haproxy.cfg"; haproxy -c -f haproxy.cfg 2>&1 | head -3; }
+[ "$bad" -eq 0 ] || { echo "stopping before the live tests"; exit 1; }
+w=$(mktemp -d); pids=""
+cleanup() { for p in $pids; do kill "$p" 2>/dev/null; done; wait 2>/dev/null; rm -rf "$w"; }
+trap cleanup EXIT
+cat > "$w/srv.py" <<'PY'
+import sys
+from http.server import BaseHTTPRequestHandler, HTTPServer
+name, port = sys.argv[1], int(sys.argv[2])
+class H(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = b"ok\n" if self.path == "/health" else (name + "\n").encode()
+        self.send_response(200); self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
+    def log_message(self, *a): pass
+HTTPServer(("127.0.0.1", port), H).serve_forever()
+PY
+python3 "$w/srv.py" app1 8081 & b1=$!; pids="$b1"
+python3 "$w/srv.py" app2 8082 & b2=$!; pids="$pids $b2"
+haproxy -db -f haproxy.cfg >"$w/haproxy.log" 2>&1 & pids="$pids $!"
+for _ in $(seq 1 30); do curl -s -o /dev/null --max-time 1 http://127.0.0.1:8080/ && break; sleep 0.5; done
+sleep 3
+got=$(for _ in $(seq 1 10); do curl -s --max-time 2 http://127.0.0.1:8080/; done | sort | uniq -c | tr -s ' ' | tr '\n' ';')
+echo "$got" | grep -q 'app1' && echo "$got" | grep -q 'app2' && ok "requests are spread over both backends ($got)" || fail "both backends must answer; got: $got"
+grep -Eq 'option\s+httpchk' haproxy.cfg && ok "HTTP health check is configured" || fail "use option httpchk GET /health"
+kill "$b1" 2>/dev/null; wait "$b1" 2>/dev/null
+sleep 5
+got=$(for _ in $(seq 1 10); do curl -s --max-time 2 http://127.0.0.1:8080/; done | sort | uniq -c | tr -s ' ' | tr '\n' ';')
+[ "$got" = " 10 app2;" ] && ok "after app1 dies, every request goes to app2" || fail "failover did not work within 5 seconds (check inter/fall); got: $got"
+exit "$bad"

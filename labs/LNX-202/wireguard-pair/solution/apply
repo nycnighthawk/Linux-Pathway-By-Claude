@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+umask 077
+wg genkey > a.key
+wg genkey > b.key
+cat > a.conf <<CONF
+# SPDX-License-Identifier: MIT
+[Interface]
+Address = 10.77.0.1/24
+ListenPort = 51820
+MTU = 1420
+PrivateKey = $(cat a.key)
+
+[Peer]
+PublicKey = $(wg pubkey < b.key)
+AllowedIPs = 10.77.0.2/32, 192.168.20.0/24
+Endpoint = 203.0.113.2:51821
+PersistentKeepalive = 25
+CONF
+cat > b.conf <<CONF
+# SPDX-License-Identifier: MIT
+[Interface]
+Address = 10.77.0.2/24
+ListenPort = 51821
+MTU = 1420
+PrivateKey = $(cat b.key)
+
+[Peer]
+PublicKey = $(wg pubkey < a.key)
+AllowedIPs = 10.77.0.1/32, 192.168.10.0/24
+Endpoint = 198.51.100.1:51820
+PersistentKeepalive = 25
+CONF
