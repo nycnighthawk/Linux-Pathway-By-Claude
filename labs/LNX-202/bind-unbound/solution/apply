@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > named.conf <<'CONF'
+// SPDX-License-Identifier: MIT
+options {
+    listen-on port 5300 { 127.0.0.1; };
+    listen-on-v6 { none; };
+    pid-file "named.pid";
+    session-keyfile "session.key";
+    dnssec-validation no;
+    recursion no;
+    allow-transfer { none; };
+};
+controls { };
+zone "lab.example" IN {
+    type primary;
+    file "lab.example.db";
+};
+CONF
+cat > lab.example.db <<'DB'
+; SPDX-License-Identifier: MIT
+$TTL 300
+@       IN SOA ns1.lab.example. hostmaster.lab.example. (
+                2026111401 ; serial
+                3600       ; refresh
+                600        ; retry
+                604800     ; expire
+                300 )      ; negative caching
+        IN NS  ns1.lab.example.
+        IN MX  10 mail.lab.example.
+ns1     IN A   192.0.2.53
+www     IN A   192.0.2.80
+mail    IN A   192.0.2.25
+app     IN CNAME www.lab.example.
+DB
+cat > unbound.conf <<'CONF'
+# SPDX-License-Identifier: MIT
+server:
+    interface: 127.0.0.1
+    port: 5301
+    do-ip6: no
+    username: ""
+    chroot: ""
+    directory: "."
+    pidfile: "unbound.pid"
+    use-syslog: no
+    access-control: 0.0.0.0/0 refuse
+    access-control: 127.0.0.0/8 allow
+    hide-identity: yes
+    hide-version: yes
+    local-zone: "lab.test." static
+    local-data: "router.lab.test. A 192.0.2.1"
+    domain-insecure: "lab.example."
+    do-not-query-localhost: no
+forward-zone:
+    name: "lab.example."
+    forward-addr: 127.0.0.1@5300
+CONF

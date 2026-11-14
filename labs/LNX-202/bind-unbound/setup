@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a BIND configuration that is too open and has no zone, and an Unbound skeleton.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > named.conf <<'CONF'
+// SPDX-License-Identifier: MIT
+// Lab named.conf: listens on 127.0.0.1 port 5300. Edit the policy and add the zone (see README.md).
+options {
+    listen-on port 5300 { 127.0.0.1; };
+    listen-on-v6 { none; };
+    pid-file "named.pid";
+    session-keyfile "session.key";
+    dnssec-validation no;
+    recursion yes;
+    allow-transfer { any; };
+};
+controls { };
+// TODO 1: set the policy above (no recursion, no transfers).
+// TODO 2: add a primary zone for lab.example that reads lab.example.db.
+CONF
+cat > lab.example.db <<'DB'
+; SPDX-License-Identifier: MIT
+; TODO 3: write the zone for lab.example (see README.md for the required records).
+DB
+cat > unbound.conf <<'CONF'
+# SPDX-License-Identifier: MIT
+# Lab unbound.conf: listens on 127.0.0.1 port 5301 (see README.md).
+server:
+    interface: 127.0.0.1
+    port: 5301
+    do-ip6: no
+    username: ""
+    chroot: ""
+    directory: "."
+    pidfile: "unbound.pid"
+    use-syslog: no
+    # TODO 4: access control, local zone and data
+# TODO 5: forward-zone for lab.example to the BIND server
+CONF
