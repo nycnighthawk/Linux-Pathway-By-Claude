@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: MIT
 set -eu
 cd "${LAB_DIR:-.}"
-export GNUPGHOME="$PWD/gnupg"
-rpmsign --define "_gpg_name Lab Signer" --define "_gpg_path $PWD/gnupg" --addsign repo/hello-1.0-1.noarch.rpm >/dev/null 2>&1
+export GNUPGHOME=/tmp/lab104-gnupg
+rpmsign --define "_gpg_name Lab Signer" --define "_gpg_path $GNUPGHOME" --addsign repo/hello-1.0-1.noarch.rpm >/dev/null 2>&1
 rpm --dbpath "$PWD/rpmdb" --import RPM-GPG-KEY-lab 2>/dev/null
 createrepo_c repo >/dev/null 2>&1
 cat > lab.repo <<REPO

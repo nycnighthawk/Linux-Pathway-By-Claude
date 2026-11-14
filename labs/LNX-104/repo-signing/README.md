@@ -6,14 +6,14 @@ would use.
 
 ## Starting state
 
-`setup` creates a signing key in `gnupg/`, the public key `RPM-GPG-KEY-lab`, the package `hello` unsigned in `repo/`
+`setup` creates a signing key in `/tmp/lab104-gnupg` (a short path, because gpg-agent socket names are length-limited), the public key `RPM-GPG-KEY-lab`, the package `hello` unsigned in `repo/`
 with metadata, an unsigned control copy in `unsigned/`, an empty `rpmdb/` directory for imported keys and a blank
 `answers.txt`. `$LAB_DIR` is your working directory.
 
 ## Your task
 
 1. Sign `repo/hello-1.0-1.noarch.rpm`:
-   `GNUPGHOME=$PWD/gnupg rpmsign --define "_gpg_name Lab Signer" --define "_gpg_path $PWD/gnupg" --addsign repo/hello-1.0-1.noarch.rpm`.
+   `GNUPGHOME=/tmp/lab104-gnupg rpmsign --define "_gpg_name Lab Signer" --define "_gpg_path /tmp/lab104-gnupg" --addsign repo/hello-1.0-1.noarch.rpm`.
 2. Import the public key into the private database: `rpm --dbpath $PWD/rpmdb --import RPM-GPG-KEY-lab`, then list it
    with `rpm --dbpath $PWD/rpmdb -qa 'gpg-pubkey*'`.
 3. Verify both copies: `rpm --dbpath $PWD/rpmdb -K repo/hello-1.0-1.noarch.rpm unsigned/hello-1.0-1.noarch.rpm`.
@@ -34,6 +34,6 @@ LAB_DIR=$PWD /path/to/repo/labs/LNX-104/repo-signing/check
 ## Notes
 
 - `NOKEY` in the `-K` output means the signature is well formed but the key is not imported; `BAD` means tampering.
-- The private key never leaves `gnupg/`. A real signing key lives on a separate, protected machine and has an expiry.
+- The private key never leaves `/tmp/lab104-gnupg`. A real signing key lives on a separate, protected machine and has an expiry.
 - The lab needs the packages `rpm`, `gnupg` and `createrepo-c`.
 - Reading material: [the lesson](lesson:LNX-104-T03). Afterwards, try [the quiz](quiz:LNX-104-T03).
