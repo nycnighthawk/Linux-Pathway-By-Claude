@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run Kea's own syntax test, then check the design rules in the file.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+command -v kea-dhcp4 >/dev/null || { echo "FAIL: kea-dhcp4 is not installed (package kea-dhcp4-server)"; exit 1; }
+[ -f kea-dhcp4.conf ] || { echo "FAIL: kea-dhcp4.conf is missing; run setup"; exit 1; }
+if out=$(kea-dhcp4 -t kea-dhcp4.conf 2>&1); then ok "kea-dhcp4 -t accepts the file"; else fail "kea-dhcp4 -t rejects the file: $(echo "$out" | tail -2)"; fi
+code=$(cat <<'PY'
+import ipaddress, json, re, sys
+raw = open("kea-dhcp4.conf").read()
+raw = re.sub(r"(?m)^\s*(//|#).*$", "", raw)
+try:
+    d = json.loads(raw)["Dhcp4"]
+except Exception as e:
+    print("FAIL: cannot parse the file as JSON after removing comments:", e); sys.exit(1)
+bad = 0
+def fail(m):
+    global bad
+    print("FAIL: " + m); bad = 1
+def ok(m): print("ok:   " + m)
+subs = d.get("subnet4") or []
+s = next((x for x in subs if x.get("subnet") == "192.0.2.0/24"), None)
+if not s:
+    fail("no subnet4 entry for 192.0.2.0/24"); sys.exit(1)
+net = ipaddress.ip_network("192.0.2.0/24")
+ok("subnet 192.0.2.0/24 defined")
+pool = None
+for p in s.get("pools") or []:
+    m = re.match(r"^\s*(\S+)\s*-\s*(\S+)\s*$", p.get("pool", ""))
+    if m:
+        a, b = ipaddress.ip_address(m.group(1)), ipaddress.ip_address(m.group(2))
+        if a in net and b in net and int(b) - int(a) + 1 >= 50:
+            pool = (a, b)
+if pool: ok("a pool of at least 50 addresses inside the subnet: %s - %s" % pool)
+else: fail("pools needs a range of at least 50 addresses inside 192.0.2.0/24 (written as FIRST - LAST)")
+opts = {o.get("name"): o.get("data") for o in (s.get("option-data") or []) + (d.get("option-data") or [])}
+if opts.get("routers") == "192.0.2.1": ok("default gateway option is 192.0.2.1")
+else: fail("option routers must be 192.0.2.1")
+if opts.get("domain-name-servers") == "192.0.2.53": ok("DNS option is 192.0.2.53")
+else: fail("option domain-name-servers must be 192.0.2.53")
+vl = d.get("valid-lifetime", 0)
+rt, rb = s.get("renew-timer", d.get("renew-timer")), s.get("rebind-timer", d.get("rebind-timer"))
+if isinstance(vl, int) and 600 <= vl <= 7200: ok("valid-lifetime is between 600 and 7200 seconds")
+else: fail("valid-lifetime must be between 600 and 7200 seconds (a guest network should not hold addresses for a day)")
+if isinstance(rt, int) and isinstance(rb, int) and 0 < rt < rb < vl: ok("renew-timer < rebind-timer < valid-lifetime")
+else: fail("set renew-timer and rebind-timer so that renew < rebind < valid-lifetime")
+r = next((x for x in s.get("reservations") or [] if x.get("hw-address", "").lower() == "52:54:00:aa:bb:01"), None)
+if r and r.get("ip-address") == "192.0.2.20": ok("reservation for 52:54:00:aa:bb:01 is 192.0.2.20")
+else: fail("add a reservation: hw-address 52:54:00:aa:bb:01 gets ip-address 192.0.2.20")
+if pool and ipaddress.ip_address("192.0.2.20") >= pool[0] and ipaddress.ip_address("192.0.2.20") <= pool[1]:
+    fail("the reserved address 192.0.2.20 must lie outside the pool")
+elif pool: ok("the reserved address is outside the pool")
+if r and r.get("hostname"): ok("the reservation names a hostname")
+else: fail("give the reservation a hostname")
+sys.exit(bad)
+PY
+)
+python3 -c "$code" || bad=1
+exit "$bad"

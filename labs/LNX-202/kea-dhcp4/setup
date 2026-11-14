@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a Kea DHCPv4 skeleton with no subnet.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > kea-dhcp4.conf <<'CONF'
+// SPDX-License-Identifier: MIT
+// Lab Kea DHCPv4 configuration. See README.md for what to add.
+{
+  "Dhcp4": {
+    "interfaces-config": { "interfaces": [ "lo" ] },
+    "lease-database": { "type": "memfile", "persist": false },
+    "valid-lifetime": 86400,
+    "subnet4": [
+      // TODO: one subnet for 192.0.2.0/24
+    ]
+  }
+}
+CONF

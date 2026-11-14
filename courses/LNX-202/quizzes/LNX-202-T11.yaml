@@ -1,0 +1,72 @@
+title: 'Quiz: Vendor-switch LACP, SR-IOV'
+questions:
+- id: switch-side
+  prompt: What does the switch need for 802.3ad?
+  choices:
+  - Spanning tree off
+  - A port-channel with LACP and matching members
+  - Nothing
+  - Only a static group
+  answer:
+  - 1
+  explain: Active mode on at least one side.
+- id: mlag
+  prompt: What does MLAG add?
+  choices:
+  - Faster LACP
+  - Spanning tree
+  - VLAN trunking
+  - One LACP partner across two switches
+  answer:
+  - 3
+  explain: A plain bond cannot span two independent switches.
+- id: fallback
+  prompt: Why is LACP fallback useful?
+  choices:
+  - It encrypts
+  - It enables VLANs
+  - A port works as an individual link until LACPDUs arrive, for network boot
+  - It doubles speed
+  answer:
+  - 2
+  explain: PXE clients cannot speak LACP.
+- id: numvfs
+  prompt: Which file creates SR-IOV virtual functions?
+  choices:
+  - device/vfs
+  - sriov_numvfs
+  - sriov_totalvfs
+  - vf_create
+  answer:
+  - 1
+  explain: sriov_totalvfs shows the maximum.
+- id: bypass
+  prompt: What does VF traffic bypass?
+  choices:
+  - The host network stack, bridge and firewall
+  - The NIC
+  - The IOMMU
+  - The guest
+  answer:
+  - 0
+  explain: That is both the benefit and the limit.
+- id: iommu
+  prompt: What must be enabled for device assignment?
+  choices:
+  - IPv6
+  - LACP
+  - The IOMMU (VT-d or AMD-Vi)
+  - Jumbo frames
+  answer:
+  - 2
+  explain: Plus SR-IOV in firmware.
+- id: pf-control
+  prompt: Who sets a VF's MAC and VLAN?
+  choices:
+  - The switch only
+  - DHCP
+  - The PF, with ip link set ... vf N
+  - The guest only
+  answer:
+  - 2
+  explain: The PF keeps control of VF policy.

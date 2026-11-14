@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Check route lookups and real pings for each source address and for a marked packet.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+$SUDO ip netns list 2>/dev/null | grep -q '^lab-host' || { echo "FAIL: namespace lab-host does not exist; run setup"; exit 1; }
+H() { $SUDO ip netns exec lab-host "$@"; }
+r1=$(H ip route get 203.0.113.9 2>&1)
+echo "$r1" | grep -q 'dev eth1' && ok "traffic from the primary address still leaves through eth1 (ISP 1)" || fail "the main table must keep sending ordinary traffic through eth1: $r1"
+r2=$(H ip route get 203.0.113.9 from 198.51.100.7 2>&1)
+echo "$r2" | grep -q 'dev eth2' && ok "from 198.51.100.7 the route lookup picks eth2 (ISP 2)" || fail "ip route get 203.0.113.9 from 198.51.100.7 should use eth2: $r2"
+r3=$(H ip route get 203.0.113.9 mark 2 2>&1)
+echo "$r3" | grep -q 'dev eth2' && ok "a packet with mark 2 uses eth2" || fail "ip route get 203.0.113.9 mark 2 should use eth2: $r3"
+H ip -4 route show default 2>/dev/null | grep -q 'via 192.0.2.1' && ok "the main default route was left alone" || fail "do not change the main default route (via 192.0.2.1)"
+H ip rule show | grep -Eq 'from 198\.51\.100\.7 lookup (100|[A-Za-z0-9_]+)' && ok "a rule selects a table by source address" || fail "add: ip rule add from 198.51.100.7 lookup 100"
+H ip rule show | grep -Eq 'fwmark 0x2 lookup' && ok "a rule selects a table by firewall mark" || fail "add: ip rule add fwmark 0x2 lookup 100"
+if H ping -c1 -W2 -I 192.0.2.7 203.0.113.9 >/dev/null 2>&1; then ok "ping from 192.0.2.7 works"; else fail "ping from 192.0.2.7 to 203.0.113.9 fails"; fi
+if H ping -c1 -W2 -I 198.51.100.7 203.0.113.9 >/dev/null 2>&1; then ok "ping from 198.51.100.7 works (replies come back over the same link)"; else fail "ping from 198.51.100.7 to 203.0.113.9 fails: ISP 1 has no route back to that address, use a second table"; fi
+exit "$bad"

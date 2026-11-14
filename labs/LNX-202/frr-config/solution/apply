@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > frr.conf <<'CONF'
+! SPDX-License-Identifier: MIT
+frr defaults traditional
+hostname r1
+!
+router ospf
+ ospf router-id 10.255.0.1
+ passive-interface default
+ no passive-interface eth1
+ network 10.0.12.0/24 area 0
+exit
+!
+interface eth1
+ ip ospf network point-to-point
+ ip ospf hello-interval 2
+ ip ospf dead-interval 8
+exit
+!
+router bgp 65001
+ bgp router-id 10.255.0.1
+ no bgp ebgp-requires-policy
+ neighbor 192.0.2.2 remote-as 65002
+ neighbor 192.0.2.2 description r2
+ !
+ address-family ipv4 unicast
+  network 198.51.100.0/24
+  neighbor 192.0.2.2 activate
+ exit-address-family
+exit
+!
+line vty
+CONF

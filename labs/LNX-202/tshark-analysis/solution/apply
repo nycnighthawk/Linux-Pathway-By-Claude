@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+streams=$(tshark -r capture.pcap -q -z conv,tcp 2>/dev/null | grep -c '<->')
+reqs=$(tshark -r capture.pcap -Y http.request 2>/dev/null | wc -l)
+retr=$(tshark -r capture.pcap -Y tcp.analysis.retransmission 2>/dev/null | wc -l)
+port=$(tshark -r capture.pcap -Y 'tcp.flags.reset == 1' -T fields -e tcp.srcport 2>/dev/null | head -1)
+name=$(tshark -r capture.pcap -Y 'dns.flags.response == 1' -T fields -e dns.qry.name 2>/dev/null | head -1)
+rcode=$(tshark -r capture.pcap -Y 'dns.flags.response == 1' -T fields -e dns.flags.rcode 2>/dev/null | head -1)
+cat > answers.txt <<A
+# SPDX-License-Identifier: MIT
+tcp_streams=$streams
+http_requests=$reqs
+retransmissions=$retr
+refused_port=$port
+dns_name=$name
+dns_rcode=$rcode
+A

@@ -1,0 +1,72 @@
+title: 'Quiz: tcpdump/tshark'
+questions:
+- id: filters
+  prompt: How do capture and display filters differ?
+  choices:
+  - Capture filters need Wireshark
+  - Capture filters are BPF in the kernel, display filters run after decoding
+  - They are the same language
+  - Display filters run first
+  answer:
+  - 1
+  explain: tshark -f is BPF, -Y is the display filter.
+- id: offload
+  prompt: Why might a capture on the sender show 64 KiB frames?
+  choices:
+  - MTU is 64 KiB
+  - TSO/GSO hand large segments to the NIC
+  - The network is corrupt
+  - The capture is wrong
+  answer:
+  - 1
+  explain: Capture elsewhere or disable offloads while testing.
+- id: ring
+  prompt: Which options rotate capture files by size?
+  choices:
+  - -s0
+  - -n
+  - -C and -W
+  - -G only
+  answer:
+  - 2
+  explain: -G rotates by time.
+- id: conv
+  prompt: Which tshark option prints a TCP conversation table?
+  choices:
+  - -q -z conv,tcp
+  - -Y conv
+  - -T conv
+  - -e tcp.conv
+  answer:
+  - 0
+  explain: -z selects statistics.
+- id: tlskeys
+  prompt: How do you decrypt TLS in a capture?
+  choices:
+  - Use the client's key log file
+  - Use the server's private key always
+  - Impossible
+  - Capture on loopback
+  answer:
+  - 0
+  explain: SSLKEYLOGFILE and tls.keylog_file.
+- id: drops
+  prompt: Where do you learn whether tcpdump lost packets?
+  choices:
+  - dmesg only
+  - The file size
+  - The 'dropped by kernel' report at exit
+  - The pcap header
+  answer:
+  - 2
+  explain: Raise the buffer or narrow the filter.
+- id: vantage
+  prompt: Why capture on a mirror port or tap?
+  choices:
+  - It decrypts traffic
+  - It is faster
+  - It adds offloads
+  - It gives an independent view of the wire
+  answer:
+  - 3
+  explain: Host captures can hide or distort traffic.

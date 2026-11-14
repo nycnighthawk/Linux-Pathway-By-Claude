@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Check both configurations, start both servers on loopback and query them.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+for c in named-checkconf named-checkzone unbound-checkconf dig named unbound; do command -v "$c" >/dev/null || { echo "FAIL: $c is not installed (packages bind9, bind9-utils, bind9-dnsutils, unbound)"; exit 1; }; done
+[ -f named.conf ] && [ -f lab.example.db ] && [ -f unbound.conf ] || { echo "FAIL: configuration files are missing; run setup"; exit 1; }
+named-checkconf named.conf >/dev/null 2>&1 && ok "named-checkconf accepts named.conf" || fail "named-checkconf rejects named.conf"
+named-checkzone lab.example lab.example.db >/dev/null 2>&1 && ok "named-checkzone accepts lab.example.db" || { fail "named-checkzone rejects lab.example.db"; named-checkzone lab.example lab.example.db 2>&1 | head -3; }
+unbound-checkconf unbound.conf >/dev/null 2>&1 && ok "unbound-checkconf accepts unbound.conf" || fail "unbound-checkconf rejects unbound.conf"
+grep -Eq '^\s*access-control:\s*0\.0\.0\.0/0\s+refuse' unbound.conf && ok "unbound refuses everyone by default" || fail "add access-control: 0.0.0.0/0 refuse"
+grep -Eq '^\s*access-control:\s*127\.0\.0\.0/8\s+allow' unbound.conf && ok "unbound allows loopback" || fail "add access-control: 127.0.0.0/8 allow"
+[ "$bad" -eq 0 ] || { echo "stopping before the live tests"; exit 1; }
+pids=""
+cleanup() { for p in $pids; do kill "$p" 2>/dev/null; done; wait 2>/dev/null; }
+trap cleanup EXIT
+rm -f named.pid unbound.pid
+named -c "$PWD/named.conf" -f -g >named.log 2>&1 &
+pids="$pids $!"
+for _ in $(seq 1 30); do dig +time=1 +tries=1 -p 5300 @127.0.0.1 lab.example SOA +short >/dev/null 2>&1 && break; sleep 0.5; done
+q() { dig +time=2 +tries=1 -p 5300 @127.0.0.1 "$@"; }
+[ "$(q www.lab.example A +short)" = "192.0.2.80" ] && ok "BIND answers www.lab.example" || fail "BIND did not answer 192.0.2.80 for www.lab.example (see named.log)"
+[ "$(q app.lab.example CNAME +short)" = "www.lab.example." ] && ok "app is a CNAME to www" || fail "app.lab.example must be a CNAME to www.lab.example."
+[ "$(q lab.example MX +short)" = "10 mail.lab.example." ] && ok "MX 10 mail" || fail "lab.example needs MX 10 mail.lab.example."
+[ "$(q mail.lab.example A +short)" = "192.0.2.25" ] && ok "mail A record" || fail "mail.lab.example needs A 192.0.2.25"
+q lab.example NS +short | grep -q '^ns1.lab.example.$' && ok "NS ns1" || fail "lab.example needs NS ns1.lab.example."
+q lab.example SOA +short | grep -q 'hostmaster' && ok "SOA present" || fail "SOA missing"
+q www.lab.example A +noall +comments | grep -q 'flags:.*aa' && ok "answers are authoritative (aa)" || fail "answer is not authoritative"
+q example.org A +noall +comments | grep -q 'status: REFUSED' && ok "recursion is off (REFUSED for example.org)" || fail "example.org should be REFUSED: set recursion no"
+q lab.example AXFR 2>&1 | grep -Eqi 'Transfer failed|REFUSED|failed' && ok "zone transfer is denied" || fail "AXFR must be refused: allow-transfer { none; }"
+unbound -d -c "$PWD/unbound.conf" >unbound.log 2>&1 &
+pids="$pids $!"
+for _ in $(seq 1 30); do dig +time=1 +tries=1 -p 5301 @127.0.0.1 router.lab.test A +short >/dev/null 2>&1 && break; sleep 0.5; done
+u() { dig +time=3 +tries=1 -p 5301 @127.0.0.1 "$@"; }
+[ "$(u router.lab.test A +short)" = "192.0.2.1" ] && ok "Unbound serves the local data" || fail "router.lab.test must answer 192.0.2.1 from local-data (see unbound.log)"
+[ "$(u www.lab.example A +short)" = "192.0.2.80" ] && ok "Unbound forwards lab.example to BIND" || fail "www.lab.example through Unbound must give 192.0.2.80 (forward-zone to 127.0.0.1@5300)"
+exit "$bad"

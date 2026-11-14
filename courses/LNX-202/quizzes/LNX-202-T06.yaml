@@ -1,0 +1,72 @@
+title: 'Quiz: HAProxy, keepalived VRRP'
+questions:
+- id: mode
+  prompt: What does mode tcp do?
+  choices:
+  - Parses every request
+  - Enables TLS
+  - Disables health checks
+  - Forwards bytes without parsing HTTP
+  answer:
+  - 3
+  explain: mode http parses requests; tcp does not.
+- id: check
+  prompt: Which keyword enables health checks on a server line?
+  choices:
+  - probe
+  - verify
+  - alive
+  - check
+  answer:
+  - 3
+  explain: inter, fall and rise tune it.
+- id: vrrp-proto
+  prompt: Which IP protocol number does VRRP use?
+  choices:
+  - '50'
+  - '179'
+  - '112'
+  - '89'
+  answer:
+  - 2
+  explain: 89 is OSPF, 50 is ESP, 179 is the BGP TCP port.
+- id: weight
+  prompt: What does a negative weight on a vrrp_script do when the script fails?
+  choices:
+  - Sends an email
+  - Lowers the instance priority so the standby can win
+  - Stops keepalived
+  - Raises the priority
+  answer:
+  - 1
+  explain: Priority is reduced by the weight.
+- id: nonlocal
+  prompt: Why does HAProxy on the standby need ip_nonlocal_bind?
+  choices:
+  - To open port 80
+  - To enable forwarding
+  - To use IPv6
+  - To bind the VIP that is on the other node
+  answer:
+  - 3
+  explain: Without it, binding a missing address fails.
+- id: reload
+  prompt: How does HAProxy apply a changed config without dropping connections?
+  choices:
+  - Restart the host
+  - systemctl reload starts new workers and lets old ones finish
+  - kill -9
+  - It cannot
+  answer:
+  - 1
+  explain: Validate first with haproxy -c.
+- id: splitbrain
+  prompt: What usually causes both VRRP nodes to be master?
+  choices:
+  - Wrong MTU
+  - Advertisements do not reach the peer
+  - Equal weights
+  - Too many backends
+  answer:
+  - 1
+  explain: Blocked multicast or firewalls; use unicast_peer.

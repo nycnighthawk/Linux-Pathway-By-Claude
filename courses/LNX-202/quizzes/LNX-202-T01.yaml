@@ -1,0 +1,72 @@
+title: 'Quiz: Bridges, VLANs, bonding'
+questions:
+- id: lacp-vs-xor
+  prompt: What separates 802.3ad from balance-xor?
+  choices:
+  - 802.3ad negotiates membership with LACP
+  - balance-xor negotiates with LACP
+  - 802.3ad needs no switch configuration
+  - balance-xor is faster on one flow
+  answer:
+  - 0
+  explain: Both hash flows to ports; only 802.3ad speaks LACP with the peer.
+- id: one-flow
+  prompt: Why does one TCP stream never exceed one bond member's speed?
+  choices:
+  - LACP forbids it
+  - Bonds only carry UDP
+  - The hash picks one port per flow
+  - The kernel limits streams to 1 Gb/s
+  answer:
+  - 2
+  explain: Aggregation adds capacity across flows, not within one.
+- id: aggregator
+  prompt: Two ports in /proc/net/bonding/bond0 show different Aggregator IDs. What does that suggest?
+  choices:
+  - The bond is healthy
+  - The hash policy is layer2
+  - The MTU differs
+  - They did not negotiate into one bundle
+  answer:
+  - 3
+  explain: One bundle shows one Aggregator ID; a mismatch usually points to the switch side.
+- id: pvid
+  prompt: What does pvid do on a VLAN-aware bridge port?
+  choices:
+  - Allocates a VLAN number
+  - Puts untagged incoming frames into that VLAN
+  - Strips the tag on egress
+  - Enables spanning tree
+  answer:
+  - 1
+  explain: pvid assigns untagged ingress to a VLAN; untagged controls the tag on egress.
+- id: networkd-miimon
+  prompt: What is the default of MIIMonitorSec= in systemd-networkd bonds?
+  choices:
+  - 1 s
+  - 30 s
+  - 0, so link monitoring is disabled
+  - 100 ms
+  answer:
+  - 2
+  explain: A value of zero disables MII monitoring, so a networkd bond must set it.
+- id: vlan-mtu
+  prompt: What limits the MTU of a VLAN child interface?
+  choices:
+  - VLANs ignore MTU
+  - It cannot exceed the parent's MTU
+  - It must be exactly 1500
+  - It must be 4 bytes larger than the parent
+  answer:
+  - 1
+  explain: The tag costs four bytes on the wire, so paths must allow for it.
+- id: br-loop
+  prompt: Why can two bridge ports on one switch without STP be dangerous?
+  choices:
+  - The bridge stops learning MACs
+  - VLANs stop working
+  - The bond hash breaks
+  - Frames loop until the network collapses
+  answer:
+  - 3
+  explain: A layer 2 loop floods the same frames forever.

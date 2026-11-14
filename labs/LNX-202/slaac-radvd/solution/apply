@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > radvd.conf <<'CONF'
+# SPDX-License-Identifier: MIT
+interface eth1 {
+    AdvSendAdvert on;
+    MinRtrAdvInterval 30;
+    MaxRtrAdvInterval 100;
+    AdvManagedFlag off;
+    AdvOtherConfigFlag on;
+    prefix 2001:db8:42:7::/64 {
+        AdvOnLink on;
+        AdvAutonomous on;
+    };
+    RDNSS 2001:db8:42:7::53 {
+        AdvRDNSSLifetime 600;
+    };
+};
+CONF
+cat > eui64.sh <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -euo pipefail
+mac=${1:?usage: eui64.sh MAC PREFIX}
+prefix=${2:?usage: eui64.sh MAC PREFIX}
+IFS=: read -r o1 o2 o3 o4 o5 o6 <<< "$mac"
+o1=$(printf '%02x' $(( 0x$o1 ^ 0x02 )))
+printf '%s:%x:%x:%x:%x\n' "$prefix" $(( 0x$o1$o2 )) $(( 0x${o3}ff )) $(( 0xfe$o4 )) $(( 0x$o5$o6 ))
+SH
+chmod +x eui64.sh

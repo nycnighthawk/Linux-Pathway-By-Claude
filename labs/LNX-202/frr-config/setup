@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an FRR configuration with only the hostname.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > frr.conf <<'CONF'
+! SPDX-License-Identifier: MIT
+! Lab frr.conf for router r1 (see README.md).
+frr defaults traditional
+hostname r1
+!
+! TODO 1: OSPF
+! TODO 2: interface settings
+! TODO 3: BGP
+CONF

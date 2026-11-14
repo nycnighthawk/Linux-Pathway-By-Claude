@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a dual-homed host (namespace lab-host) with a default route through ISP 1 only.
+set -eu
+cd "${LAB_DIR:-.}"
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+for n in host isp1 isp2; do $SUDO ip netns del "lab-$n" 2>/dev/null || true; $SUDO ip netns add "lab-$n"; $SUDO ip -n "lab-$n" link set lo up; done
+$SUDO ip link add eth1 netns lab-host type veth peer name eth0 netns lab-isp1
+$SUDO ip link add eth2 netns lab-host type veth peer name eth0 netns lab-isp2
+$SUDO ip -n lab-host addr add 192.0.2.7/24 dev eth1;      $SUDO ip -n lab-host link set eth1 up
+$SUDO ip -n lab-isp1 addr add 192.0.2.1/24 dev eth0;      $SUDO ip -n lab-isp1 link set eth0 up
+$SUDO ip -n lab-host addr add 198.51.100.7/24 dev eth2;   $SUDO ip -n lab-host link set eth2 up
+$SUDO ip -n lab-isp2 addr add 198.51.100.1/24 dev eth0;   $SUDO ip -n lab-isp2 link set eth0 up
+# the same "Internet" address is reachable through both providers
+$SUDO ip -n lab-isp1 addr add 203.0.113.9/32 dev lo
+$SUDO ip -n lab-isp2 addr add 203.0.113.9/32 dev lo
+$SUDO ip -n lab-host route add default via 192.0.2.1 dev eth1
+# loose reverse-path filtering so that replies on the second link are accepted
+$SUDO ip netns exec lab-host sysctl -qw net.ipv4.conf.all.rp_filter=2 net.ipv4.conf.default.rp_filter=2 net.ipv4.conf.eth1.rp_filter=2 net.ipv4.conf.eth2.rp_filter=2
+cat > notes.txt <<'N'
+# SPDX-License-Identifier: MIT
+# Run commands in the host with: ip -n lab-host ...   or   ip netns exec lab-host ...
+# Tear down with: ip netns del lab-host; ip netns del lab-isp1; ip netns del lab-isp2
+N

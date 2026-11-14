@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: nothing but a notes file; you generate the keys and write both configurations.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f a.key b.key a.conf b.conf
+printf '# SPDX-License-Identifier: MIT\n# Optional notes. Files to create: a.key b.key a.conf b.conf (see README.md).\n' > notes.txt

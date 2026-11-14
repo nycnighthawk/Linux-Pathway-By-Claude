@@ -1,0 +1,72 @@
+title: 'Quiz: Kea DHCP'
+questions:
+- id: files
+  prompt: Which file belongs to Kea's DHCPv4 server?
+  choices:
+  - dhcp4.json only
+  - kea-dhcp4.conf
+  - dhcpd.conf
+  - kea.conf
+  answer:
+  - 1
+  explain: Each protocol has its own file and service.
+- id: test
+  prompt: How do you test a Kea configuration without starting it?
+  choices:
+  - kea-dhcp4 -t FILE
+  - kea-admin test
+  - systemctl check
+  - dhcpd -t
+  answer:
+  - 0
+  explain: -t checks syntax and semantics.
+- id: t1
+  prompt: When does a client first try to renew a lease?
+  choices:
+  - At expiry
+  - At the rebind timer with any server
+  - Never
+  - At the renew timer (T1) with the same server
+  answer:
+  - 3
+  explain: T2 is the rebind timer, expiry ends the lease.
+- id: leasefile
+  prompt: Why not edit the memfile lease CSV by hand?
+  choices:
+  - It is read-only
+  - It is a database
+  - Kea keeps leases in memory and rewrites the file
+  - The file is encrypted
+  answer:
+  - 2
+  explain: Manual edits are overwritten.
+- id: relay
+  prompt: How does Kea pick the subnet for a relayed request?
+  choices:
+  - By the lease file
+  - By the relay address (giaddr)
+  - By the client MAC
+  - By the hostname
+  answer:
+  - 1
+  explain: A subnet must contain the relay address.
+- id: hooks
+  prompt: Which hook library provides high availability?
+  choices:
+  - lease_cmds
+  - stat_cmds
+  - flex_id
+  - ha
+  answer:
+  - 3
+  explain: lease_cmds manages leases through the API.
+- id: ha-db
+  prompt: Which lease back ends can serve shared storage?
+  choices:
+  - Only memfile
+  - Only SQLite
+  - None
+  - MySQL and PostgreSQL
+  answer:
+  - 3
+  explain: memfile is a local file.

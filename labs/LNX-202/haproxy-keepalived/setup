@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: HAProxy global/defaults and an empty keepalived file.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > haproxy.cfg <<'CONF'
+# SPDX-License-Identifier: MIT
+# Lab haproxy.cfg: see README.md. The grader starts HAProxy in the foreground with this file.
+global
+    maxconn 200
+
+defaults
+    mode http
+    timeout connect 2s
+    timeout client  10s
+    timeout server  10s
+
+# TODO 1: frontend "web" on 127.0.0.1:8080 with default_backend app
+# TODO 2: backend "app": round robin over 127.0.0.1:8081 and 127.0.0.1:8082 with health checks on /health
+CONF
+cat > keepalived.conf <<'CONF'
+# SPDX-License-Identifier: MIT
+# Lab keepalived.conf for the primary load balancer: see README.md.
+# TODO 3: global_defs, a vrrp_script that checks haproxy, and a vrrp_instance that floats 192.0.2.80/24
+CONF

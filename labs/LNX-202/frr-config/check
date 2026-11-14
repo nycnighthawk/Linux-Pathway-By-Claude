@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Let FRR's vtysh parse the file offline, then check the design rules.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+command -v vtysh >/dev/null || { echo "FAIL: vtysh is not installed (package frr)"; exit 1; }
+[ -f frr.conf ] || { echo "FAIL: frr.conf is missing; run setup"; exit 1; }
+if out=$(timeout 60 vtysh -C -f frr.conf 2>&1); then ok "vtysh -C accepts frr.conf"; else fail "vtysh -C rejects frr.conf: $(echo "$out" | tail -3 | tr '\n' ' ')"; fi
+has() { grep -Eq "$1" frr.conf; }
+has '^router ospf' && ok "router ospf is configured" || fail "add a router ospf section"
+has '^\s*ospf router-id 10\.255\.0\.1\s*$' && ok "OSPF router-id 10.255.0.1" || fail "set ospf router-id 10.255.0.1"
+has '^\s*network 10\.0\.12\.0/24 area 0(\.0\.0\.0)?\s*$' && ok "10.0.12.0/24 is in area 0" || fail "put 10.0.12.0/24 in area 0 with a network statement"
+has '^\s*passive-interface default\s*$' && has '^\s*no passive-interface eth1\s*$' && ok "passive by default, active on eth1" || fail "use passive-interface default and no passive-interface eth1"
+has '^interface eth1' && has '^\s*ip ospf network point-to-point\s*$' && ok "eth1 is point-to-point" || fail "under interface eth1 set ip ospf network point-to-point"
+has '^\s*ip ospf hello-interval 2\s*$' && has '^\s*ip ospf dead-interval 8\s*$' && ok "hello 2 s, dead 8 s" || fail "set hello-interval 2 and dead-interval 8 on eth1"
+has '^router bgp 65001\s*$' && ok "router bgp 65001" || fail "add router bgp 65001"
+has '^\s*bgp router-id 10\.255\.0\.1\s*$' && ok "BGP router-id 10.255.0.1" || fail "set bgp router-id 10.255.0.1"
+has '^\s*neighbor 192\.0\.2\.2 remote-as 65002\s*$' && ok "eBGP neighbour 192.0.2.2 in AS 65002" || fail "add neighbor 192.0.2.2 remote-as 65002"
+has '^\s*address-family ipv4 unicast' && has '^\s*neighbor 192\.0\.2\.2 activate\s*$' && ok "neighbour activated in ipv4 unicast" || fail "activate the neighbour inside address-family ipv4 unicast"
+has '^\s*network 198\.51\.100\.0/24\s*$' && ok "BGP advertises 198.51.100.0/24" || fail "advertise 198.51.100.0/24 with a network statement in the address family"
+if has '^\s*no bgp ebgp-requires-policy\s*$' || has '^\s*neighbor 192\.0\.2\.2 route-map \S+ (in|out)'; then ok "eBGP policy requirement is handled"; else fail "FRR needs a route-map or no bgp ebgp-requires-policy, or the eBGP session exchanges nothing"; fi
+exit "$bad"

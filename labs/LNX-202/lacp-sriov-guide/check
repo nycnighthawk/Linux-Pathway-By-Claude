@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of the hardware report: every key present and each value of the right kind.
+# The values come from the equipment you inspected, so this script checks shape, not truth.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f report.txt ] || { echo "FAIL: report.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get bond_mode)" in none|balance-rr|active-backup|balance-xor|broadcast|802.3ad|balance-tlb|balance-alb) ok "bond_mode" ;; *) fail "bond_mode must be a bonding mode name or none (cat /proc/net/bonding/bond0)" ;; esac
+v=$(get aggregator_ids); { [ "$v" = none ] || printf '%s' "$v" | grep -Eq '^[0-9]+$'; } && ok "aggregator_ids" || fail "aggregator_ids must be the number of distinct Aggregator IDs among the ports, or none"
+v=$(get partner_mac); { [ "$v" = none ] || printf '%s' "$v" | grep -Eq '^([0-9a-f]{2}:){5}[0-9a-f]{2}$'; } && ok "partner_mac" || fail "partner_mac must be the partner system MAC in lower-case colon form, or none"
+case "$(get lacp_rate)" in none|slow|fast) ok "lacp_rate" ;; *) fail "lacp_rate must be slow, fast or none (cat /proc/net/bonding/bond0)" ;; esac
+v=$(get sriov_totalvfs); { [ "$v" = none ] || printf '%s' "$v" | grep -Eq '^[0-9]+$'; } && ok "sriov_totalvfs" || fail "sriov_totalvfs must be a number or none (/sys/class/net/IFACE/device/sriov_totalvfs)"
+v=$(get vfs_enabled); { [ "$v" = none ] || printf '%s' "$v" | grep -Eq '^[0-9]+$'; } && ok "vfs_enabled" || fail "vfs_enabled must be a number or none (sriov_numvfs after you set it)"
+case "$(get vf_spoofchk)" in on|off|none) ok "vf_spoofchk" ;; *) fail "vf_spoofchk must be on, off or none (ip link show IFACE, the vf lines)" ;; esac
+exit "$bad"
