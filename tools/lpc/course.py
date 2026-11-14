@@ -408,6 +408,9 @@ def run_matrix(root: Path, changed: str | None, env: str | None, notices: bool) 
         return 0
     if env:
         m["include"] = [x for x in m["include"] if x["env"] == env]
+        # GitHub treats every top-level matrix key except include/exclude as a dimension,
+        # and an empty one fails the whole run, so a CI matrix carries only "include".
+        m = {"include": m["include"]}
     print(json.dumps(m))
     return 0
 

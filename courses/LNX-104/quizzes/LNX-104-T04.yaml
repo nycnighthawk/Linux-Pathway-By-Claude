@@ -1,0 +1,72 @@
+title: 'Quiz: Flatpak remotes and packages (RHEL 10 objective)'
+questions:
+- id: ref
+  prompt: Which form is a Flatpak ref?
+  choices:
+  - name-version-release.arch
+  - repo/name/version
+  - kind:name:branch
+  - kind/name/arch/branch
+  answer:
+  - 3
+  explain: For example app/org.mozilla.firefox/x86_64/stable.
+- id: installation
+  prompt: Where is the default system installation kept?
+  choices:
+  - ~/.var/app
+  - /var/lib/flatpak
+  - /usr/lib/flatpak
+  - /etc/flatpak
+  answer:
+  - 1
+  explain: The per-user installation is under ~/.local/share/flatpak.
+- id: scope
+  prompt: Why might flatpak install report that a remote is not found after you added it?
+  choices:
+  - Flathub is down
+  - The ref is wrong
+  - Polkit blocked the network
+  - The remote was added to the other installation
+  answer:
+  - 3
+  explain: Remotes belong to one installation, so --user and system do not share them.
+- id: override
+  prompt: Which command removes host filesystem access for one application?
+  choices:
+  - flatpak pin app-id
+  - flatpak override --nofilesystem=host app-id
+  - flatpak mask app-id
+  - flatpak repair
+  answer:
+  - 1
+  explain: flatpak override changes permissions; mask blocks updates and pin keeps a runtime.
+- id: rhel10
+  prompt: What changed for Firefox and Thunderbird in RHEL 10?
+  choices:
+  - They need snap
+  - They moved to modules
+  - They are delivered as Flatpaks by default
+  - They were removed
+  answer:
+  - 2
+  explain: RHEL 10 changed the default delivery method from RPM packages to Flatpaks.
+- id: sandbox
+  prompt: Which pair provides the Flatpak sandbox?
+  choices:
+  - SELinux only
+  - chroot and sudo
+  - docker and runc
+  - bubblewrap and seccomp
+  answer:
+  - 3
+  explain: Flatpak uses namespaces through bubblewrap plus a seccomp filter, with portals for user-mediated access.
+- id: cleanup
+  prompt: Which command removes runtimes that no installed application needs?
+  choices:
+  - flatpak history
+  - flatpak uninstall --unused
+  - flatpak repair
+  - flatpak remote-delete
+  answer:
+  - 1
+  explain: --unused removes unused runtimes and extensions.

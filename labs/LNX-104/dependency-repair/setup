@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: libgreet 1.0 installed in a private root; app 1.0 needs libgreet >= 2.0; libgreet 2.0 sits in pkgs/.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf specs src rpmbuild pkgs root answers.txt
+mkdir -p specs src pkgs root
+printf 'greeting data\n' > src/data.txt
+mk() { # name version extra-spec-lines
+    cat > "specs/$1-$2.spec" <<SPEC
+# SPDX-License-Identifier: MIT
+Name:       $1
+Version:    $2
+Release:    1
+Summary:    Package $1 for the dependency lab
+License:    MIT
+BuildArch:  noarch
+Source0:    data.txt
+$3
+
+%description
+Dependency lab package.
+
+%install
+mkdir -p %{buildroot}/usr/share/$1
+install -m 0644 %{SOURCE0} %{buildroot}/usr/share/$1/data.txt
+
+%files
+/usr/share/$1/data.txt
+SPEC
+    rpmbuild --define "_topdir $PWD/rpmbuild" --define "_sourcedir $PWD/src" -bb "specs/$1-$2.spec" >/dev/null 2>&1
+    cp "rpmbuild/RPMS/noarch/$1-$2-1.noarch.rpm" pkgs/
+}
+mk libgreet 1.0 ''
+mk libgreet 2.0 ''
+mk app 1.0 'Requires:   libgreet >= 2.0'
+rpm --root "$PWD/root" -i --nosignature pkgs/libgreet-1.0-1.noarch.rpm 2>/dev/null
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nmissing_capability=?\nneeded_version=?\nreverse_dependency_option=?\nforce_option_to_avoid=?\n' > answers.txt

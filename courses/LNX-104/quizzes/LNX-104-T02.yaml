@@ -1,0 +1,72 @@
+title: 'Quiz: apt/dpkg: sources, pinning, holds'
+questions:
+- id: layers
+  prompt: Which tool downloads package indexes and resolves dependencies?
+  choices:
+  - apt
+  - dpkg
+  - dpkg-query
+  - dpkg-deb
+  answer:
+  - 0
+  explain: apt fetches and solves; dpkg only unpacks and records installed packages.
+- id: hold-state
+  prompt: What does hi in the first columns of dpkg -l mean?
+  choices:
+  - Half installed
+  - Held and removed
+  - Hidden package
+  - Held and installed
+  answer:
+  - 3
+  explain: The first letter is the desired state (h hold) and the second the current state (i installed).
+- id: force-downgrade
+  prompt: From which priority does apt install a version even if it means a downgrade?
+  choices:
+  - '100'
+  - '1000'
+  - '990'
+  - '500'
+  answer:
+  - 1
+  explain: A priority of 1000 or more forces installation, even replacing a newer version.
+- id: negative
+  prompt: What does a pin priority below zero do?
+  choices:
+  - Marks it manual
+  - Holds the installed copy
+  - Forbids the version
+  - Makes it the default
+  answer:
+  - 2
+  explain: A negative priority prevents the version from being installed.
+- id: policy
+  prompt: Which command shows installed, candidate and priorities for a package?
+  choices:
+  - dpkg -s foo
+  - apt list foo
+  - apt-cache policy foo
+  - apt show foo
+  answer:
+  - 2
+  explain: apt-cache policy lists each version with its priority and source.
+- id: backports
+  prompt: How do you install one package from bookworm-backports without moving the rest of the system?
+  choices:
+  - apt install -t bookworm-backports foo
+  - apt full-upgrade
+  - apt-mark hold foo
+  - dpkg -i foo
+  answer:
+  - 0
+  explain: -t chooses a target release for that command; backports stay at low priority otherwise.
+- id: hold-tradeoff
+  prompt: What is a downside of apt-mark hold?
+  choices:
+  - It deletes the package
+  - It changes the architecture
+  - It disables dpkg
+  - It can hide security fixes and block dependent upgrades
+  answer:
+  - 3
+  explain: A held package stays old, so record an owner and an end date for each hold.

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a spec file with two source files and a blank answer sheet. Nothing is built or installed.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src hello.spec rpmbuild root answers.txt
+mkdir -p src
+printf '#!/bin/sh\n# SPDX-License-Identifier: MIT\necho hello from the lab package\n' > src/hello.sh
+printf '# SPDX-License-Identifier: MIT\ngreeting = hello\n' > src/hello.conf
+cat > hello.spec <<'SPEC'
+# SPDX-License-Identifier: MIT
+Name:       hello
+Version:    1.0
+Release:    1
+Summary:    Tiny package for the query and verify lab
+License:    MIT
+BuildArch:  noarch
+Source0:    hello.sh
+Source1:    hello.conf
+
+%description
+A script and a configuration file, used to practise rpm queries and verification.
+
+%install
+mkdir -p %{buildroot}/usr/bin %{buildroot}/etc
+install -m 0755 %{SOURCE0} %{buildroot}/usr/bin/hello
+install -m 0644 %{SOURCE1} %{buildroot}/etc/hello.conf
+
+%files
+/usr/bin/hello
+%config(noreplace) /etc/hello.conf
+SPEC
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nbinary_flags=?\ndigest_flag=?\nmode_flag=?\nconfig_file_marker=?\nowner_package=?\n' > answers.txt

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the staged install: layout, soname links, a run path inside the tree, and a program that runs without help.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+root=stage/opt/greet
+[ -x "$root/bin/greeter" ] && [ -f "$root/lib/libgreet.so.1.0.0" ] && ok "staged under stage/opt/greet" || fail "install with: make DESTDIR=\$PWD/stage PREFIX=/opt/greet install (inside src/)"
+[ "$(readlink "$root/lib/libgreet.so.1" 2>/dev/null)" = libgreet.so.1.0.0 ] && [ "$(readlink "$root/lib/libgreet.so" 2>/dev/null)" = libgreet.so.1 ] && ok "soname and linker-name symlinks" || fail "libgreet.so.1 and libgreet.so symlinks are missing in $root/lib"
+readelf -d "$root/lib/libgreet.so.1.0.0" 2>/dev/null | grep -q 'SONAME.*libgreet.so.1\]' && ok "library SONAME is libgreet.so.1" || fail "the library must carry SONAME libgreet.so.1"
+readelf -d "$root/bin/greeter" 2>/dev/null | grep -q 'NEEDED.*libgreet.so.1\]' && ok "program needs libgreet.so.1" || fail "greeter must link against libgreet"
+readelf -d "$root/bin/greeter" 2>/dev/null | grep -E 'RUNPATH|RPATH' | grep -q 'ORIGIN/../lib' && ok "run path is relative to the executable" || fail "rebuild greeter with a RUNPATH of \$ORIGIN/../lib (EXTRA_LDFLAGS)"
+out=$(env -u LD_LIBRARY_PATH "$root/bin/greeter" 2>&1)
+[ "$out" = "hello from libgreet 1" ] && ok "greeter runs with no LD_LIBRARY_PATH" || fail "greeter does not run without help: $out"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get library_soname)" = libgreet.so.1 ] && ok "soname" || fail "library_soname: the soname recorded in libgreet.so.1.0.0"
+[ "$(get staging_variable)" = DESTDIR ] && ok "DESTDIR" || fail "staging_variable: the make variable that redirects an install into a staging tree"
+[ "$(get cache_rebuild_command)" = ldconfig ] && ok "ldconfig" || fail "cache_rebuild_command: the command that rebuilds the loader cache"
+[ "$(get list_needed_command)" = ldd ] && ok "ldd" || fail "list_needed_command: the command that lists the libraries a program needs"
+[ "$(get search_trace_variable)" = LD_DEBUG ] && ok "LD_DEBUG" || fail "search_trace_variable: the environment variable that traces the loader search (LD_DEBUG=libs)"
+exit $bad

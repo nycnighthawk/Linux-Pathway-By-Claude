@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the per-user remote and override by reading flatpak's own configuration files.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+export XDG_DATA_HOME="$PWD/xdg"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+cfg=$XDG_DATA_HOME/flatpak/repo/config
+if [ -f "$cfg" ] && grep -q '^\[remote "labrepo"\]' "$cfg"; then
+    ok "remote labrepo exists in the user installation"
+    sec=$(sed -n '/^\[remote "labrepo"\]/,/^\[/p' "$cfg")
+    printf '%s\n' "$sec" | grep -q '^gpg-verify=true' && ok "signature verification is on" || fail "the remote must keep gpg-verify=true (do not use --no-gpg-verify)"
+    printf '%s\n' "$sec" | grep -q '^xa.prio=5$' && ok "priority is 5" || fail "set the remote priority to 5 (flatpak remote-modify --prio=5)"
+    printf '%s\n' "$sec" | grep -q "^url=file://$PWD/repo\$" && ok "URL comes from the .flatpakrepo file" || fail "add the remote from lab.flatpakrepo"
+else
+    fail "add the remote: flatpak --user remote-add labrepo lab.flatpakrepo (with XDG_DATA_HOME=\$PWD/xdg)"
+fi
+ov=$XDG_DATA_HOME/flatpak/overrides/org.example.Lab
+if [ -f "$ov" ]; then
+    grep -q '!host' "$ov" && ok "host filesystem access removed" || fail "override must remove host filesystem access (--nofilesystem=host)"
+    grep -q 'xdg-documents:ro' "$ov" && ok "documents read-only" || fail "override must grant xdg-documents read-only (--filesystem=xdg-documents:ro)"
+    grep -q '!network' "$ov" && ok "network unshared" || fail "override must remove network access (--unshare=network)"
+else
+    fail "create the override for org.example.Lab with flatpak --user override"
+fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get remote_details_option)" in -d|--show-details) ok "details option" ;; *) fail "remote_details_option: the option that makes flatpak remotes print URLs and options" ;; esac
+[ "$(get system_installation_dir)" = /var/lib/flatpak ] && ok "system dir" || fail "system_installation_dir: where the default system installation lives"
+[ "$(get unused_cleanup_command)" = "flatpak uninstall --unused" ] && ok "cleanup" || fail "unused_cleanup_command: the command that removes runtimes nothing needs"
+[ "$(get override_command)" = "flatpak override" ] && ok "override" || fail "override_command: the command that changes an application's permissions"
+exit $bad

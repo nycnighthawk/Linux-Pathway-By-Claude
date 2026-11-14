@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export GNUPGHOME=/tmp/lab104-gnupg
+rpmsign --define "__gpg $(command -v gpg)" --define "_gpg_name Lab Signer" --define "_gpg_path $GNUPGHOME" --addsign repo/hello-1.0-1.noarch.rpm >/dev/null
+rpm --dbpath "$PWD/rpmdb" --import RPM-GPG-KEY-lab 2>/dev/null
+createrepo_c repo >/dev/null 2>&1
+cat > lab.repo <<REPO
+# SPDX-License-Identifier: MIT
+[lab]
+name=Lab repository
+baseurl=file://$PWD/repo
+enabled=1
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=file://$PWD/RPM-GPG-KEY-lab
+REPO
+sed -i -e 's/^metadata_signature_option=.*/metadata_signature_option=repo_gpgcheck/' -e "s/^list_keys_command=.*/list_keys_command=rpm -qa 'gpg-pubkey*'/" -e 's/^key_package_prefix=.*/key_package_prefix=gpg-pubkey/' -e 's/^verify_signature_command=.*/verify_signature_command=rpm -K/' answers.txt

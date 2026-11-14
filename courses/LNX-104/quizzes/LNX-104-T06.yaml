@@ -1,0 +1,72 @@
+title: 'Quiz: Dependency troubleshooting'
+questions:
+- id: first-error
+  prompt: Which error should you read first in a long failure message?
+  choices:
+  - The summary line
+  - The first one
+  - The last one
+  - Any warning
+  answer:
+  - 1
+  explain: Later lines are usually consequences of the first problem.
+- id: provides
+  prompt: Which command finds the package that ships libfoo.so.1 on an RPM system?
+  choices:
+  - dnf clean all
+  - ldconfig -p
+  - dnf provides '*/libfoo.so.1'
+  - rpm -V libfoo
+  answer:
+  - 2
+  explain: dnf provides searches repository metadata, including file paths.
+- id: nodeps
+  prompt: Why is rpm -e --nodeps dangerous?
+  choices:
+  - It needs a reboot
+  - It deletes the database
+  - It bypasses the dependency check and leaves broken packages
+  - It is slower
+  answer:
+  - 2
+  explain: The solver later refuses to continue, and dnf history does not record the change.
+- id: fix-broken
+  prompt: Which sequence is the usual first aid after an interrupted apt install?
+  choices:
+  - dpkg --configure -a, then apt --fix-broken install
+  - rm /var/lib/dpkg/status
+  - apt purge everything
+  - reboot only
+  answer:
+  - 0
+  explain: Finish configuration, then let apt pull missing dependencies; verify with apt-get check.
+- id: lock
+  prompt: What should you do before deleting an apt lock file?
+  choices:
+  - Run apt-get clean
+  - Edit dpkg status
+  - Identify the holder with fuser or lsof
+  - Reboot
+  answer:
+  - 2
+  explain: Often an unattended upgrade is running and will finish by itself.
+- id: mixed
+  prompt: What typically causes unmet dependencies after adding a pin for another suite?
+  choices:
+  - A full disk
+  - A wrong locale
+  - An old kernel
+  - Mixed suites
+  answer:
+  - 3
+  explain: apt-cache policy shows candidates from several releases; remove the broad pin and review a simulated upgrade.
+- id: simulate
+  prompt: Which options show the plan without changing the system?
+  choices:
+  - dnf clean and apt clean
+  - rpm -e and dpkg -r
+  - dnf --assumeno and apt-get -s
+  - rpm -Uvh and dpkg -i
+  answer:
+  - 2
+  explain: Simulation lets you read the transaction before accepting it.

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rpm --root "$PWD/root" -i --test --nosignature pkgs/app-1.0-1.noarch.rpm 2>/dev/null && exit 1
+rpm --root "$PWD/root" -U --nosignature pkgs/libgreet-2.0-1.noarch.rpm 2>/dev/null
+rpm --root "$PWD/root" -i --nosignature pkgs/app-1.0-1.noarch.rpm 2>/dev/null
+sed -i -e 's/^missing_capability=.*/missing_capability=libgreet/' -e 's/^needed_version=.*/needed_version=2.0/' -e 's/^reverse_dependency_option=.*/reverse_dependency_option=--whatrequires/' -e 's/^force_option_to_avoid=.*/force_option_to_avoid=--nodeps/' answers.txt

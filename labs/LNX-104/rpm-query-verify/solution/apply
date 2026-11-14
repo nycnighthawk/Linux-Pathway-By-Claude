@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rpmbuild --define "_topdir $PWD/rpmbuild" --define "_sourcedir $PWD/src" -bb hello.spec >/dev/null 2>&1
+mkdir -p root
+rpm --root "$PWD/root" -i --nodeps --nosignature rpmbuild/RPMS/noarch/hello-1.0-1.noarch.rpm
+printf '# local change\n' >> root/usr/bin/hello
+chmod 0700 root/usr/bin/hello
+flags=$(rpm --root "$PWD/root" -V hello 2>/dev/null | grep ' /usr/bin/hello$' | cut -d' ' -f1)
+sed -i -e "s/^binary_flags=.*/binary_flags=$flags/" -e 's/^digest_flag=.*/digest_flag=5/' -e 's/^mode_flag=.*/mode_flag=M/' -e 's/^config_file_marker=.*/config_file_marker=c/' -e 's/^owner_package=.*/owner_package=hello/' answers.txt
