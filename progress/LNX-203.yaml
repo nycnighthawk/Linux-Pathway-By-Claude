@@ -1,0 +1,71 @@
+item: LNX-203
+label: Shell Scripting & Python for Sysadmins
+branch: build/LNX-203
+state: done
+started: '2026-11-14'
+updated: '2026-11-14'
+phases:
+  synth:
+    state: done
+    units: 7
+    done:
+    - LNX-203-T01
+    - LNX-203-T02
+    - LNX-203-T03
+    - LNX-203-T04
+    - LNX-203-T05
+    - LNX-203-T06
+    - LNX-203-T07
+  lessons:
+    state: done
+    units: 7
+    done:
+    - LNX-203-T01
+    - LNX-203-T02
+    - LNX-203-T03
+    - LNX-203-T04
+    - LNX-203-T05
+    - LNX-203-T06
+    - LNX-203-T07
+  quizzes:
+    state: done
+    units: 7
+    done:
+    - LNX-203-T01
+    - LNX-203-T02
+    - LNX-203-T03
+    - LNX-203-T04
+    - LNX-203-T05
+    - LNX-203-T06
+    - LNX-203-T07
+  labs:
+    state: done
+    units: 7
+    done:
+    - LNX-203-T01
+    - LNX-203-T02
+    - LNX-203-T03
+    - LNX-203-T04
+    - LNX-203-T05
+    - LNX-203-T06
+    - LNX-203-T07
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-14 started
+- '2026-11-14 synth: LNX-203-T01'
+- '2026-11-14 synth: LNX-203-T01, LNX-203-T02'
+- '2026-11-14 synth: LNX-203-T03'
+- '2026-11-14 synth: LNX-203-T04'
+- '2026-11-14 synth: LNX-203-T05'
+- '2026-11-14 synth: LNX-203-T06'
+- '2026-11-14 synth: LNX-203-T07'
+- '2026-11-14 lessons: LNX-203-T01, LNX-203-T02, LNX-203-T03, LNX-203-T04, LNX-203-T05, LNX-203-T06, LNX-203-T07'
+- '2026-11-14 quizzes: LNX-203-T01, LNX-203-T02, LNX-203-T03, LNX-203-T04, LNX-203-T05, LNX-203-T06, LNX-203-T07'
+- '2026-11-14 labs: LNX-203-T01, LNX-203-T02, LNX-203-T03, LNX-203-T04, LNX-203-T05, LNX-203-T06, LNX-203-T07'
+- '2026-11-14 checks: done'
+- 2026-11-14 finished
+finished: '2026-11-14'

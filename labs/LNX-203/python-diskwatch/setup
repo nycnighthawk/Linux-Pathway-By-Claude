@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a JSON mount list and a skeleton diskwatch.py.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > mounts.json <<'DATA'
+[
+  {"mount": "/", "size_gb": 100, "used_gb": 85},
+  {"mount": "/var", "size_gb": 200, "used_gb": 100},
+  {"mount": "/home", "size_gb": 50, "used_gb": 50},
+  {"mount": "/empty", "size_gb": 0, "used_gb": 0}
+]
+DATA
+cat > diskwatch.py <<'PY'
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""diskwatch.py [--threshold PCT] FILE: report mounts that are too full (see README.md)."""
+import sys
+
+# TODO 1: argparse with --threshold (float, default 80) and a positional FILE.
+# TODO 2: logging to stderr; a mount with size_gb of 0 is skipped with a warning.
+# TODO 3: print "MOUNT PCT%" (rounded to a whole number) on stdout for each mount at or above the threshold.
+# TODO 4: exit 0 if nothing is over, 1 if something is, 2 if the file is unreadable or not valid JSON.
+
+
+def main(argv=None):
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+PY
+chmod +x diskwatch.py

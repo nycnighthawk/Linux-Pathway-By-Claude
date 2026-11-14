@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Check the bisect answer, and that the fix is a rebased, pushed branch with a proper message.
+set -u
+export LC_ALL=C GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -d work/.git ] && [ -d origin.git ] || { echo "FAIL: work/ or origin.git is missing; run setup"; exit 1; }
+cd work
+# the commit that really introduced BUG: the first commit on origin/main whose app.conf contains it
+first=""
+for c in $(git rev-list --reverse origin/main); do
+  if git show "$c:app.conf" 2>/dev/null | grep -q BUG; then first=$c; break; fi
+done
+got=$(cat ../bad_commit.txt 2>/dev/null | tr -d '[:space:]')
+if [ -z "$got" ]; then fail "bad_commit.txt is missing or empty (put the full hash of the first bad commit in it)"
+elif [ "$(git rev-parse --verify -q "$got^{commit}" 2>/dev/null)" = "$first" ]; then ok "bad_commit.txt names the commit that introduced the bug"
+else fail "bad_commit.txt does not name the first bad commit (try: git bisect start HEAD v1.0; git bisect run ./test.sh)"; fi
+if git rev-parse --verify -q refs/heads/feature/fix-bug >/dev/null; then ok "branch feature/fix-bug exists"; else fail "create the branch feature/fix-bug"; echo "stopping: nothing more to check"; exit 1; fi
+if git show feature/fix-bug:app.conf | grep -q BUG; then fail "the fix does not remove BUG from app.conf at the branch tip"; else ok "the branch tip is healthy (no BUG in app.conf)"; fi
+if git merge-base --is-ancestor origin/main feature/fix-bug 2>/dev/null; then ok "the branch contains the current origin/main (rebased)"; else fail "rebase onto the latest origin/main (git fetch, then git rebase origin/main)"; fi
+n=$(git rev-list --merges origin/main..feature/fix-bug | wc -l)
+[ "$n" -eq 0 ] && ok "no merge commits on the branch" || fail "the branch has $n merge commit(s); rebase instead of merging"
+c=$(git rev-list --count origin/main..feature/fix-bug)
+[ "$c" -ge 1 ] && ok "$c commit(s) of your own on top of origin/main" || fail "no commit of your own on the branch"
+subj=$(git log -1 --format=%s feature/fix-bug)
+if [ "${#subj}" -le 50 ] && [ "${#subj}" -ge 8 ] && [ "${subj%.}" = "$subj" ]; then ok "subject line is short and has no trailing period"; else fail "subject must be 8 to 50 characters without a trailing period: '$subj'"; fi
+body=$(git log -1 --format=%b feature/fix-bug | tr -d '[:space:]')
+[ -n "$body" ] && ok "the commit message has a body" || fail "add a body to the commit message (second -m, or a blank line and an explanation)"
+remote=$(git --git-dir=../origin.git rev-parse --verify -q refs/heads/feature/fix-bug 2>/dev/null)
+[ -n "$remote" ] && [ "$remote" = "$(git rev-parse feature/fix-bug)" ] && ok "origin has the same branch tip" || fail "push the branch: git push -u origin feature/fix-bug"
+exit "$bad"

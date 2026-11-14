@@ -1,0 +1,72 @@
+title: 'Quiz: Scripts as systemd services and timers'
+questions:
+- id: oneshot
+  prompt: What does Type=oneshot mean for a service?
+  choices:
+  - The service restarts forever
+  - The unit cannot be started by hand
+  - The unit stays activating until the command exits
+  - The command runs once per boot only
+  answer:
+  - 2
+  explain: systemctl start waits for it, and ordering after the unit waits for the command to finish.
+- id: enable-which
+  prompt: Which unit do you enable to schedule a backup?
+  choices:
+  - The .target
+  - The .timer
+  - The .service
+  - Both with --now
+  answer:
+  - 1
+  explain: Enable backup.timer; the timer starts the service of the same name.
+- id: persistent
+  prompt: What does Persistent=true do?
+  choices:
+  - Keeps the service running
+  - Stores logs permanently
+  - Makes the timer ignore OnCalendar
+  - Runs a missed activation after the machine was off
+  answer:
+  - 3
+  explain: systemd records the last run and catches up on boot.
+- id: calendar
+  prompt: Which command checks an OnCalendar expression and shows the next run?
+  choices:
+  - journalctl --calendar EXPR
+  - systemd-timer --test EXPR
+  - systemd-analyze calendar 'EXPR'
+  - systemctl calendar EXPR
+  answer:
+  - 2
+  explain: It prints the normalized form and the next elapse time.
+- id: protectsystem
+  prompt: What does ProtectSystem=strict do?
+  choices:
+  - Runs the unit as root
+  - Hides /proc
+  - Mounts the file system read-only except paths in ReadWritePaths
+  - Blocks network access
+  answer:
+  - 2
+  explain: Writable locations must be listed explicitly, so a failed write often needs ReadWritePaths.
+- id: reload
+  prompt: What must you run after editing a unit file?
+  choices:
+  - journalctl --rotate
+  - systemctl daemon-reload
+  - systemctl rebuild
+  - systemctl enable --all
+  answer:
+  - 1
+  explain: systemd reads unit files only on reload.
+- id: logs
+  prompt: Where do you read the output of a service run?
+  choices:
+  - journalctl -u backup.service
+  - /var/log/syslog only
+  - The terminal that started it
+  - cron's mail spool
+  answer:
+  - 0
+  explain: Standard output and standard error of a service go to the journal.

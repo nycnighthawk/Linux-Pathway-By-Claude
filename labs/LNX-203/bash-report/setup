@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a script skeleton that does nothing yet.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.sh <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# report.sh DIR: count the regular files directly inside DIR by extension (see README.md for the rules).
+set -euo pipefail
+
+# TODO 1: print "usage: report.sh DIR" to stderr and exit 2 unless exactly one argument is given.
+# TODO 2: exit 1 with a message on stderr if DIR is not a directory.
+# TODO 3: create a scratch directory with mktemp -d and remove it with a trap on EXIT, on every path.
+# TODO 4: loop over the files (hidden ones too, names may contain spaces), count by extension in an
+#         associative array, and print "EXT COUNT" lines sorted by count (descending), then EXT (ascending).
+SH
+chmod +x report.sh

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > backup.service <<'UNIT'
+[Unit]
+Description=Nightly backup marker
+
+[Service]
+Type=oneshot
+User=daemon
+ExecStart=/usr/bin/logger -t backup nightly-run
+ProtectSystem=strict
+NoNewPrivileges=yes
+UNIT
+cat > backup.timer <<'UNIT'
+[Unit]
+Description=Run the nightly backup marker
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+Persistent=true
+RandomizedDelaySec=15min
+
+[Install]
+WantedBy=timers.target
+UNIT

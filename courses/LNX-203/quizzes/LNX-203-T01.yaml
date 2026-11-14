@@ -1,0 +1,72 @@
+title: 'Quiz: Bash: tests, loops, functions, traps'
+questions:
+- id: bracket-vs-dbl
+  prompt: What is a key difference between [ ] and [[ ]]?
+  choices:
+  - They are identical in bash
+  - '[[ ]] only works on numbers'
+  - '[[ ]] does not word-split or glob its operands and supports pattern and regex matching'
+  - '[ ] supports regular expressions and [[ ]] does not'
+  answer:
+  - 2
+  explain: '[[ is a keyword with its own parsing rules; [ is an ordinary command whose arguments are split and expanded first.'
+- id: read-loop
+  prompt: Which loop reads lines exactly as they are, without trimming or backslash processing?
+  choices:
+  - while IFS= read -r line; do ...; done < file
+  - for line in $(cat file); do ...; done
+  - while read line; do ...; done < file
+  - for line in `file`; do ...; done
+  answer:
+  - 0
+  explain: Clearing IFS keeps whitespace and -r keeps backslashes; a for over $(cat) splits on every space.
+- id: pipe-subshell
+  prompt: Why is a counter set inside cmd | while read x; do ...; done lost afterwards?
+  choices:
+  - Counters must be declared with local
+  - The loop never runs
+  - The pipeline runs the loop in a subshell
+  - Bash resets variables after read
+  answer:
+  - 2
+  explain: Variables changed in a subshell do not propagate back; redirect from a file or use process substitution.
+- id: expansion-suffix
+  prompt: What does ${file%.*} produce for file=archive.tar.gz?
+  choices:
+  - gz
+  - tar.gz
+  - archive.tar
+  - archive
+  answer:
+  - 2
+  explain: '% removes the shortest matching suffix, here .gz; %% would remove the longest and give archive.'
+- id: trap-exit
+  prompt: Which trap removes a temporary directory on every normal or error exit?
+  choices:
+  - trap 'rm -rf -- "$tmp"' RETURN
+  - trap 'rm -rf -- "$tmp"' EXIT
+  - trap 'rm -rf -- "$tmp"' ERR
+  - trap 'rm -rf -- "$tmp"' DEBUG
+  answer:
+  - 1
+  explain: EXIT runs when the shell exits, including after exit and after a fatal error under set -e.
+- id: null-glob
+  prompt: What does shopt -s nullglob change?
+  choices:
+  - Hidden files are included
+  - Globs become case-insensitive
+  - Globs stop matching directories
+  - A glob with no match expands to nothing instead of staying literal
+  answer:
+  - 3
+  explain: Without it an unmatched *.log stays as the text *.log and the loop runs once with it; dotglob is the option for hidden files.
+- id: local-vars
+  prompt: Why use local inside functions?
+  choices:
+  - It speeds up the function
+  - It keeps the function's variables from overwriting the caller's
+  - It makes variables read-only
+  - It exports the variable
+  answer:
+  - 1
+  explain: Without local, assignments in a function change the global scope.

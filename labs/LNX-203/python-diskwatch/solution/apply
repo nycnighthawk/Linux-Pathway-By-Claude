@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > diskwatch.py <<'PY'
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""diskwatch.py [--threshold PCT] FILE: report mounts that are too full (see README.md)."""
+import argparse
+import json
+import logging
+import sys
+
+log = logging.getLogger("diskwatch")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Report mounts at or above a use threshold.")
+    parser.add_argument("--threshold", type=float, default=80.0, help="percent used (default: 80)")
+    parser.add_argument("file", metavar="FILE")
+    args = parser.parse_args(argv)
+    logging.basicConfig(stream=sys.stderr, level=logging.INFO, format="%(levelname)s: %(message)s")
+    try:
+        with open(args.file, encoding="utf-8") as fh:
+            mounts = json.load(fh)
+    except (OSError, json.JSONDecodeError) as exc:
+        log.error("cannot read %s: %s", args.file, exc)
+        return 2
+    over = 0
+    for m in mounts:
+        size = m["size_gb"]
+        if not size:
+            log.warning("skipping %s: size is zero", m["mount"])
+            continue
+        pct = 100.0 * m["used_gb"] / size
+        if pct >= args.threshold:
+            print(f"{m['mount']} {pct:.0f}%")
+            over += 1
+    return 1 if over else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+PY

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > q1.awk <<'AWK'
+NR > 1 { cpu[$1] += $3 }
+END { for (u in cpu) printf "%s %.1f\n", u, cpu[u] }
+AWK
+cat > q2.jq <<'JQ'
+.hosts
+| map(select((.tags | index("prod")) and .disk_gb >= 100))
+| sort_by(-.disk_gb)[]
+| "\(.name)\t\(.disk_gb)"
+JQ
+cat > q3.sh <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -euo pipefail
+jq -r --arg role "${1:?usage: q3.sh ROLE}" '.hosts[] | select(.role == $role) | .name' inventory.json
+SH
+chmod +x q3.sh

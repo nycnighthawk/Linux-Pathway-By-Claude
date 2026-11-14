@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the awk program, the jq filter and the safe-variable script.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+for f in ps.txt inventory.json q1.awk q2.jq q3.sh; do [ -f "$f" ] || { echo "FAIL: $f is missing; run setup"; exit 1; }; done
+got=$(awk -f q1.awk ps.txt 2>&1 | sort)
+want=$'alice 10.3\nroot 0.5\nwww 4.0'
+[ "$got" = "$want" ] && ok "q1: CPU per user is right" || fail "q1: expected:\n$want\ngot:\n$got"
+got=$(jq -r -f q2.jq inventory.json 2>&1)
+want=$'db2\t750\ndb1\t500\nweb1\t120'
+[ "$got" = "$want" ] && ok "q2: big prod hosts, largest disk first" || fail "q2: expected:\n$want\ngot:\n$got"
+got=$(./q3.sh web 2>&1)
+[ "$got" = $'web1\nweb2' ] && ok "q3: role web" || fail "q3: expected web1 and web2, got '$got'"
+got=$(./q3.sh 'x" or true or "' 2>&1); st=$?
+if [ "$st" -eq 0 ] && [ -z "$got" ]; then ok "q3: a hostile value matches nothing and causes no jq error"; else fail "q3: hostile value gave status $st and output '$got' (pass the shell variable with --arg)"; fi
+grep -q -- '--arg' q3.sh && ok "q3 uses jq --arg" || fail "q3 must pass the value with jq --arg"
+exit "$bad"

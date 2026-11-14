@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.sh <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -euo pipefail
+
+if [ $# -ne 1 ]; then echo "usage: report.sh DIR" >&2; exit 2; fi
+dir=$1
+if [ ! -d "$dir" ]; then echo "report.sh: not a directory: $dir" >&2; exit 1; fi
+
+scratch=$(mktemp -d)
+cleanup() { rm -rf -- "$scratch"; }
+trap cleanup EXIT
+
+shopt -s dotglob nullglob
+declare -A count=()
+for f in "$dir"/*; do
+    [ -f "$f" ] || continue
+    name=${f##*/}
+    ext=noext
+    case "$name" in
+        .*|*.) ;;                                  # dotfiles and a trailing dot have no extension
+        *.*) ext=${name##*.}; ext=${ext,,} ;;
+    esac
+    count[$ext]=$(( ${count[$ext]:-0} + 1 ))
+done
+for e in "${!count[@]}"; do printf '%s %s\n' "$e" "${count[$e]}"; done > "$scratch/lines"
+sort -k2,2nr -k1,1 "$scratch/lines"
+SH
+chmod +x report.sh

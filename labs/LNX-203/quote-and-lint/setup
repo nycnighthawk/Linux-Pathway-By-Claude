@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a fragile script that breaks on awkward file names and fails shellcheck.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > broken.sh <<'SH'
+#!/bin/bash
+# SPDX-License-Identifier: MIT
+# broken.sh DIR: copy every *.log file in DIR into DIR/archive and print "copied N".
+dir=$1
+mkdir $dir/archive
+for f in $(ls $dir/*.log); do
+  cp $f $dir/archive
+done
+n=$(ls $dir/archive | wc -l)
+echo copied $n
+SH
+chmod +x broken.sh

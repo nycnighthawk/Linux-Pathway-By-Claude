@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
+cd work
+git bisect start HEAD v1.0 >/dev/null
+git bisect run ./test.sh >/dev/null
+git rev-parse refs/bisect/bad > ../bad_commit.txt
+git bisect reset >/dev/null 2>&1
+git switch -q -c feature/fix-bug
+sed -i '/BUG/d' app.conf
+git commit -q -am "Remove the faulty flag from app.conf" -m "The flag added in the tuning commit makes test.sh fail. Dropping it restores a healthy configuration."
+git fetch -q origin
+git rebase -q origin/main
+git push -q -u origin feature/fix-bug

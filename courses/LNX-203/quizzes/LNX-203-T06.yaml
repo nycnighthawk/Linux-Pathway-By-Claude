@@ -1,0 +1,72 @@
+title: 'Quiz: Git workflow and review'
+questions:
+- id: fetch-pull
+  prompt: What does git fetch do?
+  choices:
+  - Deletes stale branches
+  - Updates remote-tracking branches without touching your branch
+  - Merges the remote branch
+  - Pushes your commits
+  answer:
+  - 1
+  explain: git pull is fetch plus a merge or rebase.
+- id: lease
+  prompt: Why is --force-with-lease safer than --force?
+  choices:
+  - It asks for a password
+  - It refuses if the remote branch moved since you last fetched
+  - It keeps backups of the remote
+  - It only pushes one commit
+  answer:
+  - 1
+  explain: It protects work someone else pushed in the meantime.
+- id: rebase-main
+  prompt: Which command replays your commits on top of the latest main?
+  choices:
+  - git merge origin/main
+  - git reset origin/main
+  - git cherry origin/main
+  - git rebase origin/main
+  answer:
+  - 3
+  explain: Rebase rewrites your commits to sit on the new base; merge adds a merge commit.
+- id: bisect-run
+  prompt: Which exit code makes git bisect run skip a commit?
+  choices:
+  - '1'
+  - '0'
+  - '255'
+  - '125'
+  answer:
+  - 3
+  explain: 0 means good, 1 to 127 except 125 means bad, 125 skips; above 127 aborts.
+- id: subject
+  prompt: Which commit subject follows common conventions?
+  choices:
+  - Changes to the retry loop and also some other cleanups in files
+  - WIP
+  - Fix timeout handling in the retry loop
+  - fixed stuff.
+  answer:
+  - 2
+  explain: Short, imperative, no trailing period; the body explains why.
+- id: reflog
+  prompt: How can you recover commits after a bad reset?
+  choices:
+  - git reflog, then branch from the old hash
+  - They are gone
+  - git fetch
+  - git gc
+  answer:
+  - 0
+  explain: The reflog records where HEAD was and keeps unreachable commits for a while.
+- id: shared
+  prompt: Which branches must you never rewrite and force-push?
+  choices:
+  - Your own topic branch
+  - Local branches
+  - Tags you created today
+  - Shared ones such as main
+  answer:
+  - 3
+  explain: Rewriting shared history forces everyone else to repair their clones.

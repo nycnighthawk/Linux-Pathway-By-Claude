@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > broken.sh <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# broken.sh DIR: copy every *.log file in DIR into DIR/archive and print "copied N".
+set -euo pipefail
+shopt -s nullglob
+dir=${1:?usage: broken.sh DIR}
+mkdir -p -- "$dir/archive"
+n=0
+for f in "$dir"/*.log; do
+  cp -- "$f" "$dir/archive/"
+  n=$((n + 1))
+done
+echo "copied $n"
+SH

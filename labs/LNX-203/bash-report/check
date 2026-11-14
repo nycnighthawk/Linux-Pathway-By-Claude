@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run report.sh on a fixture with awkward names and on the error paths; check output, status and cleanup.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -x report.sh ] || { echo "FAIL: report.sh is missing or not executable in $PWD"; exit 1; }
+fx=$(mktemp -d); scratch=$(mktemp -d)
+trap 'rm -rf "$fx" "$scratch"' EXIT
+touch "$fx/my file.txt" "$fx/b.TXT" "$fx/c.txt" "$fx/notes" "$fx/.hidden" "$fx/x.tar.gz" "$fx/trailing."
+mkdir "$fx/sub"; touch "$fx/sub/deep.txt"
+want=$'noext 3\ntxt 3\ngz 1'
+got=$(TMPDIR="$scratch" ./report.sh "$fx" 2>/dev/null); st=$?
+if [ "$st" -eq 0 ]; then ok "exit status 0 on a directory"; else fail "expected exit 0 for a directory, got $st"; fi
+if [ "$got" = "$want" ]; then ok "counts are right and sorted (count desc, extension asc)"; else fail "output differs. expected:\n$want\ngot:\n$got"; fi
+left=$(find "$scratch" -mindepth 1 | wc -l)
+[ "$left" -eq 0 ] && ok "no scratch files are left in TMPDIR after a normal run" || fail "scratch files left behind in TMPDIR ($left); mktemp -d plus trap ... EXIT"
+grep -q 'mktemp' report.sh && ok "report.sh uses mktemp" || fail "use mktemp -d for the scratch directory"
+grep -Eq 'trap .*EXIT' report.sh && ok "report.sh traps EXIT" || fail "clean up with trap ... EXIT"
+out=$(TMPDIR="$scratch" ./report.sh 2>&1 >/dev/null); st=$?
+[ "$st" -eq 2 ] && ok "no argument: exit 2" || fail "no argument should exit 2, got $st"
+case "$out" in usage:*) ok "usage message on stderr" ;; *) fail "usage: ... must go to stderr" ;; esac
+TMPDIR="$scratch" ./report.sh "$fx/nope" >/dev/null 2>&1; st=$?
+[ "$st" -eq 1 ] && ok "missing directory: exit 1" || fail "missing directory should exit 1, got $st"
+left=$(find "$scratch" -mindepth 1 | wc -l)
+[ "$left" -eq 0 ] && ok "scratch is clean after the error path too" || fail "scratch files left behind after an error path ($left)"
+if command -v shellcheck >/dev/null; then
+  shellcheck -S warning report.sh >/dev/null 2>&1 && ok "shellcheck reports no warnings" || fail "shellcheck -S warning reports problems in report.sh"
+fi
+exit $bad

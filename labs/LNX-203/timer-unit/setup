@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: two unit files with only a description.
+set -eu
+cd "${LAB_DIR:-.}"
+printf '[Unit]\nDescription=Nightly backup marker\n# TODO: add [Service], see README.md\n' > backup.service
+printf '[Unit]\nDescription=Run the nightly backup marker\n# TODO: add [Timer] and [Install], see README.md\n' > backup.timer

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: two data files and three empty answer files.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > ps.txt <<'DATA'
+USER PID %CPU %MEM COMMAND
+root 1 0.0 0.1 systemd
+www 210 2.5 1.0 nginx
+www 211 1.5 0.9 nginx
+alice 900 10.0 3.2 python3
+root 2 0.5 0.0 kthreadd
+alice 901 0.3 0.1 bash
+DATA
+cat > inventory.json <<'DATA'
+{"hosts":[
+ {"name":"web1","role":"web","tags":["prod","eu"],"disk_gb":120},
+ {"name":"web2","role":"web","tags":["staging"],"disk_gb":80},
+ {"name":"db1","role":"db","tags":["prod","eu"],"disk_gb":500},
+ {"name":"db2","role":"db","tags":["prod","us"],"disk_gb":750}
+]}
+DATA
+printf '# TODO: awk program, see README.md\n' > q1.awk
+printf '# TODO: jq program, see README.md\n' > q2.jq
+printf '#!/usr/bin/env bash\n# TODO: see README.md\nexit 1\n' > q3.sh
+chmod +x q3.sh

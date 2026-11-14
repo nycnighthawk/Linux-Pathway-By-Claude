@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a clone with a hidden regression in its history, and an origin that has moved on.
+set -eu
+cd "${LAB_DIR:-.}"
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
+rm -rf origin.git work other bad_commit.txt
+git init -q --bare -b main origin.git
+git clone -q origin.git work 2>/dev/null
+cd work
+git config user.name "Lab Learner"; git config user.email "learner@example.invalid"
+printf '#!/bin/sh\n# exits 0 while the configuration is healthy\n! grep -q BUG app.conf\n' > test.sh
+chmod +x test.sh
+printf 'mode=normal\n' > app.conf
+git add test.sh app.conf && git commit -q -m "Add config and its health test"
+for i in 2 3 4 5 6 7 8 9 10; do
+  echo "entry $i" >> notes.txt
+  if [ "$i" -eq 3 ]; then git add notes.txt && git commit -q -m "Add notes entry $i" && git tag v1.0; continue; fi
+  if [ "$i" -eq 6 ]; then echo "flag=BUG" >> app.conf; git add app.conf notes.txt; git commit -q -m "Tune flags and add notes entry $i"; continue; fi
+  git add notes.txt && git commit -q -m "Add notes entry $i"
+done
+git push -q origin main
+cd ..
+git clone -q origin.git other 2>/dev/null
+( cd other && git config user.name "Teammate" && git config user.email "mate@example.invalid" \
+  && echo "release notes" > NEWS.md && git add NEWS.md && git commit -q -m "Add release notes" && git push -q origin main )
+rm -rf other

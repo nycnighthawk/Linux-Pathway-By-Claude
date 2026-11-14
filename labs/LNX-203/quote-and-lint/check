@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run the repaired script on awkward names, check strict mode, and run shellcheck when available.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -x broken.sh ] || { echo "FAIL: broken.sh is missing or not executable in $PWD"; exit 1; }
+if grep -Eq '^set -[a-z]*e[a-z]*u|^set -euo pipefail|^set -[a-z]*u[a-z]*e' broken.sh && grep -q 'pipefail' broken.sh; then ok "strict mode header present"; else fail "add set -euo pipefail near the top"; fi
+fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
+mkdir "$fx/in"
+touch "$fx/in/my file.log" "$fx/in/b.log" "$fx/in/-dash.log" "$fx/in/c.txt"
+out=$(./broken.sh "$fx/in" 2>&1); st=$?
+[ "$st" -eq 0 ] && ok "exit 0 on a directory with awkward names" || fail "exit status $st, output: $out"
+[ "$out" = "copied 3" ] && ok "prints copied 3" || fail "expected 'copied 3', got '$out'"
+n=$(find "$fx/in/archive" -type f 2>/dev/null | wc -l)
+[ "$n" -eq 3 ] && ok "three files archived" || fail "expected 3 files in archive, found $n"
+[ -f "$fx/in/archive/my file.log" ] && ok "the file with a space was copied" || fail "my file.log was not copied intact"
+out=$(./broken.sh "$fx/in" 2>&1); st=$?
+[ "$st" -eq 0 ] && ok "second run is idempotent (mkdir -p)" || fail "second run failed: $out"
+mkdir "$fx/empty"
+out=$(./broken.sh "$fx/empty" 2>&1); st=$?
+[ "$st" -eq 0 ] && [ "$out" = "copied 0" ] && ok "empty directory gives copied 0" || fail "empty dir: status $st, output '$out'"
+./broken.sh >/dev/null 2>&1 && fail "missing argument should be an error" || ok "missing argument is an error"
+if command -v shellcheck >/dev/null; then
+  if shellcheck -S warning broken.sh; then ok "shellcheck -S warning is clean"; else fail "shellcheck reports problems"; fi
+else
+  echo "skip: shellcheck not installed"
+fi
+exit "$bad"

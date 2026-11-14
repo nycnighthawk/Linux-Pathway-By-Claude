@@ -1,0 +1,147 @@
+id: LNX-203
+title: Shell Scripting & Python for Sysadmins
+summary: 'Reliable automation on Linux: Bash with strict mode, quoting and traps, ShellCheck and bats tests, text and JSON
+  processing with awk, jq and yq, Python tools for operations, a review-ready Git workflow, and running scripts as systemd
+  services and timers.'
+hours: 50
+coverage: full
+outcomes:
+- Write Bash scripts with correct tests, loops, functions and cleanup traps
+- Apply strict mode and quoting rules and keep scripts ShellCheck-clean
+- Test shell scripts with bats and judge a suite by the mutants it catches
+- Summarise text with awk and query JSON and YAML with jq and yq
+- Build command line tools in Python with argparse, logging and meaningful exit codes
+- Use branches, rebase and bisect to deliver and debug changes
+- Run scripts as hardened systemd services with timers
+certifications:
+- cert: LPIC1
+  objectives:
+  - '105.1'
+  - '105.2'
+- cert: LPLUS
+  objectives:
+  - D4
+- cert: RHCSA
+  objectives:
+  - D3
+modules:
+- id: shell-foundations
+  title: Reliable shell scripts
+  lessons:
+  - topic: LNX-203-T01
+    title: 'Bash: tests, loops, functions, traps'
+    file: lessons/LNX-203-T01.md
+    minutes: 70
+  - topic: LNX-203-T02
+    title: Strict mode, quoting, ShellCheck
+    file: lessons/LNX-203-T02.md
+    minutes: 60
+  - topic: LNX-203-T03
+    title: bats-core tests
+    file: lessons/LNX-203-T03.md
+    minutes: 60
+- id: data-and-python
+  title: Data processing and Python tools
+  lessons:
+  - topic: LNX-203-T04
+    title: awk, jq, yq
+    file: lessons/LNX-203-T04.md
+    minutes: 65
+  - topic: LNX-203-T05
+    title: Python for ops
+    file: lessons/LNX-203-T05.md
+    minutes: 70
+- id: delivery
+  title: Delivery and scheduling
+  lessons:
+  - topic: LNX-203-T06
+    title: Git workflow and review
+    file: lessons/LNX-203-T06.md
+    minutes: 65
+  - topic: LNX-203-T07
+    title: Scripts as systemd services and timers
+    file: lessons/LNX-203-T07.md
+    minutes: 55
+labs:
+- id: bash-report
+  topic: LNX-203-T01
+  title: Count files by extension with a clean Bash tool
+  env: C
+  license: MIT
+  minutes: 40
+- id: quote-and-lint
+  topic: LNX-203-T02
+  title: Repair a fragile script until ShellCheck is clean
+  env: C
+  license: MIT
+  minutes: 30
+  packages:
+  - shellcheck
+- id: bats-mutants
+  topic: LNX-203-T03
+  title: Write bats tests that catch six mutants
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - bats
+- id: column-and-json
+  topic: LNX-203-T04
+  title: Summarise a table with awk and query JSON with jq
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - gawk
+  - jq
+- id: python-diskwatch
+  topic: LNX-203-T05
+  title: Build a disk monitoring tool in Python
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - python3
+- id: git-bisect-rebase
+  topic: LNX-203-T06
+  title: Bisect a regression, then rebase and push a fix
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - git
+- id: timer-unit
+  topic: LNX-203-T07
+  title: Write a hardened service and its timer
+  env: V
+  license: MIT
+  minutes: 35
+quizzes:
+- id: LNX-203-T01
+  topic: LNX-203-T01
+  title: 'Quiz: Bash: tests, loops, functions, traps'
+  file: quizzes/LNX-203-T01.yaml
+- id: LNX-203-T02
+  topic: LNX-203-T02
+  title: 'Quiz: Strict mode, quoting, ShellCheck'
+  file: quizzes/LNX-203-T02.yaml
+- id: LNX-203-T03
+  topic: LNX-203-T03
+  title: 'Quiz: bats-core tests'
+  file: quizzes/LNX-203-T03.yaml
+- id: LNX-203-T04
+  topic: LNX-203-T04
+  title: 'Quiz: awk, jq, yq'
+  file: quizzes/LNX-203-T04.yaml
+- id: LNX-203-T05
+  topic: LNX-203-T05
+  title: 'Quiz: Python for ops'
+  file: quizzes/LNX-203-T05.yaml
+- id: LNX-203-T06
+  topic: LNX-203-T06
+  title: 'Quiz: Git workflow and review'
+  file: quizzes/LNX-203-T06.yaml
+- id: LNX-203-T07
+  topic: LNX-203-T07
+  title: 'Quiz: Scripts as systemd services and timers'
+  file: quizzes/LNX-203-T07.yaml

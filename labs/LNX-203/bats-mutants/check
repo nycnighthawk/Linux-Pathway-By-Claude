@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run the learner's bats tests on the real script, then on mutants of it; every mutant must be caught.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+command -v bats >/dev/null || { echo "FAIL: bats is not installed"; exit 1; }
+[ -f rotate.sh ] || { echo "FAIL: rotate.sh is missing"; exit 1; }
+sha256sum -c .rotate.sha256 >/dev/null 2>&1 || { echo "FAIL: rotate.sh was modified; the lab tests it as given (run setup again to restore it)"; exit 1; }
+ls test/*.bats >/dev/null 2>&1 || { echo "FAIL: no test/*.bats file yet"; exit 1; }
+n=$(cat test/*.bats | grep -c '^@test')
+[ "$n" -ge 4 ] && ok "$n tests written (at least 4 needed)" || fail "only $n tests; write at least 4"
+if bats test >/dev/null 2>&1; then ok "tests pass against the real script"; else fail "your tests fail against the real script; run: bats test"; fi
+declare -A mut=(
+  [A]='/# A$/s/exit 2/exit 0/'
+  [B]='/# B$/d'
+  [C]='/# C$/s/exit 1/exit 3/'
+  [D]='s/^i=\$((keep - 1))/i=$keep/'
+  [E]='s/-ge 1/-ge 2/'
+  [F]='/# F$/d'
+)
+for k in A B C D E F; do
+  w=$(mktemp -d)
+  cp -r test "$w/test"
+  sed -e "${mut[$k]}" rotate.sh > "$w/rotate.sh"
+  chmod +x "$w/rotate.sh"
+  if cmp -s rotate.sh "$w/rotate.sh"; then fail "internal error: mutant $k changed nothing"; rm -rf "$w"; continue; fi
+  if (cd "$w" && bats test >/dev/null 2>&1); then
+    fail "mutant $k survived: its change is not caught by your tests (see README for what each mutant breaks)"
+  else
+    ok "mutant $k is caught"
+  fi
+  rm -rf "$w"
+done
+exit "$bad"
