@@ -1,0 +1,62 @@
+title: 'Quiz: Hardware RAID, Fibre Channel SAN and multipath'
+questions:
+- id: fc-host
+  prompt: Where does Linux list Fibre Channel adapters?
+  choices:
+  - /dev/fc
+  - /sys/class/fc_host
+  - /proc/fc
+  - /etc/fc
+  answer:
+  - 1
+  explain: Each host entry has port_name (the WWPN).
+- id: wwid
+  prompt: What identifies a LUN across several paths?
+  choices:
+  - The sdX name
+  - The slot
+  - The IP address
+  - Its WWID
+  answer:
+  - 3
+  explain: Multipath groups paths with the same WWID.
+- id: mapper
+  prompt: Which device do you use in fstab for a multipath LUN?
+  choices:
+  - /dev/mapper/mpathX or the alias
+  - /dev/sdb
+  - /dev/sdc
+  - /dev/sg0
+  answer:
+  - 0
+  explain: Individual sdX paths can fail or reorder.
+- id: ll
+  prompt: Which command shows multipath topology?
+  choices:
+  - lsblk -f
+  - fdisk -l
+  - iscsiadm -m session
+  - multipath -ll
+  answer:
+  - 3
+  explain: It lists path groups and states such as active ready.
+- id: hwraid
+  prompt: What is a risk of hardware RAID?
+  choices:
+  - Volumes can be tied to a controller model
+  - It cannot be fast
+  - It needs LVM
+  - It cannot use cache
+  answer:
+  - 0
+  explain: Export configuration and keep spare controllers or firmware notes.
+- id: rescan
+  prompt: How do you find a new LUN without a reboot?
+  choices:
+  - partprobe on /
+  - systemctl reboot
+  - Write to /sys/class/scsi_host/hostN/scan
+  - mkfs
+  answer:
+  - 2
+  explain: Writing - - - triggers a scan of all channels, targets and LUNs.

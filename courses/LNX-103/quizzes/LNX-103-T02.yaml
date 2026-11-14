@@ -1,0 +1,72 @@
+title: 'Quiz: ext4, XFS and Btrfs; fstab and mount units'
+questions:
+- id: xfs-shrink
+  prompt: Which file system cannot be shrunk?
+  choices:
+  - FAT
+  - ext4
+  - XFS
+  - Btrfs
+  answer:
+  - 2
+  explain: XFS can be grown online but never shrunk.
+- id: fstab-fields
+  prompt: What are the six fstab fields in order?
+  choices:
+  - device, type, options, dump, pass, mount point
+  - device, mount point, type, options, dump, pass
+  - type, device, mount point, pass, dump, options
+  - mount point, device, options, type, pass, dump
+  answer:
+  - 1
+  explain: The order is spec, file, vfstype, mntops, freq, passno.
+- id: uuid
+  prompt: Why prefer UUID= over /dev/sdX in fstab?
+  choices:
+  - It is faster
+  - sdX is not allowed
+  - Names can change between boots
+  - UUID is shorter
+  answer:
+  - 2
+  explain: Device names depend on probe order; UUIDs follow the file system.
+- id: nofail
+  prompt: What does the nofail option do?
+  choices:
+  - Boot continues if the device is missing
+  - Skips fsck
+  - Mounts read-only
+  - Disables journaling
+  answer:
+  - 0
+  explain: Without nofail a missing disk can drop boot to emergency mode.
+- id: mount-unit
+  prompt: How is a mount unit for /srv/data named?
+  choices:
+  - /srv/data.mount
+  - data.mount
+  - srv-data.mount
+  - srv_data.mount
+  answer:
+  - 2
+  explain: Slashes become dashes and the leading slash is dropped.
+- id: grow
+  prompt: Which command grows a mounted XFS file system?
+  choices:
+  - resize2fs
+  - xfs_repair
+  - tune2fs -O
+  - xfs_growfs /mountpoint
+  answer:
+  - 3
+  explain: xfs_growfs takes the mount point and grows to the device size.
+- id: btrfs-raid
+  prompt: Which statement about Btrfs RAID 5/6 is the safest advice?
+  choices:
+  - It needs mdadm
+  - Use it for important data
+  - Avoid it for critical data; known write-hole issues remain
+  - It is faster than RAID 1
+  answer:
+  - 2
+  explain: The Btrfs documentation still warns about RAID 5/6 reliability.

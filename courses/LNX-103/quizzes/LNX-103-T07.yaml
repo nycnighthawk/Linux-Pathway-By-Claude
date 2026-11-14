@@ -1,0 +1,62 @@
+title: 'Quiz: NFS and SMB clients, autofs'
+questions:
+- id: exports
+  prompt: Which file defines NFS server exports?
+  choices:
+  - /etc/exports
+  - /etc/fstab
+  - /etc/nfs.conf only
+  - /etc/hosts
+  answer:
+  - 0
+  explain: /etc/exports, applied with exportfs -ra.
+- id: mount-nfs
+  prompt: Which fstab type mounts an NFS version 4 share?
+  choices:
+  - 9p
+  - nfs4 (or nfs with vers=4)
+  - cifs
+  - autofs
+  answer:
+  - 1
+  explain: The type is nfs4, or nfs with an option vers=4.x.
+- id: cifs
+  prompt: Which option passes SMB credentials without putting them in fstab?
+  choices:
+  - noauto
+  - credentials=/path/file
+  - user=x,pass=y
+  - guest
+  answer:
+  - 1
+  explain: A root-only credentials file keeps secrets out of fstab.
+- id: autofs-direct
+  prompt: In an autofs indirect map, what is the key in auto.master?
+  choices:
+  - The share name
+  - The parent mount point and the map file
+  - The server name
+  - The UID
+  answer:
+  - 1
+  explain: Each master line names a mount point and a map.
+- id: netdev
+  prompt: Why add _netdev to a network mount?
+  choices:
+  - Order it after the network is up
+  - Speed
+  - Encrypt
+  - Read-only
+  answer:
+  - 0
+  explain: It marks the mount as needing the network.
+- id: wildcard
+  prompt: What does a wildcard key * with & do in an autofs map?
+  choices:
+  - Sets uid
+  - Mounts any subdirectory from the matching server path
+  - Mounts everything at once
+  - Enables locking
+  answer:
+  - 1
+  explain: The key matched is substituted for & in the location.

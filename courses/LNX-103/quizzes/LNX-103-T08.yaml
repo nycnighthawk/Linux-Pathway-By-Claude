@@ -1,0 +1,62 @@
+title: 'Quiz: iSCSI target and initiator'
+questions:
+- id: order
+  prompt: Which order builds a working LIO target?
+  choices:
+  - Backstore, target, LUN, ACL, portal, save
+  - ACL first, then LUN
+  - Portal, then backstore
+  - Save, then create
+  answer:
+  - 0
+  explain: The LUN needs the backstore and the target to exist.
+- id: match
+  prompt: What must match between initiator and target?
+  choices:
+  - The file system UUID
+  - The initiator IQN in the ACL
+  - The hostname
+  - The MTU
+  answer:
+  - 1
+  explain: The ACL lists initiator IQNs from initiatorname.iscsi.
+- id: netdev
+  prompt: What does _netdev do in fstab?
+  choices:
+  - Waits for the network before mounting
+  - Encrypts traffic
+  - Makes it read-only
+  - Adds multipath
+  answer:
+  - 0
+  explain: It orders the mount after network and iscsi services.
+- id: two-writers
+  prompt: Why is mounting one LUN on two hosts dangerous?
+  choices:
+  - It is slower
+  - It breaks CHAP
+  - It needs IPv6
+  - Ordinary file systems are not cluster aware and corrupt
+  answer:
+  - 3
+  explain: Only cluster file systems with fencing allow shared writers.
+- id: port
+  prompt: Which TCP port does iSCSI use by default?
+  choices:
+  - '3260'
+  - '2049'
+  - '445'
+  - '860'
+  answer:
+  - 0
+  explain: The IANA registered port is 3260.
+- id: login
+  prompt: Which command logs in to a discovered target?
+  choices:
+  - iscsiadm -m node -T iqn -p ip --login
+  - targetcli login
+  - mount -t iscsi
+  - iscsid --login
+  answer:
+  - 0
+  explain: iscsiadm node mode with --login.

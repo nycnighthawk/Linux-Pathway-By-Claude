@@ -1,0 +1,72 @@
+title: 'Quiz: Software RAID with mdadm'
+questions:
+- id: levels
+  prompt: How many disks does RAID 5 need at minimum?
+  choices:
+  - '5'
+  - '2'
+  - '3'
+  - '4'
+  answer:
+  - 2
+  explain: RAID 5 stripes with one disk of parity, so three disks.
+- id: create
+  prompt: Which command creates a RAID 1 array of two devices?
+  choices:
+  - mdadm --build
+  - mdadm --assemble
+  - mdadm --grow
+  - mdadm --create /dev/md0 --level=1 --raid-devices=2 A B
+  answer:
+  - 3
+  explain: --create with --level and --raid-devices.
+- id: detail
+  prompt: Which command shows an array's state and failed members?
+  choices:
+  - lsblk
+  - mkfs
+  - pvs
+  - mdadm --detail /dev/md0
+  answer:
+  - 3
+  explain: --detail reports State, Active Devices and Failed Devices.
+- id: proc
+  prompt: Which file shows resync progress?
+  choices:
+  - /proc/mdstat
+  - /etc/mdstat
+  - /sys/mdstat
+  - /var/log/md
+  answer:
+  - 0
+  explain: /proc/mdstat lists arrays and rebuild progress.
+- id: replace
+  prompt: What is the order to replace a failed disk?
+  choices:
+  - Delete the superblock
+  - Fail and remove it, add the new one, watch the rebuild
+  - Add first, then reboot
+  - Reformat the array
+  answer:
+  - 1
+  explain: mdadm --fail, --remove, then --add.
+- id: conf
+  prompt: Why record the array in mdadm.conf?
+  choices:
+  - Stable names and assembly at boot
+  - Needed by mkfs
+  - Enables TRIM
+  - Sets RAID level
+  answer:
+  - 0
+  explain: Use mdadm --detail --scan and update the initramfs.
+- id: raid-not-backup
+  prompt: Does RAID replace backup?
+  choices:
+  - 'Yes'
+  - Only RAID 6
+  - Only with LVM
+  - No, it protects against disk failure only
+  answer:
+  - 3
+  explain: Deletion, corruption and site loss are copied across members.
