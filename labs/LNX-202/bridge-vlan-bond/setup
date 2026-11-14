@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: three namespaces on one flat bridge, so everyone can reach everyone. You split them with VLANs.
+set -eu
+cd "${LAB_DIR:-.}"
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+$SUDO ip link del lab-br0 2>/dev/null || true
+for n in a b c; do $SUDO ip netns del "lab-$n" 2>/dev/null || true; $SUDO ip link del "lab-p$n" 2>/dev/null || true; done
+# keep bridged frames away from iptables on hosts that load br_netfilter (for example with Docker)
+for f in bridge-nf-call-iptables bridge-nf-call-ip6tables bridge-nf-call-arptables; do
+  [ -e "/proc/sys/net/bridge/$f" ] && $SUDO sysctl -qw "net.bridge.$f=0" || true
+done
+$SUDO ip link add lab-br0 type bridge
+$SUDO ip link set lab-br0 up
+i=1
+for n in a b c; do
+  $SUDO ip netns add "lab-$n"
+  $SUDO ip link add "lab-p$n" type veth peer name eth0 netns "lab-$n"
+  $SUDO ip link set "lab-p$n" master lab-br0
+  $SUDO ip link set "lab-p$n" up
+  $SUDO ip -n "lab-$n" link set lo up
+  $SUDO ip -n "lab-$n" addr add "10.20.10.$i/24" dev eth0
+  $SUDO ip -n "lab-$n" link set eth0 up
+  i=$((i + 1))
+done
+cat > notes.txt <<'N'
+# SPDX-License-Identifier: MIT
+# Ports of the bridge lab-br0: lab-pa (host a, 10.20.10.1), lab-pb (host b, 10.20.10.2), lab-pc (host c, 10.20.10.3).
+# Tear down with: ip link del lab-br0; ip netns del lab-a; ip netns del lab-b; ip netns del lab-c
+N

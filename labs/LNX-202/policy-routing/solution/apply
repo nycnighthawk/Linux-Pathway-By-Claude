@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+$SUDO ip -n lab-host route add default via 198.51.100.1 dev eth2 table 100
+$SUDO ip -n lab-host route add 198.51.100.0/24 dev eth2 src 198.51.100.7 table 100
+$SUDO ip -n lab-host rule add from 198.51.100.7 lookup 100 priority 1000
+$SUDO ip -n lab-host rule add fwmark 0x2 lookup 100 priority 1100

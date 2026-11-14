@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a radvd skeleton and a stub for the address calculator.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > radvd.conf <<'CONF'
+# SPDX-License-Identifier: MIT
+# Lab radvd.conf for the router interface eth1 (see README.md).
+# TODO 1: write the interface block
+CONF
+cat > eui64.sh <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# eui64.sh MAC PREFIX: print the SLAAC address a host with that MAC builds in a /64 prefix.
+#   eui64.sh 52:54:00:12:34:56 2001:db8:42:7   ->   2001:db8:42:7:5054:ff:fe12:3456
+# TODO 2: implement the modified EUI-64 rule (see README.md)
+echo "not implemented" >&2
+exit 1
+SH
+chmod +x eui64.sh

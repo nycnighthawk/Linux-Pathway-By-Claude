@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Check radvd.conf with radvd itself and by rule, and test the EUI-64 calculator on several MACs.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+command -v radvd >/dev/null || { echo "FAIL: radvd is not installed (package radvd)"; exit 1; }
+[ -f radvd.conf ] && [ -x eui64.sh ] || { echo "FAIL: radvd.conf or eui64.sh is missing; run setup"; exit 1; }
+if out=$(radvd -c -C radvd.conf 2>&1); then ok "radvd -c: syntax ok"; else fail "radvd -c rejects radvd.conf: $(echo "$out" | head -2 | tr '\n' ' ')"; fi
+t=$(tr -d '\n' < radvd.conf | tr -s ' ')
+has() { echo "$t" | grep -Eq "$1"; }
+has 'interface eth1 *\{' && ok "block for interface eth1" || fail "write an interface eth1 { ... } block"
+has 'AdvSendAdvert on;' && ok "AdvSendAdvert on" || fail "set AdvSendAdvert on"
+has 'AdvManagedFlag off;' && ok "M flag off (no managed DHCPv6)" || fail "set AdvManagedFlag off: addresses come from SLAAC"
+has 'AdvOtherConfigFlag on;' && ok "O flag on (other settings from DHCPv6)" || fail "set AdvOtherConfigFlag on"
+has 'prefix 2001:db8:42:7::/64 *\{[^}]*AdvOnLink on;[^}]*AdvAutonomous on;|prefix 2001:db8:42:7::/64 *\{[^}]*AdvAutonomous on;[^}]*AdvOnLink on;' && ok "prefix 2001:db8:42:7::/64 with the L and A flags on" || fail "advertise prefix 2001:db8:42:7::/64 with AdvOnLink on and AdvAutonomous on"
+has 'RDNSS 2001:db8:42:7::53' && ok "RDNSS advertises 2001:db8:42:7::53" || fail "add an RDNSS block for 2001:db8:42:7::53"
+mx=$(echo "$t" | grep -Eo 'MaxRtrAdvInterval [0-9]+' | awk '{print $2}')
+[ -n "${mx:-}" ] && [ "$mx" -le 600 ] && ok "MaxRtrAdvInterval $mx" || fail "set MaxRtrAdvInterval to 600 seconds or less"
+code=$(cat <<'PY'
+import ipaddress, subprocess, sys
+cases = [("52:54:00:12:34:56", "2001:db8:42:7", "2001:db8:42:7:5054:ff:fe12:3456"),
+         ("00:1a:2b:3c:4d:5e", "2001:db8:42:7", "2001:db8:42:7:21a:2bff:fe3c:4d5e"),
+         ("02:00:00:00:00:01", "fd00:1:2:3", "fd00:1:2:3:0:ff:fe00:1"),
+         ("ac:de:48:ab:cd:ef", "2001:db8:9:9", "2001:db8:9:9:aede:48ff:feab:cdef")]
+bad = 0
+for mac, prefix, want in cases:
+    r = subprocess.run(["./eui64.sh", mac, prefix], capture_output=True, text=True)
+    try:
+        got = ipaddress.ip_address(r.stdout.strip())
+    except ValueError:
+        print("FAIL: eui64.sh %s %s printed '%s' (exit %d)" % (mac, prefix, r.stdout.strip(), r.returncode)); bad = 1; continue
+    if got == ipaddress.ip_address(want): print("ok:   eui64.sh %s -> %s" % (mac, got))
+    else: print("FAIL: eui64.sh %s %s printed %s, expected %s" % (mac, prefix, got, want)); bad = 1
+sys.exit(bad)
+PY
+)
+python3 -c "$code" || bad=1
+exit "$bad"

@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Check VLAN isolation on the live bridge, and the systemd-networkd files that describe an LACP bond.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+ip link show lab-br0 >/dev/null 2>&1 || { echo "FAIL: bridge lab-br0 does not exist; run setup"; exit 1; }
+vf=$($SUDO cat /sys/class/net/lab-br0/bridge/vlan_filtering 2>/dev/null || echo 0)
+[ "$vf" = 1 ] && ok "VLAN filtering is on" || fail "enable it: ip link set lab-br0 type bridge vlan_filtering 1"
+vj=$($SUDO bridge -j vlan show 2>/dev/null || echo '[]')
+portcheck() { # PORT VID: prints ok when the port has the VID with PVID and untagged egress and no other VLAN
+  printf '%s' "$vj" | python3 -c '
+import json, sys
+port, vid = sys.argv[1], int(sys.argv[2])
+data = json.load(sys.stdin)
+vl = [v for e in data if e.get("ifname") == port for v in e.get("vlans", [])]
+mine = [v for v in vl if v.get("vlan") == vid]
+others = [v for v in vl if v.get("vlan") != vid]
+good = bool(mine) and "PVID" in mine[0].get("flags", []) and "Egress Untagged" in mine[0].get("flags", []) and not others
+sys.exit(0 if good else 1)' "$1" "$2"
+}
+for p in lab-pa lab-pb; do
+  if portcheck "$p" 10; then ok "$p is an access port in VLAN 10 only"; else fail "$p must have vid 10 with pvid untagged and no other VLAN (delete vid 1)"; fi
+done
+if portcheck lab-pc 20; then ok "lab-pc is an access port in VLAN 20 only"; else fail "lab-pc must have vid 20 with pvid untagged and no other VLAN (delete vid 1)"; fi
+if $SUDO ip netns exec lab-a ping -c1 -W2 10.20.10.2 >/dev/null 2>&1; then ok "a reaches b (same VLAN)"; else fail "a cannot reach b; both ports belong in VLAN 10"; fi
+if $SUDO ip netns exec lab-a ping -c1 -W2 10.20.10.3 >/dev/null 2>&1; then fail "a still reaches c; c must be in a different VLAN"; else ok "a cannot reach c (different VLAN)"; fi
+if $SUDO ip netns exec lab-c ping -c1 -W2 10.20.10.1 >/dev/null 2>&1; then fail "c still reaches a"; else ok "c cannot reach a"; fi
+for f in bond0.netdev ports.network; do [ -f "$f" ] || { fail "$f is missing"; }; done
+[ -f bond0.netdev ] && [ -f ports.network ] || exit 1
+code=$(cat <<'PY'
+import configparser, sys
+def load(p):
+    cp = configparser.ConfigParser(strict=False, interpolation=None, delimiters=("=",))
+    cp.optionxform = str
+    cp.read(p)
+    return cp
+bad = 0
+def fail(m):
+    global bad
+    print("FAIL: " + m); bad = 1
+def ok(m): print("ok:   " + m)
+nd, nw = load("bond0.netdev"), load("ports.network")
+g = lambda cp, s, k: cp.get(s, k, fallback="").strip()
+if g(nd, "NetDev", "Kind") == "bond" and g(nd, "NetDev", "Name") == "bond0": ok("bond0.netdev declares bond0 of Kind=bond")
+else: fail("bond0.netdev needs [NetDev] Name=bond0 and Kind=bond")
+if g(nd, "Bond", "Mode") == "802.3ad": ok("Mode=802.3ad (LACP)")
+else: fail("set Mode=802.3ad in [Bond]")
+if g(nd, "Bond", "TransmitHashPolicy") == "layer3+4": ok("TransmitHashPolicy=layer3+4")
+else: fail("set TransmitHashPolicy=layer3+4")
+if g(nd, "Bond", "LACPTransmitRate") == "fast": ok("LACPTransmitRate=fast")
+else: fail("set LACPTransmitRate=fast")
+if g(nd, "Bond", "MIIMonitorSec") in ("100ms", "0.1s", "0.1"): ok("MIIMonitorSec=100ms (link monitoring is on)")
+else: fail("set MIIMonitorSec=100ms; networkd leaves link monitoring off by default")
+names = set(g(nw, "Match", "Name").split())
+if {"enp7s0", "enp8s0"} <= names: ok("ports.network matches enp7s0 and enp8s0")
+else: fail("ports.network must match both enp7s0 and enp8s0 in [Match] Name=")
+if g(nw, "Network", "Bond") == "bond0": ok("ports.network enslaves them with Bond=bond0")
+else: fail("ports.network needs [Network] Bond=bond0")
+sys.exit(bad)
+PY
+)
+python3 -c "$code" || bad=1
+exit "$bad"
