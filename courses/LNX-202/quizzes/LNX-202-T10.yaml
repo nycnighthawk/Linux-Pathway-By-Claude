@@ -1,0 +1,72 @@
+title: 'Quiz: Line-rate measurement'
+questions:
+- id: pps
+  prompt: How many 64-byte frames per second fit on a 10 Gb/s Ethernet link?
+  choices:
+  - About 1 million
+  - About 100 million
+  - About 14.88 million
+  - About 812 000
+  answer:
+  - 2
+  explain: 10e9 / ((64 + 20) x 8) with 20 bytes of preamble and gap.
+- id: parallel
+  prompt: Why use iperf3 -P on fast links?
+  choices:
+  - It disables offloads
+  - One TCP stream uses one core
+  - UDP needs parallelism
+  - It enables RSS
+  answer:
+  - 1
+  explain: Parallel streams spread across cores and queues.
+- id: udp-loss
+  prompt: UDP loss on the receiver with nstat showing buffer errors. Where is the loss?
+  choices:
+  - In the cable
+  - In the DNS
+  - Inside the host, buffer too small
+  - In the switch
+  answer:
+  - 2
+  explain: Raise net.core.rmem_max and the socket buffer.
+- id: report
+  prompt: What should a test report include beyond the number?
+  choices:
+  - NIC, driver, kernel, MTU, offloads, tool options and repeats
+  - Only the tool name
+  - Only the average
+  - The date
+  answer:
+  - 0
+  explain: So the result is repeatable.
+- id: rings
+  prompt: Which command shows ring buffer sizes?
+  choices:
+  - ethtool -l
+  - ip -s link
+  - nstat
+  - ethtool -g
+  answer:
+  - 3
+  explain: -l shows queues.
+- id: mpstat
+  prompt: What does one core at 100 percent soft-irq during a test suggest?
+  choices:
+  - A full disk
+  - A per-queue CPU limit
+  - A switch fault
+  - A DNS problem
+  answer:
+  - 1
+  explain: Add queues or spread interrupts.
+- id: control
+  prompt: Which port does iperf3 use for control by default?
+  choices:
+  - UDP 5001
+  - TCP 22
+  - UDP 53
+  - TCP 5201
+  answer:
+  - 3
+  explain: UDP data moves to a UDP socket on the same number.

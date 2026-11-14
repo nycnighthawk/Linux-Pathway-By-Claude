@@ -1,0 +1,72 @@
+title: 'Quiz: BIND9, Unbound, DNSSEC'
+questions:
+- id: roles
+  prompt: Why separate authoritative and recursive roles?
+  choices:
+  - Authoritative servers cannot cache
+  - Recursion needs DNSSEC
+  - One daemon cannot do both
+  - An open recursive resolver can be abused for amplification
+  answer:
+  - 3
+  explain: Authoritative servers should refuse recursion.
+- id: serial
+  prompt: What must change in a zone file for secondaries to transfer the zone?
+  choices:
+  - The SOA serial
+  - The TTL
+  - The NS records
+  - The file name
+  answer:
+  - 0
+  explain: Secondaries compare serial numbers.
+- id: cd
+  prompt: What does dig +cd tell you?
+  choices:
+  - The cookie
+  - The delegation
+  - Whether validation is the cause of a SERVFAIL
+  - The cache depth
+  answer:
+  - 2
+  explain: Checking disabled returns data even if validation fails.
+- id: ds
+  prompt: Where is the DS record published?
+  choices:
+  - In /etc/hosts
+  - In the resolver
+  - In the parent zone
+  - In the child zone only
+  answer:
+  - 2
+  explain: The parent holds a hash of the child's key-signing key.
+- id: tsig
+  prompt: What authenticates a zone transfer?
+  choices:
+  - The SOA serial
+  - The DS record
+  - The NS records
+  - A TSIG shared key
+  answer:
+  - 3
+  explain: Combine allow-transfer with a TSIG key (hmac-sha256).
+- id: unbound-default
+  prompt: Who may query Unbound by default?
+  choices:
+  - Nobody
+  - Only localhost
+  - Everyone
+  - Only the local subnet
+  answer:
+  - 1
+  explain: Add access-control lines for other clients.
+- id: named-check
+  prompt: Which command checks a zone file?
+  choices:
+  - named-checkzone
+  - named-checkconf
+  - rndc status
+  - dig +check
+  answer:
+  - 0
+  explain: named-checkconf checks the configuration, named-checkzone checks a zone.

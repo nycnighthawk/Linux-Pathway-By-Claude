@@ -1,0 +1,72 @@
+title: 'Quiz: FRR (OSPF/BGP)'
+questions:
+- id: zebra
+  prompt: Which FRR daemon installs routes into the kernel?
+  choices:
+  - ospfd
+  - staticd only
+  - zebra
+  - bgpd
+  answer:
+  - 2
+  explain: Protocol daemons feed zebra.
+- id: ospf-states
+  prompt: Which OSPF neighbour state means adjacency is complete?
+  choices:
+  - Init
+  - Down
+  - Full
+  - 2-Way
+  answer:
+  - 2
+  explain: ExStart usually means an MTU mismatch.
+- id: exstart
+  prompt: A neighbour is stuck in ExStart. Likely cause?
+  choices:
+  - Missing route map
+  - Clock skew
+  - MTU mismatch
+  - Wrong AS number
+  answer:
+  - 2
+  explain: Database descriptions are dropped.
+- id: ebgp-policy
+  prompt: Why can an eBGP session be Established with 0 prefixes?
+  choices:
+  - BGP needs OSPF
+  - The AS path is empty
+  - TCP 179 is closed
+  - FRR requires a policy unless ebgp-requires-policy is off
+  answer:
+  - 3
+  explain: Add a route map or disable the requirement.
+- id: passive
+  prompt: What does passive-interface default do?
+  choices:
+  - Disables OSPF
+  - Enables BFD
+  - Blocks BGP
+  - Stops OSPF hellos on all interfaces except those re-enabled
+  answer:
+  - 3
+  explain: Re-enable with no passive-interface IFACE.
+- id: ospf-proto
+  prompt: Which IP protocol number does OSPF use?
+  choices:
+  - '50'
+  - '179'
+  - '89'
+  - '112'
+  answer:
+  - 2
+  explain: BGP uses TCP port 179.
+- id: offline
+  prompt: How do you check frr.conf without daemons running?
+  choices:
+  - systemctl status frr
+  - ospfd -t
+  - vtysh -C -f frr.conf
+  - show running-config
+  answer:
+  - 2
+  explain: vtysh -C parses the file.

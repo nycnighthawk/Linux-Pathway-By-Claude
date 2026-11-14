@@ -1,0 +1,72 @@
+title: 'Quiz: IPv6 SLAAC, DHCPv6, radvd'
+questions:
+- id: who-gateway
+  prompt: Which mechanism carries the default router in IPv6?
+  choices:
+  - DHCPv6
+  - DNS
+  - ARP
+  - Router advertisements
+  answer:
+  - 3
+  explain: DHCPv6 has no gateway option.
+- id: m-o
+  prompt: What does the O flag in a router advertisement say?
+  choices:
+  - Addresses are available from DHCPv6
+  - The router is the origin of the prefix
+  - Hosts must use privacy addresses
+  - Other settings are available from DHCPv6
+  answer:
+  - 3
+  explain: The M flag is for addresses, the O flag for other configuration.
+- id: accept-ra
+  prompt: A Linux router loses its upstream default route when forwarding is enabled. Why?
+  choices:
+  - DHCPv6 took over
+  - accept_ra falls back to 0 unless set to 2
+  - Forwarding deletes routes
+  - The prefix expired
+  answer:
+  - 1
+  explain: Set accept_ra=2 on the upstream interface.
+- id: eui64
+  prompt: What does the modified EUI-64 rule do to the first byte of the MAC?
+  choices:
+  - Swaps it with the last byte
+  - Flips the universal/local bit
+  - Zeroes it
+  - Adds fe
+  answer:
+  - 1
+  explain: ff:fe is inserted in the middle and bit 1 of the first byte is inverted.
+- id: radvd-fwd
+  prompt: What does radvd require of the host?
+  choices:
+  - A DHCPv6 server
+  - Jumbo frames
+  - IPv6 forwarding enabled
+  - IPv4 NAT
+  answer:
+  - 2
+  explain: radvd refuses to run on a host that does not forward.
+- id: icmp6
+  prompt: Why must firewalls allow ICMPv6?
+  choices:
+  - Neighbour discovery, router discovery and path MTU discovery depend on it
+  - It carries web traffic
+  - It replaces TCP
+  - It is only for ping
+  answer:
+  - 0
+  explain: Blocking it breaks IPv6.
+- id: dhcp6-ports
+  prompt: Which ports does DHCPv6 use?
+  choices:
+  - UDP 67 and 68
+  - TCP 53
+  - UDP 123
+  - UDP 546 client, 547 server
+  answer:
+  - 3
+  explain: DHCPv4 uses 67 and 68.
