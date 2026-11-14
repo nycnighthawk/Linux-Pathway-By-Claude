@@ -12,7 +12,7 @@ outcomes:
   - Write and check a small nftables ruleset that behaves like one Service
 certifications:
   - cert: CKA
-    objectives: ["Services and networking"]
+    objectives: ["D3"]
 modules:
   - id: services-data-plane
     title: Services and the node data plane
