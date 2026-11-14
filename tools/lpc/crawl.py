@@ -154,6 +154,16 @@ def run(src: dict, out) -> dict:
             seen.add(url)
             if not allowed(url):
                 continue
+            if src.get("resume"):
+                done = out / _out_path(src, url)
+                if done.is_file():          # already stored: reuse its links, no request
+                    for href in re.findall(r"\]\(([^)\s]+)", done.read_text(errors="replace")):
+                        n = _norm(urljoin(url, href))
+                        if n not in queued and n.startswith(tuple(allow)):
+                            queue.append(n)
+                            queued.add(n)
+                    stored.append(url)
+                    continue
             try:
                 resp = page.goto(url, wait_until="domcontentloaded", timeout=45000)
                 page.wait_for_timeout(300)
