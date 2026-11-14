@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade chrony.conf with chronyd's own parser, and the time zone link in the scratch root.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+if chronyd -p -f chrony.conf >parsed.txt 2>parse.err; then ok "chronyd -p parses chrony.conf"; else fail "chronyd -p rejects chrony.conf: $(head -1 parse.err)"; fi
+grep -Eq '^(server|pool)[[:space:]]+[^[:space:]]+.*iburst' chrony.conf && ok "a server or pool with iburst" || fail "keep at least one server or pool line with the iburst option"
+grep -Eq '^(server|pool)[[:space:]]+[^[:space:]]+' chrony.conf && [ "$(grep -Ecv '^[[:space:]]*(#|$)' chrony.conf)" -ge 4 ] && ok "has more than the starting lines" || fail "add the policy directives"
+grep -Eq '^makestep[[:space:]]+1(\.0)?[[:space:]]+3[[:space:]]*$' chrony.conf && ok "makestep 1.0 3" || fail "allow a step in the first 3 updates when the offset exceeds 1 second: makestep 1.0 3"
+grep -Eq '^rtcsync[[:space:]]*$' chrony.conf && ok "rtcsync" || fail "add rtcsync (keep the hardware clock in step)"
+grep -Eq '^allow[[:space:]]+192\.168\.10\.0/24[[:space:]]*$' chrony.conf && ok "allow 192.168.10.0/24" || fail "serve time to the lab network with: allow 192.168.10.0/24"
+grep -Eq '^driftfile[[:space:]]+/var/lib/chrony/drift' chrony.conf && ok "driftfile kept" || fail "keep the driftfile line"
+grep -Eq '^log[[:space:]]+tracking' chrony.conf && ok "log tracking" || fail "add: log tracking"
+link=$(readlink root/etc/localtime 2>/dev/null || true)
+case "$link" in
+  */usr/share/zoneinfo/Europe/Berlin|../usr/share/zoneinfo/Europe/Berlin|/usr/share/zoneinfo/Europe/Berlin) ok "time zone is Europe/Berlin" ;;
+  *) fail "root/etc/localtime must be a symlink to .../usr/share/zoneinfo/Europe/Berlin (what timedatectl set-timezone does)";;
+esac
+exit $bad

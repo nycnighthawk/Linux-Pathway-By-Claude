@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the account database under $LAB_DIR/root.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+P=root/etc/passwd; S=root/etc/shadow; G=root/etc/group
+
+grep -q '^ops:x:2100:' "$G" && ok "group ops has gid 2100" || fail "group ops with gid 2100 not found in root/etc/group"
+line=$(grep '^deploy:' "$P" 2>/dev/null || true)
+if [ -n "$line" ]; then
+    IFS=: read -r _ _ uid gid _ home shell <<<"$line"
+    [ "$uid" = 2001 ] && ok "deploy has uid 2001" || fail "deploy must have uid 2001 (it has $uid)"
+    [ "$gid" = 2100 ] && ok "deploy has primary group ops (2100)" || fail "deploy's primary group must be ops (gid 2100), it is $gid"
+    [ "$home" = /srv/deploy ] && ok "home is /srv/deploy" || fail "home must be /srv/deploy (it is $home)"
+    [ "$shell" = /bin/bash ] && ok "shell is /bin/bash" || fail "shell must be /bin/bash (it is $shell)"
+    [ -d root/srv/deploy ] && ok "home directory exists" || fail "the home directory root/srv/deploy was not created (-m)"
+else fail "user deploy not found in root/etc/passwd"; fi
+
+sl=$(grep '^deploy:' "$S" 2>/dev/null || true)
+if [ -n "$sl" ]; then
+    IFS=: read -r _ _ _ mn mx wn inact _ <<<"$sl"
+    [ "$mn" = 7 ] && [ "$mx" = 90 ] && [ "$wn" = 14 ] && ok "ageing is min 7, max 90, warn 14" || fail "ageing must be min 7, max 90, warn 14 (shadow has min=$mn max=$mx warn=$wn)"
+    [ "$inact" = 30 ] && ok "inactive after 30 days" || fail "the account must lock 30 days after expiry (inactive field is '$inact')"
+else fail "user deploy not found in root/etc/shadow"; fi
+
+f=root/etc/sudoers.d/ops
+if [ -f "$f" ]; then
+    visudo -cf "$f" >/dev/null 2>&1 && ok "sudoers drop-in is valid" || fail "visudo -cf rejects $f"
+    [ "$(stat -c %a "$f")" = 440 ] && ok "drop-in mode is 0440" || fail "the drop-in must have mode 0440 (it is $(stat -c %a "$f"))"
+    grep -Eq '^%ops[[:space:]]+ALL=\(root\)[[:space:]]+NOPASSWD:[[:space:]]*/usr/bin/systemctl restart nginx[[:space:]]*$' "$f" \
+      && ok "rule lets %ops restart nginx without a password" || fail "the rule must be exactly: %ops ALL=(root) NOPASSWD: /usr/bin/systemctl restart nginx"
+else fail "root/etc/sudoers.d/ops is missing"; fi
+exit $bad

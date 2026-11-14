@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > conf/myapp.conf <<CONF
+$PWD/logs/myapp.log {
+    weekly
+    rotate 8
+    compress
+    missingok
+    notifempty
+    create 0640 root adm
+}
+CONF
+printf '[Journal]\nStorage=persistent\nSystemMaxUse=200M\nMaxRetentionSec=1month\n' > journald.conf.d/50-lab.conf
+printf 'local6.*    /var/log/myapp.log\n' > rsyslog.d/30-myapp.conf

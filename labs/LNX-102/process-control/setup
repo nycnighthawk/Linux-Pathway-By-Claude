@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: three long-running sleep processes, each with a job to do on it.
+set -eu
+cd "${LAB_DIR:-.}"
+[ -f pids.txt ] && while read -r _ pid; do kill -9 "$pid" 2>/dev/null || true; done < pids.txt
+rm -f pids.txt
+for name in batch frozen runaway; do
+    setsid nohup bash -c "exec -a lab-$name sleep 3000" >/dev/null 2>&1 &
+    echo "$name $!" >> pids.txt
+done
+sleep 0.5
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ? after reading the process table (ps, /proc)\nbatch_priority_class=?\nrunaway_state_after_term=?\nstop_signal_number=?\nstate_letter_of_stopped=?\n' > answers.txt

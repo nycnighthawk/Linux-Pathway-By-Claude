@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a time-sync config that does not meet the policy, and a scratch root with no time zone set.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf root chrony.conf
+mkdir -p root/etc root/usr/share
+[ -d /usr/share/zoneinfo ] && ln -s /usr/share/zoneinfo root/usr/share/zoneinfo || mkdir -p root/usr/share/zoneinfo
+cat > chrony.conf <<'CONF'
+# Starting configuration (does not meet the policy)
+pool 2.pool.ntp.org iburst
+driftfile /var/lib/chrony/drift
+CONF

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the default target, unit states, grub defaults and answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+E=root/etc/systemd/system
+
+[ "$(readlink "$E/default.target" 2>/dev/null)" = multi-user.target ] || [ "$(readlink "$E/default.target" 2>/dev/null)" = /usr/lib/systemd/system/multi-user.target ] \
+  && ok "default target is multi-user.target" || fail "the default target must be multi-user.target (set it with systemctl --root=\"\$PWD/root\" set-default multi-user.target)"
+[ -L "$E/multi-user.target.wants/labweb.service" ] && ok "labweb is enabled" || fail "labweb.service must be enabled (symlink in multi-user.target.wants)"
+[ "$(readlink "$E/labbluetooth.service" 2>/dev/null)" = /dev/null ] && ok "labbluetooth is masked" || fail "labbluetooth.service must be masked (a symlink to /dev/null in etc/systemd/system)"
+
+g=root/etc/default/grub
+grep -Eq '^GRUB_TIMEOUT=5$' "$g" && ok "GRUB_TIMEOUT=5" || fail "set GRUB_TIMEOUT=5 in root/etc/default/grub"
+line=$(grep '^GRUB_CMDLINE_LINUX=' "$g" || true)
+echo "$line" | grep -q 'quiet' && fail "remove 'quiet' from GRUB_CMDLINE_LINUX so boot messages are visible" || ok "quiet removed"
+echo "$line" | grep -q 'console=ttyS0,115200n8' && ok "serial console added" || fail "add console=ttyS0,115200n8 to GRUB_CMDLINE_LINUX"
+echo "$line" | grep -q 'rhgb' && ok "rhgb kept" || fail "keep the other arguments (rhgb) when you edit the line"
+bash -n <(cat "$g") 2>/dev/null && ok "defaults file is valid shell" || fail "the defaults file must stay valid shell (matching quotes)"
+
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | tr -d ' '; }
+[ "$(get rescue_kernel_argument)" = systemd.unit=rescue.target ] && ok "rescue argument" || fail "rescue_kernel_argument: the kernel command-line argument that boots into rescue mode (see systemd.special(7))"
+[ "$(get emergency_kernel_argument)" = systemd.unit=emergency.target ] && ok "emergency argument" || fail "emergency_kernel_argument: the argument for emergency mode"
+[ "$(get rescue_needs_root_password)" = yes ] && ok "rescue asks for the root password" || fail "rescue_needs_root_password: answer yes or no (see sulogin and the single-user STIG items)"
+[ "$(get regenerate_command_rhel)" = 'grub2-mkconfig-o/boot/grub2/grub.cfg' ] && ok "regenerate command" || fail "regenerate_command_rhel: the command that rebuilds grub.cfg on RHEL-family systems, written without spaces"
+exit $bad

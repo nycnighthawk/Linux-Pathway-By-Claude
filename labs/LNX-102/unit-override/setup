@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a vendor unit under usr/lib/systemd/system that must not be edited, and an empty etc/systemd/system.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf root
+mkdir -p root/usr/lib/systemd/system root/etc/systemd/system
+cat > root/usr/lib/systemd/system/labapp.service <<'UNIT'
+[Unit]
+Description=Lab application (vendor unit)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/sleep 1000
+Restart=no
+TimeoutStopSec=90
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+cp /usr/lib/systemd/system/multi-user.target /usr/lib/systemd/system/network.target root/usr/lib/systemd/system/ 2>/dev/null || true
+cp /usr/lib/systemd/system/basic.target /usr/lib/systemd/system/sysinit.target root/usr/lib/systemd/system/ 2>/dev/null || true

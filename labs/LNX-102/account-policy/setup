@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty account database under root/ (no real accounts are touched).
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf root
+mkdir -p root/etc/sudoers.d
+printf 'root:x:0:0:root:/root:/bin/bash\n' > root/etc/passwd
+printf 'root:!:19000:0:99999:7:::\n' > root/etc/shadow
+printf 'root:x:0:\n' > root/etc/group
+printf 'root:!::\n' > root/etc/gshadow
+printf 'UID_MIN 1000\nUID_MAX 60000\nGID_MIN 1000\nGID_MAX 60000\nPASS_MAX_DAYS 99999\nPASS_MIN_DAYS 0\nPASS_WARN_AGE 7\nCREATE_HOME yes\n' > root/etc/login.defs
+mkdir -p root/etc/skel root/bin root/srv
+touch root/bin/bash; chmod 755 root/bin/bash
+touch root/etc/skel/.bashrc
+chmod 640 root/etc/shadow root/etc/gshadow

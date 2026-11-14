@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the logrotate policy by running it, and the journald and rsyslog snippets by reading them.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+c=conf/myapp.conf
+if [ -f "$c" ]; then
+    chmod 644 "$c"
+    logrotate -d -s /dev/null "$c" >/dev/null 2>dry.err && ok "logrotate -d accepts the policy" || { fail "logrotate -d rejects conf/myapp.conf: $(head -2 dry.err | tr '\n' ' ')"; }
+    for w in weekly 'rotate 8' compress missingok notifempty; do grep -Eq "^[[:space:]]*$w[[:space:]]*$" "$c" && ok "$w" || fail "conf/myapp.conf needs the directive: $w"; done
+    grep -Eq '^[[:space:]]*create[[:space:]]+0?640[[:space:]]+root[[:space:]]+adm' "$c" && ok "create 0640 root adm" || fail "needs: create 0640 root adm"
+    grep -Eq "logs/myapp\.log" "$c" && ok "policy names logs/myapp.log" || fail "the policy must name the log logs/myapp.log (use the full path under \$LAB_DIR)"
+    # run it for real on a copy and look at the result
+    t=$(mktemp -d); cp -r logs "$t/"; sed "s|$PWD/logs|$t/logs|g" "$c" > "$t/c.conf"; chmod 644 "$t/c.conf"
+    logrotate -f -s "$t/state" "$t/c.conf" >/dev/null 2>&1
+    ls "$t"/logs/myapp.log.1* >/dev/null 2>&1 && ok "forced rotation produced a rotated file" || fail "forced rotation did not produce myapp.log.1*"
+    [ -e "$t/logs/myapp.log" ] && [ "$(stat -c %a "$t/logs/myapp.log")" = 640 ] && ok "a fresh log with mode 640 is created" || fail "after rotation a new myapp.log with mode 640 must exist"
+    rm -rf "$t"
+else fail "conf/myapp.conf is missing"; fi
+
+j=journald.conf.d/50-lab.conf
+if [ -f "$j" ]; then
+    grep -q '^\[Journal\]$' "$j" && ok "[Journal] section" || fail "$j needs a [Journal] section"
+    grep -Eq '^Storage=persistent$' "$j" && ok "Storage=persistent" || fail "set Storage=persistent"
+    grep -Eq '^SystemMaxUse=200M$' "$j" && ok "SystemMaxUse=200M" || fail "set SystemMaxUse=200M"
+    grep -Eq '^MaxRetentionSec=1month$' "$j" && ok "MaxRetentionSec=1month" || fail "set MaxRetentionSec=1month"
+else fail "journald.conf.d/50-lab.conf is missing"; fi
+
+r=rsyslog.d/30-myapp.conf
+if [ -f "$r" ]; then
+    grep -Eq '^local6\.\*[[:space:]]+-?/var/log/myapp\.log$' "$r" && ok "rsyslog rule for local6" || fail "$r needs one rule: local6.*   /var/log/myapp.log"
+else fail "rsyslog.d/30-myapp.conf is missing"; fi
+exit $bad

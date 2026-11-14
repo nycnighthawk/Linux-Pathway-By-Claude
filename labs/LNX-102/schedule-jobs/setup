@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a script to run on a schedule, and empty places for a crontab and a timer pair.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf jobs units
+mkdir -p jobs units
+printf '#!/bin/sh\necho backup\n' > jobs/backup.sh
+chmod 755 jobs/backup.sh

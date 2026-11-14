@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a growing application log and nothing to rotate it.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf logs conf state journald.conf.d rsyslog.d
+mkdir -p logs conf journald.conf.d rsyslog.d
+for i in $(seq 1 200); do echo "2026-01-01 00:00:$((i % 60)) INFO request $i served"; done > logs/myapp.log
+chmod 644 logs/myapp.log

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+printf 'SHELL=/bin/sh\n30 2 * * 1-5 root %s/jobs/backup.sh\n' "$PWD" > jobs/backup.cron
+printf '[Unit]\nDescription=Weekday backup\n\n[Service]\nType=oneshot\nExecStart=%s/jobs/backup.sh\n' "$PWD" > units/backup.service
+printf '[Unit]\nDescription=Weekday backup timer\n\n[Timer]\nOnCalendar=Mon..Fri *-*-* 02:30:00\nPersistent=true\n\n[Install]\nWantedBy=timers.target\n' > units/backup.timer

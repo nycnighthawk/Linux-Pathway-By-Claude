@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: two fixture machines. 'good' keeps its changes in boot-time files; 'bad' only made runtime changes.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf machines verify.sh answers.txt
+for m in good bad; do
+    mkdir -p "machines/$m/etc/sysctl.d" "machines/$m/etc/systemd/system/multi-user.target.wants" "machines/$m/etc" "machines/$m/run/live"
+    printf 'UUID=1234 /data xfs defaults 0 0\n' > "machines/$m/etc/fstab"
+done
+# good: sysctl file, enabled unit, fstab entry for /scratch
+printf 'vm.swappiness = 10\n' > machines/good/etc/sysctl.d/99-lab.conf
+ln -s /usr/lib/systemd/system/labagent.service machines/good/etc/systemd/system/multi-user.target.wants/labagent.service
+printf 'UUID=5678 /scratch xfs defaults 0 0\n' >> machines/good/etc/fstab
+# bad: the same three changes exist only as runtime state
+printf 'vm.swappiness = 10\n' > machines/bad/run/live/sysctl
+touch machines/bad/run/live/labagent.active
+printf 'mounted /scratch\n' > machines/bad/run/live/mounts
+printf '# SPDX-License-Identifier: MIT\n# TODO: write the checker: it takes a machine directory as $1, prints one line per item and exits 0 only if every change is persistent\n' > verify.sh
+chmod +x verify.sh
+printf '# SPDX-License-Identifier: MIT\n# TODO: runtime, persistent or both? and the command that makes it persistent\nsysctl_w_is=?\nsystemctl_start_is=?\nsystemctl_enable_is=?\nmount_command_is=?\nfstab_line_is=?\nsystemctl_enable_now_is=?\n' > answers.txt

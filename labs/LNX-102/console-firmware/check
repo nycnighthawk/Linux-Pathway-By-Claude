@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of the field report: every key present, and each value of the right kind.
+# The values themselves come from the machine you inspected, so this script checks shape, not truth.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+get() { grep -E "^$1=" report.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get boot_mode)" in uefi|bios) ok "boot_mode" ;; *) fail "boot_mode must be uefi or bios (does /sys/firmware/efi exist?)" ;; esac
+case "$(get secure_boot)" in enabled|disabled|unsupported) ok "secure_boot" ;; *) fail "secure_boot must be enabled, disabled or unsupported (mokutil --sb-state, or the firmware menu)" ;; esac
+case "$(get console_device)" in tty[0-9]*|ttyS[0-9]*|ttyAMA[0-9]*|hvc[0-9]*) ok "console_device" ;; *) fail "console_device must look like tty1, ttyS0, ttyAMA0 or hvc0 (see /proc/cmdline and the boot loader)" ;; esac
+case "$(get keyboard_layout)" in ''|'?') fail "keyboard_layout must be a layout name such as us or de (localectl status)" ;; *) ok "keyboard_layout" ;; esac
+tz=$(get timezone)
+case "$tz" in */*|UTC) [ -e "/usr/share/zoneinfo/$tz" ] || [ "$tz" = UTC ] && ok "timezone" || fail "timezone '$tz' is not in the zone database" ;; *) fail "timezone must look like Area/City or UTC (timedatectl)" ;; esac
+case "$(get firmware_menu_key)" in ''|'?') fail "firmware_menu_key: the key your firmware or hypervisor showed for its setup menu (F2, Del, Esc ...)" ;; *) ok "firmware_menu_key" ;; esac
+exit $bad

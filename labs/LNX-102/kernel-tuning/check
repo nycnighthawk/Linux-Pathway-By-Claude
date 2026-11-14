@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the drop-ins (parameter names must exist in /proc/sys) and the answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+f=root/etc/sysctl.d/99-lab.conf
+if [ -f "$f" ]; then
+    want='net.ipv4.ip_forward=1 vm.swappiness=10 kernel.dmesg_restrict=1'
+    for kv in $want; do
+        k=${kv%%=*}; v=${kv#*=}
+        line=$(grep -E "^[[:space:]]*$k[[:space:]]*=" "$f" | tail -1 | sed 's/[[:space:]]//g')
+        [ "$line" = "$kv" ] && ok "$kv" || fail "root/etc/sysctl.d/99-lab.conf needs: $k = $v"
+        sysctl -N "$k" >/dev/null 2>&1 && ok "$k is a real kernel parameter" || fail "$k is not a parameter of this kernel (typo?)"
+    done
+else fail "root/etc/sysctl.d/99-lab.conf is missing"; fi
+
+m=root/etc/modules-load.d/lab.conf
+if [ -f "$m" ]; then grep -Eq '^br_netfilter[[:space:]]*$' "$m" && ok "br_netfilter loads at boot" || fail "$m must list br_netfilter on a line of its own"; else fail "root/etc/modules-load.d/lab.conf is missing"; fi
+
+b=root/etc/modprobe.d/lab.conf
+if [ -f "$b" ]; then
+    grep -Eq '^blacklist[[:space:]]+floppy[[:space:]]*$' "$b" && ok "floppy is blacklisted" || fail "$b needs: blacklist floppy"
+    grep -Eq '^install[[:space:]]+usb-storage[[:space:]]+(/bin/false|/bin/true|/usr/bin/false)[[:space:]]*$' "$b" && ok "usb-storage cannot be loaded" || fail "$b needs: install usb-storage /bin/false"
+    grep -Eq '^options[[:space:]]+bonding[[:space:]]+mode=802\.3ad[[:space:]]+miimon=100[[:space:]]*$' "$b" && ok "bonding options" || fail "$b needs: options bonding mode=802.3ad miimon=100"
+else fail "root/etc/modprobe.d/lab.conf is missing"; fi
+
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get runtime_only_command)" = 'sysctl -w' ] && ok "sysctl -w" || fail "runtime_only_command: the sysctl option that changes a value only until reboot is written like 'sysctl -w'"
+[ "$(get persistent_directory)" = /etc/sysctl.d ] && ok "/etc/sysctl.d" || fail "persistent_directory: the directory for your own sysctl files (not /usr/lib)"
+[ "$(get list_loaded_modules_command)" = lsmod ] && ok "lsmod" || fail "list_loaded_modules_command: lists the loaded modules"
+[ "$(get module_info_command)" = 'modinfo' ] && ok "modinfo" || fail "module_info_command: prints a module's author, licence, parameters and file"
+exit $bad

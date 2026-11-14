@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's/^boot_mode=.*/boot_mode=uefi/' -e 's/^secure_boot=.*/secure_boot=disabled/' -e 's/^console_device=.*/console_device=ttyS0/' \
+  -e 's/^keyboard_layout=.*/keyboard_layout=us/' -e 's|^timezone=.*|timezone=UTC|' -e 's/^firmware_menu_key=.*/firmware_menu_key=F2/' report.txt
