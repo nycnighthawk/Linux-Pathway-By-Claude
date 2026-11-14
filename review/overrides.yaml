@@ -35,3 +35,2468 @@ overrides:
     courses: []
     by: claude
     why: Contributor process for the Kubernetes docs project.
+  # ---- T1d: tagging precision (man pages by family, sources that span several courses) ----
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man2/perf_event_open.2.md
+    courses: &id001
+    - LNX-307
+    by: claude
+    only_if: [none, low]
+    why: Tracing and profiling system calls belong to observability.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man2/bpf.2.md
+    courses: *id001
+    by: claude
+    only_if: [none, low]
+    why: Tracing and profiling system calls belong to observability.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man2/ptrace.2.md
+    courses: *id001
+    by: claude
+    only_if: [none, low]
+    why: Tracing and profiling system calls belong to observability.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man2/*
+    courses:
+    - LNX-320
+    by: claude
+    only_if: [none, low]
+    why: 'Section 2 is the system call interface: the core reference for system programming.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/lttng*
+    courses: &id002
+    - LNX-307
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/babeltrace*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/stap*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/pm*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/pcp*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/perf*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/oprofile*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/trace-cmd*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/gprof*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/ltrace*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/dtrace*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/strace*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/ps.1.md
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/pgrep*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/pidstat*
+    courses: *id002
+    by: claude
+    only_if: [none, low]
+    why: Tracing, profiling and performance-monitoring tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/dh*
+    courses: &id003
+    - LNX-304
+    by: claude
+    only_if: [none, low]
+    why: 'Debian packaging helpers (debhelper, dpkg-dev): building packages at scale.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/dpkg*
+    courses: *id003
+    by: claude
+    only_if: [none, low]
+    why: 'Debian packaging helpers (debhelper, dpkg-dev): building packages at scale.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/quilt*
+    courses: *id003
+    by: claude
+    only_if: [none, low]
+    why: 'Debian packaging helpers (debhelper, dpkg-dev): building packages at scale.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/debuild*
+    courses: *id003
+    by: claude
+    only_if: [none, low]
+    why: 'Debian packaging helpers (debhelper, dpkg-dev): building packages at scale.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/git*
+    courses: &id004
+    - LNX-203
+    by: claude
+    only_if: [none, low]
+    why: Git command and workflow pages.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/gitk*
+    courses: *id004
+    by: claude
+    only_if: [none, low]
+    why: Git command and workflow pages.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/gitweb*
+    courses: *id004
+    by: claude
+    only_if: [none, low]
+    why: Git command and workflow pages.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/cups*
+    courses: &id005 []
+    by: claude
+    only_if: [none, low]
+    why: 'Printing: not part of the curriculum.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/lp.1.md
+    courses: *id005
+    by: claude
+    only_if: [none, low]
+    why: 'Printing: not part of the curriculum.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/lpr.1.md
+    courses: *id005
+    by: claude
+    only_if: [none, low]
+    why: 'Printing: not part of the curriculum.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/ippeveprinter*
+    courses: *id005
+    by: claude
+    only_if: [none, low]
+    why: 'Printing: not part of the curriculum.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/systemd*
+    courses: &id006
+    - LNX-102
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/*ctl.1.md
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/busctl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/bootctl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/machinectl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/portablectl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/varlinkctl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/ukify*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/homectl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/updatectl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/userdbctl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/loginctl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/oomctl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/coredumpctl*
+    courses: *id006
+    by: claude
+    only_if: [none, low]
+    why: systemd command-line tools (service and system management).
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/rsync*
+    courses: &id007
+    - LNX-201
+    by: claude
+    only_if: [none, low]
+    why: Network file transfer and remote tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/telnet-probe*
+    courses: *id007
+    by: claude
+    only_if: [none, low]
+    why: Network file transfer and remote tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/sshfs*
+    courses: *id007
+    by: claude
+    only_if: [none, low]
+    why: Network file transfer and remote tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/fusermount*
+    courses: *id007
+    by: claude
+    only_if: [none, low]
+    why: Network file transfer and remote tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/taskset*
+    courses: &id008
+    - LNX-307
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/chrt*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/ionice*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/uclampset*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/coresched*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/prlimit*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/renice*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/nproc*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/lscpu*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/fincore*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/memusage*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/tload*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/dmesg*
+    courses: *id008
+    by: claude
+    only_if: [none, low]
+    why: Process scheduling, limits and system inspection tools used when tuning and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man1/*.1.md
+    courses:
+    - LNX-101
+    by: claude
+    only_if: [none, low]
+    why: 'Section 1 commands: everyday user commands and the command line.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/git*
+    courses:
+    - LNX-203
+    by: claude
+    only_if: [none, low]
+    why: Git file formats and configuration.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/slapd*
+    courses: &id009
+    - LNX-301
+    by: claude
+    only_if: [none, low]
+    why: Directory service and name-service switch configuration.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/ldap.conf*
+    courses: *id009
+    by: claude
+    only_if: [none, low]
+    why: Directory service and name-service switch configuration.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/lloadd*
+    courses: *id009
+    by: claude
+    only_if: [none, low]
+    why: Directory service and name-service switch configuration.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/nsswitch*
+    courses: *id009
+    by: claude
+    only_if: [none, low]
+    why: Directory service and name-service switch configuration.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/nsswitch.conf*
+    courses: *id009
+    by: claude
+    only_if: [none, low]
+    why: Directory service and name-service switch configuration.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/org.freedesktop.*
+    courses: &id010
+    - LNX-102
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/*.conf.5.md
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/*.conf.d.5.md
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/*.d.5.md
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/systemd*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/binfmt*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/tmpfiles*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/sysusers*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/os-release*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/machine-*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/environment.d*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/modules-load*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/vconsole*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/locale*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/journald*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/logind*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/homed*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/resolved*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/timesyncd*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/coredump*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/oomd*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/pstore*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/loader*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/repart*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/sysext*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/confext*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/sysupdate*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/extension-release*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/initrd-release*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/iocost*
+    courses: *id010
+    by: claude
+    only_if: [none, low]
+    why: systemd and system configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/proc*
+    courses:
+    - LNX-307
+    by: claude
+    only_if: [none, low]
+    why: /proc interface used for monitoring and troubleshooting.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/deb*
+    courses: &id011
+    - LNX-304
+    by: claude
+    only_if: [none, low]
+    why: Debian package metadata formats.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/dsc*
+    courses: *id011
+    by: claude
+    only_if: [none, low]
+    why: Debian package metadata formats.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/rpm*
+    courses:
+    - LNX-104
+    by: claude
+    only_if: [none, low]
+    why: RPM package format and configuration.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/fstab*
+    courses: &id012
+    - LNX-103
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/crypttab*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/xfs*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/ext3*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/ext4*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/filesystems*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/fs.5.md
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/tmpfs*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/autofs*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/nfs*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/mdadm*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/integritytab*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/veritytab*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/acl*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/sysfs*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/selabel*
+    courses: *id012
+    by: claude
+    only_if: [none, low]
+    why: Filesystem and storage configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/hosts*
+    courses: &id013
+    - LNX-201
+    by: claude
+    only_if: [none, low]
+    why: Network configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/host.conf*
+    courses: *id013
+    by: claude
+    only_if: [none, low]
+    why: Network configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/resolv*
+    courses: *id013
+    by: claude
+    only_if: [none, low]
+    why: Network configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/resolver*
+    courses: *id013
+    by: claude
+    only_if: [none, low]
+    why: Network configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/protocols*
+    courses: *id013
+    by: claude
+    only_if: [none, low]
+    why: Network configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/services*
+    courses: *id013
+    by: claude
+    only_if: [none, low]
+    why: Network configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/networkd*
+    courses: *id013
+    by: claude
+    only_if: [none, low]
+    why: Network configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/org.freedesktop.network1*
+    courses: *id013
+    by: claude
+    only_if: [none, low]
+    why: Network configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/pam_env*
+    courses: &id014
+    - LNX-204
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/limits.conf*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/capability.conf*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/shadow*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/passwd*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/group*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/request-key*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/keyrings*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/tunables*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/utmp*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/acct*
+    courses: *id014
+    by: claude
+    only_if: [none, low]
+    why: Accounts, limits and security-related configuration files.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man5/*.5.md
+    courses:
+    - LNX-102
+    by: claude
+    only_if: [none, low]
+    why: 'Section 5 file formats and configuration: system administration reference.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/groff*
+    courses: &id015 []
+    by: claude
+    only_if: [none, low]
+    why: 'Typesetting and man-page authoring: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/roff*
+    courses: *id015
+    by: claude
+    only_if: [none, low]
+    why: 'Typesetting and man-page authoring: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/man.7.md
+    courses: *id015
+    by: claude
+    only_if: [none, low]
+    why: 'Typesetting and man-page authoring: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/man-pages*
+    courses: *id015
+    by: claude
+    only_if: [none, low]
+    why: 'Typesetting and man-page authoring: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/mdoc*
+    courses: *id015
+    by: claude
+    only_if: [none, low]
+    why: 'Typesetting and man-page authoring: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/mom*
+    courses: *id015
+    by: claude
+    only_if: [none, low]
+    why: 'Typesetting and man-page authoring: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/iso*
+    courses: &id016 []
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/latin*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/koi8*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/cp125*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/tis-620*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/armscii*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/charsets*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/utf*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/UTF*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/unicode*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/ascii*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/charmap*
+    courses: *id016
+    by: claude
+    only_if: [none, low]
+    why: 'Character set reference pages: not course material.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/git*
+    courses:
+    - LNX-203
+    by: claude
+    only_if: [none, low]
+    why: Git concepts, tutorials and formats.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/babeltrace*
+    courses: &id017
+    - LNX-307
+    by: claude
+    only_if: [none, low]
+    why: Tracing tool concepts.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/lttng*
+    courses: *id017
+    by: claude
+    only_if: [none, low]
+    why: Tracing tool concepts.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/stap*
+    courses: *id017
+    by: claude
+    only_if: [none, low]
+    why: Tracing tool concepts.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/libabigail*
+    courses: *id017
+    by: claude
+    only_if: [none, low]
+    why: Tracing tool concepts.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/ovs*
+    courses: &id018
+    - LNX-202
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/ovn*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/tc-*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/sock_diag*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/netdevice*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/rtnetlink*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/netlink*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/packet*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/raw*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/sctp*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/tcp*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/udp*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/udplite*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/ip.7.md
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/ipv6*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/icmp*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/unix*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/vsock*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/rdma*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/x25*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/arp*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/mlx*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/efadv*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/hnsdv*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/ionicdv*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/manadv*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/mctp*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/address_families*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/pcap*
+    courses: *id018
+    by: claude
+    only_if: [none, low]
+    why: Network protocol and interface reference.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/*namespaces*
+    courses: &id019
+    - LNX-310
+    by: claude
+    only_if: [none, low]
+    why: Kernel isolation primitives (namespaces, cgroups) that containers are built on.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/cgroup*
+    courses: *id019
+    by: claude
+    only_if: [none, low]
+    why: Kernel isolation primitives (namespaces, cgroups) that containers are built on.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/cpuset*
+    courses: *id019
+    by: claude
+    only_if: [none, low]
+    why: Kernel isolation primitives (namespaces, cgroups) that containers are built on.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/capabilities*
+    courses: *id019
+    by: claude
+    only_if: [none, low]
+    why: Kernel isolation primitives (namespaces, cgroups) that containers are built on.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/pid_namespaces*
+    courses: *id019
+    by: claude
+    only_if: [none, low]
+    why: Kernel isolation primitives (namespaces, cgroups) that containers are built on.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/landlock*
+    courses: *id019
+    by: claude
+    only_if: [none, low]
+    why: Kernel isolation primitives (namespaces, cgroups) that containers are built on.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/Landlock*
+    courses: *id019
+    by: claude
+    only_if: [none, low]
+    why: Kernel isolation primitives (namespaces, cgroups) that containers are built on.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/credentials*
+    courses: *id019
+    by: claude
+    only_if: [none, low]
+    why: Kernel isolation primitives (namespaces, cgroups) that containers are built on.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/mount_namespaces*
+    courses: *id019
+    by: claude
+    only_if: [none, low]
+    why: Kernel isolation primitives (namespaces, cgroups) that containers are built on.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/keyrings*
+    courses: &id020
+    - LNX-204
+    by: claude
+    only_if: [none, low]
+    why: Kernel key management and security features.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/keyutils*
+    courses: *id020
+    by: claude
+    only_if: [none, low]
+    why: Kernel key management and security features.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/*-keyring*
+    courses: *id020
+    by: claude
+    only_if: [none, low]
+    why: Kernel key management and security features.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/asymmetric*
+    courses: *id020
+    by: claude
+    only_if: [none, low]
+    why: Kernel key management and security features.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/persistent-keyring*
+    courses: *id020
+    by: claude
+    only_if: [none, low]
+    why: Kernel key management and security features.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/kernel_lockdown*
+    courses: *id020
+    by: claude
+    only_if: [none, low]
+    why: Kernel key management and security features.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/lvm*
+    courses:
+    - LNX-103
+    by: claude
+    only_if: [none, low]
+    why: LVM concepts.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/rpm*
+    courses: &id021
+    - LNX-304
+    by: claude
+    only_if: [none, low]
+    why: Package-format and packaging concept pages.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/dnf*
+    courses: *id021
+    by: claude
+    only_if: [none, low]
+    why: Package-format and packaging concept pages.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/deb*
+    courses: *id021
+    by: claude
+    only_if: [none, low]
+    why: Package-format and packaging concept pages.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/libdpkg*
+    courses: *id021
+    by: claude
+    only_if: [none, low]
+    why: Package-format and packaging concept pages.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/debhelper*
+    courses: *id021
+    by: claude
+    only_if: [none, low]
+    why: Package-format and packaging concept pages.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/bpf*
+    courses: &id022
+    - LNX-307
+    by: claude
+    only_if: [none, low]
+    why: Kernel facilities used for observability and tuning.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/fanotify*
+    courses: *id022
+    by: claude
+    only_if: [none, low]
+    why: Kernel facilities used for observability and tuning.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/inotify*
+    courses: *id022
+    by: claude
+    only_if: [none, low]
+    why: Kernel facilities used for observability and tuning.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/sched*
+    courses: *id022
+    by: claude
+    only_if: [none, low]
+    why: Kernel facilities used for observability and tuning.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/numa*
+    courses: *id022
+    by: claude
+    only_if: [none, low]
+    why: Kernel facilities used for observability and tuning.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/vdso*
+    courses: *id022
+    by: claude
+    only_if: [none, low]
+    why: Kernel facilities used for observability and tuning.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/futex*
+    courses: *id022
+    by: claude
+    only_if: [none, low]
+    why: Kernel facilities used for observability and tuning.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man7/*.7.md
+    courses:
+    - LNX-320
+    by: claude
+    only_if: [none, low]
+    why: 'Section 7 overviews: IPC, signals, process and I/O concepts for system programming.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/lv*
+    courses: &id023
+    - LNX-103
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/pv*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/vg*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/xfs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/mkfs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/fsck*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/mke2fs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/mkswap*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/swap*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/blkid*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/lsblk*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/findmnt*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/findfs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/fdisk*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/sfdisk*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/wipefs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/tune2fs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/e2*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/e4*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/btrfs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/cryptsetup*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/fstrim*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/losetup*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/mount*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/umount*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/blockdev*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/hdparm*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/fsfreeze*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/dmeventd*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/lsof*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/lslocks*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/lsns*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/quota*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/repquota*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/setquota*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/edquota*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/autofs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/automount*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/nfs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/mountd*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/fatlabel*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/mkudffs*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/fuse*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/mapscrn*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/setfont*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/captree*
+    courses: *id023
+    by: claude
+    only_if: [none, low]
+    why: Storage, filesystem and mount administration commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/ip*
+    courses: &id024
+    - LNX-202
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/tc*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/ss.8.md
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/arp*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/bridge*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/genl*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/lnstat*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/nameif*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/netstat*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/ifconfig*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/ifstat*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/iptables*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/ebtables*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/arptables*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/ping*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/tracepath*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/rtmon*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/routel*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/wg*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/netsniff*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/trafgen*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/netshaper*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/dpll*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/rdma*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/ibacm*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/sendmail*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/nscd*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/nss-*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/libnss*
+    courses: *id024
+    by: claude
+    only_if: [none, low]
+    why: Network configuration and diagnostic commands.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/cups*
+    courses: &id025 []
+    by: claude
+    only_if: [none, low]
+    why: 'Printing: not part of the curriculum.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/lp*
+    courses: *id025
+    by: claude
+    only_if: [none, low]
+    why: 'Printing: not part of the curriculum.'
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/pam*
+    courses: &id026
+    - LNX-204
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/setcap*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/getcap*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/filecap*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/getpcaps*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/pscap*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/captest*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/netcap*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/auditctl*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/augenrules*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/sudo*
+    courses: *id026
+    by: claude
+    only_if: [none, low]
+    why: PAM, capabilities, auditing and privilege tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/stap*
+    courses: &id027
+    - LNX-307
+    by: claude
+    only_if: [none, low]
+    why: Performance and tracing administration tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/numactl*
+    courses: *id027
+    by: claude
+    only_if: [none, low]
+    why: Performance and tracing administration tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/numastat*
+    courses: *id027
+    by: claude
+    only_if: [none, low]
+    why: Performance and tracing administration tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/migratepages*
+    courses: *id027
+    by: claude
+    only_if: [none, low]
+    why: Performance and tracing administration tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/setarch*
+    courses: *id027
+    by: claude
+    only_if: [none, low]
+    why: Performance and tracing administration tools.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/rpm*
+    courses:
+    - LNX-104
+    by: claude
+    only_if: [none, low]
+    why: RPM administration.
+  - match:
+      source: man-pages
+      path: man7.org/linux/man-pages/man8/*.8.md
+    courses:
+    - LNX-102
+    by: claude
+    only_if: [none, low]
+    why: 'Section 8 administration commands: system administration essentials.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/how-to/security/*
+    courses:
+    - LNX-204
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/how-to/networking/*
+    courses:
+    - LNX-201
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/explanation/networking/*
+    courses:
+    - LNX-201
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/how-to/software/*
+    courses:
+    - LNX-104
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/how-to/openldap/*
+    courses:
+    - LNX-301
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/how-to/observability/*
+    courses:
+    - LNX-307
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/explanation/performance/*
+    courses:
+    - LNX-307
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/how-to/virtualisation/*
+    courses:
+    - LNX-308
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/how-to/web-services/*
+    courses:
+    - LNX-102
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: docs/explanation/intro-to/*
+    courses:
+    - LNX-101
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: ubuntu-server-docs
+      path: '*'
+    courses:
+    - LNX-102
+    by: claude
+    only_if: [none, low]
+    why: 'Ubuntu Server guide default: system administration.'
+  - match:
+      source: rocky-docs
+      path: docs/guides/contribute/*
+    courses: []
+    by: claude
+    only_if: [none, low]
+    why: Contributor guides for the Rocky docs project, not course material.
+  - match:
+      source: rocky-docs
+      path: docs/desktop/*
+    courses: []
+    by: claude
+    only_if: [none, low]
+    why: Desktop environment guides are out of scope.
+  - match:
+      source: rocky-docs
+      path: docs/guides/rocky_insights/*
+    courses: []
+    by: claude
+    only_if: [none, low]
+    why: Rocky Insights product pages are out of scope.
+  - match:
+      source: rocky-docs
+      path: docs/books/admin_guide/*
+    courses:
+    - LNX-102
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: rocky-docs
+      path: docs/guides/security/*
+    courses:
+    - LNX-204
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: rocky-docs
+      path: docs/labs/security/*
+    courses:
+    - LNX-204
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: rocky-docs
+      path: docs/guides/network/*
+    courses:
+    - LNX-201
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: rocky-docs
+      path: docs/guides/automation/*
+    courses:
+    - LNX-305
+    by: claude
+    only_if: [none, low]
+    why: 'Path rule: topic area of this documentation folder.'
+  - match:
+      source: compliance-as-code
+      path: linux_os/guide/system/*
+    courses:
+    - LNX-204
+    - LNX-303
+    by: claude
+    only_if: [none, low]
+    why: Hardening rules for system settings.
+  - match:
+      source: compliance-as-code
+      path: linux_os/guide/services/*
+    courses:
+    - LNX-204
+    - LNX-303
+    by: claude
+    only_if: [none, low]
+    why: Hardening rules for services.
+  - match:
+      source: compliance-as-code
+      path: linux_os/guide/auditing/*
+    courses:
+    - LNX-303
+    by: claude
+    only_if: [none, low]
+    why: Audit rules.
+  - match:
+      source: disa-stig
+      path: '*'
+    courses:
+    - LNX-303
+    by: claude
+    only_if: [none, low]
+    why: DISA STIG content is compliance material.
+  - match:
+      source: kubernetes-docs
+      path: content/en/docs/*
+    courses:
+    - LNX-311
+    by: claude
+    only_if: [none, low]
+    why: 'Kubernetes docs default: administration (specific areas are tagged by keyword).'
+  - match:
+      source: qemu-docs
+      path: docs/devel/*
+    courses:
+    - LNX-332
+    by: claude
+    only_if: [none, low]
+    why: QEMU developer documentation.
+  - match:
+      source: qemu-docs
+      path: docs/about/*
+    courses:
+    - LNX-308
+    by: claude
+    only_if: [none, low]
+    why: QEMU release and compatibility notes.
+  - match:
+      source: qemu-docs
+      path: '*'
+    courses:
+    - LNX-308
+    by: claude
+    only_if: [none, low]
+    why: 'QEMU system emulation and interop guides: virtualization administration.'
+  - match:
+      source: virtualbox-docs
+      path: '*'
+    courses:
+    - LNX-315
+    by: claude
+    only_if: [none, low]
+    why: VirtualBox manual and reference.
+  - match:
+      source: rhel-10-docs
+      path: managing_monitoring_and_updating_the_kernel.md
+    courses:
+    - LNX-307
+    - LNX-330
+    by: claude
+    only_if: [none, low]
+    why: Kernel monitoring and tuning guide.

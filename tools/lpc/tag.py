@@ -5,7 +5,8 @@ Scoring per course (see taxonomy/courses.yaml):
   * section heading path match: 3 (strong: 6), counted once per keyword
   * body matches: 1 per hit (strong: 2), at most 4 hits per keyword
   * plus the source prior, if any
-Manual overrides in review/overrides.yaml win over automatic tags.
+Manual overrides in review/overrides.yaml win over automatic tags, except entries with
+`only_if: [none, low]`, which apply only when the automatic confidence is in that list.
 """
 from __future__ import annotations
 
@@ -90,7 +91,7 @@ class Tagger:
         conf = "none" if not chosen else ("high" if top >= self.t["high"] else "medium" if top >= self.t["medium"] else "low")
         if conf == "low" and self.priors.get(chunk["source"], {}).get(chosen[0][0], 0) >= self.t["assign"]:
             conf = "medium"   # whole-source prior (e.g. kernel process docs) is itself evidence
-        manual = self._override(chunk)
+        manual = self._override(chunk, conf)
         if manual is not None:
             chosen = [(c, 99.0) for c in manual]
             conf = "manual" if manual else "out-of-scope"
@@ -104,9 +105,11 @@ class Tagger:
         best = {"code": ranked[0][0], "score": round(top, 1)} if ranked else None
         return {"courses": courses, "pathways": sorted(paths), "certs": sorted(certs), "confidence": conf, "best_guess": best}
 
-    def _override(self, chunk):
+    def _override(self, chunk, conf=None):
         for o in self.overrides:
             m = o.get("match", {})
+            if o.get("only_if") and conf not in o["only_if"]:
+                continue          # gap-filling rule: leave chunks the keywords already tagged confidently
             if m.get("source") and m["source"] != chunk["source"]:
                 continue
             if m.get("path") and not fnmatch.fnmatch(chunk["path"], m["path"]):

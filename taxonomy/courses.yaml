@@ -193,15 +193,20 @@ source_priors:
   qemu-docs: {LNX-332: 3, LNX-308: 2}
   libvirt-docs: {LNX-308: 4, LNX-315: 2}
   virtualbox-docs: {LNX-315: 4, LNX-332: 1}
-  kubevirt-user-guide: {LNX-315: 4, LNX-311: 1}
+  kubevirt-user-guide: {LNX-315: 6, LNX-311: 1}
   firecracker-docs: {LNX-332: 3, LNX-308: 2}
   cloud-hypervisor-docs: {LNX-332: 4, LNX-315: 2}
   rust-vmm-community: {LNX-332: 6}
   virtio-spec: {LNX-332: 6}
-  python-docs: {LNX-203: 3, LNX-220: 3, LNX-320: 1}
+  python-docs: {LNX-220: 6, LNX-203: 3}
   rust-book: {LNX-220: 4, LNX-320: 2}
   clusterlabs-docs: {LNX-309: 6}
   git-docs: {LNX-330: 3, LNX-203: 1}
+  freeipa-docs: {LNX-301: 6}
+  ms-learn-adds: {LNX-301: 6, LNX-302: 2}
+  samba-docs: {LNX-302: 6, LNX-301: 2}
+  cilium-docs: {LNX-312: 6}
+  ansible-docs: {LNX-305: 6}
 
 # Tagging thresholds (implementation constants, documented here so they're reviewable).
 thresholds:
