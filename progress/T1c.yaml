@@ -1,0 +1,18 @@
+item: T1c
+label: Crawl scope
+branch: build/T1c
+state: in-progress
+started: '2026-11-14'
+updated: '2026-11-14'
+phases:
+  crawls:
+    state: todo
+    units: 3
+    done: []
+  rebuild:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-14 started
