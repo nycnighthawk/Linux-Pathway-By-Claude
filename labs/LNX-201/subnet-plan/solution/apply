@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's|^users=.*|users=10.40.0.0/23|' -e 's|^servers=.*|servers=10.40.2.0/25|' -e 's|^mgmt=.*|mgmt=10.40.2.128/27|' \
+  -e 's|^link=.*|link=10.40.2.160/30|' -e 's|^users_broadcast=.*|users_broadcast=10.40.1.255|' \
+  -e 's|^servers_netmask=.*|servers_netmask=255.255.255.128|' -e 's|^mgmt_last_host=.*|mgmt_last_host=10.40.2.158|' \
+  -e 's|^users_v6=.*|users_v6=2001:db8:10:1::/64|' -e 's|^servers_v6=.*|servers_v6=2001:db8:10:2::/64|' \
+  -e 's|^mgmt_v6=.*|mgmt_v6=2001:db8:10:3::/64|' plan.txt

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: three network namespaces in a line (a - r - b); r forwards but a and b have no routes to each other's network.
+set -eu
+cd "${LAB_DIR:-.}"
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+for n in lab-a lab-r lab-b; do $SUDO ip netns del "$n" 2>/dev/null || true; $SUDO ip netns add "$n"; done
+$SUDO ip link add va-r type veth peer name vr-a
+$SUDO ip link set va-r netns lab-a
+$SUDO ip link set vr-a netns lab-r
+$SUDO ip link add vr-b type veth peer name vb-r
+$SUDO ip link set vr-b netns lab-r
+$SUDO ip link set vb-r netns lab-b
+for n in lab-a lab-r lab-b; do $SUDO ip -n "$n" link set lo up; done
+$SUDO ip -n lab-a addr add 10.1.1.2/24 dev va-r; $SUDO ip -n lab-a link set va-r up
+$SUDO ip -n lab-r addr add 10.1.1.1/24 dev vr-a; $SUDO ip -n lab-r link set vr-a up
+$SUDO ip -n lab-r addr add 10.1.2.1/24 dev vr-b; $SUDO ip -n lab-r link set vr-b up
+$SUDO ip -n lab-b addr add 10.1.2.2/24 dev vb-r; $SUDO ip -n lab-b link set vb-r up
+$SUDO ip netns exec lab-r sysctl -qw net.ipv4.ip_forward=1
+cat > notes.txt <<'N'
+# SPDX-License-Identifier: MIT
+# Write the commands you run here (optional, not graded). Tear down with: ip netns del lab-a; ip netns del lab-r; ip netns del lab-b
+N

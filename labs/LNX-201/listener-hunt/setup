@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an unknown TCP listener on loopback and an empty answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+[ -f .listener.pid ] && kill "$(cat .listener.pid)" 2>/dev/null || true
+rm -f .listener.pid answers.txt
+# A background listener on a random high port. Its descriptors are detached so the grader never waits for it.
+code=$(cat <<'PY'
+import os, socket, sys
+s = socket.socket(); s.bind(("127.0.0.1", 0)); s.listen(5)
+pid = os.fork()
+if pid:
+    print(pid); sys.stdout.flush(); os._exit(0)
+os.setsid()
+for fd in (0, 1, 2):
+    os.close(fd)
+os.open("/dev/null", os.O_RDWR); os.dup2(0, 1); os.dup2(0, 2)
+while True:
+    c, _ = s.accept(); c.close()
+PY
+)
+python3 -c "$code" > .listener.pid 2>/dev/null </dev/null
+for _ in 1 2 3 4 5 6 7 8 9 10; do kill -0 "$(cat .listener.pid)" 2>/dev/null && break; sleep 0.2; done
+cat > answers.txt <<'ANS'
+# SPDX-License-Identifier: MIT
+# Fill in each ? from the live system (see README.md).
+port=?
+pid=?
+command=?
+bind_address=?
+lo_mtu=?
+lo_state=?
+ANS

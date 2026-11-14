@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+printf '10.20.30.40 intranet.lab.test intranet\n' >> hosts
+sed -i 's/^hosts: .*/hosts: files dns/' nsswitch.conf
+printf 'DNS=192.0.2.53\nDomains=~lab.test\n' >> resolved-lab.conf

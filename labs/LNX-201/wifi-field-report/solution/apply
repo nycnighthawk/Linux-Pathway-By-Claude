@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's/^wifi_device=.*/wifi_device=none/' -e 's/^rfkill_state=.*/rfkill_state=none/' -e 's/^regdomain=.*/regdomain=00/' \
+  -e 's/^security_mode=.*/security_mode=none/' -e 's/^eap_method=.*/eap_method=none/' -e 's/^server_cert_validated=.*/server_cert_validated=na/' report.txt

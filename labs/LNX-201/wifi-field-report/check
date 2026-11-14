@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of the field report: every key present and each value of the right kind.
+# The values come from the machine you inspected, so this script checks shape, not truth.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+get() { grep -E "^$1=" report.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get wifi_device)" in none|wl[a-z0-9]*|wlan[0-9]*) ok "wifi_device" ;; *) fail "wifi_device must be the wireless interface name (wlp3s0, wlan0) or none (nmcli device status, iw dev)" ;; esac
+case "$(get rfkill_state)" in unblocked|soft-blocked|hard-blocked|none) ok "rfkill_state" ;; *) fail "rfkill_state must be unblocked, soft-blocked, hard-blocked or none (rfkill list)" ;; esac
+case "$(get regdomain)" in [A-Z][A-Z]|00) ok "regdomain" ;; *) fail "regdomain must be a two-letter country code or 00 (iw reg get)" ;; esac
+case "$(get security_mode)" in open|wep|wpa2-personal|wpa3-personal|wpa2-enterprise|wpa3-enterprise|none) ok "security_mode" ;; *) fail "security_mode must be open, wep, wpa2-personal, wpa3-personal, wpa2-enterprise, wpa3-enterprise or none (nmcli -f SSID,SECURITY device wifi list)" ;; esac
+case "$(get eap_method)" in peap|ttls|tls|none) ok "eap_method" ;; *) fail "eap_method must be peap, ttls, tls or none (nmcli connection show <profile> | grep 802-1x.eap)" ;; esac
+case "$(get server_cert_validated)" in yes|no|na) ok "server_cert_validated" ;; *) fail "server_cert_validated must be yes, no or na (is 802-1x.ca-cert set in the profile?)" ;; esac
+exit $bad

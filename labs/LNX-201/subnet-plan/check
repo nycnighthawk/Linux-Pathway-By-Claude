@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade plan.txt with the ipaddress module: sizes, alignment, overlap and the derived values.
+set -u
+cd "${LAB_DIR:-.}"
+[ -f plan.txt ] || { echo "FAIL: plan.txt not found in $PWD"; exit 1; }
+exec python3 - <<'PY'
+import ipaddress as ip, sys
+vals = {}
+for line in open("plan.txt"):
+    line = line.strip()
+    if line and not line.startswith("#") and "=" in line:
+        k, v = line.split("=", 1)
+        vals[k.strip()] = v.strip()
+bad = 0
+def fail(m):
+    global bad; bad = 1; print("FAIL:", m)
+def ok(m): print("ok:  ", m)
+parent = ip.ip_network("10.40.0.0/22")
+need = {"users": (300, (23,)), "servers": (100, (25,)), "mgmt": (20, (27,)), "link": (2, (30, 31))}
+nets = {}
+for name, (hosts, prefixes) in need.items():
+    try:
+        n = ip.ip_network(vals.get(name, "?"), strict=True)
+    except ValueError:
+        fail(f"{name} must be a network address in CIDR form with host bits zero (got {vals.get(name, '?')!r})")
+        continue
+    if n.version != 4 or not n.subnet_of(parent):
+        fail(f"{name} {n} is not inside {parent}"); continue
+    if n.prefixlen not in prefixes:
+        fail(f"{name} {n}: for {hosts} hosts the smallest fitting prefix is /{prefixes[0]}"); continue
+    nets[name] = n; ok(f"{name} {n} fits {hosts} hosts with the smallest prefix")
+names = list(nets)
+for i in range(len(names)):
+    for j in range(i + 1, len(names)):
+        if nets[names[i]].overlaps(nets[names[j]]):
+            fail(f"{names[i]} {nets[names[i]]} overlaps {names[j]} {nets[names[j]]}")
+if len(nets) == 4 and not bad: ok("no two subnets overlap")
+if "users" in nets:
+    want = str(nets["users"].broadcast_address)
+    (ok if vals.get("users_broadcast") == want else lambda m: fail("users_broadcast should be the last address of users"))(f"users_broadcast {want}")
+if "servers" in nets:
+    want = str(nets["servers"].netmask)
+    (ok if vals.get("servers_netmask") == want else lambda m: fail("servers_netmask should be the dotted mask of the servers prefix"))(f"servers_netmask {want}")
+if "mgmt" in nets:
+    want = str(nets["mgmt"].broadcast_address - 1)
+    (ok if vals.get("mgmt_last_host") == want else lambda m: fail("mgmt_last_host should be the highest usable address of mgmt"))(f"mgmt_last_host {want}")
+v6parent = ip.ip_network("2001:db8:10::/48")
+seen = []
+for k in ("users_v6", "servers_v6", "mgmt_v6"):
+    try:
+        n = ip.ip_network(vals.get(k, "?"), strict=True)
+    except ValueError:
+        fail(f"{k} must be an IPv6 /64 network inside {v6parent}"); continue
+    if n.version != 6 or n.prefixlen != 64 or not n.subnet_of(v6parent):
+        fail(f"{k} {n} must be a /64 inside {v6parent}"); continue
+    if n in seen: fail(f"{k} repeats another /64"); continue
+    seen.append(n); ok(f"{k} {n}")
+sys.exit(bad)
+PY

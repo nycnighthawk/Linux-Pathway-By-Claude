@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Compare answers.txt with the facts built into lab.pcap, and confirm tcpdump can still read the file.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f answers.txt ] || { echo "FAIL: answers.txt not found in $PWD"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+n=$(tcpdump -nn -r lab.pcap 2>/dev/null | wc -l)
+[ "$n" = 7 ] && ok "lab.pcap holds the 7 recorded packets" || fail "lab.pcap was changed or cannot be read (expected 7 packets, got $n)"
+[ "$(get refused_port)" = 8080 ] && ok "refused_port" || fail "refused_port: the port whose SYN was answered by a reset (look for Flags [R.])"
+[ "$(get silent_port)" = 443 ] && ok "silent_port" || fail "silent_port: the port whose SYN got no reply at all"
+[ "$(get syn_count_silent)" = 3 ] && ok "syn_count_silent" || fail "syn_count_silent: how many times the SYN to that port was sent"
+[ "$(get dns_server)" = 192.0.2.53 ] && ok "dns_server" || fail "dns_server: the address the client asked (UDP port 53)"
+[ "$(get dns_name)" = app.lab.test ] && ok "dns_name" || fail "dns_name: the name in the query"
+case "$(get dns_status)" in NXDOMAIN|nxdomain) ok "dns_status" ;; *) fail "dns_status: the result code in the reply (tcpdump prints NXDomain)" ;; esac
+exit $bad

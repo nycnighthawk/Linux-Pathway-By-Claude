@@ -1,0 +1,72 @@
+title: 'Quiz: OpenSSH: keys, ProxyJump, forwarding'
+questions:
+- id: proxyjump-safer
+  prompt: Why is ProxyJump safer than agent forwarding?
+  choices:
+  - It encrypts twice
+  - It skips host key checks
+  - It needs no keys
+  - The bastion relays ciphertext and never gets use of your agent
+  answer:
+  - 3
+  explain: With ProxyJump you authenticate end to end; forwarding exposes your agent socket on the intermediate host.
+- id: remote-forward
+  prompt: Which side listens for ssh -R 8080:localhost:3000 user@server?
+  choices:
+  - The server, on port 8080
+  - The client, on port 3000
+  - Both
+  - Neither
+  answer:
+  - 0
+  explain: -R opens a listener on the server and carries connections back to the client.
+- id: local-forward
+  prompt: What does ssh -L 5433:db.internal:5432 bastion do?
+  choices:
+  - Starts a SOCKS proxy
+  - Copies a file
+  - Opens local port 5433 and reaches db.internal:5432 through bastion
+  - Opens port 5432 on the bastion
+  answer:
+  - 2
+  explain: -L listens on the client; the server connects on to the target.
+- id: first-wins
+  prompt: In ssh_config, which value applies when several blocks set an option?
+  choices:
+  - The most specific only
+  - The longest
+  - The first value obtained
+  - The last value
+  answer:
+  - 2
+  explain: The first obtained value wins, so specific Host blocks go before Host *.
+- id: identities-only
+  prompt: What does IdentitiesOnly yes do?
+  choices:
+  - Offers only the identity files named in the configuration
+  - Disables the agent
+  - Requires a passphrase
+  - Forbids password login
+  answer:
+  - 0
+  explain: Without it the client offers every agent key, which can exhaust MaxAuthTries.
+- id: sshd-t-dump
+  prompt: What does sshd -T print?
+  choices:
+  - Only the changed options
+  - A syntax summary
+  - The connected users
+  - The effective server configuration
+  answer:
+  - 3
+  explain: -T dumps the settings after includes and defaults; -t only checks syntax.
+- id: strictmodes
+  prompt: Why might key authentication silently fall back to a password?
+  choices:
+  - The port is 22
+  - ~/.ssh or authorized_keys is writable by others
+  - The key is ed25519
+  - The agent is empty
+  answer:
+  - 1
+  explain: StrictModes makes sshd ignore keys in files with unsafe permissions.

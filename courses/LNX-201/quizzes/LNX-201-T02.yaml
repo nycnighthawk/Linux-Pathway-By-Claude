@@ -1,0 +1,72 @@
+title: 'Quiz: ip, ss, ethtool'
+questions:
+- id: route-get
+  prompt: Which command shows the route, interface and source address a packet to 192.0.2.10 would use?
+  choices:
+  - ss -r 192.0.2.10
+  - ip route get 192.0.2.10
+  - ip route show 192.0.2.10
+  - ip addr show 192.0.2.10
+  answer:
+  - 1
+  explain: ip route get asks the kernel for the actual decision, including policy rules.
+- id: ss-flags
+  prompt: Which ss options list listening TCP sockets with numeric ports and owning processes?
+  choices:
+  - -ua
+  - -s
+  - -tan
+  - -ltnp
+  answer:
+  - 3
+  explain: -l listening, -t TCP, -n numeric, -p processes.
+- id: loopback-bind
+  prompt: A service shows 127.0.0.1:5432 in ss. Who can connect?
+  choices:
+  - Only processes on the same host
+  - Anyone on the LAN
+  - Anyone with a firewall rule
+  - Only root
+  answer:
+  - 0
+  explain: A socket bound to loopback cannot be reached from other machines.
+- id: neigh-failed
+  prompt: What does a FAILED entry in ip neigh show mean?
+  choices:
+  - The interface is down
+  - The address is a duplicate
+  - Nothing answered the ARP or neighbour request
+  - The cache is full
+  answer:
+  - 2
+  explain: FAILED means the resolution attempt got no answer.
+- id: ethtool-persist
+  prompt: Does ethtool -G eth0 tx 4096 rx 4096 survive a reboot?
+  choices:
+  - Only on RHEL
+  - No, it is a runtime change
+  - Yes, it writes the driver config
+  - Only with sudo
+  answer:
+  - 1
+  explain: ethtool settings are runtime only; persist them through the network manager or a link file.
+- id: ip-stats
+  prompt: Which command shows per-interface error and drop counters?
+  choices:
+  - ss -s
+  - ip -s link show eth0
+  - ip addr show eth0
+  - ip route show
+  answer:
+  - 1
+  explain: -s adds statistics to ip link output.
+- id: ip-runtime
+  prompt: What happens to an address added with ip addr add after a reboot?
+  choices:
+  - It stays
+  - It moves to another NIC
+  - It becomes IPv6
+  - It is gone unless a manager configures it
+  answer:
+  - 3
+  explain: ip changes apply to the running kernel only.

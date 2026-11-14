@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Bind-mount the lab's hosts and nsswitch.conf over the real ones inside a private mount namespace, then ask getent.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f hosts ] && [ -f nsswitch.conf ] && [ -f resolved-lab.conf ] || { echo "FAIL: hosts, nsswitch.conf or resolved-lab.conf missing in $PWD"; exit 1; }
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+printf '# SPDX-License-Identifier: MIT\nnameserver 127.0.0.1\noptions timeout:1 attempts:1\n' > .resolv.conf
+inside() {
+  $SUDO unshare -m --propagation private sh -c "mount --bind '$PWD/hosts' /etc/hosts && mount --bind '$PWD/nsswitch.conf' /etc/nsswitch.conf && mount --bind '$PWD/.resolv.conf' /etc/resolv.conf && getent hosts \"\$1\"" sh "$1" 2>/dev/null
+}
+for n in intranet intranet.lab.test; do
+  if inside "$n" | grep -q '^10\.20\.30\.40 '; then ok "getent hosts $n returns 10.20.30.40"; else fail "getent hosts $n does not return 10.20.30.40"; fi
+done
+grep -Eq '^hosts:[[:space:]]+files([[:space:]]|$)' nsswitch.conf && ok "nsswitch: files comes first on the hosts line" || fail "nsswitch.conf: the hosts line must start with files"
+grep -Eq '^hosts:.*dns' nsswitch.conf && ok "nsswitch: dns is still consulted" || fail "nsswitch.conf: keep dns on the hosts line after files"
+body=$(sed -e 's/#.*$//' resolved-lab.conf)
+printf '%s\n' "$body" | grep -q '^\[Resolve\]$' && ok "drop-in has a [Resolve] section" || fail "resolved-lab.conf needs a [Resolve] section"
+printf '%s\n' "$body" | grep -Eq '^DNS=.*192\.0\.2\.53' && ok "DNS=192.0.2.53" || fail "resolved-lab.conf needs DNS=192.0.2.53"
+printf '%s\n' "$body" | grep -Eq '^Domains=.*~lab\.test' && ok "Domains=~lab.test (routing-only domain)" || fail "resolved-lab.conf needs Domains=~lab.test so only lab.test goes to that server"
+exit $bad

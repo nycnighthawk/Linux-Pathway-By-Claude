@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Render the netplan file into a fake root with netplan generate, then read the networkd unit and the NetworkManager keyfile.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f root/etc/netplan/10-lab.yaml ] || { echo "FAIL: root/etc/netplan/10-lab.yaml not found in $PWD"; exit 1; }
+rm -rf root/run root/lib
+if out=$(netplan generate --root-dir "$PWD/root" 2>&1); then ok "netplan generate accepts the file"; else fail "netplan generate failed: $out"; fi
+unit=$(ls root/run/systemd/network/*eth0*.network 2>/dev/null | head -1)
+if [ -z "$unit" ]; then fail "no networkd unit was generated for eth0"; else
+  ok "generated $(basename "$unit")"
+  grep -q '^Address=192\.0\.2\.10/24$' "$unit" && ok "Address=192.0.2.10/24" || fail "eth0 needs the static address 192.0.2.10/24"
+  grep -q '^Gateway=192\.0\.2\.1$' "$unit" && ok "Gateway=192.0.2.1" || fail "eth0 needs the default gateway 192.0.2.1 (routes: to default, via 192.0.2.1)"
+  grep -q '^DNS=192\.0\.2\.53$' "$unit" && ok "DNS=192.0.2.53" || fail "eth0 needs the nameserver 192.0.2.53"
+  grep -qi '^Domains=lab\.test$' "$unit" && ok "Domains=lab.test" || fail "eth0 needs the search domain lab.test"
+  grep -q '^DHCP=' "$unit" && fail "DHCP must be off for a static interface (remove dhcp4: true)" || ok "DHCP is off"
+fi
+if [ -f lab.nmconnection ]; then
+  grep -q '^id=lab$' lab.nmconnection && ok "keyfile: id=lab" || fail "keyfile: connection id must be lab"
+  grep -q '^interface-name=eth0$' lab.nmconnection && ok "keyfile: interface-name=eth0" || fail "keyfile: bound to eth0"
+  grep -q '^address1=192\.0\.2\.10/24,192\.0\.2\.1$' lab.nmconnection && ok "keyfile: address1 with gateway" || fail "keyfile: address1=192.0.2.10/24,192.0.2.1"
+  grep -q '^dns=192\.0\.2\.53;$' lab.nmconnection && ok "keyfile: dns=192.0.2.53;" || fail "keyfile: dns=192.0.2.53;"
+  grep -q '^method=manual$' lab.nmconnection && ok "keyfile: ipv4 method=manual" || fail "keyfile: ipv4 method must be manual"
+else
+  fail "lab.nmconnection not found: create it with nmcli --offline connection add (see README.md)"
+fi
+exit $bad

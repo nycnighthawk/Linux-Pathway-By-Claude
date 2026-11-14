@@ -1,0 +1,72 @@
+title: 'Quiz: TCP/IP, IPv4/IPv6, subnetting'
+questions:
+- id: usable-27
+  prompt: How many usable host addresses does a /27 provide?
+  choices:
+  - '32'
+  - '31'
+  - '62'
+  - '30'
+  answer:
+  - 3
+  explain: A /27 has 32 addresses; the network and broadcast addresses are not usable, leaving 30.
+- id: mask-26
+  prompt: What is the dotted mask of a /26?
+  choices:
+  - 255.255.255.128
+  - 255.255.255.240
+  - 255.255.255.192
+  - 255.255.255.224
+  answer:
+  - 2
+  explain: 'A /26 keeps 26 network bits: 255.255.255.192.'
+- id: alignment
+  prompt: Why is 10.0.0.100/27 not a valid network address?
+  choices:
+  - 100 is not a multiple of the 32-address block size
+  - A /27 must end in .0
+  - Private ranges forbid /27
+  - Host bits cannot be 100
+  answer:
+  - 0
+  explain: A subnet must start at a multiple of its block size, so /27 starts at .0, .32, .64, .96 and so on.
+- id: smallest-fit
+  prompt: Which prefix is the smallest fit for 100 hosts?
+  choices:
+  - /26
+  - /27
+  - /25
+  - /24
+  answer:
+  - 2
+  explain: A /25 has 126 usable hosts; a /26 has only 62.
+- id: p2p
+  prompt: Which prefix is usable for a point-to-point link with both ends addressed, per RFC 3021?
+  choices:
+  - /32
+  - /29
+  - /28
+  - /31
+  answer:
+  - 3
+  explain: A /31 has two addresses and both are usable on point-to-point links; /30 is the older choice.
+- id: v6-subnet
+  prompt: Which prefix length do most IPv6 subnets use, since features such as SLAAC assume it?
+  choices:
+  - /56
+  - /96
+  - /64
+  - /48
+  answer:
+  - 2
+  explain: A /64 leaves 64 bits for the interface identifier; /48 is the usual allocation per site.
+- id: icmpv6
+  prompt: Why must a firewall accept ICMPv6?
+  choices:
+  - It carries all web traffic
+  - It replaces ARP for IPv4
+  - It is only for ping
+  - Neighbour discovery and path MTU discovery depend on it
+  answer:
+  - 3
+  explain: IPv6 uses ICMPv6 for neighbour discovery, router advertisements and path MTU discovery.

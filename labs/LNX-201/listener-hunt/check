@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Compare answers.txt with what ss and ip report right now.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f answers.txt ] || { echo "FAIL: answers.txt not found in $PWD"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+lpid=$(cat .listener.pid 2>/dev/null || true)
+if [ -z "$lpid" ] || ! kill -0 "$lpid" 2>/dev/null; then echo "FAIL: the listener is not running; run setup again"; exit 1; fi
+line=$(ss -H -ltnp 2>/dev/null | grep "pid=$lpid," | head -1)
+[ -n "$line" ] || { echo "FAIL: ss does not show the listener (is it running as another user?)"; exit 1; }
+local_addr=$(echo "$line" | awk '{print $4}')
+want_port=${local_addr##*:}; want_bind=${local_addr%:*}
+[ "$(get port)" = "$want_port" ] && ok "port $want_port" || fail "port: the listener's TCP port (ss -ltnp)"
+[ "$(get pid)" = "$lpid" ] && ok "pid $lpid" || fail "pid: the process id that owns that port (ss -p)"
+case "$(get command)" in python*) ok "command" ;; *) fail "command: the program name shown by ss for that pid" ;; esac
+[ "$(get bind_address)" = "$want_bind" ] && ok "bind_address $want_bind" || fail "bind_address: the local address part of the listening socket"
+mtu=$(cat /sys/class/net/lo/mtu)
+[ "$(get lo_mtu)" = "$mtu" ] && ok "lo_mtu $mtu" || fail "lo_mtu: the MTU of the loopback interface (ip link show lo)"
+case "$(get lo_state)" in UNKNOWN|UP) ok "lo_state" ;; *) fail "lo_state: the operational state ip shows for lo" ;; esac
+exit $bad

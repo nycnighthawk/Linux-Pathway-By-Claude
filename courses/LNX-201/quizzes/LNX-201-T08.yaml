@@ -1,0 +1,72 @@
+title: 'Quiz: Troubleshooting: mtr, dig, tcpdump'
+questions:
+- id: syn-rst
+  prompt: In a capture, a SYN is answered by an RST. What does that mean?
+  choices:
+  - Nothing listens or a reject rule answered
+  - The packet was lost
+  - The link is down
+  - DNS failed
+  answer:
+  - 0
+  explain: A reset is an explicit refusal; silence points to a drop.
+- id: mtr-middle
+  prompt: An mtr report shows loss on hop 4 only, none on later hops. What is the likely reason?
+  choices:
+  - The destination is down
+  - Asymmetric routing
+  - ICMP rate limiting at hop 4
+  - A broken link at hop 4
+  answer:
+  - 2
+  explain: Routers often deprioritise replies to probes while forwarding traffic normally.
+- id: dig-aa
+  prompt: What does the aa flag in a dig reply mean?
+  choices:
+  - DNSSEC validated
+  - Recursion was refused
+  - The answer came from the authoritative server
+  - The answer was cached
+  answer:
+  - 2
+  explain: Cached answers lack aa; ad marks DNSSEC validation.
+- id: nn
+  prompt: Why use tcpdump -nn while troubleshooting?
+  choices:
+  - It enables promiscuous mode
+  - It skips name and port lookups that slow output and add traffic
+  - It captures more packets
+  - It decrypts traffic
+  answer:
+  - 1
+  explain: -n stops address lookups and -nn also stops port-name lookups.
+- id: read-pcap
+  prompt: Which option reads a saved capture instead of the live network?
+  choices:
+  - -c file
+  - -r file
+  - -w file
+  - -i file
+  answer:
+  - 1
+  explain: -w writes, -r reads.
+- id: mtu
+  prompt: Which test finds a path MTU problem?
+  choices:
+  - ping -M do -s 1472 host
+  - ping -f host
+  - mtr -n host
+  - dig +tcp
+  answer:
+  - 0
+  explain: The don't-fragment bit with a large payload fails where the path MTU is smaller.
+- id: getent
+  prompt: Which command shows what applications see when resolving a name?
+  choices:
+  - getent hosts name
+  - dig name
+  - nslookup name
+  - host -a name
+  answer:
+  - 0
+  explain: getent follows the name service switch; dig asks DNS only.
