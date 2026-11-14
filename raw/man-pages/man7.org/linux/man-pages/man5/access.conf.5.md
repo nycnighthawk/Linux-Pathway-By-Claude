@@ -1,0 +1,220 @@
+---
+{"title": "access.conf(5) — Linux manual page", "url": "https://man7.org/linux/man-pages/man5/access.conf.5.html", "retrieved": "2026-11-14", "license": "various (per page)"}
+---
+
+# access.conf(5) --- Linux manual page
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| [NAME](#NAME) \| [DESCRIPTION](#DESCRIPTION) \| [EXAMPLES](#EXAMPLES) \| [NOTES](#NOTES) \| [SEE ALSO](#SEE_ALSO) \| [AUTHORS](#AUTHORS) \| [COLOPHON](#COLOPHON) |                                   |
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+|                                                                                                                                                                   |                                   |
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+
+    ACCESS.CONF(5)               Linux-PAM Manual              ACCESS.CONF(5)
+
+## [](#NAME)NAME
+
+           access.conf - the login access control table file
+
+## [](#DESCRIPTION)DESCRIPTION
+
+           The /etc/security/access.conf file specifies (user/group, host),
+           (user/group, network/netmask), (user/group, tty), (user/group,
+           X-$DISPLAY-value), or (user/group, pam-service-name) combinations
+           for which a login will be either accepted or refused.
+
+           When someone logs in, the file access.conf is scanned for the
+           first entry that matches the (user/group, host) or (user/group,
+           network/netmask) combination, or, in case of non-networked logins,
+           the first entry that matches the (user/group, tty) combination, or
+           in the case of non-networked logins without a tty, the first entry
+           that matches the (user/group, X-$DISPLAY-value) or (user/group,
+           pam-service-name/) combination. The permissions field of that
+           table entry determines whether the login will be accepted or
+           refused.
+
+           Each line of the login access control table has three fields
+           separated by a ":" character (colon):
+
+           permission:users/groups:origins
+
+           The first field, the permission field, can be either a "+"
+           character (plus) for access granted or a "-" character (minus) for
+           access denied.
+
+           The second field, the users/group field, should be a list of one
+           or more login names, group names, uid, gid, or ALL (which always
+           matches). To differentiate user entries from group entries, group
+           entries should be written with brackets, e.g.  (group) or (gid).
+
+           The third field, the origins field, should be a list of one or
+           more tty names (for non-networked logins), X $DISPLAY values or
+           PAM service names (for non-networked logins without a tty), host
+           names, domain names (begin with "."), host addresses, internet
+           network numbers (end with "."), internet network addresses with
+           network mask (where network mask can be a decimal number or an
+           internet address also), ALL (which always matches) or LOCAL. The
+           LOCAL keyword matches when the user connects without a network
+           connection (e.g., su, login). A connection through the loopback
+           device (e.g., ssh user@localhost) is considered a network
+           connection, and thus, the LOCAL keyword does not match.
+
+           If supported by the system you can use @netgroupname in host or
+           user patterns. The @@netgroupname syntax is supported in the user
+           pattern only and it makes the local system hostname to be passed
+           to the netgroup match call in addition to the user name. This
+           might not work correctly on some libc implementations causing the
+           match to always fail.
+
+           The EXCEPT operator makes it possible to write very compact rules.
+
+           If the nodefgroup is not set, the group file is searched when a
+           name does not match that of the logged-in user. Only groups are
+           matched in which users are explicitly listed. However the PAM
+           module does not look at the primary group id of a user.
+
+           The "#" character at start of line (no space at front) can be used
+           to mark this line as a comment line.
+
+## [](#EXAMPLES)EXAMPLES
+
+           These are some example lines which might be specified in
+           /etc/security/access.conf.
+
+           User root should be allowed to get access via cron, X11 terminal
+           :0, tty1, ..., tty5, tty6.
+
+           +:root:crond :0 tty1 tty2 tty3 tty4 tty5 tty6
+
+           User root should be allowed to get access from hosts which own the
+           IPv4 addresses. This does not mean that the connection have to be
+           a IPv4 one, a IPv6 connection from a host with one of this IPv4
+           addresses does work, too.
+
+           +:root:192.168.200.1 192.168.200.4 192.168.200.9
+
+           +:root:127.0.0.1
+
+           User root should get access from network 192.168.201.  where the
+           term will be evaluated by string matching. But it might be better
+           to use network/netmask instead. The same meaning of 192.168.201.
+           is 192.168.201.0/24 or 192.168.201.0/255.255.255.0.
+
+           +:root:192.168.201.
+
+           User root should be able to have access from hosts foo1.bar.org
+           and foo2.bar.org (uses string matching also).
+
+           +:root:foo1.bar.org foo2.bar.org
+
+           User root should be able to have access from domain foo.bar.org
+           (uses string matching also).
+
+           +:root:.foo.bar.org
+
+           User root should be denied to get access from all other sources.
+
+           -:root:ALL
+
+           A user with uid 1003 and a group with gid 1000 should be allowed
+           to get access from all other sources.
+
+           +:(1000) 1003:ALL
+
+           User foo and members of netgroup admins should be allowed to get
+           access from all sources. This will only work if netgroup service
+           is available.
+
+           +:@admins foo:ALL
+
+           User john and foo should get access from IPv6 host address.
+
+           +:john foo:2001:db8:0:101::1
+
+           User john and foo should get access from IPv6 link local host
+           address.
+
+           +:john foo:fe80::de95:818c:1b55:7e42%eth1
+
+           User john should get access from IPv6 net/mask.
+
+           +:john:2001:db8:0:101::/64
+
+           Members of group wheel should be allowed to get access from all
+           sources.
+
+           +:(wheel):ALL
+
+           Disallow console logins to all but the shutdown, sync and all
+           other accounts, which are a member of the wheel group.
+
+           -:ALL EXCEPT (wheel) shutdown sync:LOCAL
+
+           All other users should be denied to get access from all sources.
+
+           -:ALL:ALL
+
+## [](#NOTES)NOTES
+
+           The default separators of list items in a field are space, ',',
+           and tabulator characters. Thus conveniently if spaces are put at
+           the beginning and the end of the fields they are ignored. However
+           if the list separator is changed with the listsep option, the
+           spaces will become part of the actual item and the line will be
+           most probably ignored. For this reason, it is not recommended to
+           put spaces around the ':' characters.
+
+           An IPv6 link local host address must contain the interface
+           identifier. IPv6 link local network/netmask is not supported.
+
+           Hostnames should be written as Fully-Qualified Host Name (FQHN) to
+           avoid confusion with device names or PAM service names.
+
+## [](#SEE_ALSO)SEE ALSO
+
+           pam_access(8), pam.d(5), pam(8)
+
+## [](#AUTHORS)AUTHORS
+
+           Original login.access(5) manual was provided by Guido van Rooij
+           which was renamed to access.conf(5) to reflect relation to default
+           config file.
+
+           Network address / netmask description and example text was
+           introduced by Mike Becher <mike.becher@lrz-muenchen.de>.
+
+## [](#COLOPHON)COLOPHON
+
+           This page is part of the linux-pam (Pluggable Authentication
+           Modules for Linux) project.  Information about the project can be
+           found at ⟨http://www.linux-pam.org/⟩.  If you have a bug report
+           for this manual page, see ⟨//www.linux-pam.org/⟩.  This page was
+           obtained from the project's upstream Git repository
+           ⟨https://github.com/linux-pam/linux-pam.git⟩ on 2026-08-04.  (At
+           that time, the date of the most recent commit that was found in
+           the repository was 2026-07-30.)  If you discover any rendering
+           problems in this HTML version of the page, or you believe there is
+           a better or more up-to-date source for the page, or you have
+           corrections or improvements to the information in this COLOPHON
+           (which is not part of the original manual page), send a mail to
+           man-pages@man7.org
+
+    [FIXME: source]                 08/04/2026                 ACCESS.CONF(5)
+
+------------------------------------------------------------------------
+
+Pages that refer to this page: [access.conf(5)](../man5/access.conf.5.html),  [pam_access(8)](../man8/pam_access.8.html)
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+| HTML rendering created 2026-09-09 by [Michael Kerrisk](https://man7.org/mtk/index.html), author of [*The Linux Programming Interface*](https://man7.org/tlpi/). |                       | [](https://man7.org/tlpi/) |
+|                                                                                                                                                                 |                       |                            |
+| For details of in-depth **Linux/UNIX system programming training courses** that I teach, look [here](https://man7.org/training/).                               |                       |                            |
+|                                                                                                                                                                 |                       |                            |
+| Hosting by [jambit GmbH](https://www.jambit.com/index_en.html).                                                                                                 |                       |                            |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+
+------------------------------------------------------------------------

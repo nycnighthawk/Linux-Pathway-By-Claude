@@ -49,11 +49,11 @@ def git(*args, cwd=None) -> str:
     return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
 
 
-def fresh_dir(sid: str) -> Path:
+def fresh_dir(sid: str, keep: bool = False) -> Path:
     d = RAW / sid
-    if d.exists():
+    if d.exists() and not keep:
         shutil.rmtree(d)
-    d.mkdir(parents=True)
+    d.mkdir(parents=True, exist_ok=True)
     return d
 
 
@@ -395,7 +395,7 @@ def sync_stig(src: dict, update: bool) -> dict:
 def sync_crawl(src: dict, update: bool) -> dict:
     from . import crawl
 
-    out = fresh_dir(src["id"])
+    out = fresh_dir(src["id"], keep=bool(src.get("resume")))   # resume: keep stored pages, fetch only new ones
     res = crawl.run(src, out)
     write_notice(out, src, extra=f"Retrieved with a headless browser (Playwright) from: {', '.join(src['allow'])}\n"
                  f"Licence basis: {src.get('license_basis', 'see sources.yaml')}\n")
