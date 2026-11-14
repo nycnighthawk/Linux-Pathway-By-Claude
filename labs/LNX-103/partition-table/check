@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the partition table of disk.img, the saved layout and the answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f disk.img ] || { echo "FAIL: disk.img is missing (run setup)"; exit 1; }
+dump=$(sfdisk -d disk.img 2>/dev/null)
+echo "$dump" | grep -q '^label: gpt' && ok "GPT label" || fail "disk.img does not carry a GPT label"
+n=$(echo "$dump" | grep -c '^disk.img[0-9]* :')
+[ "$n" = 3 ] && ok "three partitions" || fail "expected 3 partitions, found $n"
+part() { echo "$dump" | grep "^disk.img$1 :"; }
+field() { part "$1" | sed -n "s/.*[ ,]$2= *\"\{0,1\}\([^,\"]*\)\"\{0,1\}.*/\1/p" | head -1; }
+[ "$(field 1 start)" = 2048 ] && ok "partition 1 starts at sector 2048" || fail "partition 1 must start at sector 2048"
+[ "$(field 1 size)" = 65536 ] && ok "esp is 32 MiB" || fail "partition 1 must be 32 MiB (65536 sectors)"
+[ "$(field 2 size)" = 131072 ] && ok "swap is 64 MiB" || fail "partition 2 must be 64 MiB (131072 sectors)"
+[ "$(field 1 name)" = esp ] && [ "$(field 2 name)" = swap ] && [ "$(field 3 name)" = data ] && ok "names" || fail "names must be esp, swap, data"
+[ "$(field 1 type)" = C12A7328-F81F-11D2-BA4B-00A0C93EC93B ] && ok "esp type" || fail "partition 1 must be an EFI System Partition"
+[ "$(field 2 type)" = 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F ] && ok "swap type" || fail "partition 2 must be Linux swap"
+[ "$(field 3 type)" = 0FC63DAF-8483-4772-8E79-3D69D8477DE4 ] && ok "data type" || fail "partition 3 must be a Linux filesystem"
+for i in 1 2 3; do s=$(field $i start); [ -n "$s" ] && [ $((s % 2048)) = 0 ] || { fail "partition $i is not aligned to 1 MiB"; break; }; done
+free=$(sfdisk -F disk.img 2>/dev/null | awk 'NR>1 && $3+0 > 4096 {print $3}' | head -1)
+[ -z "$free" ] && ok "partition 3 uses the rest of the disk" || fail "partition 3 should take all remaining space ($free sectors left free)"
+sfdisk -V disk.img >/dev/null 2>&1 && ok "sfdisk -V finds the table consistent" || fail "sfdisk -V reports a problem"
+if [ -s layout.sfdisk ]; then
+    grep -q '^label: gpt' layout.sfdisk && grep -c 'name=' layout.sfdisk | grep -q '^3$' && ok "layout.sfdisk is a replayable dump" || fail "layout.sfdisk must be the output of sfdisk -d disk.img"
+else fail "layout.sfdisk is missing or empty"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+a=$(get protective_mbr_type | tr 'A-Z' 'a-z'); [ "$a" = ee ] && ok "protective MBR type" || fail "protective_mbr_type: two hex digits, the type of the single protective entry"
+[ "$(get default_gpt_entries)" = 128 ] && ok "128 entries" || fail "default_gpt_entries: how many partition entries a GPT holds by default"
+[ "$(get gpt_header_signature)" = 'EFI PART' ] && ok "signature" || fail "gpt_header_signature: the eight characters at the start of LBA 1 (include the space)"
+[ "$(get mbr_limit_tib)" = 2 ] && ok "2 TiB" || fail "mbr_limit_tib: 2^32 sectors of 512 bytes, in TiB"
+exit $bad

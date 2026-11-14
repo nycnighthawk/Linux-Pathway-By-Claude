@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+uuid=$(awk '/UUID :/ {print $3}' detail.txt)
+printf 'DEVICE partitions\nMAILADDR root\nARRAY /dev/md0 metadata=1.2 name=fileserver:0 UUID=%s\n' "$uuid" > mdadm.conf
+cat > runbook.txt <<'EOF'
+# replace the failed member of /dev/md0
+mdadm /dev/md0 --fail /dev/sdc1
+mdadm /dev/md0 --remove /dev/sdc1
+# power down or hot-swap the disk, then give the new disk the same layout as a healthy one
+sfdisk -d /dev/sda | sfdisk /dev/sdd
+mdadm /dev/md0 --add /dev/sdd1
+watch cat /proc/mdstat
+EOF
+sed -i -e 's/^raid_level=.*/raid_level=raid5/' -e 's|^failed_device=.*|failed_device=/dev/sdc1|' -e 's/^failures_survived=.*/failures_survived=1/' -e 's/^mdstat_status=.*/mdstat_status=[UU_]/' answers.txt

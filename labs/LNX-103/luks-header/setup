@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a blank 32 MiB image, two key files, a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f vault.img vault.hdr crypttab answers.txt key1.txt key2.txt
+truncate -s 32M vault.img
+printf 'correct-horse-battery' > key1.txt
+printf 'second-key-for-backup' > key2.txt
+chmod 600 key1.txt key2.txt
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nluks2_max_keyslots=?\ndefault_cipher=?\nheader_size_mib=?\n' > answers.txt

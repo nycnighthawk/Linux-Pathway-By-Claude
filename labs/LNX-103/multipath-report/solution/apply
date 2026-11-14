@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mp=no; command -v multipath >/dev/null 2>&1 && mp=yes
+fc=$(ls /sys/class/fc_host 2>/dev/null | wc -l); sh=$(ls /sys/class/scsi_host 2>/dev/null | wc -l)
+bd=$(lsblk -d -n 2>/dev/null | wc -l)
+sed -i -e "s/^multipath_tools_installed=.*/multipath_tools_installed=$mp/" -e "s/^fc_hosts=.*/fc_hosts=$fc/" -e "s/^scsi_hosts=.*/scsi_hosts=$sh/" \
+  -e "s/^block_devices=.*/block_devices=$bd/" -e 's/^storage_driver=.*/storage_driver=none/' -e 's/^paths_per_lun=.*/paths_per_lun=1/' report.txt
+cat > multipath.conf <<'EOF'
+defaults {
+    user_friendly_names yes
+    find_multipaths     yes
+}
+blacklist {
+    wwid "3600508b1001c1234567890abcdef0000"
+}
+multipaths {
+    multipath {
+        wwid  360000000000000000e00000000010001
+        alias oradata
+    }
+}
+EOF

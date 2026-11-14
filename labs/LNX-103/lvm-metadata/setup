@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: three loop devices, a private LVM configuration, no PVs or VGs.
+set -eu
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+if [ -f loops.txt ]; then
+    export LVM_SYSTEM_DIR="$PWD/lvm"
+    vgremove -ff labvg >/dev/null 2>&1 || true
+    while read -r d; do [ -n "$d" ] && losetup -d "$d" 2>/dev/null || true; done < loops.txt
+fi
+rm -rf loops.txt lvm labvg.cfg thin.conf answers.txt disk1.img disk2.img disk3.img
+for i in 1 2 3; do truncate -s 200M "disk$i.img"; losetup -f --show "disk$i.img" >> loops.txt; done
+filter=$(sed 's|.*|"a\|&$\|"|' loops.txt | paste -sd, -)
+mkdir -p lvm
+cat > lvm/lvm.conf <<EOF
+devices {
+    filter = [ $filter, "r|.*|" ]
+    use_devicesfile = 0
+}
+activation {
+    udev_sync = 0
+    udev_rules = 0
+    verify_udev_operations = 0
+}
+backup {
+    backup = 0
+    archive = 0
+}
+EOF
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nresize_fs_option=?\nthin_snapshot_may_have_size=?\npool_fullness_column=?\n' > answers.txt

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: no swap file, no configuration, a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f swapfile fstab zram-generator.conf answers.txt
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nlist_swap_command=?\nzram_create_command=?\nswappiness_sysctl=?\n' > answers.txt

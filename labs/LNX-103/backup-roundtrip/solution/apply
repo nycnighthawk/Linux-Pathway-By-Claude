@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+R="restic -r repo --password-file restic.pass -q"
+rsync -aH data/ backups/day1/
+$R init >/dev/null
+$R backup data >/dev/null
+./mutate.sh
+rsync -aH --delete --link-dest="$PWD/backups/day1" data/ backups/day2/
+$R backup data >/dev/null
+$R check >/dev/null
+$R restore latest --target restore >/dev/null
+sed -i -e 's/^rsync_dry_run_option=.*/rsync_dry_run_option=-n/' -e 's/^restic_forget_prune_option=.*/restic_forget_prune_option=--prune/' -e 's/^three_two_one_copies=.*/three_two_one_copies=3/' answers.txt

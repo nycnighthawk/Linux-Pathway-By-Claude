@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a small tree to protect, a mutation script, a repository password, a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf data backups repo restore restic.pass mutate.sh answers.txt
+mkdir -p data/sub backups
+printf 'alpha\n' > data/a.txt
+printf 'bravo v1\n' > data/b.txt
+printf 'charlie\n' > data/c.txt
+printf 'delta\n' > data/sub/d.txt
+ln data/a.txt data/a.link
+ln -s a.txt data/a.sym
+printf 'lab-repository-password\n' > restic.pass
+chmod 600 restic.pass
+cat > mutate.sh <<'EOF'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# The change that happens between the two backups.
+set -eu
+cd "${LAB_DIR:-.}"
+printf 'bravo v2\n' > data/b.txt
+rm -f data/c.txt
+EOF
+chmod +x mutate.sh
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nrsync_dry_run_option=?\nrestic_forget_prune_option=?\nthree_two_one_copies=?\n' > answers.txt

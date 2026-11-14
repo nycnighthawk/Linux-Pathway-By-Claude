@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+chmod 2770 project
+setfacl -m u:nobody:r-x,g:daemon:rwx project
+setfacl -d -m u:nobody:r-x,g:daemon:rwx project
+touch project/new.txt
+setfattr -n user.classification -v internal project/report.txt
+tune2fs -O quota -Q usrquota,grpquota quota.img >/dev/null 2>&1
+u=$(dumpe2fs -h quota.img 2>/dev/null | awk -F': *' '/^Filesystem UUID/ {print $2}')
+printf 'UUID=%s /srv/quota ext4 defaults,usrquota,grpquota 0 2\n' "$u" > fstab
+sed -i -e 's/^set_limits_command=.*/set_limits_command=setquota/' -e 's/^report_command=.*/report_command=repquota/' -e 's/^xfs_quota_tool=.*/xfs_quota_tool=xfs_quota/' answers.txt

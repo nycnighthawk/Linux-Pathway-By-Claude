@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the targetcli script (content and order), the initiator files and the answers.
+set -u -f
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+T=iqn.2025-06.lab.example:san.lun1
+I=iqn.2025-06.lab.example:compute1
+if [ -f target.cli ]; then
+    c=$(grep -Ev '^[[:space:]]*(#|$)' target.cli | sed 's|^/||; s/[[:space:]]\+/ /g; s/[[:space:]]*$//')
+    ln() { echo "$c" | grep -nxE "$1" | head -1 | cut -d: -f1; }
+    b=$(ln 'backstores/block create name=lun1 dev=/dev/vg0/lun1')
+    t=$(ln "iscsi/ create $T")
+    l=$(ln "iscsi/$T/tpg1/luns create /backstores/block/lun1")
+    a=$(ln "iscsi/$T/tpg1/acls create $I")
+    p=$(ln "iscsi/$T/tpg1/portals create 192\.0\.2\.10 3260")
+    s=$(ln 'saveconfig')
+    [ -n "$b" ] && ok "block backstore" || fail "target.cli: backstores/block create name=lun1 dev=/dev/vg0/lun1"
+    [ -n "$t" ] && ok "target created" || fail "target.cli: iscsi/ create $T"
+    [ -n "$l" ] && ok "LUN mapped" || fail "target.cli: iscsi/$T/tpg1/luns create /backstores/block/lun1"
+    [ -n "$a" ] && ok "ACL" || fail "target.cli: iscsi/$T/tpg1/acls create $I"
+    [ -n "$p" ] && ok "portal" || fail "target.cli: iscsi/$T/tpg1/portals create 192.0.2.10 3260"
+    [ -n "$s" ] && ok "saveconfig" || fail "target.cli must end with saveconfig"
+    if [ -n "$b" ] && [ -n "$t" ] && [ -n "$l" ] && [ -n "$a" ] && [ -n "$p" ] && [ -n "$s" ]; then
+        last=$(echo "$c" | wc -l)
+        [ "$b" -lt "$l" ] && [ "$t" -lt "$l" ] && [ "$t" -lt "$a" ] && [ "$t" -lt "$p" ] && [ "$s" = "$last" ] && ok "order is valid" || fail "order: backstore and target first, then LUN, ACL and portal, saveconfig last"
+    fi
+else fail "target.cli is missing"; fi
+[ -f initiatorname.iscsi ] && grep -Eqx "InitiatorName=$I" initiatorname.iscsi && ok "initiator name" || fail "initiatorname.iscsi: InitiatorName=$I"
+if [ -f iscsid.conf ]; then
+    [ "$(stat -c %a iscsid.conf)" = 600 ] && ok "iscsid.conf mode 0600" || fail "iscsid.conf must have mode 0600 (it holds a secret)"
+    for kv in 'node.startup=automatic' 'node.session.timeo.replacement_timeout=5' 'node.session.auth.authmethod=CHAP' 'node.session.auth.username=lab'; do
+        k=${kv%%=*}; v=${kv#*=}
+        grep -E "^[[:space:]]*$k[[:space:]]*=" iscsid.conf | tail -1 | sed 's/[[:space:]]//g' | grep -qx "$k=$v" && ok "$k = $v" || fail "iscsid.conf: $k = $v"
+    done
+    grep -Eq '^[[:space:]]*node\.session\.auth\.password[[:space:]]*=[[:space:]]*[^[:space:]]+' iscsid.conf && ok "CHAP password set" || fail "iscsid.conf: node.session.auth.password = <something>"
+else fail "iscsid.conf is missing"; fi
+if [ -f fstab ]; then
+    set -- $(grep -E '^UUID=0c1d4a02-5b1e-4a77-9a6d-2f1b3c4d5e6f[[:space:]]' fstab | head -1)
+    ok_opts=1; for o in defaults _netdev nofail; do echo ",${4:-}," | grep -q ",$o," || ok_opts=0; done
+    [ "${2:-}" = /srv/san ] && [ "${3:-}" = xfs ] && [ "${5:-}" = 0 ] && [ "${6:-}" = 0 ] && [ "$ok_opts" = 1 ] && ok "fstab line" || fail "fstab: UUID=0c1d4a02-5b1e-4a77-9a6d-2f1b3c4d5e6f /srv/san xfs defaults,_netdev,nofail 0 0"
+else fail "fstab is missing"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get iscsi_tcp_port)" = 3260 ] && ok "3260" || fail "iscsi_tcp_port: the well-known iSCSI port"
+[ "$(get initiator_daemon)" = iscsid ] && ok "iscsid" || fail "initiator_daemon: the Open-iSCSI user-space daemon"
+[ "$(get name_prefix)" = iqn ] && ok "iqn" || fail "name_prefix: how an iSCSI qualified name begins"
+exit $bad

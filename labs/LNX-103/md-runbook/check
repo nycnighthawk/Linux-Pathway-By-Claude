@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the mdadm.conf, the runbook text and the answers against the captured evidence.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+uuid=$(awk '/UUID :/ {print $3}' detail.txt 2>/dev/null)
+c=mdadm.conf
+if [ -f "$c" ]; then
+    grep -Eq '^DEVICE[[:space:]]+partitions[[:space:]]*$' "$c" && ok "DEVICE partitions" || fail "$c needs the line: DEVICE partitions"
+    grep -Eq '^MAILADDR[[:space:]]+root[[:space:]]*$' "$c" && ok "MAILADDR root" || fail "$c needs the line: MAILADDR root"
+    line=$(grep -E '^ARRAY[[:space:]]+/dev/md0[[:space:]]' "$c" | head -1)
+    [ -n "$line" ] && ok "ARRAY /dev/md0" || fail "$c needs an ARRAY /dev/md0 line"
+    echo "$line" | grep -q "metadata=1.2" && ok "metadata=1.2" || fail "ARRAY line needs metadata=1.2"
+    echo "$line" | grep -q "name=fileserver:0" && ok "name=fileserver:0" || fail "ARRAY line needs name=fileserver:0 (see detail.txt)"
+    echo "$line" | grep -q "UUID=$uuid" && ok "UUID" || fail "ARRAY line needs UUID=$uuid"
+else fail "$c is missing"; fi
+r=runbook.txt
+if [ -f "$r" ]; then
+    cmds=$(grep -Ev '^[[:space:]]*(#|$)' "$r")
+    ln() { echo "$cmds" | grep -nE "$1" | head -1 | cut -d: -f1; }
+    f=$(ln 'mdadm[[:space:]]+/dev/md0[[:space:]]+(--fail|-f)[[:space:]]+/dev/sdc1')
+    rm=$(ln 'mdadm[[:space:]]+/dev/md0[[:space:]]+(--remove|-r)[[:space:]]+/dev/sdc1')
+    sf=$(ln 'sfdisk[[:space:]]+-d[[:space:]]+/dev/sda[[:space:]]*\|[[:space:]]*sfdisk[[:space:]]+/dev/sdd')
+    ad=$(ln 'mdadm[[:space:]]+/dev/md0[[:space:]]+(--add|-a)[[:space:]]+/dev/sdd1')
+    w=$(ln '(watch|cat)[[:space:]].*(/proc/mdstat)|mdadm[[:space:]]+(--detail|-D)[[:space:]]+/dev/md0')
+    [ -n "$f" ] && ok "fail the member" || fail "runbook: mdadm /dev/md0 --fail /dev/sdc1"
+    [ -n "$rm" ] && ok "remove the member" || fail "runbook: mdadm /dev/md0 --remove /dev/sdc1"
+    [ -n "$sf" ] && ok "copy the partition table" || fail "runbook: sfdisk -d /dev/sda | sfdisk /dev/sdd"
+    [ -n "$ad" ] && ok "add the new member" || fail "runbook: mdadm /dev/md0 --add /dev/sdd1"
+    [ -n "$w" ] && ok "watch the rebuild" || fail "runbook: a command that watches /proc/mdstat or mdadm --detail"
+    if [ -n "$f" ] && [ -n "$rm" ] && [ -n "$sf" ] && [ -n "$ad" ] && [ -n "$w" ]; then
+        [ "$f" -lt "$rm" ] && [ "$rm" -lt "$ad" ] && [ "$sf" -lt "$ad" ] && [ "$ad" -lt "$w" ] && ok "order is safe" || fail "order: fail, remove, partition copy, add, then watch (partition copy before add)"
+    fi
+else fail "$r is missing"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get raid_level)" = raid5 ] && ok "raid5" || fail "raid_level: see 'Raid Level' in detail.txt"
+[ "$(get failed_device)" = /dev/sdc1 ] && ok "/dev/sdc1" || fail "failed_device: the member marked faulty in detail.txt"
+[ "$(get failures_survived)" = 1 ] && ok "one failure" || fail "failures_survived: how many members RAID 5 can lose"
+[ "$(get mdstat_status)" = '[UU_]' ] && ok "[UU_]" || fail "mdstat_status: the bracketed U/underscore string in mdstat.txt"
+exit $bad

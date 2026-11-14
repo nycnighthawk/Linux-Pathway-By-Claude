@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: no configuration files, a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f exports fstab auto.master auto.home smbcred answers.txt
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nnfs_default_failure_mode=?\nnfsv4_tcp_port=?\nkerberos_encrypting_flavour=?\n' > answers.txt

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: no images, an empty units directory and a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf ext4.img xfs.img fstab units answers.txt
+mkdir -p units
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nxfs_grow_command=?\nxfs_can_shrink=?\nxfs_geometry_command=?\n' > answers.txt

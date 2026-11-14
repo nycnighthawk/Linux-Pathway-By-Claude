@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the LUKS2 container, its keys, the header backup, the crypttab line and the answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+d=$(cryptsetup luksDump vault.img 2>/dev/null)
+if [ -n "$d" ]; then
+    echo "$d" | grep -Eq '^Version:[[:space:]]+2$' && ok "LUKS2" || fail "vault.img must be LUKS2 (--type luks2)"
+    echo "$d" | grep -Eq '^Label:[[:space:]]+VAULT$' && ok "label VAULT" || fail "vault.img needs the label VAULT (--label)"
+    n=$(echo "$d" | sed -n '/^Keyslots:/,/^Tokens:/p' | grep -Ec '^  [0-9]+: luks2')
+    [ "$n" -ge 2 ] && ok "two key slots" || fail "vault.img needs two key slots (found $n): luksAddKey"
+    cryptsetup open --test-passphrase --key-file key1.txt vault.img 2>/dev/null && ok "key1 opens it" || fail "key1.txt does not unlock vault.img"
+    cryptsetup open --test-passphrase --key-file key2.txt vault.img 2>/dev/null && ok "key2 opens it" || fail "key2.txt does not unlock vault.img"
+    uuid=$(echo "$d" | awk '/^UUID:/ {print $2}')
+    hd=$(cryptsetup luksDump vault.hdr 2>/dev/null)
+    if [ -n "$hd" ] && echo "$hd" | grep -q "^UUID:[[:space:]]*$uuid"; then
+        cryptsetup open --test-passphrase --key-file key2.txt vault.hdr 2>/dev/null && ok "header backup is valid and current" || fail "vault.hdr was made before key2 was added (back up again)"
+    else fail "vault.hdr is missing or is not a header backup of vault.img (luksHeaderBackup)"; fi
+    [ -f crypttab ] && grep -Eq "^vault[[:space:]]+UUID=$uuid[[:space:]]+none[[:space:]]+luks,nofail[[:space:]]*$" crypttab && ok "crypttab line" || fail "crypttab: vault UUID=$uuid none luks,nofail"
+else fail "vault.img is not a LUKS container yet (cryptsetup luksFormat)"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get luks2_max_keyslots)" = 32 ] && ok "32 key slots" || fail "luks2_max_keyslots: LUKS1 had 8; LUKS2 allows more"
+[ "$(get default_cipher)" = aes-xts-plain64 ] && ok "aes-xts-plain64" || fail "default_cipher: see the Cipher line of luksDump"
+[ "$(get header_size_mib)" = 16 ] && ok "16 MiB header" || fail "header_size_mib: data starts at this offset in a default LUKS2 container"
+exit $bad

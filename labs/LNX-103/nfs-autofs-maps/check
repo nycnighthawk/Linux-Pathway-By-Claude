@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the configuration files as text: fields in place, option sets complete.
+set -u -f
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+# has_opts "<comma list found>" "<comma list required>"
+has_opts() { echo "$1" | tr ',' '\n' | sort > /tmp/.lab103_have.$$; for o in $(echo "$2" | tr ',' ' '); do grep -qxF -- "$o" /tmp/.lab103_have.$$ || { rm -f /tmp/.lab103_have.$$; return 1; }; done; rm -f /tmp/.lab103_have.$$; }
+if [ -f exports ]; then
+    l=$(grep -E '^/srv/export/projects[[:space:]]' exports | head -1)
+    o=$(echo "$l" | sed -n 's/^[^ ]*[[:space:]]*192\.168\.10\.0\/24(\(.*\))[[:space:]]*$/\1/p')
+    [ -n "$o" ] && has_opts "$o" "rw,sync,no_subtree_check,root_squash" && ok "projects export" || fail "exports: /srv/export/projects 192.168.10.0/24(rw,sync,no_subtree_check,root_squash)"
+    l=$(grep -E '^/srv/export/docs[[:space:]]' exports | head -1)
+    o=$(echo "$l" | sed -n 's/^[^ ]*[[:space:]]*\*\.example\.com(\(.*\))[[:space:]]*$/\1/p')
+    [ -n "$o" ] && has_opts "$o" "ro,sync,no_subtree_check" && ok "docs export" || fail "exports: /srv/export/docs *.example.com(ro,sync,no_subtree_check)"
+else fail "exports is missing"; fi
+if [ -f fstab ]; then
+    set -- $(grep -E '^files\.example\.com:/export/home[[:space:]]' fstab | head -1)
+    [ "${1:-}" = files.example.com:/export/home ] && [ "${2:-}" = /mnt/home ] && [ "${3:-}" = nfs4 ] && [ "${5:-}" = 0 ] && [ "${6:-}" = 0 ] && has_opts "${4:-}" "rw,sec=sys,_netdev,nofail,x-systemd.automount,x-systemd.idle-timeout=600" && ok "NFS fstab line" || fail "fstab: NFSv4 line for /mnt/home with rw,sec=sys,_netdev,nofail,x-systemd.automount,x-systemd.idle-timeout=600 0 0"
+    set -- $(grep -E '^//files\.example\.com/team[[:space:]]' fstab | head -1)
+    [ "${1:-}" = //files.example.com/team ] && [ "${2:-}" = /mnt/team ] && [ "${3:-}" = cifs ] && [ "${5:-}" = 0 ] && [ "${6:-}" = 0 ] && has_opts "${4:-}" "credentials=/root/.smbcred,uid=1000,gid=1000,vers=3.1.1,_netdev,nofail" && ok "SMB fstab line" || fail "fstab: cifs line for /mnt/team with credentials=/root/.smbcred,uid=1000,gid=1000,vers=3.1.1,_netdev,nofail 0 0"
+else fail "fstab is missing"; fi
+if [ -f auto.master ]; then
+    set -- $(grep -E '^/home[[:space:]]' auto.master | head -1)
+    [ "${1:-}" = /home ] && [ "${2:-}" = /etc/auto.home ] && [ "${3:-}" = --timeout=600 ] && ok "auto.master" || fail "auto.master: /home /etc/auto.home --timeout=600"
+else fail "auto.master is missing"; fi
+if [ -f auto.home ]; then
+    set -- $(grep -E '^\*[[:space:]]' auto.home | head -1)
+    [ "${1:-}" = '*' ] && case "${2:-}" in -fstype=nfs4,*) true ;; *) false ;; esac && has_opts "$(echo "${2:-}" | sed 's/^-//; s/^fstype=nfs4,//; s/^/nfs4,/')" "nfs4,rw,sec=sys,nosuid" && [ "${3:-}" = 'files.example.com:/export/home/&' ] && ok "auto.home wildcard" || fail "auto.home: * -fstype=nfs4,rw,sec=sys,nosuid files.example.com:/export/home/&"
+else fail "auto.home is missing"; fi
+if [ -f smbcred ]; then
+    [ "$(stat -c %a smbcred)" = 600 ] && ok "smbcred mode 0600" || fail "smbcred must have mode 0600"
+    grep -Eq '^username=.+' smbcred && grep -Eq '^password=.+' smbcred && grep -Eq '^domain=EXAMPLE[[:space:]]*$' smbcred && ok "smbcred fields" || fail "smbcred needs username=, password= and domain=EXAMPLE"
+else fail "smbcred is missing"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get nfs_default_failure_mode)" = hard ] && ok "hard" || fail "nfs_default_failure_mode: hard or soft"
+[ "$(get nfsv4_tcp_port)" = 2049 ] && ok "2049" || fail "nfsv4_tcp_port: the single TCP port of NFSv4"
+[ "$(get kerberos_encrypting_flavour)" = krb5p ] && ok "krb5p" || fail "kerberos_encrypting_flavour: krb5, krb5i or krb5p"
+exit $bad

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a plain project directory, an ext4 image without quota, a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+rm -rf project quota.img fstab answers.txt
+mkdir project && echo "quarterly figures" > project/report.txt && chmod 755 project
+truncate -s 32M quota.img && mkfs.ext4 -q quota.img
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nset_limits_command=?\nreport_command=?\nxfs_quota_tool=?\n' > answers.txt

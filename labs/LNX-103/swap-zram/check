@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the swap file, the fstab line, the zram configuration and the answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+if [ -f swapfile ]; then
+    sz=$(stat -c %s swapfile)
+    [ "$sz" -ge 67108864 ] && ok "at least 64 MiB" || fail "swapfile must be at least 64 MiB"
+    [ "$(stat -c %a swapfile)" = 600 ] && ok "mode 0600" || fail "swapfile must have mode 0600"
+    alloc=$(( $(stat -c %b swapfile) * $(stat -c %B swapfile) ))
+    [ "$alloc" -ge "$sz" ] && ok "no holes" || fail "swapfile has holes (use dd, not truncate)"
+    [ "$(blkid -p -o value -s TYPE swapfile 2>/dev/null)" = swap ] && ok "swap signature" || fail "swapfile has no swap signature (mkswap)"
+    [ "$(blkid -p -o value -s LABEL swapfile 2>/dev/null)" = labswap ] && ok "label labswap" || fail "swapfile label must be labswap (mkswap -L)"
+else fail "swapfile is missing"; fi
+if [ -f fstab ]; then
+    grep -Eq '^/swapfile[[:space:]]+none[[:space:]]+swap[[:space:]]+defaults,pri=10[[:space:]]+0[[:space:]]+0[[:space:]]*$' fstab && ok "fstab swap line" || fail "fstab: /swapfile none swap defaults,pri=10 0 0"
+else fail "fstab is missing"; fi
+z=zram-generator.conf
+if [ -f "$z" ]; then
+    grep -Eq '^\[zram0\][[:space:]]*$' "$z" && ok "[zram0] section" || fail "$z needs a [zram0] section"
+    grep -Eq '^zram-size[[:space:]]*=[[:space:]]*ram[[:space:]]*/[[:space:]]*2[[:space:]]*$' "$z" && ok "zram-size" || fail "$z: zram-size = ram / 2"
+    grep -Eq '^compression-algorithm[[:space:]]*=[[:space:]]*zstd[[:space:]]*$' "$z" && ok "zstd" || fail "$z: compression-algorithm = zstd"
+    grep -Eq '^swap-priority[[:space:]]*=[[:space:]]*100[[:space:]]*$' "$z" && ok "priority 100" || fail "$z: swap-priority = 100"
+else fail "$z is missing"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get list_swap_command)" in 'swapon --show'|'swapon -s'|'cat /proc/swaps') ok "list swap" ;; *) fail "list_swap_command: swapon --show (or /proc/swaps)" ;; esac
+case "$(get zram_create_command)" in 'zramctl --find'*|'zramctl -f'*|zramctl) ok "zramctl" ;; *) fail "zram_create_command: the util-linux tool that creates and sizes zram devices" ;; esac
+[ "$(get swappiness_sysctl)" = vm.swappiness ] && ok "vm.swappiness" || fail "swappiness_sysctl: the vm.* parameter that biases swapping"
+exit $bad
