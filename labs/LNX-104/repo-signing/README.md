@@ -13,7 +13,7 @@ with metadata, an unsigned control copy in `unsigned/`, an empty `rpmdb/` direct
 ## Your task
 
 1. Sign `repo/hello-1.0-1.noarch.rpm`:
-   `GNUPGHOME=/tmp/lab104-gnupg rpmsign --define "_gpg_name Lab Signer" --define "_gpg_path /tmp/lab104-gnupg" --addsign repo/hello-1.0-1.noarch.rpm`.
+   `GNUPGHOME=/tmp/lab104-gnupg rpmsign --define "__gpg $(command -v gpg)" --define "_gpg_name Lab Signer" --define "_gpg_path /tmp/lab104-gnupg" --addsign repo/hello-1.0-1.noarch.rpm`.
 2. Import the public key into the private database: `rpm --dbpath $PWD/rpmdb --import RPM-GPG-KEY-lab`, then list it
    with `rpm --dbpath $PWD/rpmdb -qa 'gpg-pubkey*'`.
 3. Verify both copies: `rpm --dbpath $PWD/rpmdb -K repo/hello-1.0-1.noarch.rpm unsigned/hello-1.0-1.noarch.rpm`.
