@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Verify the two unit files with systemd-analyze and check the required directives.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+command -v systemd-analyze >/dev/null || { echo "FAIL: systemd-analyze is not installed"; exit 1; }
+[ -f backup.service ] && [ -f backup.timer ] || { echo "FAIL: backup.service or backup.timer is missing"; exit 1; }
+code=$(cat <<'PY'
+import configparser, os, subprocess, sys
+
+def load(path):
+    cp = configparser.ConfigParser(strict=False, interpolation=None, delimiters=("=",))
+    cp.optionxform = str
+    cp.read(path)
+    return cp
+
+bad = 0
+def fail(msg):
+    global bad
+    print("FAIL: " + msg); bad = 1
+def ok(msg):
+    print("ok:   " + msg)
+
+svc, tmr = load("backup.service"), load("backup.timer")
+g = lambda cp, s, k: cp.get(s, k, fallback="").strip()
+
+if g(svc, "Service", "Type") == "oneshot": ok("service: Type=oneshot")
+else: fail("service: set Type=oneshot")
+cmd = g(svc, "Service", "ExecStart").lstrip("@-:+!").split()
+if cmd and os.path.isabs(cmd[0]) and os.access(cmd[0], os.X_OK): ok("service: ExecStart is an absolute path to an executable (" + cmd[0] + ")")
+else: fail("service: ExecStart must start with the absolute path of an existing executable (try /usr/bin/logger)")
+if g(svc, "Service", "User") not in ("", "root", "0"): ok("service: runs as a non-root User")
+else: fail("service: set User= to an unprivileged account such as daemon")
+if g(svc, "Service", "ProtectSystem") == "strict": ok("service: ProtectSystem=strict")
+else: fail("service: set ProtectSystem=strict")
+if g(svc, "Service", "NoNewPrivileges").lower() in ("yes", "true", "1", "on"): ok("service: NoNewPrivileges is on")
+else: fail("service: set NoNewPrivileges=yes")
+cal = g(tmr, "Timer", "OnCalendar")
+if cal and subprocess.run(["systemd-analyze", "calendar", cal], capture_output=True).returncode == 0: ok("timer: OnCalendar is valid (" + cal + ")")
+else: fail("timer: set a valid OnCalendar= expression (check it with systemd-analyze calendar)")
+if g(tmr, "Timer", "Persistent").lower() in ("yes", "true", "1", "on"): ok("timer: Persistent=true")
+else: fail("timer: set Persistent=true so a missed run happens after boot")
+if g(tmr, "Timer", "RandomizedDelaySec"): ok("timer: RandomizedDelaySec is set")
+else: fail("timer: set RandomizedDelaySec= to spread the load")
+if "timers.target" in g(tmr, "Install", "WantedBy").split(): ok("timer: WantedBy=timers.target")
+else: fail("timer: add an [Install] section with WantedBy=timers.target")
+r = subprocess.run(["systemd-analyze", "verify", "./backup.service", "./backup.timer"], capture_output=True, text=True)
+noise = "\n".join(l for l in r.stderr.splitlines() if l.strip() and "Binding to IPv6" not in l)
+if r.returncode == 0 and not noise: ok("systemd-analyze verify is clean")
+else: fail("systemd-analyze verify complains:\n" + noise)
+sys.exit(bad)
+PY
+)
+python3 -c "$code" || bad=1
+exit "$bad"
