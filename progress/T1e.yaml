@@ -1,7 +1,7 @@
 item: T1e
 label: Certification objective maps
 branch: build/T1e
-state: in-progress
+state: done
 started: '2026-11-14'
 updated: '2026-11-14'
 phases:
@@ -41,6 +41,8 @@ log:
   CKA, CKAD, CKS, CCA, EX316, KDEV'
 - '2026-11-14 rebuild: done'
 - '2026-11-14 rebuild: done'
+- 2026-11-14 finished
+finished: '2026-11-14'
 notes:
 - Files are named by the cert ids in taxonomy/courses.yaml, so plan units L300, L303, L305 and L306 are objectives/LPIC3-300.yml,
   LPIC3-303.yml, LPIC3-305.yml and LPIC3-306.yml.

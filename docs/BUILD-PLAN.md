@@ -341,7 +341,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-101). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-101 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-101 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-101/, courses/LNX-101/, labs/LNX-101/, progress/LNX-101.yaml, and the query: lists of LNX-101 topics in taxonomy/topics.yaml.
@@ -373,7 +373,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-102). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-102 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-102 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-102/, courses/LNX-102/, labs/LNX-102/, progress/LNX-102.yaml, and the query: lists of LNX-102 topics in taxonomy/topics.yaml.
@@ -405,7 +405,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-103). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-103 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-103 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-103/, courses/LNX-103/, labs/LNX-103/, progress/LNX-103.yaml, and the query: lists of LNX-103 topics in taxonomy/topics.yaml.
@@ -437,7 +437,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-104). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-104 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-104 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-104/, courses/LNX-104/, labs/LNX-104/, progress/LNX-104.yaml, and the query: lists of LNX-104 topics in taxonomy/topics.yaml.
@@ -469,7 +469,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-201). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-201 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-201 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-201/, courses/LNX-201/, labs/LNX-201/, progress/LNX-201.yaml, and the query: lists of LNX-201 topics in taxonomy/topics.yaml.
@@ -501,7 +501,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-203). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-203 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-203 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-203/, courses/LNX-203/, labs/LNX-203/, progress/LNX-203.yaml, and the query: lists of LNX-203 topics in taxonomy/topics.yaml.
@@ -533,7 +533,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-202). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-202 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-202 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-202/, courses/LNX-202/, labs/LNX-202/, progress/LNX-202.yaml, and the query: lists of LNX-202 topics in taxonomy/topics.yaml.
@@ -565,7 +565,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-204). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-204 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-204 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-204/, courses/LNX-204/, labs/LNX-204/, progress/LNX-204.yaml, and the query: lists of LNX-204 topics in taxonomy/topics.yaml.
@@ -597,7 +597,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-220). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-220 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-220 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-220/, courses/LNX-220/, labs/LNX-220/, progress/LNX-220.yaml, and the query: lists of LNX-220 topics in taxonomy/topics.yaml.
@@ -629,7 +629,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-305). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-305 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-305 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-305/, courses/LNX-305/, labs/LNX-305/, progress/LNX-305.yaml, and the query: lists of LNX-305 topics in taxonomy/topics.yaml.
@@ -661,7 +661,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-307). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-307 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-307 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-307/, courses/LNX-307/, labs/LNX-307/, progress/LNX-307.yaml, and the query: lists of LNX-307 topics in taxonomy/topics.yaml.
@@ -693,7 +693,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-308). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-308 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-308 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-308/, courses/LNX-308/, labs/LNX-308/, progress/LNX-308.yaml, and the query: lists of LNX-308 topics in taxonomy/topics.yaml.
@@ -725,7 +725,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-310). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-310 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-310 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-310/, courses/LNX-310/, labs/LNX-310/, progress/LNX-310.yaml, and the query: lists of LNX-310 topics in taxonomy/topics.yaml.
@@ -757,7 +757,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-301). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-301 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-301 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-301/, courses/LNX-301/, labs/LNX-301/, progress/LNX-301.yaml, and the query: lists of LNX-301 topics in taxonomy/topics.yaml.
@@ -789,7 +789,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-302). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-302 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-302 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-302/, courses/LNX-302/, labs/LNX-302/, progress/LNX-302.yaml, and the query: lists of LNX-302 topics in taxonomy/topics.yaml.
@@ -821,7 +821,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-303). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-303 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-303 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-303/, courses/LNX-303/, labs/LNX-303/, progress/LNX-303.yaml, and the query: lists of LNX-303 topics in taxonomy/topics.yaml.
@@ -853,7 +853,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-304). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-304 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-304 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-304/, courses/LNX-304/, labs/LNX-304/, progress/LNX-304.yaml, and the query: lists of LNX-304 topics in taxonomy/topics.yaml.
@@ -885,7 +885,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-306). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-306 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-306 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-306/, courses/LNX-306/, labs/LNX-306/, progress/LNX-306.yaml, and the query: lists of LNX-306 topics in taxonomy/topics.yaml.
@@ -917,7 +917,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-309). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-309 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-309 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-309/, courses/LNX-309/, labs/LNX-309/, progress/LNX-309.yaml, and the query: lists of LNX-309 topics in taxonomy/topics.yaml.
@@ -949,7 +949,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-311). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-311 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-311 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-311/, courses/LNX-311/, labs/LNX-311/, progress/LNX-311.yaml, and the query: lists of LNX-311 topics in taxonomy/topics.yaml.
@@ -981,7 +981,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-312). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-312 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-312 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-312/, courses/LNX-312/, labs/LNX-312/, progress/LNX-312.yaml, and the query: lists of LNX-312 topics in taxonomy/topics.yaml.
@@ -1013,7 +1013,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-313). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-313 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-313 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-313/, courses/LNX-313/, labs/LNX-313/, progress/LNX-313.yaml, and the query: lists of LNX-313 topics in taxonomy/topics.yaml.
@@ -1045,7 +1045,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-314). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-314 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-314 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-314/, courses/LNX-314/, labs/LNX-314/, progress/LNX-314.yaml, and the query: lists of LNX-314 topics in taxonomy/topics.yaml.
@@ -1077,7 +1077,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-315). Web search for current facts. At least 2 publishers per synthesis.
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-315 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-315 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-315/, courses/LNX-315/, labs/LNX-315/, progress/LNX-315.yaml, and the query: lists of LNX-315 topics in taxonomy/topics.yaml.
@@ -1109,7 +1109,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-320). Web search for current facts. At least 2 publishers per synthesis. Catalog packs are thin for this course: use at least 3 primary web references per topic (docs.kernel.org, LWN, upstream project docs, specifications).
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-320 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-320 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-320/, courses/LNX-320/, labs/LNX-320/, progress/LNX-320.yaml, and the query: lists of LNX-320 topics in taxonomy/topics.yaml.
@@ -1141,7 +1141,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-330). Web search for current facts. At least 2 publishers per synthesis. Catalog packs are thin for this course: use at least 3 primary web references per topic (docs.kernel.org, LWN, upstream project docs, specifications).
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-330 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-330 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-330/, courses/LNX-330/, labs/LNX-330/, progress/LNX-330.yaml, and the query: lists of LNX-330 topics in taxonomy/topics.yaml.
@@ -1173,7 +1173,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-331). Web search for current facts. At least 2 publishers per synthesis. Catalog packs are thin for this course: use at least 3 primary web references per topic (docs.kernel.org, LWN, upstream project docs, specifications).
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-331 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-331 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-331/, courses/LNX-331/, labs/LNX-331/, progress/LNX-331.yaml, and the query: lists of LNX-331 topics in taxonomy/topics.yaml.
@@ -1205,7 +1205,7 @@ Every phase is marked, and the PR is merged with CI green, including the labs wo
 
 CONSTRAINTS
 - Evidence: bin/lpc synth pack <TOPIC>. Scope and depth from web/report.html (grep LNX-332). Web search for current facts. At least 2 publishers per synthesis. Catalog packs are thin for this course: use at least 3 primary web references per topic (docs.kernel.org, LWN, upstream project docs, specifications).
-- Syntheses: the six sections from synth/TEMPLATE.md, 1,400–2,200 words scaled to depth, matching the pilot files in synth/.
+- Syntheses: the ten sections of synth/TEMPLATE.md (template 2, D-034: problem and gap, history with failures and partial successes, current structure, good/bad/ugly, applications beyond the domain, examples, related problems and ideas, active research, future), written as structured coherent prose, 2,500–4,000 words scaled to depth. LNX-320 and LNX-330 use original text, not link-only sources.
 - Lesson prose is original, written from synth/LNX-332 and its references, never from raw/.
 - If T0 is not merged when you reach lessons, park: bin/lpc plan park LNX-332 --until T0 "waiting for the toolchain".
 - Owns: synth/LNX-332/, courses/LNX-332/, labs/LNX-332/, progress/LNX-332.yaml, and the query: lists of LNX-332 topics in taxonomy/topics.yaml.
