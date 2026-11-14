@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p test
+cat > test/rotate.bats <<'BATS'
+#!/usr/bin/env bats
+# SPDX-License-Identifier: MIT
+
+setup() {
+  script="$BATS_TEST_DIRNAME/../rotate.sh"
+  cd "$BATS_TEST_TMPDIR"
+}
+
+@test "no arguments is a usage error" {
+  run "$script"
+  [ "$status" -eq 2 ]
+}
+
+@test "a bad KEEP value is rejected" {
+  echo x > log
+  run "$script" log abc
+  [ "$status" -eq 2 ]
+  run "$script" log 0
+  [ "$status" -eq 2 ]
+}
+
+@test "a missing file exits with 1" {
+  run "$script" nope 3
+  [ "$status" -eq 1 ]
+}
+
+@test "every older copy moves up by one" {
+  echo new > log; echo a > log.1; echo b > log.2
+  run "$script" log 3
+  [ "$status" -eq 0 ]
+  [ "$(cat log.1)" = new ]
+  [ "$(cat log.2)" = a ]
+  [ "$(cat log.3)" = b ]
+}
+
+@test "the oldest copy is dropped" {
+  echo new > log; echo a > log.1; echo b > log.2
+  run "$script" log 2
+  [ "$(cat log.2)" = a ]
+  [ ! -e log.3 ]
+}
+
+@test "a fresh empty file is left behind" {
+  echo new > log
+  run "$script" log 2
+  [ -f log ]
+  [ ! -s log ]
+}
+BATS

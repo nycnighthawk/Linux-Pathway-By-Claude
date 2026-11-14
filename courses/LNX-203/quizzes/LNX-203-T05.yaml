@@ -1,0 +1,72 @@
+title: 'Quiz: Python for ops'
+questions:
+- id: exit-main
+  prompt: Why should main() take argv and return the exit status?
+  choices:
+  - Tests can call it directly and check the result
+  - Python requires it
+  - It is faster
+  - Imports run it twice otherwise
+  answer:
+  - 0
+  explain: The guard sys.exit(main()) applies the status while main stays testable.
+- id: shell-true
+  prompt: What is the main danger of subprocess.run(cmd, shell=True) with a variable in cmd?
+  choices:
+  - It hides output
+  - It needs root
+  - A shell reinterprets metacharacters in the value
+  - It runs the command twice
+  answer:
+  - 2
+  explain: Pass an argument list and leave shell=False so values stay arguments.
+- id: check-true
+  prompt: What does check=True do in subprocess.run?
+  choices:
+  - Verifies the program exists
+  - Checks the output format
+  - Runs the command as root
+  - Raises CalledProcessError on a non-zero exit
+  answer:
+  - 3
+  explain: Without it you inspect returncode yourself.
+- id: log-stream
+  prompt: Where should diagnostics go so that stdout stays clean for results?
+  choices:
+  - logging to stderr
+  - print to stdout
+  - A file in /tmp
+  - The system log only
+  answer:
+  - 0
+  explain: Pipelines read stdout; stderr carries messages for humans.
+- id: venv
+  prompt: What does python3 -m venv .venv create?
+  choices:
+  - A container
+  - A system-wide package
+  - A requirements file
+  - An isolated environment with its own interpreter links and site-packages
+  answer:
+  - 3
+  explain: Packages installed with .venv/bin/pip stay inside it.
+- id: pathlib
+  prompt: Which is the pathlib way to read all text of a file?
+  choices:
+  - Path(p).open().read_all()
+  - Path(p).cat()
+  - read(Path(p))
+  - Path(p).read_text()
+  answer:
+  - 3
+  explain: Path objects provide read_text, glob, stat and the / join operator.
+- id: cron-module
+  prompt: A script imports a module fine in your shell but fails from systemd. A likely cause?
+  choices:
+  - Python forgot the module
+  - systemd blocks imports
+  - Modules are per-terminal
+  - A different interpreter or environment is used
+  answer:
+  - 3
+  explain: Check sys.executable and the unit's ExecStart, and use the venv's interpreter explicitly.

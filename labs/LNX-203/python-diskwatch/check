@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run diskwatch.py with several thresholds and on bad input; check stdout, stderr and exit codes.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f diskwatch.py ] && [ -f mounts.json ] || { echo "FAIL: diskwatch.py or mounts.json is missing; run setup"; exit 1; }
+python3 -m py_compile diskwatch.py 2>/dev/null && ok "diskwatch.py compiles" || { echo "FAIL: diskwatch.py has a syntax error"; exit 1; }
+grep -q 'argparse' diskwatch.py && ok "uses argparse" || fail "use argparse"
+grep -q 'logging' diskwatch.py && ok "uses logging" || fail "use the logging module for messages"
+t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
+run() { python3 diskwatch.py "$@" >"$t/out" 2>"$t/err"; st=$?; }
+run mounts.json
+[ "$st" -eq 1 ] && ok "default threshold: exit 1 when something is over" || fail "default run: expected exit 1, got $st"
+[ "$(cat "$t/out")" = $'/ 85%\n/home 100%' ] && ok "default output lists / and /home" || fail "default stdout was: $(cat "$t/out")"
+grep -qi 'warn' "$t/err" && ok "the zero-size mount is reported on stderr" || fail "expected a warning on stderr for the mount with size 0"
+run --threshold 95 mounts.json
+[ "$st" -eq 1 ] && [ "$(cat "$t/out")" = "/home 100%" ] && ok "--threshold 95" || fail "--threshold 95: status $st, stdout '$(cat "$t/out")'"
+run mounts.json --threshold 101
+[ "$st" -eq 0 ] && [ ! -s "$t/out" ] && ok "threshold 101: nothing over, exit 0, no output" || fail "--threshold 101: status $st, stdout '$(cat "$t/out")'"
+run "$t/nope.json"
+[ "$st" -eq 2 ] && [ ! -s "$t/out" ] && ok "missing file: exit 2, nothing on stdout" || fail "missing file: status $st, stdout '$(cat "$t/out")'"
+echo '{not json' > "$t/bad.json"
+run "$t/bad.json"
+[ "$st" -eq 2 ] && [ ! -s "$t/out" ] && ok "invalid JSON: exit 2" || fail "invalid JSON: status $st"
+run --help
+[ "$st" -eq 0 ] && grep -q -- '--threshold' "$t/out" && ok "--help documents --threshold" || fail "--help should exit 0 and mention --threshold"
+exit "$bad"

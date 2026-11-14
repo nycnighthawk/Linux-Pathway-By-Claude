@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a correct rotate.sh and an empty test directory.
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p test
+cat > rotate.sh <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# rotate.sh FILE KEEP: shift FILE.1..FILE.KEEP up by one, drop the oldest, move FILE to FILE.1, leave an empty FILE.
+set -euo pipefail
+[ $# -eq 2 ] || { echo "usage: rotate.sh FILE KEEP" >&2; exit 2; }  # A
+file=$1 keep=$2
+case $keep in ''|*[!0-9]*|0) echo "KEEP must be a positive integer" >&2; exit 2;; esac  # B
+[ -f "$file" ] || { echo "no such file: $file" >&2; exit 1; }  # C
+i=$((keep - 1))  # D
+while [ "$i" -ge 1 ]; do  # E
+  if [ -e "$file.$i" ]; then mv "$file.$i" "$file.$((i + 1))"; fi
+  i=$((i - 1))
+done
+mv "$file" "$file.1"
+: > "$file"  # F
+SH
+chmod +x rotate.sh
+sha256sum rotate.sh > .rotate.sha256

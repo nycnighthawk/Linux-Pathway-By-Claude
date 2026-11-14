@@ -1,0 +1,72 @@
+title: 'Quiz: awk, jq, yq'
+questions:
+- id: awk-order
+  prompt: In what order does for (k in a) visit awk array keys?
+  choices:
+  - Sorted order
+  - Reverse order
+  - No fixed order
+  - Insertion order
+  answer:
+  - 2
+  explain: Pipe the output through sort when order matters.
+- id: awk-var
+  prompt: How should a shell value reach an awk program?
+  choices:
+  - Export it and read ENV in BEGIN only
+  - awk -v name="$value" '...'
+  - Paste $value into the program text
+  - Use eval
+  answer:
+  - 1
+  explain: -v keeps the value as data instead of program text.
+- id: awk-header
+  prompt: Which pattern skips the header line of a table?
+  choices:
+  - NR == 1
+  - NF == 0
+  - $1 != ""
+  - NR > 1
+  answer:
+  - 3
+  explain: NR counts input lines starting at 1.
+- id: jq-arg
+  prompt: Which option passes a shell string into a jq filter safely?
+  choices:
+  - --raw-output
+  - --slurp
+  - --sort-keys
+  - --arg
+  answer:
+  - 3
+  explain: --arg binds a variable such as $role without changing the program.
+- id: jq-raw
+  prompt: What does jq -r change?
+  choices:
+  - Strings are printed without quotes
+  - The output is sorted
+  - Input is read as raw text
+  - Output is compact
+  answer:
+  - 0
+  explain: -r prints raw strings; -c is the compact option.
+- id: yq-two
+  prompt: Why must a script say which yq it needs?
+  choices:
+  - yq only runs on Debian
+  - yq cannot edit files
+  - Two incompatible programs share the name
+  - yq has no stable version
+  answer:
+  - 2
+  explain: The Go yq has its own syntax; the Python yq wraps jq and takes jq programs.
+- id: select-null
+  prompt: What does select(.tags | index("prod")) do for a host with no tags field?
+  choices:
+  - Skips that host, because index returns null
+  - Raises an error
+  - Includes the host
+  - Prints null
+  answer:
+  - 0
+  explain: null is falsy, so select drops the item.
