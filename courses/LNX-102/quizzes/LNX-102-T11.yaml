@@ -1,0 +1,62 @@
+title: 'Quiz: Physical console and firmware setup'
+questions:
+- id: uefi
+  prompt: How do you tell UEFI from BIOS boot inside Linux?
+  choices:
+  - Check whether /sys/firmware/efi exists
+  - Read /etc/os-release
+  - Run lsmod
+  - Check uname -r
+  answer:
+  - 0
+  explain: The directory exists only when booted through UEFI.
+- id: fw-reboot
+  prompt: Which command restarts into the firmware menu?
+  choices:
+  - systemctl reboot --firmware-setup
+  - reboot -f
+  - shutdown -F
+  - grub2-reboot
+  answer:
+  - 0
+  explain: It sets the EFI variable that asks firmware for setup.
+- id: keymap
+  prompt: Which file stores the console keymap?
+  choices:
+  - /etc/vconsole.conf
+  - /etc/locale.conf
+  - /etc/hostname
+  - /etc/keyboard
+  answer:
+  - 0
+  explain: KEYMAP= lives there and localectl set-keymap writes it.
+- id: cmdline
+  prompt: Where do you confirm kernel arguments of the running system?
+  choices:
+  - /proc/cmdline
+  - /boot/grub/grub.cfg
+  - /etc/default/grub
+  - dmesg only
+  answer:
+  - 0
+  explain: /proc/cmdline holds what the kernel received.
+- id: serial
+  prompt: Which kernel argument gives a serial console?
+  choices:
+  - console=ttyS0,115200n8
+  - tty=serial
+  - serial=on
+  - quiet
+  answer:
+  - 0
+  explain: The last console= argument becomes the main console.
+- id: sb
+  prompt: Which command shows the Secure Boot state?
+  choices:
+  - mokutil --sb-state
+  - efibootmgr
+  - lsblk
+  - dmidecode
+  answer:
+  - 0
+  explain: mokutil --sb-state reports enabled or disabled.

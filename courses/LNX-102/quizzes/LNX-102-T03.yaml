@@ -1,0 +1,72 @@
+title: 'Quiz: systemd units, targets, dependencies and overrides'
+questions:
+- id: precedence
+  prompt: Which directory takes precedence over /usr/lib/systemd/system?
+  choices:
+  - /etc/systemd/system
+  - /opt/systemd
+  - /var/lib/systemd
+  - /tmp
+  answer:
+  - 0
+  explain: The administrator directory wins; /run is in between.
+- id: after-meaning
+  prompt: What does After= do?
+  choices:
+  - Starts the other unit
+  - Orders startup only
+  - Requires the other unit
+  - Stops the other unit
+  answer:
+  - 1
+  explain: After= is ordering only; it does not pull the other unit in.
+- id: clear-execstart
+  prompt: Why does a drop-in set an empty ExecStart= first?
+  choices:
+  - To disable the service
+  - To clear the vendor value before setting a new one
+  - To enable logging
+  - To change the type
+  answer:
+  - 1
+  explain: ExecStart can be a list; an empty assignment resets it.
+- id: edit-cmd
+  prompt: Which command creates an override drop-in?
+  choices:
+  - systemctl edit unit
+  - systemctl override unit
+  - vi /usr/lib/systemd/system/unit
+  - systemctl mask unit
+  answer:
+  - 0
+  explain: systemctl edit writes /etc/systemd/system/unit.d/override.conf.
+- id: mask
+  prompt: What does systemctl mask do?
+  choices:
+  - Hides the unit from list-units
+  - Links the unit to /dev/null so it cannot start
+  - Removes the package
+  - Disables only at boot
+  answer:
+  - 1
+  explain: A masked unit cannot be started by anything.
+- id: wanted-by
+  prompt: What does WantedBy=multi-user.target decide?
+  choices:
+  - Which unit it conflicts with
+  - What systemctl enable links it into
+  - Its user
+  - Its restart policy
+  answer:
+  - 1
+  explain: enable creates a symlink from the target's wants directory.
+- id: reload
+  prompt: After editing a unit file by hand, which command must you run?
+  choices:
+  - systemctl daemon-reload
+  - systemctl restart systemd
+  - reboot
+  - systemctl isolate
+  answer:
+  - 0
+  explain: daemon-reload rereads unit files.

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+R="--root=$PWD/root"
+systemctl "$R" set-default multi-user.target >/dev/null 2>&1
+systemctl "$R" enable labweb.service >/dev/null 2>&1
+systemctl "$R" mask labbluetooth.service >/dev/null 2>&1
+sed -i -e 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=5/' -e 's/^GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX="rhgb console=ttyS0,115200n8"/' root/etc/default/grub
+sed -i -e 's/^rescue_kernel_argument=.*/rescue_kernel_argument=systemd.unit=rescue.target/' \
+  -e 's/^emergency_kernel_argument=.*/emergency_kernel_argument=systemd.unit=emergency.target/' \
+  -e 's/^rescue_needs_root_password=.*/rescue_needs_root_password=yes/' \
+  -e 's|^regenerate_command_rhel=.*|regenerate_command_rhel=grub2-mkconfig -o /boot/grub2/grub.cfg|' answers.txt

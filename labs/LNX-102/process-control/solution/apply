@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+pid() { awk -v n="$1" '$1==n {print $2}' pids.txt; }
+renice -n 10 -p "$(pid batch)" >/dev/null
+kill -STOP "$(pid frozen)"
+kill -TERM "$(pid runaway)"
+sleep 0.5
+sed -i -e 's/^batch_priority_class=.*/batch_priority_class=lower/' -e 's/^runaway_state_after_term=.*/runaway_state_after_term=gone/' \
+  -e 's/^stop_signal_number=.*/stop_signal_number=19/' -e 's/^state_letter_of_stopped=.*/state_letter_of_stopped=T/' answers.txt

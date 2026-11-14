@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p root/etc/systemd/system/labapp.service.d
+cat > root/etc/systemd/system/labapp.service.d/override.conf <<'CONF'
+[Service]
+Restart=on-failure
+TimeoutStopSec=10
+Environment=LAB_MODE=prod
+CONF
+systemctl --root="$PWD/root" enable labapp.service >/dev/null 2>&1

@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the custom TuneD profile (parsed as INI) and the answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+f=tuned/lab-web/tuned.conf
+if [ -f "$f" ]; then
+    res=$(python3 - "$f" <<'PY'
+import configparser, sys, os, glob
+c = configparser.ConfigParser(interpolation=None, strict=False)
+c.optionxform = str
+try:
+    c.read(sys.argv[1])
+except Exception as e:
+    print("PARSE", e); sys.exit()
+m = c["main"] if c.has_section("main") else {}
+inc = m.get("include", "")
+base = [d for d in glob.glob("/usr/lib/tuned/*") + glob.glob("/etc/tuned/*") if os.path.basename(d) == inc]
+print("INCLUDE", inc or "-", "found" if base else "missing")
+print("SUMMARY", "yes" if m.get("summary") else "no")
+print("SWAP", c.get("sysctl", "vm.swappiness", fallback="-"))
+print("DIRTY", c.get("sysctl", "vm.dirty_ratio", fallback="-"))
+print("GOV", c.get("cpu", "governor", fallback="-"))
+PY
+)
+    echo "$res" | grep -q '^PARSE' && fail "tuned.conf is not valid INI: $res"
+    echo "$res" | grep -q '^INCLUDE throughput-performance found' && ok "includes throughput-performance, which exists on this system" || fail "[main] must include=throughput-performance (a profile that exists under /usr/lib/tuned)"
+    echo "$res" | grep -q '^SUMMARY yes' && ok "has a summary" || fail "add a summary= line to [main]"
+    echo "$res" | grep -q '^SWAP 10$' && ok "vm.swappiness=10" || fail "[sysctl] vm.swappiness=10"
+    echo "$res" | grep -q '^DIRTY 15$' && ok "vm.dirty_ratio=15" || fail "[sysctl] vm.dirty_ratio=15"
+    echo "$res" | grep -q '^GOV performance$' && ok "governor=performance" || fail "[cpu] governor=performance"
+else fail "tuned/lab-web/tuned.conf is missing"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get list_profiles_command)" = 'tuned-adm list' ] && ok "tuned-adm list" || fail "list_profiles_command: the tuned-adm sub-command that lists profiles"
+[ "$(get activate_command)" = 'tuned-adm profile lab-web' ] && ok "activate command" || fail "activate_command: switch to your profile, written as tuned-adm profile NAME"
+[ "$(get profile_file_name)" = tuned.conf ] && ok "tuned.conf" || fail "profile_file_name: the file inside a profile directory"
+[ "$(get custom_profile_directory)" = /etc/tuned ] && ok "/etc/tuned" || fail "custom_profile_directory: where your own profiles belong (packages use /usr/lib/tuned)"
+exit $bad

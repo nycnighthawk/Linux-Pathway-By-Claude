@@ -1,0 +1,94 @@
+item: LNX-102
+label: System Administration Essentials
+branch: build/LNX-102
+state: done
+started: '2026-11-14'
+updated: '2026-11-14'
+phases:
+  synth:
+    state: done
+    units: 11
+    done:
+    - LNX-102-T01
+    - LNX-102-T02
+    - LNX-102-T03
+    - LNX-102-T04
+    - LNX-102-T05
+    - LNX-102-T06
+    - LNX-102-T07
+    - LNX-102-T08
+    - LNX-102-T09
+    - LNX-102-T10
+    - LNX-102-T11
+  lessons:
+    state: done
+    units: 11
+    done:
+    - LNX-102-T01
+    - LNX-102-T02
+    - LNX-102-T03
+    - LNX-102-T04
+    - LNX-102-T05
+    - LNX-102-T06
+    - LNX-102-T07
+    - LNX-102-T08
+    - LNX-102-T09
+    - LNX-102-T10
+    - LNX-102-T11
+  quizzes:
+    state: done
+    units: 11
+    done:
+    - LNX-102-T01
+    - LNX-102-T02
+    - LNX-102-T03
+    - LNX-102-T04
+    - LNX-102-T05
+    - LNX-102-T06
+    - LNX-102-T07
+    - LNX-102-T08
+    - LNX-102-T09
+    - LNX-102-T10
+    - LNX-102-T11
+  labs:
+    state: done
+    units: 11
+    done:
+    - LNX-102-T01
+    - LNX-102-T02
+    - LNX-102-T03
+    - LNX-102-T04
+    - LNX-102-T05
+    - LNX-102-T06
+    - LNX-102-T07
+    - LNX-102-T08
+    - LNX-102-T09
+    - LNX-102-T10
+    - LNX-102-T11
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-14 started
+- '2026-11-14 synth: LNX-102-T01'
+- '2026-11-14 synth: LNX-102-T02'
+- '2026-11-14 synth: LNX-102-T03'
+- '2026-11-14 synth: LNX-102-T04'
+- '2026-11-14 synth: LNX-102-T05'
+- '2026-11-14 synth: LNX-102-T06'
+- '2026-11-14 synth: LNX-102-T07'
+- '2026-11-14 synth: LNX-102-T08'
+- '2026-11-14 synth: LNX-102-T09'
+- '2026-11-14 synth: LNX-102-T10'
+- '2026-11-14 synth: LNX-102-T11'
+- '2026-11-14 labs: LNX-102-T01, LNX-102-T02, LNX-102-T03, LNX-102-T04, LNX-102-T05, LNX-102-T06, LNX-102-T07, LNX-102-T08,
+  LNX-102-T09, LNX-102-T10, LNX-102-T11'
+- '2026-11-14 lessons: LNX-102-T01, LNX-102-T02, LNX-102-T03, LNX-102-T04, LNX-102-T05, LNX-102-T06, LNX-102-T07,
+  LNX-102-T08, LNX-102-T09, LNX-102-T10, LNX-102-T11'
+- '2026-11-14 quizzes: LNX-102-T01, LNX-102-T02, LNX-102-T03, LNX-102-T04, LNX-102-T05, LNX-102-T06, LNX-102-T07,
+  LNX-102-T08, LNX-102-T09, LNX-102-T10, LNX-102-T11'
+- '2026-11-14 checks: done'
+- 2026-11-14 finished
+finished: '2026-11-14'

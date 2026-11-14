@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a scratch root with the standard targets, a boot loader defaults file and a unit to enable or mask.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf root answers.txt
+mkdir -p root/usr/lib/systemd/system root/etc/default root/etc/systemd/system
+for t in multi-user graphical rescue emergency basic sysinit; do
+    cp "/usr/lib/systemd/system/$t.target" root/usr/lib/systemd/system/ 2>/dev/null || printf '[Unit]\nDescription=%s\n' "$t" > "root/usr/lib/systemd/system/$t.target"
+done
+ln -s graphical.target root/etc/systemd/system/default.target
+cat > root/usr/lib/systemd/system/labweb.service <<'UNIT'
+[Unit]
+Description=Lab web service
+
+[Service]
+ExecStart=/bin/sleep 1000
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+cat > root/usr/lib/systemd/system/labbluetooth.service <<'UNIT'
+[Unit]
+Description=Lab bluetooth service
+
+[Service]
+ExecStart=/bin/sleep 1000
+
+[Install]
+WantedBy=graphical.target
+UNIT
+cat > root/etc/default/grub <<'GRUB'
+GRUB_TIMEOUT=0
+GRUB_DISTRIBUTOR="Lab"
+GRUB_DEFAULT=saved
+GRUB_CMDLINE_LINUX="quiet rhgb"
+GRUB
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ? (use systemctl and the systemd.special and kernel-command-line manual pages)\nrescue_kernel_argument=?\nemergency_kernel_argument=?\nrescue_needs_root_password=?\nregenerate_command_rhel=?\n' > answers.txt

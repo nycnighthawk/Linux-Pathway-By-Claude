@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run the learner's verify.sh against both fixtures, and check the classification answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+if [ -x verify.sh ] && ! grep -q 'TODO: write the checker' verify.sh; then
+    ./verify.sh machines/good >good.out 2>&1; g=$?
+    ./verify.sh machines/bad >bad.out 2>&1; b=$?
+    [ "$g" = 0 ] && ok "verify.sh exits 0 for the machine that kept its changes" || fail "verify.sh must exit 0 for machines/good (it exited $g): $(tail -2 good.out | tr '\n' ' ')"
+    [ "$b" != 0 ] && ok "verify.sh exits non-zero for the machine with only runtime changes" || fail "verify.sh must exit non-zero for machines/bad"
+    [ "$(grep -c . bad.out)" -ge 3 ] && ok "prints a line for each of the three items" || fail "print one line per item (sysctl, unit, mount) so the failing one is visible"
+    grep -qi 'swappiness\|sysctl' bad.out && grep -qi 'labagent\|unit\|service' bad.out && grep -qi 'scratch\|fstab\|mount' bad.out && ok "each item is named in the output" || fail "name each item (sysctl, labagent unit, /scratch mount) in the output"
+else fail "write verify.sh (it still contains the TODO line)"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get sysctl_w_is)" = runtime ] && ok "sysctl -w is runtime" || fail "sysctl_w_is: runtime, persistent or both"
+[ "$(get systemctl_start_is)" = runtime ] && ok "systemctl start is runtime" || fail "systemctl_start_is: runtime, persistent or both"
+[ "$(get systemctl_enable_is)" = persistent ] && ok "systemctl enable is persistent" || fail "systemctl_enable_is: runtime, persistent or both (does it start the unit now?)"
+[ "$(get mount_command_is)" = runtime ] && ok "mount is runtime" || fail "mount_command_is: runtime, persistent or both"
+[ "$(get fstab_line_is)" = persistent ] && ok "an fstab line is persistent" || fail "fstab_line_is: runtime, persistent or both"
+[ "$(get systemctl_enable_now_is)" = both ] && ok "enable --now is both" || fail "systemctl_enable_now_is: runtime, persistent or both"
+exit $bad

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: empty drop-in directories in a scratch root.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf root answers.txt
+mkdir -p root/etc/sysctl.d root/etc/modules-load.d root/etc/modprobe.d
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nruntime_only_command=?\npersistent_directory=?\nlist_loaded_modules_command=?\nmodule_info_command=?\n' > answers.txt

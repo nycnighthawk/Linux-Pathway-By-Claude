@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the crontab line and the timer and service units.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+
+c=jobs/backup.cron
+if [ -f "$c" ]; then
+    line=$(grep -Ev '^[[:space:]]*(#|$|[A-Za-z_]+=)' "$c" | head -1)
+    read -r m h dom mon dow user cmd <<<"$line"
+    [ "$m" = 30 ] && [ "$h" = 2 ] && ok "minute 30, hour 2" || fail "the job must run at 02:30 (fields minute=30 hour=2; yours: '$m $h')"
+    [ "$dom $mon" = '* *' ] && ok "every day of month, every month" || fail "day-of-month and month must be * *"
+    case "$dow" in 1-5|MON-FRI|mon-fri) ok "weekdays only" ;; *) fail "the job must run on weekdays only (day-of-week 1-5; yours: '$dow')" ;; esac
+    [ "$user" = root ] && ok "runs as root (system crontab format has a user field)" || fail "the sixth field of a system crontab is the user: root"
+    [ "${cmd:-}" = "$PWD/jobs/backup.sh" ] && ok "runs jobs/backup.sh" || fail "the command must be the full path $PWD/jobs/backup.sh"
+else fail "jobs/backup.cron is missing"; fi
+
+S=units/backup.service; T=units/backup.timer
+if [ -f "$S" ] && [ -f "$T" ]; then
+    grep -q '^\[Service\]$' "$S" && grep -Eq '^Type=oneshot$' "$S" && ok "service is Type=oneshot" || fail "backup.service needs [Service] with Type=oneshot"
+    grep -Eq "^ExecStart=$PWD/jobs/backup\.sh\$" "$S" && ok "ExecStart runs the script" || fail "ExecStart must be $PWD/jobs/backup.sh (full path)"
+    grep -Eq '^OnCalendar=Mon\.\.Fri[[:space:]]+\*-\*-\*[[:space:]]+02:30(:00)?$|^OnCalendar=Mon\.\.Fri[[:space:]]+02:30(:00)?$|^OnCalendar=Mon-Fri[[:space:]]+02:30(:00)?$' "$T" \
+      && ok "OnCalendar names weekdays at 02:30" || fail "backup.timer needs an OnCalendar line for Monday to Friday at 02:30 (try systemd-analyze calendar)"
+    grep -Eq '^Persistent=true$' "$T" && ok "Persistent=true" || fail "set Persistent=true so a missed run happens after boot"
+    grep -Eq '^WantedBy=timers\.target$' "$T" && ok "WantedBy=timers.target" || fail "the timer's [Install] section needs WantedBy=timers.target"
+    cal=$(grep '^OnCalendar=' "$T" | head -1 | cut -d= -f2-)
+    systemd-analyze calendar "$cal" >/dev/null 2>&1 && ok "systemd-analyze accepts the calendar expression" || fail "systemd-analyze calendar rejects '$cal'"
+    d=$(mktemp -d); cp "$S" "$T" "$d/"; echo 'ok' >/dev/null
+    systemd-analyze verify "$d/backup.service" "$d/backup.timer" >/dev/null 2>&1 && ok "systemd-analyze verify passes" || fail "systemd-analyze verify reports a problem in the units"
+    rm -rf "$d"
+else fail "units/backup.service and units/backup.timer are required"; fi
+exit $bad

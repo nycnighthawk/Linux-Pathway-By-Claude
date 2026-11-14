@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+groupadd --root "$PWD/root" -g 2100 ops
+useradd --root "$PWD/root" -u 2001 -g ops -d /srv/deploy -m -s /bin/bash deploy
+mkdir -p root/srv
+chage --root "$PWD/root" -m 7 -M 90 -W 14 -I 30 deploy
+printf '%%ops ALL=(root) NOPASSWD: /usr/bin/systemctl restart nginx\n' > root/etc/sudoers.d/ops
+chmod 440 root/etc/sudoers.d/ops

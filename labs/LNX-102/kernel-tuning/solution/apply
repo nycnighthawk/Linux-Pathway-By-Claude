@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+printf 'net.ipv4.ip_forward = 1\nvm.swappiness = 10\nkernel.dmesg_restrict = 1\n' > root/etc/sysctl.d/99-lab.conf
+printf 'br_netfilter\n' > root/etc/modules-load.d/lab.conf
+printf 'blacklist floppy\ninstall usb-storage /bin/false\noptions bonding mode=802.3ad miimon=100\n' > root/etc/modprobe.d/lab.conf
+sed -i -e 's|^runtime_only_command=.*|runtime_only_command=sysctl -w|' -e 's|^persistent_directory=.*|persistent_directory=/etc/sysctl.d|' \
+  -e 's|^list_loaded_modules_command=.*|list_loaded_modules_command=lsmod|' -e 's|^module_info_command=.*|module_info_command=modinfo|' answers.txt

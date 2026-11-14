@@ -1,0 +1,222 @@
+id: LNX-102
+title: System Administration Essentials
+summary: 'Everyday administration of a systemd-based server: accounts and sudo, processes, units and targets, boot, logs,
+  schedules, time, kernel tuning and proving that changes persist.'
+hours: 60
+coverage: full
+outcomes:
+- Create users and groups, set password ageing and write a validated, narrow sudo rule
+- Inspect and control processes with signals, priorities and job control
+- Write systemd drop-in overrides, choose targets and read the dependency graph
+- Explain the boot sequence, edit boot-loader defaults and reach a rescue target
+- Rotate and route logs with journald, rsyslog and logrotate
+- Schedule the same job with cron, at and a systemd timer
+- Configure chrony and time zones, kernel modules, sysctl and TuneD profiles
+- Verify that a change survives a reboot without rebooting the host
+certifications:
+- cert: LPIC1
+  objectives:
+  - '101.1'
+  - '101.2'
+  - '101.3'
+  - '102.2'
+  - '103.5'
+  - '103.6'
+  - '107.1'
+  - '107.2'
+  - '108.1'
+  - '108.2'
+  - '110.1'
+- cert: LPLUS
+  objectives:
+  - D1
+  - D2
+  - D5
+- cert: LFCS
+  objectives:
+  - D1
+  - D2
+  - D5
+- cert: RHCSA
+  objectives:
+  - D4
+  - D7
+  - D9
+modules:
+- id: accounts-and-processes
+  title: Accounts and processes
+  lessons:
+  - topic: LNX-102-T01
+    title: Users, groups, sudo and password ageing
+    file: lessons/LNX-102-T01.md
+    minutes: 60
+  - topic: LNX-102-T02
+    title: Processes, signals, priority and job control
+    file: lessons/LNX-102-T02.md
+    minutes: 55
+- id: services-and-boot
+  title: Services and boot
+  lessons:
+  - topic: LNX-102-T03
+    title: systemd units, targets, dependencies and overrides
+    file: lessons/LNX-102-T03.md
+    minutes: 65
+  - topic: LNX-102-T04
+    title: The boot process, GRUB2, rescue targets and root reset
+    file: lessons/LNX-102-T04.md
+    minutes: 60
+- id: logs-time-schedules
+  title: Logs, schedules and time
+  lessons:
+  - topic: LNX-102-T05
+    title: journald, rsyslog and logrotate
+    file: lessons/LNX-102-T05.md
+    minutes: 60
+  - topic: LNX-102-T06
+    title: cron, at and systemd timers
+    file: lessons/LNX-102-T06.md
+    minutes: 55
+  - topic: LNX-102-T07
+    title: Time and chrony
+    file: lessons/LNX-102-T07.md
+    minutes: 50
+- id: tuning-and-proof
+  title: Tuning and proof
+  lessons:
+  - topic: LNX-102-T08
+    title: Kernel modules and sysctl
+    file: lessons/LNX-102-T08.md
+    minutes: 55
+  - topic: LNX-102-T09
+    title: TuneD profiles
+    file: lessons/LNX-102-T09.md
+    minutes: 50
+  - topic: LNX-102-T10
+    title: Proving that changes survive a reboot
+    file: lessons/LNX-102-T10.md
+    minutes: 55
+  - topic: LNX-102-T11
+    title: Physical console and firmware setup
+    file: lessons/LNX-102-T11.md
+    minutes: 40
+labs:
+- id: account-policy
+  topic: LNX-102-T01
+  title: Create an account, a group, ageing and a narrow sudo rule
+  env: C
+  license: MIT
+  minutes: 50
+  packages:
+  - sudo
+- id: process-control
+  topic: LNX-102-T02
+  title: Change priority, freeze and end processes
+  env: C
+  license: MIT
+  minutes: 45
+- id: unit-override
+  topic: LNX-102-T03
+  title: Override a vendor unit with a drop-in and enable it
+  env: V
+  license: MIT
+  minutes: 55
+- id: boot-targets
+  topic: LNX-102-T04
+  title: Set the default target, mask units and read boot-loader defaults
+  env: V
+  license: MIT
+  minutes: 50
+- id: log-rotation
+  topic: LNX-102-T05
+  title: Rotate an application log, keep the journal, route a facility
+  env: V
+  license: MIT
+  minutes: 50
+  packages:
+  - logrotate
+- id: schedule-jobs
+  topic: LNX-102-T06
+  title: The same schedule as a cron line and as a systemd timer
+  env: V
+  license: MIT
+  minutes: 45
+- id: time-sync
+  topic: LNX-102-T07
+  title: Write a chrony policy and set a time zone
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - chrony
+  - tzdata
+- id: kernel-tuning
+  topic: LNX-102-T08
+  title: Set kernel parameters and modules, runtime versus persistent
+  env: V
+  license: MIT
+  minutes: 45
+- id: tuned-profile
+  topic: LNX-102-T09
+  title: Write a custom TuneD profile
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - tuned
+- id: reboot-proof
+  topic: LNX-102-T10
+  title: Prove that a change survives a reboot
+  env: V
+  license: MIT
+  minutes: 45
+- id: console-firmware
+  topic: LNX-102-T11
+  title: Field report on firmware, console and locale
+  env: H
+  license: MIT
+  minutes: 30
+quizzes:
+- id: LNX-102-T01
+  topic: LNX-102-T01
+  title: 'Quiz: Users, groups, sudo and password ageing'
+  file: quizzes/LNX-102-T01.yaml
+- id: LNX-102-T02
+  topic: LNX-102-T02
+  title: 'Quiz: Processes, signals, priority and job control'
+  file: quizzes/LNX-102-T02.yaml
+- id: LNX-102-T03
+  topic: LNX-102-T03
+  title: 'Quiz: systemd units, targets, dependencies and overrides'
+  file: quizzes/LNX-102-T03.yaml
+- id: LNX-102-T04
+  topic: LNX-102-T04
+  title: 'Quiz: The boot process, GRUB2, rescue targets and root reset'
+  file: quizzes/LNX-102-T04.yaml
+- id: LNX-102-T05
+  topic: LNX-102-T05
+  title: 'Quiz: journald, rsyslog and logrotate'
+  file: quizzes/LNX-102-T05.yaml
+- id: LNX-102-T06
+  topic: LNX-102-T06
+  title: 'Quiz: cron, at and systemd timers'
+  file: quizzes/LNX-102-T06.yaml
+- id: LNX-102-T07
+  topic: LNX-102-T07
+  title: 'Quiz: Time and chrony'
+  file: quizzes/LNX-102-T07.yaml
+- id: LNX-102-T08
+  topic: LNX-102-T08
+  title: 'Quiz: Kernel modules and sysctl'
+  file: quizzes/LNX-102-T08.yaml
+- id: LNX-102-T09
+  topic: LNX-102-T09
+  title: 'Quiz: TuneD profiles'
+  file: quizzes/LNX-102-T09.yaml
+- id: LNX-102-T10
+  topic: LNX-102-T10
+  title: 'Quiz: Proving that changes survive a reboot'
+  file: quizzes/LNX-102-T10.yaml
+- id: LNX-102-T11
+  topic: LNX-102-T11
+  title: 'Quiz: Physical console and firmware setup'
+  file: quizzes/LNX-102-T11.yaml

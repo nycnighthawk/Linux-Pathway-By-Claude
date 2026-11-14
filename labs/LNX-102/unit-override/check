@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the drop-in and the enablement under $LAB_DIR/root.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+V=root/usr/lib/systemd/system/labapp.service
+D=root/etc/systemd/system/labapp.service.d
+
+# the vendor file must be untouched
+grep -q '^Restart=no$' "$V" && grep -q '^TimeoutStopSec=90$' "$V" && ok "vendor unit left unchanged" || fail "do not edit the vendor unit; override it with a drop-in"
+
+conf=$(ls "$D"/*.conf 2>/dev/null | head -1)
+if [ -n "${conf:-}" ]; then
+    ok "drop-in found: ${conf#root/}"
+    grep -Eq '^Restart=on-failure$' "$conf" && ok "Restart=on-failure" || fail "the drop-in must set Restart=on-failure"
+    grep -Eq '^TimeoutStopSec=10$' "$conf" && ok "TimeoutStopSec=10" || fail "the drop-in must set TimeoutStopSec=10"
+    grep -Eq '^Environment=LAB_MODE=prod$' "$conf" && ok "Environment=LAB_MODE=prod" || fail "the drop-in must set Environment=LAB_MODE=prod"
+    grep -q '^\[Service\]$' "$conf" && ok "settings are in a [Service] section" || fail "the settings belong in a [Service] section"
+else fail "no drop-in file *.conf in root/etc/systemd/system/labapp.service.d/"; fi
+
+if [ -n "${conf:-}" ]; then
+    out=$(systemd-analyze --root="$PWD/root" cat-config systemd/system/labapp.service 2>/dev/null || true)
+    echo "$out" | grep -q '^Restart=on-failure$' && echo "$out" | grep -q '^TimeoutStopSec=10$' \
+      && ok "systemd merges the drop-in over the vendor unit" || fail "systemd-analyze cat-config does not show the override (is the directory named labapp.service.d?)"
+fi
+
+[ -L root/etc/systemd/system/multi-user.target.wants/labapp.service ] && ok "labapp.service is enabled for multi-user.target" \
+  || fail "enable the unit inside the scratch root: systemctl --root=\"\$PWD/root\" enable labapp.service"
+exit $bad

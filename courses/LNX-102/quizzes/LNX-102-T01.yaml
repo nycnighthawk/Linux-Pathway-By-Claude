@@ -1,0 +1,72 @@
+title: 'Quiz: Users, groups, sudo and password ageing'
+questions:
+- id: hash-file
+  prompt: Which file holds the password hash?
+  choices:
+  - /etc/passwd
+  - /etc/shadow
+  - /etc/group
+  - /etc/login.defs
+  answer:
+  - 1
+  explain: The hash is in /etc/shadow, readable only by root, because /etc/passwd must be world-readable.
+- id: usermod-a
+  prompt: What does `usermod -G ops deploy` do without -a?
+  choices:
+  - Adds ops to the existing groups
+  - Replaces the supplementary group list with ops
+  - Changes the primary group
+  - Locks the account
+  answer:
+  - 1
+  explain: Without -a the supplementary list is replaced; use -aG to append.
+- id: visudo-check
+  prompt: Which command validates a sudoers drop-in without installing it?
+  choices:
+  - sudo -l
+  - visudo -cf /etc/sudoers.d/ops
+  - chmod 0440
+  - sudoedit -c
+  answer:
+  - 1
+  explain: visudo -c checks syntax and -f names the file.
+- id: sudo-mode
+  prompt: Which mode should a file in /etc/sudoers.d/ have?
+  choices:
+  - '0777'
+  - '0644'
+  - '0440'
+  - '0200'
+  answer:
+  - 2
+  explain: sudo expects a read-only file for root and group; 0440 is the conventional mode.
+- id: chage-flags
+  prompt: Which options of chage set minimum days, maximum days, warning and inactivity?
+  choices:
+  - -m -M -W -I
+  - -d -E -l -L
+  - -a -b -c -d
+  - -n -x -w -i
+  answer:
+  - 0
+  explain: chage -m min, -M max, -W warn, -I inactive; -l lists.
+- id: locked-hash
+  prompt: A shadow hash that starts with `!` means what?
+  choices:
+  - Password never expires
+  - Password is locked
+  - Account is a system account
+  - Password is empty
+  answer:
+  - 1
+  explain: A leading ! locks password login; * means no password login at all.
+- id: sudo-paths
+  prompt: Why give full paths to commands in a sudo rule?
+  choices:
+  - It is faster
+  - A bare name can be resolved through a writable directory
+  - sudo requires it for groups
+  - It enables logging
+  answer:
+  - 1
+  explain: Full paths avoid running an attacker's program with the same name.

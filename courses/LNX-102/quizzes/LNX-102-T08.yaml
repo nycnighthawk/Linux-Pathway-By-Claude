@@ -1,0 +1,62 @@
+title: 'Quiz: Kernel modules and sysctl'
+questions:
+- id: runtime
+  prompt: Which command changes a parameter for the running kernel only?
+  choices:
+  - sysctl -w
+  - sysctl --system
+  - modprobe
+  - tuned-adm
+  answer:
+  - 0
+  explain: -w writes the value into /proc/sys; it is lost at reboot.
+- id: persist-dir
+  prompt: Where do your own persistent sysctl settings go?
+  choices:
+  - /etc/sysctl.d/
+  - /usr/lib/sysctl.d/
+  - /proc/sys
+  - /boot
+  answer:
+  - 0
+  explain: /etc/sysctl.d is for administrators; /usr/lib is for vendors.
+- id: blacklist
+  prompt: What is the difference between blacklist and an install line with /bin/false?
+  choices:
+  - None
+  - blacklist stops auto-loading only; install blocks loading by name too
+  - install stops only auto-loading
+  - blacklist needs a reboot
+  answer:
+  - 1
+  explain: A blacklisted module can still be loaded explicitly.
+- id: order
+  prompt: Why name a file 99-lab.conf?
+  choices:
+  - Files are read in lexical order and the last wins
+  - The number is the value
+  - 99 means disabled
+  - It must match the kernel
+  answer:
+  - 0
+  explain: A high prefix makes it override earlier files.
+- id: modinfo
+  prompt: Which command shows a module's parameters?
+  choices:
+  - modinfo
+  - lsmod
+  - depmod
+  - dmesg
+  answer:
+  - 0
+  explain: lsmod lists loaded modules; modinfo prints details.
+- id: mod-load
+  prompt: Which directory lists modules to load at boot?
+  choices:
+  - /etc/modules-load.d/
+  - /etc/modprobe.d/
+  - /sys/module/
+  - /lib/modules/
+  answer:
+  - 0
+  explain: modprobe.d is for options and rules, not for the load list.

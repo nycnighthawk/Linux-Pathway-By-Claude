@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > chrony.conf <<'CONF'
+pool 2.pool.ntp.org iburst
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+allow 192.168.10.0/24
+log tracking
+CONF
+ln -sf ../usr/share/zoneinfo/Europe/Berlin root/etc/localtime

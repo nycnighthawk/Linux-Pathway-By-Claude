@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > verify.sh <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Usage: verify.sh MACHINE_DIR. Exit 0 only if every change is stored in a boot-time file.
+m=${1:?machine directory}
+rc=0
+if grep -Rqs '^vm.swappiness *= *10$' "$m"/etc/sysctl.d; then echo "ok   sysctl vm.swappiness=10 is in /etc/sysctl.d"; else echo "FAIL sysctl vm.swappiness=10 is not persistent"; rc=1; fi
+if [ -L "$m/etc/systemd/system/multi-user.target.wants/labagent.service" ]; then echo "ok   unit labagent.service is enabled"; else echo "FAIL unit labagent.service is not enabled"; rc=1; fi
+if grep -Eq '[[:space:]]/scratch[[:space:]]' "$m/etc/fstab"; then echo "ok   /scratch mount is in fstab"; else echo "FAIL /scratch mount is not in fstab"; rc=1; fi
+exit $rc
+SH
+chmod +x verify.sh
+sed -i -e 's/^sysctl_w_is=.*/sysctl_w_is=runtime/' -e 's/^systemctl_start_is=.*/systemctl_start_is=runtime/' -e 's/^systemctl_enable_is=.*/systemctl_enable_is=persistent/' \
+  -e 's/^mount_command_is=.*/mount_command_is=runtime/' -e 's/^fstab_line_is=.*/fstab_line_is=persistent/' -e 's/^systemctl_enable_now_is=.*/systemctl_enable_now_is=both/' answers.txt

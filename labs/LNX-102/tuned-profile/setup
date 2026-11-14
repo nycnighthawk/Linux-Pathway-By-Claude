@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty profile directory for a custom TuneD profile.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf tuned answers.txt
+mkdir -p tuned/lab-web
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nlist_profiles_command=?\nactivate_command=?\nprofile_file_name=?\ncustom_profile_directory=?\n' > answers.txt

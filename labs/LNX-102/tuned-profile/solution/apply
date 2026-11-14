@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > tuned/lab-web/tuned.conf <<'CONF'
+[main]
+summary=Lab web server profile
+include=throughput-performance
+
+[sysctl]
+vm.swappiness=10
+vm.dirty_ratio=15
+
+[cpu]
+governor=performance
+CONF
+sed -i -e 's|^list_profiles_command=.*|list_profiles_command=tuned-adm list|' -e 's|^activate_command=.*|activate_command=tuned-adm profile lab-web|' \
+  -e 's|^profile_file_name=.*|profile_file_name=tuned.conf|' -e 's|^custom_profile_directory=.*|custom_profile_directory=/etc/tuned|' answers.txt

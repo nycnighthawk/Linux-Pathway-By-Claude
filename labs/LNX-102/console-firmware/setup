@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty field report to fill in on a real or virtual machine.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f report.txt
+printf '# SPDX-License-Identifier: MIT\n# Field report: fill in each ? on the machine you are inspecting. See README.md for how to find each value.\nboot_mode=?\nsecure_boot=?\nconsole_device=?\nkeyboard_layout=?\ntimezone=?\nfirmware_menu_key=?\n' > report.txt

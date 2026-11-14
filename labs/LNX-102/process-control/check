@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the process table and answers.txt.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+pid() { awk -v n="$1" '$1==n {print $2}' pids.txt; }
+b=$(pid batch); f=$(pid frozen); r=$(pid runaway)
+[ -n "$b" ] && [ -n "$f" ] && [ -n "$r" ] || { echo "FAIL: pids.txt missing; run setup"; exit 1; }
+
+if [ -r "/proc/$b/stat" ]; then
+    nice=$(awk '{print $19}' "/proc/$b/stat")
+    [ "$nice" = 10 ] && ok "batch runs at nice 10" || fail "the process 'batch' must have nice value 10 (it is $nice)"
+else fail "the process 'batch' must stay alive; it is gone"; fi
+
+if [ -r "/proc/$f/stat" ]; then
+    st=$(awk '{print $3}' "/proc/$f/stat")
+    [ "$st" = T ] && ok "frozen is stopped (T)" || fail "the process 'frozen' must be stopped but alive (state T); its state is $st"
+else fail "the process 'frozen' must be stopped, not killed"; fi
+
+if [ -d "/proc/$r" ] && [ "$(awk '{print $3}' "/proc/$r/stat" 2>/dev/null)" != Z ]; then fail "the process 'runaway' must be terminated"; else ok "runaway is gone"; fi
+
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | tr -d ' '; }
+[ "$(get batch_priority_class)" = lower ] && ok "batch_priority_class=lower" || fail "batch_priority_class: does a higher nice value mean higher or lower priority? answer 'higher' or 'lower'"
+[ "$(get runaway_state_after_term)" = gone ] && ok "runaway_state_after_term=gone" || fail "runaway_state_after_term: answer 'gone' once SIGTERM has ended it"
+[ "$(get stop_signal_number)" = 19 ] && ok "stop_signal_number=19" || fail "stop_signal_number: the number of SIGSTOP on Linux x86 (see signal(7))"
+[ "$(get state_letter_of_stopped)" = T ] && ok "state_letter_of_stopped=T" || fail "state_letter_of_stopped: the ps state letter for a stopped process"
+exit $bad
