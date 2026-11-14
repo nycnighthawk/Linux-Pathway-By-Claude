@@ -1,0 +1,18 @@
+item: T1b
+label: Thin-course sources
+branch: build/T1b
+state: in-progress
+started: '2026-11-14'
+updated: '2026-11-14'
+phases:
+  sources:
+    state: todo
+    units: 4
+    done: []
+  rebuild:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-14 started
