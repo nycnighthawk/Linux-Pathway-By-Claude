@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > root/etc/netplan/10-lab.yaml <<'YAML'
+# SPDX-License-Identifier: MIT
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      addresses: [192.0.2.10/24]
+      routes:
+        - to: default
+          via: 192.0.2.1
+      nameservers:
+        addresses: [192.0.2.53]
+        search: [lab.test]
+YAML
+chmod 600 root/etc/netplan/10-lab.yaml
+nmcli --offline connection add type ethernet con-name lab ifname eth0 ipv4.method manual ipv4.addresses 192.0.2.10/24 ipv4.gateway 192.0.2.1 ipv4.dns 192.0.2.53 ipv4.dns-search lab.test > lab.nmconnection

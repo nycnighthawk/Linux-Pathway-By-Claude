@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: private copies of hosts and nsswitch.conf with two mistakes, and an empty resolved drop-in.
+set -eu
+cd "${LAB_DIR:-.}"
+cat > hosts <<'H'
+# SPDX-License-Identifier: MIT
+127.0.0.1 localhost
+::1 localhost ip6-localhost
+# TODO 1: give 10.20.30.40 the names intranet.lab.test and the short name intranet
+H
+cat > nsswitch.conf <<'N'
+# SPDX-License-Identifier: MIT
+# TODO 2: the hosts line must consult the local file before DNS
+passwd: files
+group: files
+hosts: dns
+N
+cat > resolved-lab.conf <<'R'
+# SPDX-License-Identifier: MIT
+# TODO 3: a drop-in for /etc/systemd/resolved.conf.d/ that sends lab.test queries to 192.0.2.53
+[Resolve]
+R

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty fake root and a netplan skeleton to complete. Nothing on the host is touched.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf root lab.nmconnection
+mkdir -p root/etc/netplan
+cat > root/etc/netplan/10-lab.yaml <<'YAML'
+# SPDX-License-Identifier: MIT
+# TODO: configure eth0 with a static address, a default route and DNS (see README.md).
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: true
+YAML
+chmod 600 root/etc/netplan/10-lab.yaml
