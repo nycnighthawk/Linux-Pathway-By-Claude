@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a server namespace with two TCP services, a client namespace, and a policy skeleton to complete.
+set -eu
+cd "${LAB_DIR:-.}"
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+[ -f .srv.pid ] && $SUDO kill "$(cat .srv.pid)" 2>/dev/null || true
+for n in lab-srv lab-cli; do $SUDO ip netns del "$n" 2>/dev/null || true; $SUDO ip netns add "$n"; done
+$SUDO ip link add vs type veth peer name vc
+$SUDO ip link set vs netns lab-srv
+$SUDO ip link set vc netns lab-cli
+for n in lab-srv lab-cli; do $SUDO ip -n "$n" link set lo up; done
+$SUDO ip -n lab-srv addr add 10.2.0.1/24 dev vs; $SUDO ip -n lab-srv link set vs up
+$SUDO ip -n lab-cli addr add 10.2.0.2/24 dev vc; $SUDO ip -n lab-cli link set vc up
+cat > .srv.py <<'PY'
+import os, selectors, socket
+sel = selectors.DefaultSelector()
+for port in (8080, 9090):
+    s = socket.socket(); s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind(("0.0.0.0", port)); s.listen(8); sel.register(s, selectors.EVENT_READ)
+if os.fork():
+    os._exit(0)
+os.setsid()
+while True:
+    for key, _ in sel.select():
+        c, _ = key.fileobj.accept(); c.close()
+PY
+$SUDO ip netns exec lab-srv python3 .srv.py </dev/null >/dev/null 2>&1
+for _ in 1 2 3 4 5 6 7 8 9 10; do $SUDO ip netns exec lab-srv ss -H -ltn 2>/dev/null | grep -q ':9090' && break; sleep 0.3; done
+$SUDO ip netns exec lab-srv ss -H -ltnp | sed -n 's/.*pid=\([0-9]*\),.*/\1/p' | head -1 > .srv.pid
+cat > policy.nft <<'NFT'
+# SPDX-License-Identifier: MIT
+# Load with: ip netns exec lab-srv nft -f policy.nft
+flush ruleset
+table inet lab {
+    chain input {
+        # TODO: base chain on the input hook with policy drop, then accept: loopback, established and related,
+        # ICMP and ICMPv6, and TCP port 8080 only. Port 9090 must stay closed.
+    }
+}
+NFT
