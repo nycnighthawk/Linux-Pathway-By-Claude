@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the two images, the fstab, the mount unit and the answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+eu=""
+if [ -f ext4.img ]; then
+    h=$(dumpe2fs -h ext4.img 2>/dev/null)
+    echo "$h" | grep -q '^Filesystem volume name: *data$' && ok "ext4 label data" || fail "ext4.img label must be data"
+    echo "$h" | grep -q '^Filesystem features:.*metadata_csum' && ok "metadata_csum on" || fail "ext4.img must keep metadata_csum"
+    echo "$h" | grep -q '^Filesystem features:.*has_journal' && fail "ext4.img must have no journal (-O ^has_journal)" || ok "no journal"
+    blocks=$(echo "$h" | awk -F: '/^Block count/ {gsub(/ /,"",$2); print $2}'); resv=$(echo "$h" | awk -F: '/^Reserved block count/ {gsub(/ /,"",$2); print $2}')
+    if [ -n "$blocks" ] && [ -n "$resv" ] && [ $((resv * 1000 / blocks)) -ge 9 ] && [ $((resv * 1000 / blocks)) -le 11 ]; then ok "1% reserved"; else fail "ext4.img must reserve 1% of blocks (-m 1)"; fi
+    eu=$(echo "$h" | awk -F': *' '/^Filesystem UUID/ {print $2}')
+else fail "ext4.img is missing"; fi
+xu=""
+if [ -f xfs.img ]; then
+    xi=$(xfs_db -r -c 'sb 0' -c 'p' xfs.img 2>/dev/null)
+    echo "$xi" | grep -q '^fname = "logs' && ok "xfs label logs" || fail "xfs.img label must be logs"
+    ro=$(echo "$xi" | awk '/^features_ro_compat =/ {print $3}')
+    if [ -n "$ro" ] && [ $(( ro & 4 )) = 0 ]; then ok "reflink off"; else fail "xfs.img must be made with -m reflink=0"; fi
+    xu=$(echo "$xi" | awk '/^uuid =/ {print $3}')
+else fail "xfs.img is missing"; fi
+if [ -f fstab ] && [ -n "$eu" ] && [ -n "$xu" ]; then
+    grep -Eq "^UUID=$eu[[:space:]]+/srv/data[[:space:]]+ext4[[:space:]]+noatime,nodev,nofail[[:space:]]+0[[:space:]]+2[[:space:]]*$" fstab && ok "fstab ext4 line" || fail "fstab: UUID=<ext4 uuid> /srv/data ext4 noatime,nodev,nofail 0 2"
+    grep -Eq "^UUID=$xu[[:space:]]+/srv/logs[[:space:]]+xfs[[:space:]]+nodev,nosuid,noexec,nofail[[:space:]]+0[[:space:]]+0[[:space:]]*$" fstab && ok "fstab xfs line" || fail "fstab: UUID=<xfs uuid> /srv/logs xfs nodev,nosuid,noexec,nofail 0 0"
+else fail "fstab is missing (or an image is)"; fi
+name=$(systemd-escape -p --suffix=mount /srv/data)
+u="units/$name"
+if [ -f "$u" ] && [ -n "$eu" ]; then
+    grep -Eq "^What=/dev/disk/by-uuid/$eu[[:space:]]*$" "$u" && ok "What=" || fail "$u: What=/dev/disk/by-uuid/<ext4 uuid>"
+    grep -Eq '^Where=/srv/data[[:space:]]*$' "$u" && ok "Where=" || fail "$u: Where=/srv/data"
+    grep -Eq '^Type=ext4[[:space:]]*$' "$u" && ok "Type=" || fail "$u: Type=ext4"
+    grep -Eq '^Options=noatime,nodev[[:space:]]*$' "$u" && ok "Options=" || fail "$u: Options=noatime,nodev"
+    grep -Eq '^WantedBy=local-fs.target[[:space:]]*$' "$u" && ok "WantedBy=" || fail "$u: WantedBy=local-fs.target"
+else fail "units/$name is missing"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get xfs_grow_command)" = xfs_growfs ] && ok "xfs_growfs" || fail "xfs_grow_command: the command that enlarges a mounted XFS file system"
+[ "$(get xfs_can_shrink)" = no ] && ok "XFS cannot shrink" || fail "xfs_can_shrink: yes or no"
+[ "$(get xfs_geometry_command)" = xfs_info ] && ok "xfs_info" || fail "xfs_geometry_command: prints allocation groups, block size and log size"
+exit $bad

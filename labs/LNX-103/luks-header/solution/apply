@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+cryptsetup luksFormat --type luks2 --label VAULT --pbkdf pbkdf2 --pbkdf-force-iterations 1000 --batch-mode --key-file key1.txt vault.img
+cryptsetup luksAddKey --pbkdf pbkdf2 --pbkdf-force-iterations 1000 --key-file key1.txt vault.img key2.txt
+rm -f vault.hdr
+cryptsetup luksHeaderBackup vault.img --header-backup-file vault.hdr
+uuid=$(cryptsetup luksUUID vault.img)
+printf 'vault UUID=%s none luks,nofail\n' "$uuid" > crypttab
+sed -i -e 's/^luks2_max_keyslots=.*/luks2_max_keyslots=32/' -e 's/^default_cipher=.*/default_cipher=aes-xts-plain64/' -e 's/^header_size_mib=.*/header_size_mib=16/' answers.txt

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty hardware survey and no multipath configuration.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f report.txt multipath.conf
+printf '# SPDX-License-Identifier: MIT\n# Hardware survey: fill in each ? on the machine you are inspecting. See README.md.\nmultipath_tools_installed=?\nfc_hosts=?\nscsi_hosts=?\nblock_devices=?\nstorage_driver=?\npaths_per_lun=?\n' > report.txt

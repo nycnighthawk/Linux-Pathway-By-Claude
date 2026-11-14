@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the rsync snapshots (shared inodes, history kept), the restic repository and the restore.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+d1=backups/day1; d2=backups/day2
+if [ -d "$d1" ] && [ -d "$d2" ]; then
+    [ -f "$d1/c.txt" ] && ok "day1 still has c.txt (history kept)" || fail "backups/day1/c.txt is missing: day1 must be taken before mutate.sh"
+    [ ! -e "$d2/c.txt" ] && [ ! -e data/c.txt ] && ok "day2 reflects the deletion" || fail "day2 must not contain c.txt (run mutate.sh, then rsync with --delete)"
+    [ "$(cat "$d1/b.txt" 2>/dev/null)" = "bravo v1" ] && [ "$(cat "$d2/b.txt" 2>/dev/null)" = "bravo v2" ] && ok "b.txt differs between days" || fail "day1/b.txt must say 'bravo v1' and day2/b.txt 'bravo v2'"
+    [ "$(stat -c %i "$d1/a.txt" 2>/dev/null)" = "$(stat -c %i "$d2/a.txt" 2>/dev/null)" ] && [ -f "$d2/a.txt" ] && ok "a.txt is a shared hard link (--link-dest)" || fail "day1/a.txt and day2/a.txt must share an inode (--link-dest=<absolute path of day1>)"
+    [ "$(stat -c %i "$d2/a.txt" 2>/dev/null)" = "$(stat -c %i "$d2/a.link" 2>/dev/null)" ] && ok "hard link a.link preserved (-H)" || fail "day2/a.link must still be a hard link of a.txt (-H)"
+    [ -L "$d2/a.sym" ] && ok "symlink preserved" || fail "day2/a.sym must be a symlink (-a)"
+else fail "backups/day1 and backups/day2 are needed"; fi
+if [ -d repo ] && [ -f restic.pass ]; then
+    n=$(restic -r repo --password-file restic.pass snapshots --json 2>/dev/null | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))' 2>/dev/null || echo 0)
+    [ "${n:-0}" -ge 2 ] && ok "restic has $n snapshots" || fail "the restic repository needs two snapshots (one before, one after mutate.sh)"
+    restic -r repo --password-file restic.pass check >/dev/null 2>&1 && ok "restic check passes" || fail "restic check reports a problem"
+else fail "repo is missing (restic init)"; fi
+if [ -d restore ]; then
+    r=$(find restore -type d -name data -print -quit 2>/dev/null)
+    if [ -n "$r" ] && diff -r "$r" data >/dev/null 2>&1; then ok "restored tree matches data/"; else fail "restore/ must hold the latest snapshot and match data/ (restic restore latest --target restore)"; fi
+else fail "restore/ is missing"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get rsync_dry_run_option)" in -n|--dry-run) ok "dry run option" ;; *) fail "rsync_dry_run_option: -n (or --dry-run)" ;; esac
+[ "$(get restic_forget_prune_option)" = --prune ] && ok "--prune" || fail "restic_forget_prune_option: the forget option that removes unreferenced data"
+[ "$(get three_two_one_copies)" = 3 ] && ok "3 copies" || fail "three_two_one_copies: the first number of 3-2-1"
+exit $bad

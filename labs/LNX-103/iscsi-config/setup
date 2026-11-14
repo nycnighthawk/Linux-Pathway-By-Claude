@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: no configuration files, a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f target.cli initiatorname.iscsi iscsid.conf fstab answers.txt
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\niscsi_tcp_port=?\ninitiator_daemon=?\nname_prefix=?\n' > answers.txt

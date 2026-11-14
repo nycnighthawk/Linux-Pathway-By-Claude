@@ -1,0 +1,92 @@
+item: LNX-103
+label: Storage & Filesystems
+branch: build/LNX-103
+state: done
+started: '2026-11-14'
+updated: '2026-11-14'
+phases:
+  synth:
+    state: done
+    units: 11
+    done:
+    - LNX-103-T01
+    - LNX-103-T02
+    - LNX-103-T03
+    - LNX-103-T04
+    - LNX-103-T05
+    - LNX-103-T06
+    - LNX-103-T07
+    - LNX-103-T08
+    - LNX-103-T09
+    - LNX-103-T10
+    - LNX-103-T11
+  lessons:
+    state: done
+    units: 11
+    done:
+    - LNX-103-T01
+    - LNX-103-T02
+    - LNX-103-T03
+    - LNX-103-T04
+    - LNX-103-T05
+    - LNX-103-T06
+    - LNX-103-T07
+    - LNX-103-T08
+    - LNX-103-T09
+    - LNX-103-T10
+    - LNX-103-T11
+  quizzes:
+    state: done
+    units: 11
+    done:
+    - LNX-103-T01
+    - LNX-103-T02
+    - LNX-103-T03
+    - LNX-103-T04
+    - LNX-103-T05
+    - LNX-103-T06
+    - LNX-103-T07
+    - LNX-103-T08
+    - LNX-103-T09
+    - LNX-103-T10
+    - LNX-103-T11
+  labs:
+    state: done
+    units: 11
+    done:
+    - LNX-103-T01
+    - LNX-103-T02
+    - LNX-103-T03
+    - LNX-103-T04
+    - LNX-103-T05
+    - LNX-103-T06
+    - LNX-103-T07
+    - LNX-103-T08
+    - LNX-103-T09
+    - LNX-103-T10
+    - LNX-103-T11
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-14 started
+- '2026-11-14 synth: LNX-103-T01'
+- '2026-11-14 synth: LNX-103-T02'
+- '2026-11-14 synth: LNX-103-T03'
+- '2026-11-14 synth: LNX-103-T04'
+- '2026-11-14 synth: LNX-103-T05'
+- '2026-11-14 synth: LNX-103-T06'
+- '2026-11-14 synth: LNX-103-T07'
+- '2026-11-14 synth: LNX-103-T08, LNX-103-T09'
+- '2026-11-14 synth: LNX-103-T10, LNX-103-T11'
+- '2026-11-14 labs: LNX-103-T01, LNX-103-T02, LNX-103-T03, LNX-103-T04, LNX-103-T05, LNX-103-T06, LNX-103-T07, LNX-103-T08,
+  LNX-103-T09, LNX-103-T10, LNX-103-T11'
+- '2026-11-14 lessons: LNX-103-T01, LNX-103-T02, LNX-103-T03, LNX-103-T04, LNX-103-T05, LNX-103-T06, LNX-103-T07,
+  LNX-103-T08, LNX-103-T09, LNX-103-T10, LNX-103-T11'
+- '2026-11-14 quizzes: LNX-103-T01, LNX-103-T02, LNX-103-T03, LNX-103-T04, LNX-103-T05, LNX-103-T06, LNX-103-T07,
+  LNX-103-T08, LNX-103-T09, LNX-103-T10, LNX-103-T11'
+- '2026-11-14 checks: done'
+- 2026-11-14 finished
+finished: '2026-11-14'

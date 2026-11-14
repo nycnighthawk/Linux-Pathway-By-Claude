@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty 256 MiB disk image and a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f disk.img layout.sfdisk answers.txt
+truncate -s 256M disk.img
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nprotective_mbr_type=?\ndefault_gpt_entries=?\ngpt_header_signature=?\nmbr_limit_tib=?\n' > answers.txt

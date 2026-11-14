@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+export LVM_SYSTEM_DIR="$PWD/lvm"
+mapfile -t L < loops.txt
+pvcreate -qy "${L[0]}" "${L[1]}" "${L[2]}" >/dev/null
+vgcreate -q -s 8M labvg "${L[0]}" "${L[1]}" >/dev/null
+vgextend -q labvg "${L[2]}" >/dev/null
+vgcfgbackup -q -f labvg.cfg labvg >/dev/null
+printf 'activation {\n    thin_pool_autoextend_threshold = 80\n    thin_pool_autoextend_percent = 20\n}\n' > thin.conf
+sed -i -e 's/^resize_fs_option=.*/resize_fs_option=-r/' -e 's/^thin_snapshot_may_have_size=.*/thin_snapshot_may_have_size=no/' -e 's/^pool_fullness_column=.*/pool_fullness_column=data_percent/' answers.txt

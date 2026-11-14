@@ -1,0 +1,62 @@
+title: 'Quiz: LVM: growing, snapshots and thin pools'
+questions:
+- id: layers
+  prompt: What are the LVM layers from disk upward?
+  choices:
+  - PV, VG, LV
+  - LV, VG, PV
+  - VG, PV, LV
+  - PE, LE, VG
+  answer:
+  - 0
+  explain: Physical volumes join a volume group, which is carved into logical volumes.
+- id: extend
+  prompt: Which command extends an LV and its file system in one step?
+  choices:
+  - lvextend -r -L +5G vg/lv
+  - lvcreate -r
+  - vgextend -r
+  - resize2fs -L
+  answer:
+  - 0
+  explain: -r (--resizefs) calls the file system resize tool.
+- id: pvcreate
+  prompt: What does pvcreate do?
+  choices:
+  - Writes LVM metadata on a device
+  - Creates a file system
+  - Creates a VG
+  - Mounts an LV
+  answer:
+  - 0
+  explain: It labels the device and reserves a metadata area.
+- id: snap
+  prompt: What happens when a classic snapshot fills its copy-on-write space?
+  choices:
+  - It grows automatically always
+  - Nothing
+  - The snapshot becomes invalid
+  - The origin stops
+  answer:
+  - 2
+  explain: An overfull snapshot is dropped; size it for the expected change.
+- id: thin
+  prompt: What does thin provisioning allow?
+  choices:
+  - Encrypted LVs
+  - No snapshots
+  - Volumes whose total size exceeds the pool
+  - Smaller metadata
+  answer:
+  - 2
+  explain: Overcommit is possible, so monitor pool data and metadata usage.
+- id: vgs
+  prompt: Which command lists free space in a VG?
+  choices:
+  - df
+  - fdisk -l
+  - vgs
+  - lsblk -f
+  answer:
+  - 2
+  explain: vgs shows VSize and VFree.

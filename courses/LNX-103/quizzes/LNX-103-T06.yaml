@@ -1,0 +1,72 @@
+title: 'Quiz: Quotas, ACLs and extended attributes'
+questions:
+- id: setfacl
+  prompt: Which command gives user alice read access through an ACL?
+  choices:
+  - getfacl -m
+  - setfacl -m u:alice:r file
+  - chmod u+r
+  - chown alice
+  answer:
+  - 1
+  explain: setfacl -m modifies the ACL, u:name:perms names the entry.
+- id: default
+  prompt: What does a default ACL on a directory do?
+  choices:
+  - Applies to the directory only
+  - Removes access
+  - Sets quotas
+  - New files inherit it
+  answer:
+  - 3
+  explain: Default entries (d:) are copied into new children.
+- id: mask
+  prompt: What does the ACL mask limit?
+  choices:
+  - Effective permissions of named users, groups and the group class
+  - Owner permissions
+  - File size
+  - Quota
+  answer:
+  - 0
+  explain: The mask caps every entry except owner and other.
+- id: xattr
+  prompt: Which prefix holds user-defined extended attributes?
+  choices:
+  - trusted.
+  - security.
+  - system.
+  - user.
+  answer:
+  - 3
+  explain: setfattr -n user.name -v value file.
+- id: quota-tools
+  prompt: Which command shows ext4 user quota usage?
+  choices:
+  - df -i
+  - du -a
+  - lsattr
+  - quota -u user or repquota
+  answer:
+  - 3
+  explain: quota and repquota report blocks and inodes against limits.
+- id: soft-hard
+  prompt: What is the difference between soft and hard quota limits?
+  choices:
+  - Soft is for inodes only
+  - Hard allows grace
+  - Soft can be exceeded during the grace period; hard cannot
+  - Both are hard
+  answer:
+  - 2
+  explain: Soft over grace becomes blocking; hard blocks immediately.
+- id: getfacl
+  prompt: Which command shows ACLs?
+  choices:
+  - getfacl
+  - ls -i
+  - stat -f
+  - lsattr
+  answer:
+  - 0
+  explain: ls marks files that have ACLs with a plus sign.

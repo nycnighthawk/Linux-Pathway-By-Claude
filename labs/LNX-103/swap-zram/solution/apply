@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+dd if=/dev/zero of=swapfile bs=1M count=64 status=none
+chmod 600 swapfile
+mkswap -q -L labswap swapfile
+printf '/swapfile none swap defaults,pri=10 0 0\n' > fstab
+printf '[zram0]\nzram-size = ram / 2\ncompression-algorithm = zstd\nswap-priority = 100\n' > zram-generator.conf
+sed -i -e 's/^list_swap_command=.*/list_swap_command=swapon --show/' -e 's/^zram_create_command=.*/zram_create_command=zramctl --find --size 4G/' -e 's/^swappiness_sysctl=.*/swappiness_sysctl=vm.swappiness/' answers.txt

@@ -1,0 +1,62 @@
+title: 'Quiz: Swap files and zram'
+questions:
+- id: mkswap
+  prompt: Which sequence prepares a swap file?
+  choices:
+  - swapon, mkswap, chmod
+  - touch, swapon
+  - fallocate or dd, chmod 600, mkswap, swapon
+  - mkfs, mount, swapon
+  answer:
+  - 2
+  explain: Create the file, restrict the mode, format it with mkswap, then enable it.
+- id: mode
+  prompt: Why must a swap file be mode 0600?
+  choices:
+  - swapon needs executable
+  - systemd requires it
+  - To save space
+  - Other users could read memory pages
+  answer:
+  - 3
+  explain: Swap holds memory contents; swapon warns about insecure permissions.
+- id: zram
+  prompt: What is zram?
+  choices:
+  - A hibernation file
+  - A compressed block device in RAM
+  - A disk partition
+  - A network swap
+  answer:
+  - 1
+  explain: Pages written to zram are compressed in memory.
+- id: swappiness
+  prompt: What does vm.swappiness tune?
+  choices:
+  - zram algorithm
+  - Hibernation
+  - How willing the kernel is to swap anonymous pages
+  - Swap size
+  answer:
+  - 2
+  explain: Higher values favour swapping over dropping page cache.
+- id: fstab-swap
+  prompt: Which fstab type marks a swap entry?
+  choices:
+  - none
+  - auto
+  - ext4
+  - swap
+  answer:
+  - 3
+  explain: The type field is swap and the mount point is none.
+- id: btrfs-swap
+  prompt: What is special about a swap file on Btrfs?
+  choices:
+  - It needs RAID
+  - It must be on a snapshot
+  - It is not allowed
+  - It must be non-compressed, no copy-on-write
+  answer:
+  - 3
+  explain: Use the dedicated mkswap --file or btrfs filesystem mkswapfile helpers.

@@ -1,0 +1,72 @@
+title: 'Quiz: Partitioning with GPT and MBR'
+questions:
+- id: mbr-limit
+  prompt: What is the largest disk an MBR partition table can address with 512-byte sectors?
+  choices:
+  - About 2 TiB
+  - About 16 TiB
+  - About 2 PiB
+  - No limit
+  answer:
+  - 0
+  explain: MBR stores 32-bit sector counts, so 2^32 x 512 bytes is 2 TiB.
+- id: gpt-backup
+  prompt: Where does GPT keep its backup header?
+  choices:
+  - In the first partition
+  - In /boot
+  - It has none
+  - At the end of the disk
+  answer:
+  - 3
+  explain: A copy of the header and table sits at the last sectors, so damage at the start is recoverable.
+- id: fdisk-write
+  prompt: When does `fdisk` change the disk?
+  choices:
+  - On every command
+  - Only when you press w
+  - When you press q
+  - After partprobe
+  answer:
+  - 1
+  explain: Edits stay in memory until w writes the table.
+- id: reread
+  prompt: Which command asks the kernel to reread a changed partition table?
+  choices:
+  - mkfs
+  - fsck
+  - swapon
+  - partprobe
+  answer:
+  - 3
+  explain: partprobe (or partx -u) updates the kernel view without a reboot when no partition is busy.
+- id: esp
+  prompt: Which partition type does UEFI boot from?
+  choices:
+  - Linux swap
+  - EFI System Partition (FAT)
+  - BIOS boot
+  - Linux LVM
+  answer:
+  - 1
+  explain: The ESP holds boot loaders and is FAT formatted.
+- id: sfdisk
+  prompt: Which tool dumps and restores a partition layout as text?
+  choices:
+  - mkswap
+  - blkid
+  - tune2fs
+  - sfdisk -d and sfdisk
+  answer:
+  - 3
+  explain: sfdisk -d writes a script that sfdisk can replay.
+- id: align
+  prompt: Why align partitions to 1 MiB?
+  choices:
+  - Required by ext4
+  - Saves RAM
+  - Makes UUIDs unique
+  - Matches the physical block and erase sizes
+  answer:
+  - 3
+  explain: Misaligned I/O causes read-modify-write cycles.

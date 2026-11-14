@@ -1,0 +1,72 @@
+title: 'Quiz: LUKS2 volumes'
+questions:
+- id: slots
+  prompt: How many key slots does LUKS2 support?
+  choices:
+  - '8'
+  - '16'
+  - '32'
+  - '64'
+  answer:
+  - 2
+  explain: LUKS2 allows up to 32 key slots.
+- id: cipher
+  prompt: What is the default LUKS2 data cipher?
+  choices:
+  - blowfish
+  - aes-xts-plain64
+  - chacha20
+  - aes-cbc-essiv
+  answer:
+  - 1
+  explain: cryptsetup defaults to aes-xts-plain64.
+- id: change-pass
+  prompt: What happens to the data when you change a passphrase?
+  choices:
+  - Nothing; only a key slot is rewritten
+  - All data is re-encrypted
+  - The header is erased
+  - The master key changes
+  answer:
+  - 0
+  explain: Slots protect the master key; data stays as is.
+- id: crypttab-uuid
+  prompt: Which UUID goes in crypttab?
+  choices:
+  - The inner file system UUID
+  - The partition table UUID
+  - The PV UUID of LVM
+  - The LUKS container UUID
+  answer:
+  - 3
+  explain: blkid reports TYPE=crypto_LUKS for the right one.
+- id: header
+  prompt: Why back up the LUKS header?
+  choices:
+  - It stores the file system
+  - Damage to it makes data unrecoverable
+  - It is required to open
+  - It speeds boot
+  answer:
+  - 1
+  explain: Keep the backup off the disk and protect it as a secret.
+- id: test
+  prompt: Which command tests a key without opening the device?
+  choices:
+  - cryptsetup open --test-passphrase
+  - cryptsetup status
+  - luksDump
+  - cryptsetup resize
+  answer:
+  - 0
+  explain: --test-passphrase checks a slot and exits.
+- id: pbkdf
+  prompt: Why is the default argon2id derivation slow?
+  choices:
+  - It checks disk errors
+  - It resists brute force attacks
+  - It is a bug
+  - It encrypts data
+  answer:
+  - 1
+  explain: Memory and time cost raise the price per guess.

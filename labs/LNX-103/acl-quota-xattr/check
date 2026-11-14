@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the ACLs, the extended attribute, the quota feature, the fstab line and the answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+if [ -d project ]; then
+    [ "$(stat -c %a project)" = 2770 ] && ok "project mode 2770" || fail "project must have mode 2770"
+    a=$(getfacl -c project 2>/dev/null)
+    echo "$a" | grep -Eq '^user:nobody:r-x$' && ok "access ACL for nobody" || fail "project needs an access entry user:nobody:r-x"
+    echo "$a" | grep -Eq '^group:daemon:rwx$' && ok "access ACL for daemon" || fail "project needs an access entry group:daemon:rwx"
+    echo "$a" | grep -Eq '^default:user:nobody:r-x$' && ok "default ACL for nobody" || fail "project needs a default entry for user nobody (setfacl -d)"
+    echo "$a" | grep -Eq '^default:group:daemon:rwx$' && ok "default ACL for daemon" || fail "project needs a default entry for group daemon (setfacl -d)"
+    echo "$a" | grep -Eq '^mask::rwx$' && ok "mask rwx" || fail "the mask of project must be rwx (it caps the named entries)"
+    if [ -f project/new.txt ]; then
+        getfacl -c project/new.txt 2>/dev/null | grep -Eq '^user:nobody:' && ok "new.txt inherited the default ACL" || fail "project/new.txt was created before the default ACL existed (recreate it)"
+    else fail "create project/new.txt after setting the default ACL"; fi
+else fail "project/ is missing"; fi
+v=$(getfattr -n user.classification --only-values project/report.txt 2>/dev/null)
+[ "$v" = internal ] && ok "user.classification=internal" || fail "project/report.txt needs user.classification=internal (setfattr -n ... -v ...)"
+if [ -f quota.img ]; then
+    h=$(dumpe2fs -h quota.img 2>/dev/null)
+    echo "$h" | grep -q '^User quota inode:' && ok "user quota inode" || fail "quota.img has no user quota (tune2fs -O quota -Q usrquota,grpquota)"
+    echo "$h" | grep -q '^Group quota inode:' && ok "group quota inode" || fail "quota.img has no group quota"
+    u=$(echo "$h" | awk -F': *' '/^Filesystem UUID/ {print $2}')
+    [ -f fstab ] && grep -Eq "^UUID=$u[[:space:]]+/srv/quota[[:space:]]+ext4[[:space:]]+defaults,usrquota,grpquota[[:space:]]+0[[:space:]]+2[[:space:]]*$" fstab && ok "fstab line" || fail "fstab: UUID=<quota.img uuid> /srv/quota ext4 defaults,usrquota,grpquota 0 2"
+else fail "quota.img is missing"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get set_limits_command)" in setquota|edquota) ok "set limits" ;; *) fail "set_limits_command: setquota (or edquota)" ;; esac
+[ "$(get report_command)" = repquota ] && ok "repquota" || fail "report_command: the command that reports usage for a whole file system"
+[ "$(get xfs_quota_tool)" = xfs_quota ] && ok "xfs_quota" || fail "xfs_quota_tool: the XFS-specific quota tool"
+exit $bad

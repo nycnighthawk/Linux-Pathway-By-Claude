@@ -1,0 +1,72 @@
+title: 'Quiz: Backup and restore with rsync and restic'
+questions:
+- id: '321'
+  prompt: What does the 3-2-1 rule ask for?
+  choices:
+  - 3 copies, 2 media types, 1 off site
+  - 3 disks, 2 hosts, 1 tape
+  - 3 days, 2 weeks, 1 month
+  - 3 users, 2 groups, 1 owner
+  answer:
+  - 0
+  explain: At least three copies, on two kinds of media, with one away from the site.
+- id: linkdest
+  prompt: What does rsync --link-dest save?
+  choices:
+  - Permissions
+  - Nothing
+  - Space, by hard-linking unchanged files to the previous snapshot
+  - Time on the network only
+  answer:
+  - 2
+  explain: Unchanged files share inodes with the earlier directory.
+- id: dry
+  prompt: Which rsync option does a dry run?
+  choices:
+  - -c
+  - -z
+  - -n (--dry-run)
+  - -v
+  answer:
+  - 2
+  explain: -n lists what would be transferred.
+- id: prune
+  prompt: What does restic forget --prune add?
+  choices:
+  - Deletes data no snapshot uses
+  - Encrypts the repo
+  - Creates a snapshot
+  - Checks integrity
+  answer:
+  - 0
+  explain: Without --prune only snapshot references are removed.
+- id: check
+  prompt: Which restic command verifies repository integrity?
+  choices:
+  - restic stats
+  - restic ls
+  - restic find
+  - restic check
+  answer:
+  - 3
+  explain: check reads structure, and --read-data reads every pack.
+- id: acl-xattr
+  prompt: Which rsync options keep ACLs and extended attributes?
+  choices:
+  - -n -v
+  - -u -l
+  - -A -X
+  - -z -c
+  answer:
+  - 2
+  explain: -A is ACLs and -X is xattrs; -a does not include them.
+- id: test-restore
+  prompt: Why test restores?
+  choices:
+  - It is required by rsync
+  - It prunes data
+  - A backup that cannot be restored is useless
+  - It speeds backup
+  answer:
+  - 2
+  explain: Schedule restores and record the time against your RTO.

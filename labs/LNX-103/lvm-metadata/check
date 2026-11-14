@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade PVs, the VG, its text backup, the thin-pool policy and the answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+export PATH="$PATH:/usr/sbin:/sbin"
+export LVM_SYSTEM_DIR="$PWD/lvm"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f loops.txt ] || { echo "FAIL: run setup first"; exit 1; }
+n=0; inv=0
+while read -r d; do
+    n=$((n + 1))
+    vg=$(pvs --noheadings -o vg_name "$d" 2>/dev/null | tr -d ' ')
+    [ "$vg" = labvg ] && inv=$((inv + 1)) || fail "$d is not a physical volume in labvg"
+done < loops.txt
+[ "$inv" = "$n" ] && [ "$n" = 3 ] && ok "all three devices are PVs in labvg"
+es=$(vgs --noheadings --units m --nosuffix -o vg_extent_size labvg 2>/dev/null | tr -d ' ')
+[ "$es" = 8.00 ] && ok "extent size 8 MiB" || fail "labvg must use an 8 MiB extent size (vgcreate -s 8M)"
+cnt=$(vgs --noheadings -o pv_count labvg 2>/dev/null | tr -d ' ')
+[ "$cnt" = 3 ] && ok "labvg has 3 PVs" || fail "labvg must have three physical volumes (vgextend the third)"
+if [ -s labvg.cfg ]; then
+    grep -q '^labvg {' labvg.cfg && grep -q 'extent_size = 16384' labvg.cfg && grep -c 'pv[0-9] {' labvg.cfg | grep -q '^3$' && ok "labvg.cfg is a text backup of the final VG" || fail "labvg.cfg must be made with vgcfgbackup after the third PV was added"
+else fail "labvg.cfg is missing"; fi
+if [ -s thin.conf ]; then
+    t=$(lvmconfig --config "$(cat thin.conf)" activation/thin_pool_autoextend_threshold 2>/dev/null | sed 's/.*=//')
+    p=$(lvmconfig --config "$(cat thin.conf)" activation/thin_pool_autoextend_percent 2>/dev/null | sed 's/.*=//')
+    [ "$t" = 80 ] && [ "$p" = 20 ] && ok "thin pool policy 80/20" || fail "thin.conf must set thin_pool_autoextend_threshold = 80 and thin_pool_autoextend_percent = 20 in an activation section"
+else fail "thin.conf is missing"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get resize_fs_option)" in -r|--resizefs) ok "-r" ;; *) fail "resize_fs_option: the lvextend option that also grows the file system" ;; esac
+[ "$(get thin_snapshot_may_have_size)" = no ] && ok "thin snapshot has no size" || fail "thin_snapshot_may_have_size: a size option would create a thick snapshot instead"
+case "$(get pool_fullness_column)" in data_percent|Data%) ok "data_percent" ;; *) fail "pool_fullness_column: the lvs field for data usage of a thin pool" ;; esac
+exit $bad

@@ -1,0 +1,231 @@
+id: LNX-103
+title: Storage & Filesystems
+summary: 'Everything between a raw disk and a mounted, protected data set: partitions, file systems, LVM, swap, RAID, quotas
+  and ACLs, network storage, encryption, backups and multipath.'
+hours: 50
+coverage: full
+outcomes:
+- Partition a disk with GPT or MBR and keep a replayable layout
+- Create ext4, XFS and Btrfs file systems and mount them persistently with fstab or mount units
+- Grow, snapshot and thin-provision storage with LVM
+- Configure swap files and compressed swap in RAM
+- Build, monitor and repair software RAID with mdadm
+- Apply quotas, POSIX ACLs and extended attributes and preserve them in copies
+- Mount NFS and SMB shares and automount them on demand
+- Explain iSCSI targets and initiators and recognise hardware RAID and multipath setups
+- Encrypt volumes with LUKS2 and manage keys and headers
+- Back up and restore with rsync and restic, and prove the restore
+certifications:
+- cert: LPIC1
+  objectives:
+  - '102.1'
+  - '104.1'
+  - '104.2'
+  - '104.3'
+  - '110.3'
+- cert: LPIC2
+  objectives:
+  - '203.1'
+  - '203.2'
+  - '203.3'
+  - '204.1'
+  - '204.2'
+  - '204.3'
+  - '206.2'
+  - '209.2'
+- cert: LPLUS
+  objectives:
+  - D1
+  - D5
+- cert: LFCS
+  objectives:
+  - D3
+- cert: RHCSA
+  objectives:
+  - D5
+  - D6
+modules:
+- id: layout-and-file-systems
+  title: Disks, file systems and swap
+  lessons:
+  - topic: LNX-103-T01
+    title: Partitioning with GPT and MBR
+    file: lessons/LNX-103-T01.md
+    minutes: 50
+  - topic: LNX-103-T02
+    title: ext4, XFS and Btrfs; fstab and mount units
+    file: lessons/LNX-103-T02.md
+    minutes: 55
+  - topic: LNX-103-T04
+    title: Swap files and zram
+    file: lessons/LNX-103-T04.md
+    minutes: 40
+- id: pooling-and-protection
+  title: Pooling, redundancy and encryption
+  lessons:
+  - topic: LNX-103-T03
+    title: 'LVM: growing, snapshots and thin pools'
+    file: lessons/LNX-103-T03.md
+    minutes: 60
+  - topic: LNX-103-T05
+    title: Software RAID with mdadm
+    file: lessons/LNX-103-T05.md
+    minutes: 50
+  - topic: LNX-103-T09
+    title: LUKS2 volumes
+    file: lessons/LNX-103-T09.md
+    minutes: 50
+- id: access-and-sharing
+  title: Access control and network storage
+  lessons:
+  - topic: LNX-103-T06
+    title: Quotas, ACLs and extended attributes
+    file: lessons/LNX-103-T06.md
+    minutes: 55
+  - topic: LNX-103-T07
+    title: NFS and SMB clients, autofs
+    file: lessons/LNX-103-T07.md
+    minutes: 50
+  - topic: LNX-103-T08
+    title: iSCSI target and initiator
+    file: lessons/LNX-103-T08.md
+    minutes: 45
+- id: operations
+  title: Backup and enterprise storage
+  lessons:
+  - topic: LNX-103-T10
+    title: Backup and restore with rsync and restic
+    file: lessons/LNX-103-T10.md
+    minutes: 55
+  - topic: LNX-103-T11
+    title: Hardware RAID, Fibre Channel SAN and multipath
+    file: lessons/LNX-103-T11.md
+    minutes: 40
+labs:
+- id: partition-table
+  topic: LNX-103-T01
+  title: Partition a disk image with GPT and replay the layout
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - fdisk
+- id: fs-features
+  topic: LNX-103-T02
+  title: Build two file systems in image files, an fstab and a mount unit
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - xfsprogs
+  - e2fsprogs
+- id: lvm-metadata
+  topic: LNX-103-T03
+  title: Build a volume group on loop devices and set a thin-pool policy
+  env: V
+  license: MIT
+  minutes: 50
+  packages:
+  - lvm2
+- id: swap-zram
+  topic: LNX-103-T04
+  title: Prepare a swap file and a zram configuration
+  env: V
+  license: MIT
+  minutes: 30
+- id: md-runbook
+  topic: LNX-103-T05
+  title: Read a degraded RAID 5 and write the repair runbook
+  env: V
+  license: MIT
+  minutes: 40
+- id: acl-quota-xattr
+  topic: LNX-103-T06
+  title: Set ACLs with inheritance, an xattr and ext4 quotas
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - acl
+  - attr
+  - e2fsprogs
+- id: nfs-autofs-maps
+  topic: LNX-103-T07
+  title: Write exports, fstab lines and autofs maps
+  env: V
+  license: MIT
+  minutes: 40
+- id: iscsi-config
+  topic: LNX-103-T08
+  title: Write a targetcli script and an initiator configuration
+  env: V
+  license: MIT
+  minutes: 35
+- id: luks-header
+  topic: LNX-103-T09
+  title: Create a LUKS2 container with two keys and a header backup
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - cryptsetup-bin
+- id: backup-roundtrip
+  topic: LNX-103-T10
+  title: Take hard-link and deduplicated backups and restore them
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - rsync
+  - restic
+- id: multipath-report
+  topic: LNX-103-T11
+  title: Survey storage hardware and write a multipath configuration
+  env: H
+  license: MIT
+  minutes: 30
+quizzes:
+- id: LNX-103-T01
+  topic: LNX-103-T01
+  title: 'Quiz: Partitioning with GPT and MBR'
+  file: quizzes/LNX-103-T01.yaml
+- id: LNX-103-T02
+  topic: LNX-103-T02
+  title: 'Quiz: ext4, XFS and Btrfs; fstab and mount units'
+  file: quizzes/LNX-103-T02.yaml
+- id: LNX-103-T03
+  topic: LNX-103-T03
+  title: 'Quiz: LVM: growing, snapshots and thin pools'
+  file: quizzes/LNX-103-T03.yaml
+- id: LNX-103-T04
+  topic: LNX-103-T04
+  title: 'Quiz: Swap files and zram'
+  file: quizzes/LNX-103-T04.yaml
+- id: LNX-103-T05
+  topic: LNX-103-T05
+  title: 'Quiz: Software RAID with mdadm'
+  file: quizzes/LNX-103-T05.yaml
+- id: LNX-103-T06
+  topic: LNX-103-T06
+  title: 'Quiz: Quotas, ACLs and extended attributes'
+  file: quizzes/LNX-103-T06.yaml
+- id: LNX-103-T07
+  topic: LNX-103-T07
+  title: 'Quiz: NFS and SMB clients, autofs'
+  file: quizzes/LNX-103-T07.yaml
+- id: LNX-103-T08
+  topic: LNX-103-T08
+  title: 'Quiz: iSCSI target and initiator'
+  file: quizzes/LNX-103-T08.yaml
+- id: LNX-103-T09
+  topic: LNX-103-T09
+  title: 'Quiz: LUKS2 volumes'
+  file: quizzes/LNX-103-T09.yaml
+- id: LNX-103-T10
+  topic: LNX-103-T10
+  title: 'Quiz: Backup and restore with rsync and restic'
+  file: quizzes/LNX-103-T10.yaml
+- id: LNX-103-T11
+  topic: LNX-103-T11
+  title: 'Quiz: Hardware RAID, Fibre Channel SAN and multipath'
+  file: quizzes/LNX-103-T11.yaml

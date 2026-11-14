@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sfdisk -q disk.img <<'EOF'
+label: gpt
+unit: sectors
+start=2048, size=32MiB, type=U, name="esp"
+size=64MiB, type=S, name="swap"
+type=L, name="data"
+EOF
+sfdisk -d disk.img > layout.sfdisk
+sed -i -e 's/^protective_mbr_type=.*/protective_mbr_type=ee/' -e 's/^default_gpt_entries=.*/default_gpt_entries=128/' \
+  -e 's/^gpt_header_signature=.*/gpt_header_signature=EFI PART/' -e 's/^mbr_limit_tib=.*/mbr_limit_tib=2/' answers.txt

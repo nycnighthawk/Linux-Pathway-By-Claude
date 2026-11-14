@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of the survey and the multipath configuration. Values come from your machine, so only their shape is checked.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+get() { grep -E "^$1=" report.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get multipath_tools_installed)" in yes|no) ok "multipath_tools_installed" ;; *) fail "multipath_tools_installed must be yes or no" ;; esac
+for k in fc_hosts scsi_hosts block_devices; do
+    case "$(get $k)" in ''|*[!0-9]*) fail "$k must be a number (see README.md)" ;; *) ok "$k" ;; esac
+done
+case "$(get storage_driver)" in ''|'?') fail "storage_driver must name a kernel module or none" ;; *) ok "storage_driver" ;; esac
+case "$(get paths_per_lun)" in ''|*[!0-9]*|0) fail "paths_per_lun must be a number of at least 1" ;; *) ok "paths_per_lun" ;; esac
+c=multipath.conf
+if [ -f "$c" ]; then
+    flat=$(tr -s '[:space:]' ' ' < "$c")
+    opens=$(tr -cd '{' < "$c" | wc -c); closes=$(tr -cd '}' < "$c" | wc -c)
+    [ "$opens" = "$closes" ] && [ "$opens" -ge 4 ] && ok "braces balance" || fail "$c: braces must balance (defaults, blacklist, multipaths, multipath)"
+    echo "$flat" | grep -Eq 'defaults *\{[^}]*user_friendly_names +yes' && ok "user_friendly_names yes" || fail "$c: defaults { user_friendly_names yes }"
+    echo "$flat" | grep -Eq 'defaults *\{[^}]*find_multipaths +(yes|"yes")' && ok "find_multipaths yes" || fail "$c: defaults { find_multipaths yes }"
+    echo "$flat" | grep -Eq 'blacklist *\{[^}]*wwid +"?[0-9a-fA-F]+"?' && ok "blacklist wwid" || fail "$c: blacklist { wwid \"<local boot disk>\" }"
+    echo "$flat" | grep -Eq 'multipaths *\{ *multipath *\{[^}]*wwid +"?360000000000000000e00000000010001"?[^}]*alias +"?oradata"?' && ok "alias oradata" || fail "$c: multipaths { multipath { wwid 360000000000000000e00000000010001 alias oradata } }"
+else fail "$c is missing"; fi
+exit $bad
