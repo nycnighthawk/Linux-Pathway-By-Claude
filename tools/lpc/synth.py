@@ -8,7 +8,8 @@ Guardrails (D-025, D-027):
   * no run of 8+ consecutive words that appears anywhere in the curated corpus (FTS5 phrase query)
   * <= 10% of the synthesis's 5-grams shared with any single cited catalog section
   * no quoted passage of 6+ words; at least 2 independent sources (distinct publishers) in References
-  * the six required sections, in order
+  * the required sections, in order: template 2 (frontmatter `template: 2`, D-034) has ten; files without it
+    are template 1 (the six pilot sections) until they are upgraded
 """
 from __future__ import annotations
 
@@ -23,8 +24,12 @@ import yaml
 from .common import BUILD, ROOT
 
 SYNTH = ROOT / "synth"
-SECTIONS = ["Define the problem", "History and approaches", "Current state", "Related and opposing views",
-            "Future direction", "References"]
+SECTIONS_V1 = ["Define the problem", "History and approaches", "Current state", "Related and opposing views",
+               "Future direction", "References"]
+SECTIONS_V2 = ["Define the problem", "History and approaches", "Current state", "Assessment: the good, the bad and the ugly",
+               "Applications beyond this domain", "Examples", "Related problems and ideas", "Active research",
+               "Future direction", "References"]
+SECTIONS = SECTIONS_V1                       # kept for callers that import the original list
 RUN, NGRAM, MAX_SHARE = 8, 5, 0.10
 WORD = re.compile(r"[a-z0-9]+(?:['_.-][a-z0-9]+)*")
 
@@ -107,9 +112,15 @@ def check_file(path: Path, db) -> list[str]:
     md = path.read_text()
     errs = []
     heads = re.findall(r"^## (.+?)\s*$", md, flags=re.M)
-    want = [h for h in heads if h in SECTIONS]
-    if want != SECTIONS:
-        errs.append(f"sections must be, in order: {SECTIONS}; found {heads}")
+    fm = re.match(r"\A---\n(.*?)\n---\n", md, flags=re.S)
+    version = 1
+    if fm:
+        m = re.search(r"^template:\s*(\d+)", fm.group(1), flags=re.M)
+        version = int(m.group(1)) if m else 1
+    sections = SECTIONS_V2 if version >= 2 else SECTIONS_V1
+    want = [h for h in heads if h in sections]
+    if want != sections:
+        errs.append(f"template {version} sections must be, in order: {sections}; found {heads}")
     for m in re.finditer(r"[\"“]([^\"”\n]{3,})[\"”]", _prose(md)):
         if len(_tokens(m.group(1))) >= 6:
             errs.append(f"quoted passage of 6+ words is not allowed: \"{m.group(1)[:60]}…\"")
