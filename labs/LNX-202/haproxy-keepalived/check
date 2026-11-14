@@ -20,7 +20,7 @@ grep -Eq '^\s*enable_script_security' keepalived.conf && ok "enable_script_secur
 grep -Eq 'vrrp_script\s+\S+' keepalived.conf && grep -Eq '^\s*track_script' keepalived.conf && ok "a tracked health script is defined" || fail "define a vrrp_script and reference it in track_script"
 grep -Eq '^\s*weight\s+-[0-9]+' keepalived.conf && ok "the script lowers the priority (negative weight)" || fail "give vrrp_script a negative weight"
 grep -Eq '^\s*virtual_router_id\s+[0-9]+' keepalived.conf && grep -Eq '192\.0\.2\.80/24' keepalived.conf && ok "virtual router id and the address 192.0.2.80/24" || fail "set virtual_router_id and virtual_ipaddress 192.0.2.80/24"
-p=$(awk '/^\s*priority\s+/{print $2; exit}' keepalived.conf)
+p=$(awk '$1=="priority"{print $2; exit}' keepalived.conf)
 [ -n "${p:-}" ] && [ "$p" -gt 100 ] && ok "priority $p is above the default 100" || fail "this is the primary node: priority must be above 100"
 # ---- haproxy
 haproxy -c -f haproxy.cfg >/dev/null 2>&1 && ok "haproxy -c accepts haproxy.cfg" || { fail "haproxy -c rejects haproxy.cfg"; haproxy -c -f haproxy.cfg 2>&1 | head -3; }
