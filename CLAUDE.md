@@ -20,7 +20,7 @@ Before committing: `gate`, `decisions`, `build` (commit catalog/ and review/queu
 - Crawling (kind: crawl, Playwright): obey robots.txt (RFC 9309, longest match) and allow prefixes, about 1 req/s, honest UA.
   Never bypass bot walls, CAPTCHAs, Cloudflare or 403/429. Use an official source instead (git repo, distro package) or ask.
 - Decisions follow RUBRIC.md: weighted R1–R6. If the recommended option leads by 0.8 or more, Claude decides and records decisions/D-NNN-*.yaml with scores and justification. Otherwise ask the owner with a multi-select card (flag the recommended option; Other is free text) and record their answer.
-- Synthesis (synth/, All rights reserved, D-023..D-027): six sections from synth/TEMPLATE.md, in order. Write every
+- Synthesis (synth/, All rights reserved, D-023..D-027): sections from synth/TEMPLATE.md (template 2, D-034), in order. Write every
   sentence in new words; never copy a sentence verbatim. No quotes of 6+ words. Cite `[src: id chunk]` / `[web: domain]`,
   2+ publishers. Start from `lpc synth pack <topic>`; `lpc synth check` must pass. Read packs, not raw/.
 - Git: branch from main and open a PR (REST: `gh api repos/nycnighthawk/Linux-Pathway-By-Claude/pulls`; GraphQL `gh pr create` is blocked). Never push to main. Build-plan work: one work item per branch build/<ITEM> with progress/<ITEM>.yaml, pushed after every unit; one PR per finished item, squash-merged by its thread once CI is green and its DONE checks pass (D-029, D-031); never merge red or force-push.

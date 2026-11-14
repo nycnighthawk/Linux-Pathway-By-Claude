@@ -225,3 +225,21 @@ def test_objective_maps_reference_real_topics():
             assert bool(o.get("gap")) == (not o["topics"]), (f, o["id"])
             for t in o["topics"]:
                 assert t in topics and topics[t]["course"] in o["courses"], (f, o["id"], t)
+
+
+def test_synth_template_versions(tmp_path):
+    from lpc import synth
+    one = "---\nid: x\n---\n# T\n" + "".join(f"## {h}\ntext\n" for h in synth.SECTIONS_V1)
+    two = "---\nid: x\ntemplate: 2\n---\n# T\n" + "".join(f"## {h}\ntext\n" for h in synth.SECTIONS_V2)
+    class DB:  # no corpus hits, no cited chunks
+        def execute(self, *a, **k):
+            class R:
+                def fetchone(self): return None
+            return R()
+    def sec_errs(md):
+        p = tmp_path / "s.md"
+        p.write_text(md)
+        return [e for e in synth.check_file(p, DB()) if "sections must be" in e]
+    assert not sec_errs(one) and not sec_errs(two)
+    assert sec_errs(one.replace("id: x\n", "id: x\ntemplate: 2\n"))
+    assert sec_errs(two.replace("template: 2\n", ""))
