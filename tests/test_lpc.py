@@ -197,3 +197,13 @@ def test_asciidoc_headings_ids_and_listing_blocks(tmp_path):
     heads = [s["heading"] for s in doc["sections"]]
     assert heads == ["git-x(1)", "NAME", "Introduction", "Detail"]
     assert doc["sections"][2]["anchor"] == "intro" and "== not a heading" in doc["sections"][2]["text"]
+
+
+def test_only_if_override_fills_gaps_but_keeps_confident_tags():
+    t = Tagger()
+    t.overrides = [{"match": {"source": "demo", "path": "x/*"}, "courses": ["LNX-102"], "only_if": ["none", "low"]}]
+    gap = t.tag({"id": "a", "source": "demo", "path": "x/blank.md", "title": "Misc", "section": "Misc"}, "nothing relevant here")
+    assert gap["confidence"] == "manual" and gap["courses"][0]["code"] == "LNX-102"
+    sure = t.tag({"id": "b", "source": "demo", "path": "x/selinux.md", "title": "Using SELinux",
+                  "section": "Managing SELinux booleans"}, "Use setsebool and semanage to change SELinux booleans. " * 3)
+    assert sure["confidence"] in ("high", "medium") and sure["courses"][0]["code"] == "LNX-204"

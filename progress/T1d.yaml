@@ -1,22 +1,27 @@
 item: T1d
 label: Tagging precision
 branch: build/T1d
-state: in-progress
+state: done
 started: '2026-11-14'
 updated: '2026-11-14'
 phases:
   keywords:
-    state: todo
+    state: done
     units: 0
     done: []
   overrides:
-    state: todo
+    state: done
     units: 0
     done: []
   rebuild:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
 log:
 - 2026-11-14 started
+- '2026-11-14 keywords: done'
+- '2026-11-14 overrides: done'
+- '2026-11-14 rebuild: done'
+- 2026-11-14 finished
+finished: '2026-11-14'
