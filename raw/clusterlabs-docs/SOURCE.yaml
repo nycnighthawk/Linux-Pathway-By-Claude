@@ -1,0 +1,16 @@
+id: clusterlabs-docs
+name: ClusterLabs Pacemaker documentation (Explained, Administration, Clusters from
+  Scratch)
+license: CC-BY-SA-4.0
+license_note: doc/sphinx/conf.py.in and the guides state CC-BY-SA-4.0 for the documentation;
+  the repo's COPYING covers the code only. No separate doc licence file upstream.
+mode: full
+reuse: adapt
+stream: A
+retrieved: '2026-11-14'
+upstream: https://github.com/ClusterLabs/pacemaker
+pin: 781f4f3c499f210e2bb4d12e7ab5f1a65c61ab47
+upstream_commit_date: '2026-11-11'
+license_file_upstream: null
+text_files: 45
+figures: 0

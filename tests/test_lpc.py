@@ -188,3 +188,12 @@ def test_dita_topic_sections(tmp_path):
     assert [s["heading"] for s in doc["sections"]] == ["Networking", "NAT mode"]
     assert "Intro text." in doc["sections"][0]["text"] and "NAT body." in doc["sections"][1]["text"]
     assert doc["sections"][1]["anchor"] == "nat"
+
+
+def test_asciidoc_headings_ids_and_listing_blocks(tmp_path):
+    doc = _parse(tmp_path, "git-x.adoc", "= git-x(1)\n\nNAME\n----\ngit-x - do x\n\n[[intro]]\n== Introduction\nSome text.\n"
+                 "----\n== not a heading\n----\n=== Detail\nMore.\n")
+    assert doc["title"] == "git-x(1)"
+    heads = [s["heading"] for s in doc["sections"]]
+    assert heads == ["git-x(1)", "NAME", "Introduction", "Detail"]
+    assert doc["sections"][2]["anchor"] == "intro" and "== not a heading" in doc["sections"][2]["text"]

@@ -1,0 +1,15 @@
+id: python-docs
+name: Python documentation (tutorial, library, reference, HOWTOs)
+license: PSF-2.0
+license_note: Python documentation is under the PSF licence (permissive, BSD-style);
+  code examples in the docs are also 0BSD (Doc/license.rst).
+mode: full
+reuse: adapt
+stream: Permissive
+retrieved: '2026-11-14'
+upstream: https://github.com/python/cpython
+pin: ba935775f31b841f4eaa39095051f1a25aaad959
+upstream_commit_date: '2026-11-14'
+license_file_upstream: LICENSE
+text_files: 387
+figures: 0

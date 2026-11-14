@@ -198,6 +198,10 @@ source_priors:
   cloud-hypervisor-docs: {LNX-332: 4, LNX-315: 2}
   rust-vmm-community: {LNX-332: 6}
   virtio-spec: {LNX-332: 6}
+  python-docs: {LNX-203: 3, LNX-220: 3, LNX-320: 1}
+  rust-book: {LNX-220: 4, LNX-320: 2}
+  clusterlabs-docs: {LNX-309: 6}
+  git-docs: {LNX-330: 3, LNX-203: 1}
 
 # Tagging thresholds (implementation constants, documented here so they're reviewable).
 thresholds:

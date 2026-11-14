@@ -469,6 +469,60 @@ sources:
     stream: Ref
     pin: bb1dd2e1fe89b862f38f15873d835a698b196f89
 
+  # ---- T1b: sources for thin courses (LNX-203, 220, 309, 320, 330) ----
+  - id: python-docs
+    name: Python documentation (tutorial, library, reference, HOWTOs)
+    kind: git
+    repo: https://github.com/python/cpython
+    include: ["/Doc/tutorial/**/*.rst", "/Doc/howto/**/*.rst", "/Doc/reference/**/*.rst", "/Doc/library/**/*.rst", "/LICENSE"]
+    url_template: "https://docs.python.org/3/{path_no_ext_strip_doc}.html"
+    license: PSF-2.0
+    license_note: "Python documentation is under the PSF licence (permissive, BSD-style); code examples in the docs are also 0BSD (Doc/license.rst)."
+    mode: full
+    reuse: adapt
+    stream: Permissive
+    pin: ba935775f31b841f4eaa39095051f1a25aaad959
+
+  - id: rust-book
+    name: The Rust Programming Language (the Rust Book)
+    kind: git
+    repo: https://github.com/rust-lang/book
+    include: ["/src/**/*.md", "/LICENSE-MIT"]
+    figures: ["png", "svg"]
+    url_template: "https://doc.rust-lang.org/book/{stem}.html"
+    license: "MIT OR Apache-2.0"
+    license_file: LICENSE-MIT
+    mode: full
+    reuse: adapt
+    stream: Permissive
+    pin: 2771df165f092a4fbb9f46b5b2e7450f19010adb
+
+  - id: clusterlabs-docs
+    name: ClusterLabs Pacemaker documentation (Explained, Administration, Clusters from Scratch)
+    kind: git
+    repo: https://github.com/ClusterLabs/pacemaker
+    include: ["/doc/sphinx/Pacemaker_Explained/*.rst", "/doc/sphinx/Pacemaker_Administration/*.rst", "/doc/sphinx/Clusters_from_Scratch/*.rst"]
+    url_template: "https://clusterlabs.org/projects/pacemaker/doc/"
+    license: CC-BY-SA-4.0
+    license_note: "doc/sphinx/conf.py.in and the guides state CC-BY-SA-4.0 for the documentation; the repo's COPYING covers the code only. No separate doc licence file upstream."
+    mode: full
+    reuse: adapt
+    stream: A
+    pin: 781f4f3c499f210e2bb4d12e7ab5f1a65c61ab47
+
+  - id: git-docs
+    name: Git documentation (user manual, tutorials, man pages, technical notes)
+    kind: git
+    repo: https://github.com/git/git
+    include: ["/Documentation/*.adoc", "/Documentation/technical/*.adoc", "/COPYING"]
+    url_template: "https://git-scm.com/docs/{stem}"
+    license: GPL-2.0-only
+    license_note: "Git and its Documentation/ are GPL-2.0 (COPYING). The Pro Git book is CC BY-NC-SA and is not used. Link-only."
+    mode: full
+    reuse: link-only
+    stream: C
+    pin: 7fb6055e678f800320d8ab8cd8f201d9493d1ba0
+
   # ---- link-only catalog stubs: nothing fetched, but findable in search ----
   - {id: samba-wiki, name: Samba wiki, kind: none, url: "https://wiki.samba.org/", license: NOASSERTION, mode: link, reuse: link-only, stream: Ref}
   - {id: tlcl, name: "The Linux Command Line (W. Shotts)", kind: none, url: "https://linuxcommand.org/tlcl.php", license: CC-BY-NC-ND-3.0, mode: link, reuse: excluded, stream: Ref}

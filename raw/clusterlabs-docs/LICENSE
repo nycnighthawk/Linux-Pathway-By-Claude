@@ -1,0 +1,6 @@
+ClusterLabs Pacemaker documentation (Explained, Administration, Clusters from Scratch)
+Licence: CC-BY-SA-4.0
+
+doc/sphinx/conf.py.in and the guides state CC-BY-SA-4.0 for the documentation; the repo's COPYING covers the code only. No separate doc licence file upstream.
+
+Curated into Linux-Pathway-By-Claude by `lpc sync`. See SOURCE.yaml for provenance.

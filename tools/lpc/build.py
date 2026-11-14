@@ -51,6 +51,7 @@ def make_url(src: dict, prov: dict, path: str, anchor: str, front_url: str | Non
         "path_no_ext_strip_docs": _strip(path, "docs/"),
         "path_no_ext_strip_k8s": _strip(path, "content/en/docs/"),
         "path_no_ext_strip_documentation": _strip(path, "Documentation/"),
+        "path_no_ext_strip_doc": _strip(path, "Doc/"),
         "path_no_ext_strip_ansible": _strip(path, "docs/docsite/rst/"),
         "stem": Path(path).stem,
     }
