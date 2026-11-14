@@ -1,0 +1,62 @@
+title: 'Quiz: Proving that changes survive a reboot'
+questions:
+- id: enable-now
+  prompt: In `systemctl enable --now`, which part is persistent?
+  choices:
+  - enable
+  - --now
+  - both
+  - neither
+  answer:
+  - 0
+  explain: enable creates the symlinks; --now starts it immediately.
+- id: fstab-test
+  prompt: How can you test fstab without rebooting?
+  choices:
+  - mount -a
+  - fsck
+  - ls /mnt
+  - swapon
+  answer:
+  - 0
+  explain: mount -a tries every line and shows errors; findmnt --verify checks syntax.
+- id: sysctl-w
+  prompt: Is `sysctl -w` persistent?
+  choices:
+  - 'Yes'
+  - No, runtime only
+  - Only with --system
+  - Only for net keys
+  answer:
+  - 1
+  explain: It writes /proc/sys only.
+- id: clone
+  prompt: Why do the reboot test on a clone or test machine first?
+  choices:
+  - A bad change can leave the machine unbootable
+  - It is faster
+  - Clones have no fstab
+  - Reboots are logged
+  answer:
+  - 0
+  explain: A bad fstab line can drop the system into emergency mode.
+- id: failed
+  prompt: Which command lists units that failed during boot?
+  choices:
+  - systemctl --failed
+  - systemctl list-sockets
+  - journalctl -k
+  - systemd-analyze
+  answer:
+  - 0
+  explain: --failed shows units in the failed state.
+- id: both
+  prompt: Which command changes both runtime and stored state?
+  choices:
+  - timedatectl set-timezone
+  - sysctl -w
+  - modprobe
+  - mount
+  answer:
+  - 0
+  explain: It sets the live zone and updates /etc/localtime.

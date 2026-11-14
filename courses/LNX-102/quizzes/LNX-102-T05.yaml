@@ -1,0 +1,62 @@
+title: 'Quiz: journald, rsyslog and logrotate'
+questions:
+- id: persist
+  prompt: Where does the journal live if storage is not persistent?
+  choices:
+  - /var/log/journal
+  - /run/log/journal in memory
+  - /etc/journal
+  - /tmp
+  answer:
+  - 1
+  explain: Without persistent storage the journal is kept under /run and lost at reboot.
+- id: dryrun
+  prompt: What does logrotate -d do?
+  choices:
+  - Deletes old logs
+  - Dry run that shows what it would do
+  - Forces rotation
+  - Disables the config
+  answer:
+  - 1
+  explain: -d is debug mode and changes nothing.
+- id: selector
+  prompt: Which rsyslog rule sends every priority of local6 to a file?
+  choices:
+  - local6.* /var/log/myapp.log
+  - local6 = /var/log/myapp.log
+  - '*.local6 /var/log/myapp.log'
+  - local6.none /var/log/myapp.log
+  answer:
+  - 0
+  explain: A selector is facility.priority; * is any priority.
+- id: postrotate
+  prompt: Why use a postrotate script?
+  choices:
+  - To compress logs
+  - To make the daemon reopen its log file
+  - To delete old logs
+  - To set the mode
+  answer:
+  - 1
+  explain: The daemon may keep writing to the rotated file otherwise.
+- id: journal-unit
+  prompt: Which command shows a unit's messages from the previous boot?
+  choices:
+  - journalctl -u unit -b -1
+  - journalctl --last
+  - dmesg -u unit
+  - logrotate -u unit
+  answer:
+  - 0
+  explain: -b -1 selects the previous boot, which needs persistent storage.
+- id: journal-limit
+  prompt: Which settings cap journal disk use and age?
+  choices:
+  - SystemMaxUse and MaxRetentionSec
+  - Storage and Seal
+  - Compress and Forward
+  - RateLimit and Audit
+  answer:
+  - 0
+  explain: They live in the [Journal] section of journald.conf or a drop-in.

@@ -1,0 +1,62 @@
+title: 'Quiz: TuneD profiles'
+questions:
+- id: dir
+  prompt: Where do your own TuneD profiles belong?
+  choices:
+  - /etc/tuned/name/tuned.conf
+  - /usr/lib/tuned/name/tuned.conf
+  - /var/tuned
+  - /opt/tuned
+  answer:
+  - 0
+  explain: /usr/lib/tuned is for shipped profiles.
+- id: include
+  prompt: What does include= do in a profile?
+  choices:
+  - Starts from another profile
+  - Imports a module
+  - Loads a script
+  - Disables a plugin
+  answer:
+  - 0
+  explain: Your sections override the included profile.
+- id: verify
+  prompt: Which command checks that the running system matches the profile?
+  choices:
+  - tuned-adm verify
+  - tuned-adm list
+  - tuned-adm off
+  - tuned-adm active
+  answer:
+  - 0
+  explain: verify compares live settings with the profile.
+- id: activate
+  prompt: Which command activates a profile named lab-web?
+  choices:
+  - tuned-adm profile lab-web
+  - tuned lab-web
+  - systemctl start lab-web
+  - tuned-adm enable lab-web
+  answer:
+  - 0
+  explain: profile followed by the name.
+- id: choice
+  prompt: When is a plain sysctl file better than TuneD?
+  choices:
+  - One or two parameters, or no extra daemon allowed
+  - Always
+  - When tuning CPU governors
+  - Never
+  answer:
+  - 0
+  explain: TuneD adds a daemon, which a small change or a hardened baseline may not want.
+- id: recommend
+  prompt: Which command suggests a profile for this hardware?
+  choices:
+  - tuned-adm recommend
+  - tuned-adm best
+  - tuned-adm auto
+  - tuned-adm guess
+  answer:
+  - 0
+  explain: recommend reads the system type.

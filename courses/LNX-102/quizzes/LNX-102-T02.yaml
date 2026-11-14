@@ -1,0 +1,72 @@
+title: 'Quiz: Processes, signals, priority and job control'
+questions:
+- id: uncatchable
+  prompt: Which signals cannot be caught or ignored?
+  choices:
+  - SIGTERM and SIGHUP
+  - SIGKILL and SIGSTOP
+  - SIGINT and SIGTSTP
+  - SIGCONT and SIGUSR1
+  answer:
+  - 1
+  explain: SIGKILL and SIGSTOP always act.
+- id: term-first
+  prompt: Why send SIGTERM before SIGKILL?
+  choices:
+  - TERM is faster
+  - The process can clean up on TERM
+  - KILL needs root
+  - KILL is not portable
+  answer:
+  - 1
+  explain: SIGTERM can be handled so the program saves state; SIGKILL gives no chance.
+- id: zombie
+  prompt: How do you get rid of a zombie process?
+  choices:
+  - kill -9 it
+  - Fix or end its parent
+  - renice it
+  - Send SIGSTOP
+  answer:
+  - 1
+  explain: A zombie is already dead and waits for its parent to collect its status.
+- id: nice-range
+  prompt: What is the range of the nice value, and who may lower it?
+  choices:
+  - 0 to 100, anyone
+  - -20 to 19, only root may lower it
+  - -19 to 20, anyone
+  - 1 to 40, only root
+  answer:
+  - 1
+  explain: Lower values get more CPU and need privilege to set.
+- id: freeze
+  prompt: Which pair freezes and resumes a process?
+  choices:
+  - kill -STOP then kill -CONT
+  - kill -TERM then kill -HUP
+  - kill -INT then kill -KILL
+  - kill -USR1 then kill -USR2
+  answer:
+  - 0
+  explain: STOP suspends and CONT resumes without losing state.
+- id: dstate
+  prompt: What does state D in ps mean?
+  choices:
+  - Dead
+  - Uninterruptible sleep, usually I/O
+  - Daemon
+  - Detached
+  answer:
+  - 1
+  explain: A D process cannot be killed until the I/O call returns.
+- id: jobs
+  prompt: Which sequence moves a running foreground job into the background?
+  choices:
+  - Ctrl-C then bg
+  - Ctrl-Z then bg
+  - Ctrl-D then fg
+  - kill -9 then bg
+  answer:
+  - 1
+  explain: Ctrl-Z stops it, bg resumes it in the background.

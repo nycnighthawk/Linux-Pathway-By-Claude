@@ -1,0 +1,62 @@
+title: 'Quiz: Time and chrony'
+questions:
+- id: zone
+  prompt: What does changing the time zone affect?
+  choices:
+  - The system clock
+  - Only how time is displayed
+  - The hardware clock
+  - NTP servers
+  answer:
+  - 1
+  explain: The clock counts UTC; the zone only changes display.
+- id: makestep
+  prompt: What does makestep 1.0 3 mean?
+  choices:
+  - Step if offset exceeds 1 s, in the first 3 updates
+  - Step every 3 seconds
+  - Slew 1 s per update
+  - Allow 3 servers
+  answer:
+  - 0
+  explain: After three updates chrony only slews.
+- id: tracking
+  prompt: Which command shows the current offset?
+  choices:
+  - chronyc tracking
+  - timedatectl set-ntp
+  - hwclock -w
+  - date -s
+  answer:
+  - 0
+  explain: chronyc tracking reports offset, stratum and frequency.
+- id: allow
+  prompt: Which directive lets clients in a network use this host as a server?
+  choices:
+  - allow
+  - serve
+  - bindaddress
+  - peer
+  answer:
+  - 0
+  explain: allow 192.168.10.0/24 permits those clients.
+- id: rtc
+  prompt: Why is the hardware clock usually kept in UTC?
+  choices:
+  - It avoids zone and daylight-saving errors
+  - It is required by chrony
+  - It is faster
+  - BIOS needs it
+  answer:
+  - 0
+  explain: UTC does not change with zones or DST.
+- id: validate
+  prompt: How do you parse a chrony config without starting the daemon?
+  choices:
+  - chronyd -p -f file
+  - chronyc reload
+  - systemctl try-restart chronyd
+  - ntpq -p
+  answer:
+  - 0
+  explain: -p prints the parsed configuration; -f names the file.

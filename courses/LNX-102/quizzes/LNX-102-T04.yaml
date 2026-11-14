@@ -1,0 +1,62 @@
+title: 'Quiz: The boot process, GRUB2, rescue targets and root reset'
+questions:
+- id: chain
+  prompt: What is the order of the boot chain?
+  choices:
+  - Kernel, firmware, boot loader, systemd
+  - Firmware, boot loader, kernel with initramfs, systemd
+  - Boot loader, firmware, systemd, kernel
+  - Firmware, systemd, kernel, boot loader
+  answer:
+  - 1
+  explain: Firmware finds the boot loader, which loads kernel and initramfs, which start systemd.
+- id: grub-file
+  prompt: Where do you set a permanent kernel argument?
+  choices:
+  - Edit grub.cfg directly
+  - /etc/default/grub then regenerate
+  - /proc/cmdline
+  - /boot/vmlinuz
+  answer:
+  - 1
+  explain: grub.cfg is generated, so edit the defaults and run grub2-mkconfig or update-grub.
+- id: emergency
+  prompt: How does emergency.target differ from rescue.target?
+  choices:
+  - It has more services
+  - It is a minimal shell with root read-only
+  - It is graphical
+  - There is no difference
+  answer:
+  - 1
+  explain: Emergency starts almost nothing; rescue mounts the basic file systems.
+- id: rdbreak
+  prompt: After rd.break, why remount /sysroot read-write?
+  choices:
+  - Because it is mounted read-only
+  - To enable the network
+  - To load SELinux
+  - To start systemd
+  answer:
+  - 0
+  explain: The real root is mounted read-only at that point so passwd cannot write.
+- id: autorelabel
+  prompt: Why touch /.autorelabel after a root password reset on SELinux?
+  choices:
+  - Repairs file labels on next boot
+  - Changes the timeout
+  - Updates grub
+  - Unlocks root
+  answer:
+  - 0
+  explain: Editing shadow in the chroot can leave a wrong label.
+- id: default-target
+  prompt: Which command makes the text target the default?
+  choices:
+  - systemctl set-default multi-user.target
+  - systemctl isolate multi-user.target
+  - systemctl enable multi-user.target
+  - grub2-set-default 0
+  answer:
+  - 0
+  explain: set-default records the default; isolate changes only the running state.

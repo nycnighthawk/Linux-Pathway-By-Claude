@@ -1,0 +1,62 @@
+title: 'Quiz: cron, at and systemd timers'
+questions:
+- id: fields
+  prompt: How many time fields does a user crontab line have?
+  choices:
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  answer:
+  - 1
+  explain: Minute, hour, day of month, month, day of week.
+- id: sysuser
+  prompt: What do /etc/crontab and /etc/cron.d files add?
+  choices:
+  - A year field
+  - A user field before the command
+  - A comment
+  - A mail field
+  answer:
+  - 1
+  explain: System files name the user that runs the job.
+- id: persistent
+  prompt: What does Persistent=true do in a timer?
+  choices:
+  - Repeats forever
+  - Runs a missed job after downtime
+  - Makes the timer hidden
+  - Disables randomisation
+  answer:
+  - 1
+  explain: The last trigger time is stored and used to catch up.
+- id: enable-timer
+  prompt: Which unit do you enable for a timer-driven job?
+  choices:
+  - The .service
+  - The .timer
+  - The .target
+  - Both are required
+  answer:
+  - 1
+  explain: The timer activates its service.
+- id: analyze-cal
+  prompt: Which tool shows when a calendar expression next fires?
+  choices:
+  - systemd-analyze calendar
+  - timedatectl
+  - crontab -l
+  - atq
+  answer:
+  - 0
+  explain: systemd-analyze calendar normalises and shows next elapse.
+- id: cron-env
+  prompt: Why do cron jobs fail that work in a shell?
+  choices:
+  - cron is slower
+  - cron uses a minimal environment
+  - cron lacks root
+  - cron runs once
+  answer:
+  - 1
+  explain: PATH and other variables are minimal, so use full paths.
