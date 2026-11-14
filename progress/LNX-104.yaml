@@ -11,6 +11,7 @@ phases:
     done:
     - LNX-104-T01
     - LNX-104-T02
+    - LNX-104-T03
   lessons:
     state: todo
     units: 6
@@ -32,3 +33,4 @@ log:
 - 2026-11-14 started
 - '2026-11-14 synth: LNX-104-T01'
 - '2026-11-14 synth: LNX-104-T02'
+- '2026-11-14 synth: LNX-104-T03'
