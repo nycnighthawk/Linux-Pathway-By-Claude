@@ -7137,6 +7137,550 @@ virtio-spec,title.tex,title,https://docs.oasis-open.org/virtio/virtio/v1.3/virti
 virtio-spec,transport-ccw.tex,Virtio Over Channel I/O,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,16,0,LNX-332
 virtio-spec,transport-mmio.tex,Virtio Over MMIO,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,10,0,LNX-332
 virtio-spec,transport-pci.tex,Virtio Over PCI Bus,https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.html,NOASSERTION,link-only,outline,20,0,LNX-332 LNX-320 LNX-331
+python-docs,Doc/howto/a-conceptual-overview-of-asyncio.rst,A conceptual overview of :mod:`!asyncio`,https://docs.python.org/3/howto/a-conceptual-overview-of-asyncio.html,PSF-2.0,adapt,full,11,3378,LNX-203
+python-docs,Doc/howto/abi3t-migration.rst,Migrating to Stable ABI for free threading (``abi3t``),https://docs.python.org/3/howto/abi3t-migration.html,PSF-2.0,adapt,full,20,3217,LNX-203 LNX-220
+python-docs,Doc/howto/annotations.rst,Annotations Best Practices,https://docs.python.org/3/howto/annotations.html,PSF-2.0,adapt,full,7,1596,LNX-203
+python-docs,Doc/howto/argparse-optparse.rst,Migrating ``optparse`` code to ``argparse``,https://docs.python.org/3/howto/argparse-optparse.html,PSF-2.0,adapt,full,2,353,
+python-docs,Doc/howto/argparse.rst,Argparse Tutorial,https://docs.python.org/3/howto/argparse.html,PSF-2.0,adapt,full,14,4111,LNX-101 LNX-102
+python-docs,Doc/howto/clinic.rst,Argument Clinic How-To,https://docs.python.org/3/howto/clinic.html,PSF-2.0,adapt,full,2,41,
+python-docs,Doc/howto/cporting.rst,Porting Extension Modules to Python 3,https://docs.python.org/3/howto/cporting.html,PSF-2.0,adapt,full,2,122,
+python-docs,Doc/howto/curses.rst,Curses Programming with Python,https://docs.python.org/3/howto/curses.html,PSF-2.0,adapt,full,10,3845,LNX-203 LNX-220 LNX-302
+python-docs,Doc/howto/descriptor.rst,Descriptor Guide,https://docs.python.org/3/howto/descriptor.html,PSF-2.0,adapt,full,30,6890,LNX-203
+python-docs,Doc/howto/enum.rst,Enum HOWTO,https://docs.python.org/3/howto/enum.html,PSF-2.0,adapt,full,42,5830,
+python-docs,Doc/howto/free-threading-extensions.rst,C API Extension Support for Free Threading,https://docs.python.org/3/howto/free-threading-extensions.html,PSF-2.0,adapt,full,22,2313,LNX-310 LNX-203
+python-docs,Doc/howto/free-threading-python.rst,Python support for free threading,https://docs.python.org/3/howto/free-threading-python.html,PSF-2.0,adapt,full,15,1828,LNX-307
+python-docs,Doc/howto/functional.rst,Functional Programming HOWTO,https://docs.python.org/3/howto/functional.html,PSF-2.0,adapt,full,27,7438,LNX-203 LNX-220 LNX-311
+python-docs,Doc/howto/gdb_helpers.rst,Debugging C API extensions and CPython Internals with GDB,https://docs.python.org/3/howto/gdb_helpers.html,PSF-2.0,adapt,full,14,3270,LNX-220
+python-docs,Doc/howto/index.rst,Python HOWTOs,https://docs.python.org/3/howto.html,PSF-2.0,adapt,full,2,192,LNX-220
+python-docs,Doc/howto/instrumentation.rst,Instrumenting CPython with DTrace and SystemTap,https://docs.python.org/3/howto/instrumentation.html,PSF-2.0,adapt,full,10,2108,LNX-203
+python-docs,Doc/howto/ipaddress.rst,An introduction to the ipaddress module,https://docs.python.org/3/howto/ipaddress.html,PSF-2.0,adapt,full,12,1680,LNX-201
+python-docs,Doc/howto/isolating-extensions.rst,Isolating Extension Modules,https://docs.python.org/3/howto/isolating-extensions.html,PSF-2.0,adapt,full,23,3126,LNX-203
+python-docs,Doc/howto/logging-cookbook.rst,Logging Cookbook,https://docs.python.org/3/howto/logging-cookbook.html,PSF-2.0,adapt,full,55,21347,LNX-307 LNX-101 LNX-203
+python-docs,Doc/howto/logging.rst,Logging HOWTO,https://docs.python.org/3/howto/logging.html,PSF-2.0,adapt,full,25,6924,LNX-307 LNX-203 LNX-305
+python-docs,Doc/howto/mro.rst,The Python 2.3 Method Resolution Order,https://docs.python.org/3/howto/mro.html,PSF-2.0,adapt,full,8,3579,
+python-docs,Doc/howto/perf_profiling.rst,Python support for the ``perf map`` compatible profilers,https://docs.python.org/3/howto/perf_profiling.html,PSF-2.0,adapt,full,6,1580,LNX-307 LNX-220 LNX-203
+python-docs,Doc/howto/pyporting.rst,How to port Python 2 Code to Python 3,https://docs.python.org/3/howto/pyporting.html,PSF-2.0,adapt,full,3,186,
+python-docs,Doc/howto/regex.rst,Regular expression HOWTO,https://docs.python.org/3/howto/regex.html,PSF-2.0,adapt,full,26,8964,LNX-101 LNX-220 LNX-203
+python-docs,Doc/howto/remote_debugging.rst,Remote debugging attachment protocol,https://docs.python.org/3/howto/remote_debugging.html,PSF-2.0,adapt,full,12,4353,LNX-220 LNX-102 LNX-320
+python-docs,Doc/howto/sockets.rst,Socket Programming HOWTO,https://docs.python.org/3/howto/sockets.html,PSF-2.0,adapt,full,11,3092,LNX-320 LNX-202
+python-docs,Doc/howto/sorting.rst,Sorting Techniques,https://docs.python.org/3/howto/sorting.html,PSF-2.0,adapt,full,12,2029,LNX-203 LNX-311 LNX-220
+python-docs,Doc/howto/timerfd.rst,timer file descriptor HOWTO,https://docs.python.org/3/howto/timerfd.html,PSF-2.0,adapt,full,3,1074,LNX-320
+python-docs,Doc/howto/unicode.rst,Unicode HOWTO,https://docs.python.org/3/howto/unicode.html,PSF-2.0,adapt,full,19,4921,LNX-203
+python-docs,Doc/howto/urllib2.rst,HOWTO Fetch Internet Resources Using The urllib Package,https://docs.python.org/3/howto/urllib2.html,PSF-2.0,adapt,full,16,3148,LNX-305 LNX-203 LNX-314
+python-docs,Doc/library/__future__.rst,:mod:`!__future__` --- Future statement definitions,https://docs.python.org/3/library/__future__.html,PSF-2.0,adapt,full,2,649,LNX-220
+python-docs,Doc/library/__main__.rst,:mod:`!__main__` --- Top-level code environment,https://docs.python.org/3/library/__main__.html,PSF-2.0,adapt,full,9,1728,LNX-307 LNX-203 LNX-104
+python-docs,Doc/library/_thread.rst,:mod:`!_thread` --- Low-level threading API,https://docs.python.org/3/library/_thread.html,PSF-2.0,adapt,full,1,1163,LNX-203 LNX-102 LNX-320
+python-docs,Doc/library/abc.rst,:mod:`!abc` --- Abstract Base Classes,https://docs.python.org/3/library/abc.html,PSF-2.0,adapt,full,2,1586,LNX-203
+python-docs,Doc/library/aifc.rst,:mod:`!aifc` --- Read and write AIFF and AIFC files,https://docs.python.org/3/library/aifc.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/allos.rst,Generic Operating System Services,https://docs.python.org/3/library/allos.html,PSF-2.0,adapt,full,2,73,
+python-docs,Doc/library/annotationlib.rst,:mod:`!annotationlib` --- Functionality for introspecting annotations,https://docs.python.org/3/library/annotationlib.html,PSF-2.0,adapt,full,10,4181,LNX-203
+python-docs,Doc/library/archiving.rst,Data Compression and Archiving,https://docs.python.org/3/library/archiving.html,PSF-2.0,adapt,full,2,57,
+python-docs,Doc/library/argparse.rst,":mod:`!argparse` --- Parser for command-line options, arguments and subcommands",https://docs.python.org/3/library/argparse.html,PSF-2.0,adapt,full,51,12049,LNX-203 LNX-310 LNX-102
+python-docs,Doc/library/array.rst,:mod:`!array` --- Efficient arrays of numeric values,https://docs.python.org/3/library/array.html,PSF-2.0,adapt,full,2,1480,LNX-220
+python-docs,Doc/library/ast.rst,:mod:`!ast` --- Abstract syntax trees,https://docs.python.org/3/library/ast.html,PSF-2.0,adapt,full,18,10030,LNX-311 LNX-203 LNX-220
+python-docs,Doc/library/asynchat.rst,:mod:`!asynchat` --- Asynchronous socket command/response handler,https://docs.python.org/3/library/asynchat.html,PSF-2.0,adapt,full,1,82,LNX-320
+python-docs,Doc/library/asyncio-api-index.rst,High-level API Index,https://docs.python.org/3/library/asyncio-api-index.html,PSF-2.0,adapt,full,8,566,LNX-203 LNX-101
+python-docs,Doc/library/asyncio-dev.rst,Developing with asyncio,https://docs.python.org/3/library/asyncio-dev.html,PSF-2.0,adapt,full,12,1829,LNX-203 LNX-307
+python-docs,Doc/library/asyncio-eventloop.rst,Event loop,https://docs.python.org/3/library/asyncio-eventloop.html,PSF-2.0,adapt,full,29,9456,LNX-203 LNX-320 LNX-201
+python-docs,Doc/library/asyncio-exceptions.rst,Exceptions,https://docs.python.org/3/library/asyncio-exceptions.html,PSF-2.0,adapt,full,2,222,
+python-docs,Doc/library/asyncio-extending.rst,Extending,https://docs.python.org/3/library/asyncio-extending.html,PSF-2.0,adapt,full,5,389,LNX-203
+python-docs,Doc/library/asyncio-future.rst,Futures,https://docs.python.org/3/library/asyncio-future.html,PSF-2.0,adapt,full,4,1183,LNX-203
+python-docs,Doc/library/asyncio-graph.rst,Call graph introspection,https://docs.python.org/3/library/asyncio-graph.html,PSF-2.0,adapt,full,3,658,LNX-203
+python-docs,Doc/library/asyncio-llapi-index.rst,Low-level API Index,https://docs.python.org/3/library/asyncio-llapi-index.html,PSF-2.0,adapt,full,6,1499,LNX-203 LNX-320
+python-docs,Doc/library/asyncio-platforms.rst,Platform Support,https://docs.python.org/3/library/asyncio-platforms.html,PSF-2.0,adapt,full,6,411,LNX-203 LNX-302 LNX-320
+python-docs,Doc/library/asyncio-protocol.rst,Transports and Protocols,https://docs.python.org/3/library/asyncio-protocol.html,PSF-2.0,adapt,full,23,4013,LNX-203 LNX-320
+python-docs,Doc/library/asyncio-queue.rst,Queues,https://docs.python.org/3/library/asyncio-queue.html,PSF-2.0,adapt,full,7,1043,
+python-docs,Doc/library/asyncio-runner.rst,Runners,https://docs.python.org/3/library/asyncio-runner.html,PSF-2.0,adapt,full,5,880,LNX-203
+python-docs,Doc/library/asyncio-stream.rst,Streams,https://docs.python.org/3/library/asyncio-stream.html,PSF-2.0,adapt,full,9,2189,LNX-203 LNX-320
+python-docs,Doc/library/asyncio-subprocess.rst,Subprocesses,https://docs.python.org/3/library/asyncio-subprocess.html,PSF-2.0,adapt,full,7,1644,LNX-101 LNX-203 LNX-102
+python-docs,Doc/library/asyncio-sync.rst,Synchronization Primitives,https://docs.python.org/3/library/asyncio-sync.html,PSF-2.0,adapt,full,8,1700,
+python-docs,Doc/library/asyncio-task.rst,Coroutines and tasks,https://docs.python.org/3/library/asyncio-task.html,PSF-2.0,adapt,full,18,6957,LNX-203 LNX-102
+python-docs,Doc/library/asyncio-threading.rst,asyncio and free-threaded Python,https://docs.python.org/3/library/asyncio-threading.html,PSF-2.0,adapt,full,5,804,LNX-203
+python-docs,Doc/library/asyncio-tools.rst,Command-line introspection tools,https://docs.python.org/3/library/asyncio-tools.html,PSF-2.0,adapt,full,3,707,LNX-101
+python-docs,Doc/library/asyncio.rst,:mod:`!asyncio` --- Asynchronous I/O,https://docs.python.org/3/library/asyncio.html,PSF-2.0,adapt,full,1,471,
+python-docs,Doc/library/asyncore.rst,:mod:`!asyncore` --- Asynchronous socket handler,https://docs.python.org/3/library/asyncore.html,PSF-2.0,adapt,full,1,82,LNX-320
+python-docs,Doc/library/atexit.rst,:mod:`!atexit` --- Exit handlers,https://docs.python.org/3/library/atexit.html,PSF-2.0,adapt,full,2,683,LNX-305 LNX-203
+python-docs,Doc/library/audioop.rst,:mod:`!audioop` --- Manipulate raw audio data,https://docs.python.org/3/library/audioop.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/audit_events.rst,Audit events table,https://docs.python.org/3/library/audit_events.html,PSF-2.0,adapt,full,2,153,
+python-docs,Doc/library/base64.rst,":mod:`!base64` --- Base16, Base32, Base64, Base85 Data Encodings",https://docs.python.org/3/library/base64.html,PSF-2.0,adapt,full,5,2843,LNX-203
+python-docs,Doc/library/bdb.rst,:mod:`!bdb` --- Debugger framework,https://docs.python.org/3/library/bdb.html,PSF-2.0,adapt,full,2,2287,LNX-203 LNX-307 LNX-220
+python-docs,Doc/library/binary.rst,Binary Data Services,https://docs.python.org/3/library/binary.html,PSF-2.0,adapt,full,2,84,LNX-312
+python-docs,Doc/library/binascii.rst,:mod:`!binascii` --- Convert between binary and ASCII,https://docs.python.org/3/library/binascii.html,PSF-2.0,adapt,full,2,2495,LNX-203
+python-docs,Doc/library/bisect.rst,:mod:`!bisect` --- Array bisection algorithm,https://docs.python.org/3/library/bisect.html,PSF-2.0,adapt,full,4,1420,LNX-330 LNX-203 LNX-307
+python-docs,Doc/library/builtins.rst,:mod:`!builtins` --- Built-in objects,https://docs.python.org/3/library/builtins.html,PSF-2.0,adapt,full,1,214,
+python-docs,Doc/library/bz2.rst,:mod:`!bz2` --- Support for :program:`bzip2` compression,https://docs.python.org/3/library/bz2.html,PSF-2.0,adapt,full,6,1803,
+python-docs,Doc/library/calendar.rst,:mod:`!calendar` --- General calendar-related functions,https://docs.python.org/3/library/calendar.html,PSF-2.0,adapt,full,4,3669,LNX-203
+python-docs,Doc/library/cgi.rst,:mod:`!cgi` --- Common Gateway Interface support,https://docs.python.org/3/library/cgi.html,PSF-2.0,adapt,full,1,112,
+python-docs,Doc/library/cgitb.rst,:mod:`!cgitb` --- Traceback manager for CGI scripts,https://docs.python.org/3/library/cgitb.html,PSF-2.0,adapt,full,1,113,
+python-docs,Doc/library/chunk.rst,:mod:`!chunk` --- Read IFF chunked data,https://docs.python.org/3/library/chunk.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/cmath.rst,:mod:`!cmath` --- Mathematical functions for complex numbers,https://docs.python.org/3/library/cmath.html,PSF-2.0,adapt,full,13,1777,LNX-203
+python-docs,Doc/library/cmd.rst,:mod:`!cmd` --- Support for line-oriented command interpreters,https://docs.python.org/3/library/cmd.html,PSF-2.0,adapt,full,3,2116,LNX-101
+python-docs,Doc/library/cmdline.rst,Modules command-line interface (CLI),https://docs.python.org/3/library/cmdline.html,PSF-2.0,adapt,full,2,214,
+python-docs,Doc/library/cmdlinelibs.rst,Command-line interface libraries,https://docs.python.org/3/library/cmdlinelibs.html,PSF-2.0,adapt,full,2,42,
+python-docs,Doc/library/code.rst,:mod:`!code` --- Interpreter base classes,https://docs.python.org/3/library/code.html,PSF-2.0,adapt,full,3,1166,LNX-203
+python-docs,Doc/library/codecs.rst,:mod:`!codecs` --- Codec registry and base classes,https://docs.python.org/3/library/codecs.html,PSF-2.0,adapt,full,19,8552,LNX-203 LNX-310 LNX-305
+python-docs,Doc/library/codeop.rst,:mod:`!codeop` --- Compile Python code,https://docs.python.org/3/library/codeop.html,PSF-2.0,adapt,full,1,438,LNX-220 LNX-203
+python-docs,Doc/library/collections.abc.rst,:mod:`!collections.abc` --- Abstract Base Classes for Containers,https://docs.python.org/3/library/collections.abc.html,PSF-2.0,adapt,full,4,2115,LNX-310 LNX-305
+python-docs,Doc/library/collections.rst,:mod:`!collections` --- Container datatypes,https://docs.python.org/3/library/collections.html,PSF-2.0,adapt,full,15,7307,LNX-310 LNX-305 LNX-203
+python-docs,Doc/library/colorsys.rst,:mod:`!colorsys` --- Conversions between color systems,https://docs.python.org/3/library/colorsys.html,PSF-2.0,adapt,full,1,252,LNX-203
+python-docs,Doc/library/compileall.rst,:mod:`!compileall` --- Byte-compile Python libraries,https://docs.python.org/3/library/compileall.html,PSF-2.0,adapt,full,3,2021,LNX-220 LNX-203
+python-docs,Doc/library/compression.rst,The :mod:`!compression` package,https://docs.python.org/3/library/compression.html,PSF-2.0,adapt,full,1,102,LNX-104
+python-docs,Doc/library/compression.zstd.rst,:mod:`!compression.zstd` --- Compression compatible with the Zstandard format,https://docs.python.org/3/library/compression.zstd.html,PSF-2.0,adapt,full,9,4799,LNX-203 LNX-313
+python-docs,Doc/library/concurrency.rst,Concurrent Execution,https://docs.python.org/3/library/concurrency.html,PSF-2.0,adapt,full,2,86,
+python-docs,Doc/library/concurrent.futures.rst,:mod:`!concurrent.futures` --- Launching parallel tasks,https://docs.python.org/3/library/concurrent.futures.html,PSF-2.0,adapt,full,10,4093,LNX-203 LNX-320 LNX-220
+python-docs,Doc/library/concurrent.interpreters.rst,:mod:`!concurrent.interpreters` --- Multiple interpreters in the same process,https://docs.python.org/3/library/concurrent.interpreters.html,PSF-2.0,adapt,full,13,1935,LNX-203
+python-docs,Doc/library/concurrent.rst,The :mod:`!concurrent` package,https://docs.python.org/3/library/concurrent.html,PSF-2.0,adapt,full,1,21,LNX-104
+python-docs,Doc/library/configparser.rst,:mod:`!configparser` --- Configuration file parser,https://docs.python.org/3/library/configparser.html,PSF-2.0,adapt,full,15,6905,
+python-docs,Doc/library/contextlib.rst,:mod:`!contextlib` --- Utilities for :keyword:`!with`\ -statement contexts,https://docs.python.org/3/library/contextlib.html,PSF-2.0,adapt,full,13,4951,LNX-203 LNX-102
+python-docs,Doc/library/contextvars.rst,:mod:`!contextvars` --- Context Variables,https://docs.python.org/3/library/contextvars.html,PSF-2.0,adapt,full,4,1488,LNX-203
+python-docs,Doc/library/copy.rst,:mod:`!copy` --- Shallow and deep copy operations,https://docs.python.org/3/library/copy.html,PSF-2.0,adapt,full,1,650,LNX-203
+python-docs,Doc/library/copyreg.rst,:mod:`!copyreg` --- Register :mod:`!pickle` support functions,https://docs.python.org/3/library/copyreg.html,PSF-2.0,adapt,full,2,262,LNX-203
+python-docs,Doc/library/crypt.rst,:mod:`!crypt` --- Function to check Unix passwords,https://docs.python.org/3/library/crypt.html,PSF-2.0,adapt,full,1,113,LNX-203
+python-docs,Doc/library/crypto.rst,Cryptographic Services,https://docs.python.org/3/library/crypto.html,PSF-2.0,adapt,full,2,37,
+python-docs,Doc/library/csv.rst,:mod:`!csv` --- CSV file reading and writing,https://docs.python.org/3/library/csv.html,PSF-2.0,adapt,full,7,3620,LNX-203
+python-docs,Doc/library/ctypes.rst,:mod:`!ctypes` --- A foreign function library for Python,https://docs.python.org/3/library/ctypes.html,PSF-2.0,adapt,full,43,17421,LNX-203 LNX-104 LNX-220
+python-docs,Doc/library/curses.ascii.rst,:mod:`!curses.ascii` --- Utilities for ASCII characters,https://docs.python.org/3/library/curses.ascii.html,PSF-2.0,adapt,full,1,839,LNX-203
+python-docs,Doc/library/curses.panel.rst,:mod:`!curses.panel` --- A panel stack extension for curses,https://docs.python.org/3/library/curses.panel.html,PSF-2.0,adapt,full,3,542,LNX-203
+python-docs,Doc/library/curses.rst,:mod:`!curses` --- Terminal handling for character-cell displays,https://docs.python.org/3/library/curses.html,PSF-2.0,adapt,full,45,14273,LNX-203 LNX-101
+python-docs,Doc/library/custominterp.rst,Custom Python Interpreters,https://docs.python.org/3/library/custominterp.html,PSF-2.0,adapt,full,2,74,
+python-docs,Doc/library/dataclasses.rst,:mod:`!dataclasses` --- Data Classes,https://docs.python.org/3/library/dataclasses.html,PSF-2.0,adapt,full,13,5021,LNX-203
+python-docs,Doc/library/datatypes.rst,Data Types,https://docs.python.org/3/library/datatypes.html,PSF-2.0,adapt,full,2,119,
+python-docs,Doc/library/datetime.rst,:mod:`!datetime` --- Basic date and time types,https://docs.python.org/3/library/datetime.html,PSF-2.0,adapt,full,28,14818,LNX-203
+python-docs,Doc/library/dbm.rst,":mod:`!dbm` --- Interfaces to Unix ""databases""",https://docs.python.org/3/library/dbm.html,PSF-2.0,adapt,full,6,2975,LNX-203
+python-docs,Doc/library/debug.rst,Debugging and profiling,https://docs.python.org/3/library/debug.html,PSF-2.0,adapt,full,1,78,LNX-220
+python-docs,Doc/library/decimal.rst,:mod:`!decimal` --- Decimal fixed-point and floating-point arithmetic,https://docs.python.org/3/library/decimal.html,PSF-2.0,adapt,full,18,11324,LNX-203 LNX-102
+python-docs,Doc/library/development.rst,Development Tools,https://docs.python.org/3/library/development.html,PSF-2.0,adapt,full,2,83,
+python-docs,Doc/library/devmode.rst,Python Development Mode,https://docs.python.org/3/library/devmode.html,PSF-2.0,adapt,full,5,1038,LNX-101 LNX-320
+python-docs,Doc/library/difflib.rst,:mod:`!difflib` --- Helpers for computing deltas,https://docs.python.org/3/library/difflib.html,PSF-2.0,adapt,full,12,4364,LNX-203
+python-docs,Doc/library/dis.rst,:mod:`!dis` --- Disassembler for Python bytecode,https://docs.python.org/3/library/dis.html,PSF-2.0,adapt,full,10,8264,LNX-203 LNX-310 LNX-307
+python-docs,Doc/library/distribution.rst,Software Packaging and Distribution,https://docs.python.org/3/library/distribution.html,PSF-2.0,adapt,full,1,52,LNX-304
+python-docs,Doc/library/distutils.rst,:mod:`!distutils` --- Building and installing Python modules,https://docs.python.org/3/library/distutils.html,PSF-2.0,adapt,full,1,88,
+python-docs,Doc/library/doctest.rst,:mod:`!doctest` --- Test interactive Python examples,https://docs.python.org/3/library/doctest.html,PSF-2.0,adapt,full,25,10696,LNX-203 LNX-220 LNX-101
+python-docs,Doc/library/email.charset.rst,:mod:`!email.charset`: Representing character sets,https://docs.python.org/3/library/email.charset.html,PSF-2.0,adapt,full,1,1112,LNX-203
+python-docs,Doc/library/email.compat32-message.rst,:mod:`email.message.Message`: Representing an email message using the :data:`~email.policy.compat32` API,https://docs.python.org/3/library/email.compat32-message.html,PSF-2.0,adapt,full,5,4686,
+python-docs,Doc/library/email.contentmanager.rst,:mod:`!email.contentmanager`: Managing MIME Content,https://docs.python.org/3/library/email.contentmanager.html,PSF-2.0,adapt,full,2,1237,LNX-203
+python-docs,Doc/library/email.encoders.rst,:mod:`!email.encoders`: Encoders,https://docs.python.org/3/library/email.encoders.html,PSF-2.0,adapt,full,1,427,LNX-203
+python-docs,Doc/library/email.errors.rst,:mod:`!email.errors`: Exception and Defect classes,https://docs.python.org/3/library/email.errors.html,PSF-2.0,adapt,full,1,668,
+python-docs,Doc/library/email.examples.rst,:mod:`email`: Examples,https://docs.python.org/3/library/email.examples.html,PSF-2.0,adapt,full,2,306,
+python-docs,Doc/library/email.generator.rst,:mod:`!email.generator`: Generating MIME documents,https://docs.python.org/3/library/email.generator.html,PSF-2.0,adapt,full,2,1964,
+python-docs,Doc/library/email.header.rst,:mod:`!email.header`: Internationalized headers,https://docs.python.org/3/library/email.header.html,PSF-2.0,adapt,full,2,1443,LNX-203
+python-docs,Doc/library/email.headerregistry.rst,:mod:`!email.headerregistry`: Custom Header Objects,https://docs.python.org/3/library/email.headerregistry.html,PSF-2.0,adapt,full,2,2489,
+python-docs,Doc/library/email.iterators.rst,:mod:`!email.iterators`: Iterators,https://docs.python.org/3/library/email.iterators.html,PSF-2.0,adapt,full,1,350,LNX-203
+python-docs,Doc/library/email.message.rst,:mod:`!email.message`: Representing an email message,https://docs.python.org/3/library/email.message.html,PSF-2.0,adapt,full,4,4523,
+python-docs,Doc/library/email.mime.rst,:mod:`!email.mime`: Creating email and MIME objects from scratch,https://docs.python.org/3/library/email.mime.html,PSF-2.0,adapt,full,2,1584,LNX-203
+python-docs,Doc/library/email.parser.rst,:mod:`!email.parser`: Parsing email messages,https://docs.python.org/3/library/email.parser.html,PSF-2.0,adapt,full,4,1997,LNX-203 LNX-310
+python-docs,Doc/library/email.policy.rst,:mod:`!email.policy`: Policy Objects,https://docs.python.org/3/library/email.policy.html,PSF-2.0,adapt,full,4,4000,LNX-203 LNX-304
+python-docs,Doc/library/email.rst,:mod:`!email` --- An email and MIME handling package,https://docs.python.org/3/library/email.html,PSF-2.0,adapt,full,1,967,LNX-104
+python-docs,Doc/library/email.utils.rst,:mod:`!email.utils`: Miscellaneous utilities,https://docs.python.org/3/library/email.utils.html,PSF-2.0,adapt,full,2,1460,LNX-203
+python-docs,Doc/library/ensurepip.rst,:mod:`!ensurepip` --- Bootstrapping the ``pip`` installer,https://docs.python.org/3/library/ensurepip.html,PSF-2.0,adapt,full,3,686,LNX-101 LNX-203
+python-docs,Doc/library/enum.rst,:mod:`!enum` --- Support for enumerations,https://docs.python.org/3/library/enum.html,PSF-2.0,adapt,full,9,4422,
+python-docs,Doc/library/errno.rst,:mod:`!errno` --- Standard errno system symbols,https://docs.python.org/3/library/errno.html,PSF-2.0,adapt,full,2,1257,LNX-320
+python-docs,Doc/library/faulthandler.rst,:mod:`!faulthandler` --- Dump the Python traceback,https://docs.python.org/3/library/faulthandler.html,PSF-2.0,adapt,full,9,1517,LNX-203 LNX-305 LNX-102
+python-docs,Doc/library/fcntl.rst,:mod:`!fcntl` --- The ``fcntl`` and ``ioctl`` system calls,https://docs.python.org/3/library/fcntl.html,PSF-2.0,adapt,full,2,1699,LNX-320
+python-docs,Doc/library/filecmp.rst,:mod:`!filecmp` --- File and Directory Comparisons,https://docs.python.org/3/library/filecmp.html,PSF-2.0,adapt,full,2,813,LNX-203
+python-docs,Doc/library/fileformats.rst,File Formats,https://docs.python.org/3/library/fileformats.html,PSF-2.0,adapt,full,2,35,
+python-docs,Doc/library/fileinput.rst,:mod:`!fileinput` --- Iterate over lines from multiple input streams,https://docs.python.org/3/library/fileinput.html,PSF-2.0,adapt,full,2,1439,LNX-203
+python-docs,Doc/library/filesys.rst,File and Directory Access,https://docs.python.org/3/library/filesys.html,PSF-2.0,adapt,full,2,127,
+python-docs,Doc/library/fnmatch.rst,:mod:`!fnmatch` --- Unix filename pattern matching,https://docs.python.org/3/library/fnmatch.html,PSF-2.0,adapt,full,1,526,LNX-101 LNX-203
+python-docs,Doc/library/fractions.rst,:mod:`!fractions` --- Rational numbers,https://docs.python.org/3/library/fractions.html,PSF-2.0,adapt,full,1,1181,LNX-203
+python-docs,Doc/library/frameworks.rst,Program frameworks,https://docs.python.org/3/library/frameworks.html,PSF-2.0,adapt,full,2,45,
+python-docs,Doc/library/ftplib.rst,:mod:`!ftplib` --- FTP protocol client,https://docs.python.org/3/library/ftplib.html,PSF-2.0,adapt,full,6,2852,LNX-302 LNX-203 LNX-220
+python-docs,Doc/library/functional.rst,Functional Programming Modules,https://docs.python.org/3/library/functional.html,PSF-2.0,adapt,full,1,36,
+python-docs,Doc/library/functools.rst,:mod:`!functools` --- Higher-order functions and operations on callable objects,https://docs.python.org/3/library/functools.html,PSF-2.0,adapt,full,5,4232,LNX-203
+python-docs,Doc/library/gc.rst,:mod:`!gc` --- Garbage Collector interface,https://docs.python.org/3/library/gc.html,PSF-2.0,adapt,full,2,1768,LNX-203 LNX-220
+python-docs,Doc/library/getopt.rst,:mod:`!getopt` --- C-style parser for command line options,https://docs.python.org/3/library/getopt.html,PSF-2.0,adapt,full,2,1281,LNX-101
+python-docs,Doc/library/getpass.rst,:mod:`!getpass` --- Portable password input,https://docs.python.org/3/library/getpass.html,PSF-2.0,adapt,full,1,450,LNX-204 LNX-203
+python-docs,Doc/library/gettext.rst,:mod:`!gettext` --- Multilingual internationalization services,https://docs.python.org/3/library/gettext.html,PSF-2.0,adapt,full,13,3509,LNX-203 LNX-312 LNX-220
+python-docs,Doc/library/glob.rst,:mod:`!glob` --- Unix style pathname pattern expansion,https://docs.python.org/3/library/glob.html,PSF-2.0,adapt,full,2,1010,LNX-101 LNX-203
+python-docs,Doc/library/graphlib.rst,:mod:`!graphlib` --- Functionality to operate with graph-like structures,https://docs.python.org/3/library/graphlib.html,PSF-2.0,adapt,full,2,1209,LNX-203
+python-docs,Doc/library/grp.rst,:mod:`!grp` --- The group database,https://docs.python.org/3/library/grp.html,PSF-2.0,adapt,full,1,266,LNX-102 LNX-203
+python-docs,Doc/library/gzip.rst,:mod:`!gzip` --- Support for :program:`gzip` files,https://docs.python.org/3/library/gzip.html,PSF-2.0,adapt,full,5,1834,LNX-101 LNX-203
+python-docs,Doc/library/hashlib.rst,:mod:`!hashlib` --- Secure hashes and message digests,https://docs.python.org/3/library/hashlib.html,PSF-2.0,adapt,full,14,4196,LNX-203 LNX-204
+python-docs,Doc/library/heapq.rst,:mod:`!heapq` --- Heap queue algorithm,https://docs.python.org/3/library/heapq.html,PSF-2.0,adapt,full,5,2678,LNX-203
+python-docs,Doc/library/hmac.rst,:mod:`!hmac` --- Keyed-Hashing for Message Authentication,https://docs.python.org/3/library/hmac.html,PSF-2.0,adapt,full,1,704,LNX-203 LNX-314
+python-docs,Doc/library/html.entities.rst,:mod:`!html.entities` --- Definitions of HTML general entities,https://docs.python.org/3/library/html.entities.html,PSF-2.0,adapt,full,1,157,
+python-docs,Doc/library/html.parser.rst,:mod:`!html.parser` --- Simple HTML and XHTML parser,https://docs.python.org/3/library/html.parser.html,PSF-2.0,adapt,full,4,1601,LNX-203
+python-docs,Doc/library/html.rst,:mod:`!html` --- HyperText Markup Language support,https://docs.python.org/3/library/html.html,PSF-2.0,adapt,full,1,178,LNX-203
+python-docs,Doc/library/http.client.rst,:mod:`!http.client` --- HTTP protocol client,https://docs.python.org/3/library/http.client.html,PSF-2.0,adapt,full,6,3915,LNX-203
+python-docs,Doc/library/http.cookiejar.rst,:mod:`!http.cookiejar` --- Cookie handling for HTTP clients,https://docs.python.org/3/library/http.cookiejar.html,PSF-2.0,adapt,full,7,3825,
+python-docs,Doc/library/http.cookies.rst,:mod:`!http.cookies` --- HTTP state management,https://docs.python.org/3/library/http.cookies.html,PSF-2.0,adapt,full,4,1558,LNX-203
+python-docs,Doc/library/http.rst,:mod:`!http` --- HTTP modules,https://docs.python.org/3/library/http.html,PSF-2.0,adapt,full,4,1173,
+python-docs,Doc/library/http.server.rst,:mod:`!http.server` --- HTTP servers,https://docs.python.org/3/library/http.server.html,PSF-2.0,adapt,full,5,3269,LNX-204 LNX-202
+python-docs,Doc/library/i18n.rst,Internationalization,https://docs.python.org/3/library/i18n.html,PSF-2.0,adapt,full,2,53,
+python-docs,Doc/library/idle.rst,IDLE --- Python editor and shell,https://docs.python.org/3/library/idle.html,PSF-2.0,adapt,full,37,6432,LNX-101 LNX-102 LNX-203
+python-docs,Doc/library/imaplib.rst,:mod:`!imaplib` --- IMAP4 protocol client,https://docs.python.org/3/library/imaplib.html,PSF-2.0,adapt,full,6,4895,LNX-320 LNX-203
+python-docs,Doc/library/imghdr.rst,:mod:`!imghdr` --- Determine the type of an image,https://docs.python.org/3/library/imghdr.html,PSF-2.0,adapt,full,1,101,
+python-docs,Doc/library/imp.rst,:mod:`!imp` --- Access the import internals,https://docs.python.org/3/library/imp.html,PSF-2.0,adapt,full,1,86,
+python-docs,Doc/library/importlib.metadata.rst,:mod:`!importlib.metadata` -- Accessing package metadata,https://docs.python.org/3/library/importlib.metadata.html,PSF-2.0,adapt,full,14,3555,LNX-104 LNX-304 LNX-203
+python-docs,Doc/library/importlib.resources.abc.rst,:mod:`!importlib.resources.abc` -- Abstract base classes for resources,https://docs.python.org/3/library/importlib.resources.abc.html,PSF-2.0,adapt,full,1,825,
+python-docs,Doc/library/importlib.resources.rst,":mod:`!importlib.resources` -- Package resource reading, opening and access",https://docs.python.org/3/library/importlib.resources.html,PSF-2.0,adapt,full,2,1312,LNX-104 LNX-203
+python-docs,Doc/library/importlib.rst,:mod:`!importlib` --- The implementation of :keyword:`!import`,https://docs.python.org/3/library/importlib.html,PSF-2.0,adapt,full,15,7487,LNX-203 LNX-220
+python-docs,Doc/library/index.rst,The Python standard library,https://docs.python.org/3/library.html,PSF-2.0,adapt,full,2,344,
+python-docs,Doc/library/inspect.rst,:mod:`!inspect` --- Inspect live objects,https://docs.python.org/3/library/inspect.html,PSF-2.0,adapt,full,15,8277,LNX-203 LNX-202
+python-docs,Doc/library/internet.rst,Internet Protocols and Support,https://docs.python.org/3/library/internet.html,PSF-2.0,adapt,full,2,115,
+python-docs,Doc/library/intro.rst,Introduction,https://docs.python.org/3/library/intro.html,PSF-2.0,adapt,full,5,1157,LNX-320 LNX-203 LNX-102
+python-docs,Doc/library/io.rst,:mod:`!io` --- Core tools for working with streams,https://docs.python.org/3/library/io.html,PSF-2.0,adapt,full,22,6960,LNX-307 LNX-203 LNX-320
+python-docs,Doc/library/ipaddress.rst,:mod:`!ipaddress` --- IPv4/IPv6 manipulation library,https://docs.python.org/3/library/ipaddress.html,PSF-2.0,adapt,full,16,5485,LNX-201 LNX-203
+python-docs,Doc/library/ipc.rst,Networking and Interprocess Communication,https://docs.python.org/3/library/ipc.html,PSF-2.0,adapt,full,2,77,LNX-201 LNX-320
+python-docs,Doc/library/itertools.rst,:mod:`!itertools` --- Functions creating iterators for efficient looping,https://docs.python.org/3/library/itertools.html,PSF-2.0,adapt,full,9,9075,LNX-203 LNX-220
+python-docs,Doc/library/json.rst,:mod:`!json` --- JSON encoder and decoder,https://docs.python.org/3/library/json.html,PSF-2.0,adapt,full,12,4173,LNX-303 LNX-203
+python-docs,Doc/library/keyword.rst,:mod:`!keyword` --- Testing for Python keywords,https://docs.python.org/3/library/keyword.html,PSF-2.0,adapt,full,1,149,
+python-docs,Doc/library/language.rst,Python Language Services,https://docs.python.org/3/library/language.html,PSF-2.0,adapt,full,2,54,
+python-docs,Doc/library/linecache.rst,:mod:`!linecache` --- Random access to text lines,https://docs.python.org/3/library/linecache.html,PSF-2.0,adapt,full,1,386,LNX-203
+python-docs,Doc/library/locale.rst,:mod:`!locale` --- Internationalization services,https://docs.python.org/3/library/locale.html,PSF-2.0,adapt,full,7,3633,LNX-102 LNX-203 LNX-312
+python-docs,Doc/library/logging.config.rst,:mod:`!logging.config` --- Logging configuration,https://docs.python.org/3/library/logging.config.html,PSF-2.0,adapt,full,14,5834,LNX-307 LNX-203 LNX-305
+python-docs,Doc/library/logging.handlers.rst,:mod:`!logging.handlers` --- Logging handlers,https://docs.python.org/3/library/logging.handlers.html,PSF-2.0,adapt,full,17,6915,LNX-305 LNX-307 LNX-320
+python-docs,Doc/library/logging.rst,:mod:`!logging` --- Logging facility for Python,https://docs.python.org/3/library/logging.html,PSF-2.0,adapt,full,15,9421,LNX-307 LNX-203 LNX-305
+python-docs,Doc/library/lzma.rst,:mod:`!lzma` --- Compression using the LZMA algorithm,https://docs.python.org/3/library/lzma.html,PSF-2.0,adapt,full,7,2888,LNX-310
+python-docs,Doc/library/mailbox.rst,:mod:`!mailbox` --- Manipulate mailboxes in various formats,https://docs.python.org/3/library/mailbox.html,PSF-2.0,adapt,full,16,8087,
+python-docs,Doc/library/mailcap.rst,:mod:`!mailcap` --- Mailcap file handling,https://docs.python.org/3/library/mailcap.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/markup.rst,Structured Markup Processing Tools,https://docs.python.org/3/library/markup.html,PSF-2.0,adapt,full,2,88,
+python-docs,Doc/library/marshal.rst,:mod:`!marshal` --- Internal Python object serialization,https://docs.python.org/3/library/marshal.html,PSF-2.0,adapt,full,1,1045,LNX-203
+python-docs,Doc/library/math.integer.rst,:mod:`!math.integer` --- integer-specific mathematics functions,https://docs.python.org/3/library/math.integer.html,PSF-2.0,adapt,full,1,401,LNX-203
+python-docs,Doc/library/math.rst,:mod:`!math` --- Mathematical functions,https://docs.python.org/3/library/math.html,PSF-2.0,adapt,full,20,4553,LNX-203
+python-docs,Doc/library/mimetypes.rst,:mod:`!mimetypes` --- Map filenames to MIME types,https://docs.python.org/3/library/mimetypes.html,PSF-2.0,adapt,full,4,2112,LNX-203
+python-docs,Doc/library/mm.rst,Multimedia Services,https://docs.python.org/3/library/mm.html,PSF-2.0,adapt,full,2,37,
+python-docs,Doc/library/mmap.rst,:mod:`!mmap` --- Memory-mapped file support,https://docs.python.org/3/library/mmap.html,PSF-2.0,adapt,full,8,2668,LNX-320
+python-docs,Doc/library/modulefinder.rst,:mod:`!modulefinder` --- Find modules used by a script,https://docs.python.org/3/library/modulefinder.html,PSF-2.0,adapt,full,2,386,LNX-101 LNX-203 LNX-220
+python-docs,Doc/library/modules.rst,Importing Modules,https://docs.python.org/3/library/modules.html,PSF-2.0,adapt,full,2,55,
+python-docs,Doc/library/msilib.rst,:mod:`!msilib` --- Read and write Microsoft Installer files,https://docs.python.org/3/library/msilib.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/msvcrt.rst,:mod:`!msvcrt` --- Useful routines from the MS VC++ runtime,https://docs.python.org/3/library/msvcrt.html,PSF-2.0,adapt,full,4,1088,LNX-203
+python-docs,Doc/library/multiprocessing.rst,:mod:`!multiprocessing` --- Process-based parallelism,https://docs.python.org/3/library/multiprocessing.html,PSF-2.0,adapt,full,33,17218,LNX-102 LNX-203 LNX-320
+python-docs,Doc/library/multiprocessing.shared_memory.rst,:mod:`!multiprocessing.shared_memory` --- Shared memory for direct access across processes,https://docs.python.org/3/library/multiprocessing.shared_memory.html,PSF-2.0,adapt,full,2,2431,LNX-320 LNX-102 LNX-101
+python-docs,Doc/library/netdata.rst,Internet Data Handling,https://docs.python.org/3/library/netdata.html,PSF-2.0,adapt,full,2,30,
+python-docs,Doc/library/netrc.rst,:mod:`!netrc` --- netrc file processing,https://docs.python.org/3/library/netrc.html,PSF-2.0,adapt,full,2,477,
+python-docs,Doc/library/nis.rst,:mod:`!nis` --- Interface to Sun’s NIS (Yellow Pages),https://docs.python.org/3/library/nis.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/nntplib.rst,:mod:`!nntplib` --- NNTP protocol client,https://docs.python.org/3/library/nntplib.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/numbers.rst,:mod:`!numbers` --- Numeric abstract base classes,https://docs.python.org/3/library/numbers.html,PSF-2.0,adapt,full,5,953,
+python-docs,Doc/library/numeric.rst,Numeric and Mathematical Modules,https://docs.python.org/3/library/numeric.html,PSF-2.0,adapt,full,2,84,
+python-docs,Doc/library/operator.rst,:mod:`!operator` --- Standard operators as functions,https://docs.python.org/3/library/operator.html,PSF-2.0,adapt,full,3,1987,LNX-203 LNX-311
+python-docs,Doc/library/optparse.rst,:mod:`!optparse` --- Parser for command line options,https://docs.python.org/3/library/optparse.html,PSF-2.0,adapt,full,43,11528,LNX-101 LNX-220 LNX-203
+python-docs,Doc/library/os.path.rst,:mod:`!os.path` --- Common pathname manipulations,https://docs.python.org/3/library/os.path.html,PSF-2.0,adapt,full,3,3470,LNX-203 LNX-101
+python-docs,Doc/library/os.rst,:mod:`!os` --- Miscellaneous operating system interfaces,https://docs.python.org/3/library/os.html,PSF-2.0,adapt,full,34,31089,LNX-203 LNX-320 LNX-101
+python-docs,Doc/library/ossaudiodev.rst,:mod:`!ossaudiodev` --- Access to OSS-compatible audio devices,https://docs.python.org/3/library/ossaudiodev.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/pathlib.rst,:mod:`!pathlib` --- Object-oriented filesystem paths,https://docs.python.org/3/library/pathlib.html,PSF-2.0,adapt,full,23,9060,LNX-320 LNX-101 LNX-204
+python-docs,Doc/library/pdb.rst,:mod:`!pdb` --- The Python Debugger,https://docs.python.org/3/library/pdb.html,PSF-2.0,adapt,full,6,4290,LNX-203 LNX-220
+python-docs,Doc/library/persistence.rst,Data Persistence,https://docs.python.org/3/library/persistence.html,PSF-2.0,adapt,full,2,87,
+python-docs,Doc/library/pickle.rst,:mod:`!pickle` --- Python object serialization,https://docs.python.org/3/library/pickle.html,PSF-2.0,adapt,full,21,6921,LNX-203 LNX-307
+python-docs,Doc/library/pickletools.rst,:mod:`!pickletools` --- Tools for pickle developers,https://docs.python.org/3/library/pickletools.html,PSF-2.0,adapt,full,4,554,LNX-203
+python-docs,Doc/library/pipes.rst,:mod:`!pipes` --- Interface to shell pipelines,https://docs.python.org/3/library/pipes.html,PSF-2.0,adapt,full,1,82,LNX-101
+python-docs,Doc/library/pkgutil.rst,:mod:`!pkgutil` --- Package extension utility,https://docs.python.org/3/library/pkgutil.html,PSF-2.0,adapt,full,2,1402,LNX-104 LNX-203
+python-docs,Doc/library/platform.rst,:mod:`!platform` --- Access to underlying platform's identifying data,https://docs.python.org/3/library/platform.html,PSF-2.0,adapt,full,9,1685,LNX-203 LNX-302
+python-docs,Doc/library/plistlib.rst,:mod:`!plistlib` --- Generate and parse Apple ``.plist`` files,https://docs.python.org/3/library/plistlib.html,PSF-2.0,adapt,full,2,837,LNX-203
+python-docs,Doc/library/poplib.rst,:mod:`!poplib` --- POP3 protocol client,https://docs.python.org/3/library/poplib.html,PSF-2.0,adapt,full,3,1245,LNX-220
+python-docs,Doc/library/posix.rst,:mod:`!posix` --- The most common POSIX system calls,https://docs.python.org/3/library/posix.html,PSF-2.0,adapt,full,3,512,LNX-320
+python-docs,Doc/library/pprint.rst,:mod:`!pprint` --- Data pretty printer,https://docs.python.org/3/library/pprint.html,PSF-2.0,adapt,full,4,2300,LNX-203 LNX-304
+python-docs,Doc/library/profile.rst,:mod:`!profile` --- Pure Python profiler,https://docs.python.org/3/library/profile.html,PSF-2.0,adapt,full,9,2044,LNX-203
+python-docs,Doc/library/profiling.rst,:mod:`!profiling` --- Python profilers,https://docs.python.org/3/library/profiling.html,PSF-2.0,adapt,full,11,1217,LNX-203
+python-docs,Doc/library/profiling.sampling.rst,:mod:`!profiling.sampling` --- Statistical profiler,https://docs.python.org/3/library/profiling.sampling.html,PSF-2.0,adapt,full,51,8929,LNX-203 LNX-307 LNX-102
+python-docs,Doc/library/profiling.tracing.rst,:mod:`!profiling.tracing` --- Deterministic profiler,https://docs.python.org/3/library/profiling.tracing.html,PSF-2.0,adapt,full,10,1384,LNX-203
+python-docs,Doc/library/pstats.rst,:mod:`!pstats` --- Statistics for profilers,https://docs.python.org/3/library/pstats.html,PSF-2.0,adapt,full,9,1268,LNX-203
+python-docs,Doc/library/pty.rst,:mod:`!pty` --- Pseudo-terminal utilities,https://docs.python.org/3/library/pty.html,PSF-2.0,adapt,full,2,692,LNX-203 LNX-320 LNX-101
+python-docs,Doc/library/pwd.rst,:mod:`!pwd` --- The password database,https://docs.python.org/3/library/pwd.html,PSF-2.0,adapt,full,1,250,LNX-204 LNX-203
+python-docs,Doc/library/py_compile.rst,:mod:`!py_compile` --- Compile Python source files,https://docs.python.org/3/library/py_compile.html,PSF-2.0,adapt,full,2,938,LNX-220 LNX-203
+python-docs,Doc/library/pyclbr.rst,:mod:`!pyclbr` --- Python module browser support,https://docs.python.org/3/library/pyclbr.html,PSF-2.0,adapt,full,3,615,LNX-203
+python-docs,Doc/library/pydoc.rst,:mod:`!pydoc` --- Documentation generator and online help system,https://docs.python.org/3/library/pydoc.html,PSF-2.0,adapt,full,1,818,LNX-203
+python-docs,Doc/library/pyexpat.rst,:mod:`!xml.parsers.expat` --- Fast XML parsing using Expat,https://docs.python.org/3/library/pyexpat.html,PSF-2.0,adapt,full,8,5603,LNX-203
+python-docs,Doc/library/python.rst,Python Runtime Services,https://docs.python.org/3/library/python.html,PSF-2.0,adapt,full,2,75,LNX-312
+python-docs,Doc/library/queue.rst,:mod:`!queue` --- A synchronized queue class,https://docs.python.org/3/library/queue.html,PSF-2.0,adapt,full,5,1796,
+python-docs,Doc/library/quopri.rst,:mod:`!quopri` --- Encode and decode MIME quoted-printable data,https://docs.python.org/3/library/quopri.html,PSF-2.0,adapt,full,1,386,LNX-203
+python-docs,Doc/library/random.rst,:mod:`!random` --- Generate pseudo-random numbers,https://docs.python.org/3/library/random.html,PSF-2.0,adapt,full,13,4154,LNX-203
+python-docs,Doc/library/re.rst,:mod:`!re` --- Regular expression operations,https://docs.python.org/3/library/re.html,PSF-2.0,adapt,full,26,11929,LNX-101 LNX-203 LNX-220
+python-docs,Doc/library/readline.rst,:mod:`!readline` --- GNU readline interface,https://docs.python.org/3/library/readline.html,PSF-2.0,adapt,full,8,1939,LNX-203 LNX-202
+python-docs,Doc/library/removed.rst,Removed Modules,https://docs.python.org/3/library/removed.html,PSF-2.0,adapt,full,2,77,
+python-docs,Doc/library/reprlib.rst,:mod:`!reprlib` --- Alternate :func:`repr` implementation,https://docs.python.org/3/library/reprlib.html,PSF-2.0,adapt,full,3,973,LNX-203
+python-docs,Doc/library/resource.rst,:mod:`!resource` --- Resource usage information,https://docs.python.org/3/library/resource.html,PSF-2.0,adapt,full,3,1799,LNX-203 LNX-320 LNX-102
+python-docs,Doc/library/rlcompleter.rst,:mod:`!rlcompleter` --- Completion function for GNU readline,https://docs.python.org/3/library/rlcompleter.html,PSF-2.0,adapt,full,1,315,LNX-203
+python-docs,Doc/library/runpy.rst,:mod:`!runpy` --- Locating and executing Python modules,https://docs.python.org/3/library/runpy.html,PSF-2.0,adapt,full,1,1220,LNX-101 LNX-203
+python-docs,Doc/library/sched.rst,:mod:`!sched` --- Event scheduler,https://docs.python.org/3/library/sched.html,PSF-2.0,adapt,full,2,697,
+python-docs,Doc/library/secrets.rst,:mod:`!secrets` --- Generate secure random numbers for managing secrets,https://docs.python.org/3/library/secrets.html,PSF-2.0,adapt,full,6,796,LNX-313 LNX-203
+python-docs,Doc/library/security_warnings.rst,Security Considerations,https://docs.python.org/3/library/security_warnings.html,PSF-2.0,adapt,full,2,237,
+python-docs,Doc/library/select.rst,:mod:`!select` --- Waiting for I/O completion,https://docs.python.org/3/library/select.html,PSF-2.0,adapt,full,6,3032,LNX-320
+python-docs,Doc/library/selectors.rst,:mod:`!selectors` --- High-level I/O multiplexing,https://docs.python.org/3/library/selectors.html,PSF-2.0,adapt,full,4,1121,LNX-320
+python-docs,Doc/library/shelve.rst,:mod:`!shelve` --- Python object persistence,https://docs.python.org/3/library/shelve.html,PSF-2.0,adapt,full,4,1582,
+python-docs,Doc/library/shlex.rst,:mod:`!shlex` --- Simple lexical analysis,https://docs.python.org/3/library/shlex.html,PSF-2.0,adapt,full,4,2581,LNX-101 LNX-203 LNX-102
+python-docs,Doc/library/shutil.rst,:mod:`!shutil` --- High-level file operations,https://docs.python.org/3/library/shutil.html,PSF-2.0,adapt,full,11,5388,LNX-203 LNX-101 LNX-320
+python-docs,Doc/library/signal.rst,:mod:`!signal` --- Set handlers for asynchronous events,https://docs.python.org/3/library/signal.html,PSF-2.0,adapt,full,10,3874,LNX-102 LNX-305 LNX-320
+python-docs,Doc/library/site.rst,:mod:`!site` --- Site-specific configuration hook,https://docs.python.org/3/library/site.html,PSF-2.0,adapt,full,10,2938,LNX-203
+python-docs,Doc/library/smtpd.rst,:mod:`!smtpd` --- SMTP Server,https://docs.python.org/3/library/smtpd.html,PSF-2.0,adapt,full,1,96,
+python-docs,Doc/library/smtplib.rst,:mod:`!smtplib` --- SMTP protocol client,https://docs.python.org/3/library/smtplib.html,PSF-2.0,adapt,full,4,3420,LNX-302 LNX-320 LNX-102
+python-docs,Doc/library/sndhdr.rst,:mod:`!sndhdr` --- Determine type of sound file,https://docs.python.org/3/library/sndhdr.html,PSF-2.0,adapt,full,1,101,
+python-docs,Doc/library/socket.rst,:mod:`!socket` --- Low-level networking interface,https://docs.python.org/3/library/socket.html,PSF-2.0,adapt,full,18,12395,LNX-320 LNX-201 LNX-203
+python-docs,Doc/library/socketserver.rst,:mod:`!socketserver` --- A framework for network servers,https://docs.python.org/3/library/socketserver.html,PSF-2.0,adapt,full,8,3384,LNX-201 LNX-320 LNX-203
+python-docs,Doc/library/spwd.rst,:mod:`!spwd` --- The shadow password database,https://docs.python.org/3/library/spwd.html,PSF-2.0,adapt,full,1,97,LNX-204
+python-docs,Doc/library/sqlite3.rst,:mod:`!sqlite3` --- DB-API 2.0 interface for SQLite databases,https://docs.python.org/3/library/sqlite3.html,PSF-2.0,adapt,full,28,11780,LNX-203 LNX-202 LNX-307
+python-docs,Doc/library/ssl.rst,:mod:`!ssl` --- TLS/SSL wrapper for socket objects,https://docs.python.org/3/library/ssl.html,PSF-2.0,adapt,full,35,17188,LNX-320 LNX-204 LNX-203
+python-docs,Doc/library/stat.rst,:mod:`!stat` --- Interpreting :func:`~os.stat` results,https://docs.python.org/3/library/stat.html,PSF-2.0,adapt,full,2,1577,LNX-320 LNX-203
+python-docs,Doc/library/statistics.rst,:mod:`!statistics` --- Mathematical statistics functions,https://docs.python.org/3/library/statistics.html,PSF-2.0,adapt,full,15,6123,LNX-203
+python-docs,Doc/library/string.rst,:mod:`!string` --- Common string operations,https://docs.python.org/3/library/string.html,PSF-2.0,adapt,full,10,5445,LNX-203 LNX-102
+python-docs,Doc/library/string.templatelib.rst,:mod:`!string.templatelib` --- Support for template string literals,https://docs.python.org/3/library/string.templatelib.html,PSF-2.0,adapt,full,5,1410,LNX-203
+python-docs,Doc/library/stringprep.rst,:mod:`!stringprep` --- Internet String Preparation,https://docs.python.org/3/library/stringprep.html,PSF-2.0,adapt,full,1,575,LNX-203
+python-docs,Doc/library/struct.rst,:mod:`!struct` --- Interpret bytes as packed binary data,https://docs.python.org/3/library/struct.html,PSF-2.0,adapt,full,11,3424,LNX-203
+python-docs,Doc/library/subprocess.rst,:mod:`!subprocess` --- Subprocess management,https://docs.python.org/3/library/subprocess.html,PSF-2.0,adapt,full,22,8454,LNX-101 LNX-203 LNX-102
+python-docs,Doc/library/sunau.rst,:mod:`!sunau` --- Read and write Sun AU files,https://docs.python.org/3/library/sunau.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/superseded.rst,Superseded modules,https://docs.python.org/3/library/superseded.html,PSF-2.0,adapt,full,2,153,
+python-docs,Doc/library/symtable.rst,:mod:`!symtable` --- Access to the compiler's symbol tables,https://docs.python.org/3/library/symtable.html,PSF-2.0,adapt,full,4,1247,LNX-220 LNX-203
+python-docs,Doc/library/sys.monitoring.rst,:mod:`!sys.monitoring` --- Execution event monitoring,https://docs.python.org/3/library/sys.monitoring.html,PSF-2.0,adapt,full,15,1878,LNX-307 LNX-203
+python-docs,Doc/library/sys.rst,:mod:`!sys` --- System-specific parameters and functions,https://docs.python.org/3/library/sys.html,PSF-2.0,adapt,full,10,12456,LNX-203 LNX-220 LNX-101
+python-docs,Doc/library/sys_path_init.rst,The initialization of the :data:`sys.path` module search path,https://docs.python.org/3/library/sys_path_init.html,PSF-2.0,adapt,full,5,977,LNX-101
+python-docs,Doc/library/sysconfig.rst,:mod:`!sysconfig` --- Provide access to Python's configuration information,https://docs.python.org/3/library/sysconfig.html,PSF-2.0,adapt,full,15,2015,LNX-203 LNX-306
+python-docs,Doc/library/syslog.rst,:mod:`!syslog` --- Unix syslog library routines,https://docs.python.org/3/library/syslog.html,PSF-2.0,adapt,full,3,792,LNX-203
+python-docs,Doc/library/tabnanny.rst,:mod:`!tabnanny` --- Detection of ambiguous indentation,https://docs.python.org/3/library/tabnanny.html,PSF-2.0,adapt,full,1,240,LNX-203
+python-docs,Doc/library/tarfile.rst,:mod:`!tarfile` --- Read and write tar archive files,https://docs.python.org/3/library/tarfile.html,PSF-2.0,adapt,full,18,7375,LNX-101 LNX-102 LNX-203
+python-docs,Doc/library/telnetlib.rst,:mod:`!telnetlib` --- Telnet client,https://docs.python.org/3/library/telnetlib.html,PSF-2.0,adapt,full,1,98,
+python-docs,Doc/library/tempfile.rst,:mod:`!tempfile` --- Generate temporary files and directories,https://docs.python.org/3/library/tempfile.html,PSF-2.0,adapt,full,5,3046,LNX-203
+python-docs,Doc/library/termios.rst,:mod:`!termios` --- POSIX style tty control,https://docs.python.org/3/library/termios.html,PSF-2.0,adapt,full,2,723,LNX-320 LNX-203
+python-docs,Doc/library/test.rst,:mod:`!test` --- Regression tests package for Python,https://docs.python.org/3/library/test.html,PSF-2.0,adapt,full,20,8967,LNX-203 LNX-104 LNX-220
+python-docs,Doc/library/text.rst,Text Processing Services,https://docs.python.org/3/library/text.html,PSF-2.0,adapt,full,2,71,LNX-312
+python-docs,Doc/library/textwrap.rst,:mod:`!textwrap` --- Text wrapping and filling,https://docs.python.org/3/library/textwrap.html,PSF-2.0,adapt,full,2,1484,LNX-203
+python-docs,Doc/library/threading.rst,:mod:`!threading` --- Thread-based parallelism,https://docs.python.org/3/library/threading.html,PSF-2.0,adapt,full,17,8277,LNX-203 LNX-307 LNX-102
+python-docs,Doc/library/time.rst,:mod:`!time` --- Time access and conversions,https://docs.python.org/3/library/time.html,PSF-2.0,adapt,full,7,5118,LNX-203 LNX-102
+python-docs,Doc/library/timeit.rst,:mod:`!timeit` --- Measure execution time of small code snippets,https://docs.python.org/3/library/timeit.html,PSF-2.0,adapt,full,5,2024,LNX-203 LNX-101
+python-docs,Doc/library/tk.rst,Graphical user interfaces with Tk,https://docs.python.org/3/library/tk.html,PSF-2.0,adapt,full,2,239,
+python-docs,Doc/library/tkinter.colorchooser.rst,:mod:`!tkinter.colorchooser` --- Color choosing dialog,https://docs.python.org/3/library/tkinter.colorchooser.html,PSF-2.0,adapt,full,1,184,
+python-docs,Doc/library/tkinter.dialogs.rst,Tkinter dialogs,https://docs.python.org/3/library/tkinter.dialogs.html,PSF-2.0,adapt,full,6,1793,LNX-203
+python-docs,Doc/library/tkinter.dnd.rst,:mod:`!tkinter.dnd` --- Drag and drop support,https://docs.python.org/3/library/tkinter.dnd.html,PSF-2.0,adapt,full,1,326,LNX-203 LNX-102
+python-docs,Doc/library/tkinter.font.rst,:mod:`!tkinter.font` --- Tkinter font wrapper,https://docs.python.org/3/library/tkinter.font.html,PSF-2.0,adapt,full,1,793,LNX-203
+python-docs,Doc/library/tkinter.fontchooser.rst,:mod:`!tkinter.fontchooser` --- Font selection dialog,https://docs.python.org/3/library/tkinter.fontchooser.html,PSF-2.0,adapt,full,1,405,
+python-docs,Doc/library/tkinter.messagebox.rst,:mod:`!tkinter.messagebox` --- Tkinter message prompts,https://docs.python.org/3/library/tkinter.messagebox.html,PSF-2.0,adapt,full,1,787,LNX-203
+python-docs,Doc/library/tkinter.rst,:mod:`!tkinter` --- Python interface to Tcl/Tk,https://docs.python.org/3/library/tkinter.html,PSF-2.0,adapt,full,51,37578,LNX-203 LNX-310 LNX-202
+python-docs,Doc/library/tkinter.scrolledtext.rst,:mod:`!tkinter.scrolledtext` --- Scrolled text widget,https://docs.python.org/3/library/tkinter.scrolledtext.html,PSF-2.0,adapt,full,1,202,
+python-docs,Doc/library/tkinter.systray.rst,:mod:`!tkinter.systray` --- System tray icon and notifications,https://docs.python.org/3/library/tkinter.systray.html,PSF-2.0,adapt,full,1,334,
+python-docs,Doc/library/tkinter.ttk.rst,:mod:`!tkinter.ttk` --- Tk themed widgets,https://docs.python.org/3/library/tkinter.ttk.html,PSF-2.0,adapt,full,46,10259,
+python-docs,Doc/library/token.rst,:mod:`!token` --- Constants used with Python parse trees,https://docs.python.org/3/library/token.html,PSF-2.0,adapt,full,1,1066,LNX-203 LNX-311
+python-docs,Doc/library/tokenize.rst,:mod:`!tokenize` --- Tokenizer for Python source,https://docs.python.org/3/library/tokenize.html,PSF-2.0,adapt,full,4,1734,LNX-203 LNX-101
+python-docs,Doc/library/tomllib.rst,:mod:`!tomllib` --- Parse TOML files,https://docs.python.org/3/library/tomllib.html,PSF-2.0,adapt,full,4,773,LNX-203
+python-docs,Doc/library/trace.rst,:mod:`!trace` --- Trace or track Python statement execution,https://docs.python.org/3/library/trace.html,PSF-2.0,adapt,full,6,962,
+python-docs,Doc/library/traceback.rst,:mod:`!traceback` --- Print or retrieve a stack traceback,https://docs.python.org/3/library/traceback.html,PSF-2.0,adapt,full,7,3548,LNX-203
+python-docs,Doc/library/tracemalloc.rst,:mod:`!tracemalloc` --- Trace memory allocations,https://docs.python.org/3/library/tracemalloc.html,PSF-2.0,adapt,full,16,3362,LNX-203 LNX-103
+python-docs,Doc/library/tty.rst,:mod:`!tty` --- Terminal control functions,https://docs.python.org/3/library/tty.html,PSF-2.0,adapt,full,1,371,LNX-203
+python-docs,Doc/library/turtle.rst,:mod:`!turtle` --- Turtle graphics,https://docs.python.org/3/library/turtle.html,PSF-2.0,adapt,full,26,10823,LNX-203 LNX-202
+python-docs,Doc/library/types.rst,:mod:`!types` --- Dynamic type creation and names for built-in types,https://docs.python.org/3/library/types.html,PSF-2.0,adapt,full,5,2254,LNX-203 LNX-220
+python-docs,Doc/library/typing.rst,:mod:`!typing` --- Support for type hints,https://docs.python.org/3/library/typing.html,PSF-2.0,adapt,full,30,19018,LNX-203 LNX-310 LNX-220
+python-docs,Doc/library/unicodedata.rst,:mod:`!unicodedata` --- Unicode Database,https://docs.python.org/3/library/unicodedata.html,PSF-2.0,adapt,full,6,1460,LNX-203
+python-docs,Doc/library/unittest.mock-examples.rst,:mod:`!unittest.mock` --- getting started,https://docs.python.org/3/library/unittest.mock-examples.html,PSF-2.0,adapt,full,29,6518,LNX-304 LNX-330 LNX-203
+python-docs,Doc/library/unittest.mock.rst,:mod:`!unittest.mock` --- mock object library,https://docs.python.org/3/library/unittest.mock.html,PSF-2.0,adapt,full,36,13769,LNX-304 LNX-330 LNX-310
+python-docs,Doc/library/unittest.rst,:mod:`!unittest` --- Unit testing framework,https://docs.python.org/3/library/unittest.html,PSF-2.0,adapt,full,23,13314,LNX-203 LNX-310 LNX-102
+python-docs,Doc/library/unix.rst,Unix-specific services,https://docs.python.org/3/library/unix.html,PSF-2.0,adapt,full,2,55,
+python-docs,Doc/library/urllib.error.rst,:mod:`!urllib.error` --- Exception classes raised by urllib.request,https://docs.python.org/3/library/urllib.error.html,PSF-2.0,adapt,full,1,339,
+python-docs,Doc/library/urllib.parse.rst,:mod:`!urllib.parse` --- Parse URLs into components,https://docs.python.org/3/library/urllib.parse.html,PSF-2.0,adapt,full,8,4949,LNX-203
+python-docs,Doc/library/urllib.request.rst,:mod:`!urllib.request` --- Extensible library for opening URLs,https://docs.python.org/3/library/urllib.request.html,PSF-2.0,adapt,full,29,8601,LNX-203 LNX-302
+python-docs,Doc/library/urllib.robotparser.rst,:mod:`!urllib.robotparser` --- Parser for robots.txt,https://docs.python.org/3/library/urllib.robotparser.html,PSF-2.0,adapt,full,1,514,
+python-docs,Doc/library/urllib.rst,:mod:`!urllib` --- URL handling modules,https://docs.python.org/3/library/urllib.html,PSF-2.0,adapt,full,1,52,
+python-docs,Doc/library/uu.rst,:mod:`!uu` --- Encode and decode uuencode files,https://docs.python.org/3/library/uu.html,PSF-2.0,adapt,full,1,98,
+python-docs,Doc/library/uuid.rst,:mod:`!uuid` --- UUID objects according to :rfc:`9562`,https://docs.python.org/3/library/uuid.html,PSF-2.0,adapt,full,5,2268,LNX-203 LNX-220
+python-docs,Doc/library/venv.rst,:mod:`!venv` --- Creation of virtual environments,https://docs.python.org/3/library/venv.html,PSF-2.0,adapt,full,6,3801,LNX-302 LNX-104 LNX-101
+python-docs,Doc/library/warnings.rst,:mod:`!warnings` --- Warning control,https://docs.python.org/3/library/warnings.html,PSF-2.0,adapt,full,13,4188,LNX-203 LNX-101
+python-docs,Doc/library/wave.rst,:mod:`!wave` --- Read and write WAV files,https://docs.python.org/3/library/wave.html,PSF-2.0,adapt,full,3,1155,LNX-203
+python-docs,Doc/library/weakref.rst,:mod:`!weakref` --- Weak references,https://docs.python.org/3/library/weakref.html,PSF-2.0,adapt,full,7,3382,LNX-203
+python-docs,Doc/library/webbrowser.rst,:mod:`!webbrowser` --- Convenient web-browser controller,https://docs.python.org/3/library/webbrowser.html,PSF-2.0,adapt,full,3,1350,LNX-203
+python-docs,Doc/library/windows.rst,MS Windows Specific Services,https://docs.python.org/3/library/windows.html,PSF-2.0,adapt,full,2,22,LNX-302
+python-docs,Doc/library/winreg.rst,:mod:`!winreg` --- Windows registry access,https://docs.python.org/3/library/winreg.html,PSF-2.0,adapt,full,8,3544,LNX-310 LNX-302 LNX-203
+python-docs,Doc/library/winsound.rst,:mod:`!winsound` --- Sound-playing interface for Windows,https://docs.python.org/3/library/winsound.html,PSF-2.0,adapt,full,3,666,LNX-302 LNX-203
+python-docs,Doc/library/wsgiref.rst,:mod:`!wsgiref` --- WSGI Utilities and Reference Implementation,https://docs.python.org/3/library/wsgiref.html,PSF-2.0,adapt,full,9,4979,LNX-203 LNX-220 LNX-305
+python-docs,Doc/library/xdrlib.rst,:mod:`!xdrlib` --- Encode and decode XDR data,https://docs.python.org/3/library/xdrlib.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/xml.dom.minidom.rst,:mod:`!xml.dom.minidom` --- Minimal DOM implementation,https://docs.python.org/3/library/xml.dom.minidom.html,PSF-2.0,adapt,full,4,1866,LNX-203
+python-docs,Doc/library/xml.dom.pulldom.rst,:mod:`!xml.dom.pulldom` --- Support for building partial DOM trees,https://docs.python.org/3/library/xml.dom.pulldom.html,PSF-2.0,adapt,full,2,935,LNX-203
+python-docs,Doc/library/xml.dom.rst,:mod:`!xml.dom` --- The Document Object Model API,https://docs.python.org/3/library/xml.dom.html,PSF-2.0,adapt,full,23,6802,LNX-203 LNX-311
+python-docs,Doc/library/xml.etree.elementtree.rst,:mod:`!xml.etree.ElementTree` --- The ElementTree XML API,https://docs.python.org/3/library/xml.etree.elementtree.html,PSF-2.0,adapt,full,27,8260,LNX-203 LNX-310
+python-docs,Doc/library/xml.rst,XML Processing Modules,https://docs.python.org/3/library/xml.html,PSF-2.0,adapt,full,3,675,LNX-203
+python-docs,Doc/library/xml.sax.handler.rst,:mod:`!xml.sax.handler` --- Base classes for SAX handlers,https://docs.python.org/3/library/xml.sax.handler.html,PSF-2.0,adapt,full,6,2453,LNX-305 LNX-102
+python-docs,Doc/library/xml.sax.reader.rst,:mod:`!xml.sax.xmlreader` --- Interface for XML parsers,https://docs.python.org/3/library/xml.sax.reader.html,PSF-2.0,adapt,full,7,1616,
+python-docs,Doc/library/xml.sax.rst,:mod:`!xml.sax` --- Support for SAX2 parsers,https://docs.python.org/3/library/xml.sax.html,PSF-2.0,adapt,full,2,1129,LNX-203
+python-docs,Doc/library/xml.sax.utils.rst,:mod:`!xml.sax.saxutils` --- SAX Utilities,https://docs.python.org/3/library/xml.sax.utils.html,PSF-2.0,adapt,full,1,593,LNX-203
+python-docs,Doc/library/xmlrpc.client.rst,:mod:`!xmlrpc.client` --- XML-RPC client access,https://docs.python.org/3/library/xmlrpc.client.html,PSF-2.0,adapt,full,10,2889,LNX-203
+python-docs,Doc/library/xmlrpc.rst,:mod:`!xmlrpc` --- XMLRPC server and client modules,https://docs.python.org/3/library/xmlrpc.html,PSF-2.0,adapt,full,1,74,
+python-docs,Doc/library/xmlrpc.server.rst,:mod:`!xmlrpc.server` --- Basic XML-RPC servers,https://docs.python.org/3/library/xmlrpc.server.html,PSF-2.0,adapt,full,7,2051,LNX-203
+python-docs,Doc/library/zipapp.rst,:mod:`!zipapp` --- Manage executable Python zip archives,https://docs.python.org/3/library/zipapp.html,PSF-2.0,adapt,full,9,2161,LNX-203
+python-docs,Doc/library/zipfile.rst,:mod:`!zipfile` --- Work with ZIP archives,https://docs.python.org/3/library/zipfile.html,PSF-2.0,adapt,full,15,5808,LNX-220 LNX-101
+python-docs,Doc/library/zipimport.rst,:mod:`!zipimport` --- Import modules from Zip archives,https://docs.python.org/3/library/zipimport.html,PSF-2.0,adapt,full,3,837,
+python-docs,Doc/library/zlib.rst,:mod:`!zlib` --- Compression compatible with :program:`gzip`,https://docs.python.org/3/library/zlib.html,PSF-2.0,adapt,full,3,2768,LNX-101 LNX-203
+python-docs,Doc/library/zoneinfo.rst,:mod:`!zoneinfo` --- IANA time zone support,https://docs.python.org/3/library/zoneinfo.html,PSF-2.0,adapt,full,10,2223,LNX-102 LNX-203 LNX-220
+python-docs,Doc/reference/compound_stmts.rst,Compound statements,https://docs.python.org/3/reference/compound_stmts.html,PSF-2.0,adapt,full,29,10008,LNX-203 LNX-102
+python-docs,Doc/reference/datamodel.rst,Data model,https://docs.python.org/3/reference/datamodel.html,PSF-2.0,adapt,full,42,21652,LNX-203 LNX-310 LNX-104
+python-docs,Doc/reference/executionmodel.rst,Execution model,https://docs.python.org/3/reference/executionmodel.html,PSF-2.0,adapt,full,14,3636,LNX-203
+python-docs,Doc/reference/expressions.rst,Expressions,https://docs.python.org/3/reference/expressions.html,PSF-2.0,adapt,full,36,12519,LNX-203 LNX-310 LNX-311
+python-docs,Doc/reference/grammar.rst,Full Grammar specification,https://docs.python.org/3/reference/grammar.html,PSF-2.0,adapt,full,2,138,
+python-docs,Doc/reference/import.rst,The import system,https://docs.python.org/3/reference/import.html,PSF-2.0,adapt,full,26,6589,LNX-104 LNX-203 LNX-310
+python-docs,Doc/reference/index.rst,The Python Language Reference,https://docs.python.org/3/reference.html,PSF-2.0,adapt,full,2,123,
+python-docs,Doc/reference/introduction.rst,Introduction,https://docs.python.org/3/reference/introduction.html,PSF-2.0,adapt,full,5,1326,LNX-203
+python-docs,Doc/reference/lexical_analysis.rst,Lexical analysis,https://docs.python.org/3/reference/lexical_analysis.html,PSF-2.0,adapt,full,35,6734,LNX-311
+python-docs,Doc/reference/simple_stmts.rst,Simple statements,https://docs.python.org/3/reference/simple_stmts.html,PSF-2.0,adapt,full,20,6186,LNX-203 LNX-220
+python-docs,Doc/reference/toplevel_components.rst,Top-level components,https://docs.python.org/3/reference/toplevel_components.html,PSF-2.0,adapt,full,6,443,LNX-101 LNX-307
+python-docs,Doc/tutorial/appendix.rst,Appendix,https://docs.python.org/3/tutorial/appendix.html,PSF-2.0,adapt,full,7,852,LNX-101 LNX-203
+python-docs,Doc/tutorial/appetite.rst,Whetting Your Appetite,https://docs.python.org/3/tutorial/appetite.html,PSF-2.0,adapt,full,2,762,LNX-203 LNX-101 LNX-220
+python-docs,Doc/tutorial/classes.rst,Classes,https://docs.python.org/3/tutorial/classes.html,PSF-2.0,adapt,full,19,5624,LNX-203 LNX-310 LNX-220
+python-docs,Doc/tutorial/controlflow.rst,More Control Flow Tools,https://docs.python.org/3/tutorial/controlflow.html,PSF-2.0,adapt,full,20,5846,LNX-203 LNX-330
+python-docs,Doc/tutorial/datastructures.rst,Data Structures,https://docs.python.org/3/tutorial/datastructures.html,PSF-2.0,adapt,full,15,4200,LNX-203
+python-docs,Doc/tutorial/errors.rst,Errors and Exceptions,https://docs.python.org/3/tutorial/errors.html,PSF-2.0,adapt,full,12,3209,
+python-docs,Doc/tutorial/floatingpoint.rst,Floating-Point Arithmetic: Issues and Limitations,https://docs.python.org/3/tutorial/floatingpoint.html,PSF-2.0,adapt,full,4,1986,LNX-203
+python-docs,Doc/tutorial/index.rst,The Python Tutorial,https://docs.python.org/3/tutorial.html,PSF-2.0,adapt,full,2,399,LNX-203 LNX-220
+python-docs,Doc/tutorial/inputoutput.rst,Input and output,https://docs.python.org/3/tutorial/inputoutput.html,PSF-2.0,adapt,full,10,3173,LNX-203
+python-docs,Doc/tutorial/interactive.rst,Interactive Input Editing and History Substitution,https://docs.python.org/3/tutorial/interactive.html,PSF-2.0,adapt,full,4,312,
+python-docs,Doc/tutorial/interpreter.rst,Using the Python Interpreter,https://docs.python.org/3/tutorial/interpreter.html,PSF-2.0,adapt,full,7,987,LNX-101
+python-docs,Doc/tutorial/introduction.rst,An Informal Introduction to Python,https://docs.python.org/3/tutorial/introduction.html,PSF-2.0,adapt,full,7,2865,LNX-203
+python-docs,Doc/tutorial/modules.rst,Modules,https://docs.python.org/3/tutorial/modules.html,PSF-2.0,adapt,full,11,3552,LNX-203 LNX-104
+python-docs,Doc/tutorial/stdlib.rst,Brief tour of the standard library,https://docs.python.org/3/tutorial/stdlib.html,PSF-2.0,adapt,full,14,1537,LNX-203 LNX-307
+python-docs,Doc/tutorial/stdlib2.rst,Brief tour of the standard library --- part II,https://docs.python.org/3/tutorial/stdlib2.html,PSF-2.0,adapt,full,10,2007,LNX-307
+python-docs,Doc/tutorial/venv.rst,Virtual Environments and Packages,https://docs.python.org/3/tutorial/venv.html,PSF-2.0,adapt,full,5,1188,LNX-104 LNX-101 LNX-304
+python-docs,Doc/tutorial/whatnow.rst,What Now?,https://docs.python.org/3/tutorial/whatnow.html,PSF-2.0,adapt,full,2,488,
+rust-book,src/SUMMARY.md,The Rust Programming Language,https://doc.rust-lang.org/book/SUMMARY.html,MIT OR Apache-2.0,adapt,full,1,1091,LNX-220
+rust-book,src/appendix-00.md,Appendix,https://doc.rust-lang.org/book/appendix-00.html,MIT OR Apache-2.0,adapt,full,1,14,
+rust-book,src/appendix-01-keywords.md,appendix 01 keywords,https://doc.rust-lang.org/book/appendix-01-keywords.html,MIT OR Apache-2.0,adapt,full,4,749,LNX-203 LNX-220
+rust-book,src/appendix-02-operators.md,appendix 02 operators,https://doc.rust-lang.org/book/appendix-02-operators.html,MIT OR Apache-2.0,adapt,full,3,1227,LNX-311
+rust-book,src/appendix-03-derivable-traits.md,appendix 03 derivable traits,https://doc.rust-lang.org/book/appendix-03-derivable-traits.html,MIT OR Apache-2.0,adapt,full,7,1569,LNX-220
+rust-book,src/appendix-04-useful-development-tools.md,appendix 04 useful development tools,https://doc.rust-lang.org/book/appendix-04-useful-development-tools.html,MIT OR Apache-2.0,adapt,full,5,783,LNX-220
+rust-book,src/appendix-05-editions.md,appendix 05 editions,https://doc.rust-lang.org/book/appendix-05-editions.html,MIT OR Apache-2.0,adapt,full,1,510,LNX-220
+rust-book,src/appendix-06-translation.md,appendix 06 translation,https://doc.rust-lang.org/book/appendix-06-translation.html,MIT OR Apache-2.0,adapt,full,1,285,LNX-220
+rust-book,src/appendix-07-nightly-rust.md,appendix 07 nightly rust,https://doc.rust-lang.org/book/appendix-07-nightly-rust.html,MIT OR Apache-2.0,adapt,full,7,1422,LNX-220
+rust-book,src/ch00-00-introduction.md,Introduction,https://doc.rust-lang.org/book/ch00-00-introduction.html,MIT OR Apache-2.0,adapt,full,10,1643,LNX-220
+rust-book,src/ch01-00-getting-started.md,Getting Started,https://doc.rust-lang.org/book/ch01-00-getting-started.html,MIT OR Apache-2.0,adapt,full,1,46,LNX-220
+rust-book,src/ch01-01-installation.md,ch01 01 installation,https://doc.rust-lang.org/book/ch01-01-installation.html,MIT OR Apache-2.0,adapt,full,8,990,LNX-220 LNX-306 LNX-101
+rust-book,src/ch01-02-hello-world.md,ch01 02 hello world,https://doc.rust-lang.org/book/ch01-02-hello-world.html,MIT OR Apache-2.0,adapt,full,5,1215,LNX-220
+rust-book,src/ch01-03-hello-cargo.md,ch01 03 hello cargo,https://doc.rust-lang.org/book/ch01-03-hello-cargo.html,MIT OR Apache-2.0,adapt,full,6,1788,LNX-220 LNX-104
+rust-book,src/ch02-00-guessing-game-tutorial.md,Programming a Guessing Game,https://doc.rust-lang.org/book/ch02-00-guessing-game-tutorial.html,MIT OR Apache-2.0,adapt,full,17,6420,LNX-220 LNX-313 LNX-302
+rust-book,src/ch03-00-common-programming-concepts.md,Common Programming Concepts,https://doc.rust-lang.org/book/ch03-00-common-programming-concepts.html,MIT OR Apache-2.0,adapt,full,1,190,LNX-220
+rust-book,src/ch03-01-variables-and-mutability.md,ch03 01 variables and mutability,https://doc.rust-lang.org/book/ch03-01-variables-and-mutability.html,MIT OR Apache-2.0,adapt,full,3,1565,LNX-220 LNX-313
+rust-book,src/ch03-02-data-types.md,ch03 02 data types,https://doc.rust-lang.org/book/ch03-02-data-types.html,MIT OR Apache-2.0,adapt,full,4,2810,LNX-220
+rust-book,src/ch03-03-how-functions-work.md,ch03 03 how functions work,https://doc.rust-lang.org/book/ch03-03-how-functions-work.html,MIT OR Apache-2.0,adapt,full,4,1716,LNX-203 LNX-220
+rust-book,src/ch03-04-comments.md,ch03 04 comments,https://doc.rust-lang.org/book/ch03-04-comments.html,MIT OR Apache-2.0,adapt,full,1,238,LNX-220
+rust-book,src/ch03-05-control-flow.md,ch03 05 control flow,https://doc.rust-lang.org/book/ch03-05-control-flow.html,MIT OR Apache-2.0,adapt,full,5,2838,LNX-220 LNX-203
+rust-book,src/ch04-00-understanding-ownership.md,Understanding Ownership,https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html,MIT OR Apache-2.0,adapt,full,1,63,LNX-220
+rust-book,src/ch04-01-what-is-ownership.md,ch04 01 what is ownership,https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html,MIT OR Apache-2.0,adapt,full,8,4376,LNX-220 LNX-203
+rust-book,src/ch04-02-references-and-borrowing.md,ch04 02 references and borrowing,https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html,MIT OR Apache-2.0,adapt,full,4,1723,LNX-220
+rust-book,src/ch04-03-slices.md,ch04 03 slices,https://doc.rust-lang.org/book/ch04-03-slices.html,MIT OR Apache-2.0,adapt,full,4,2251,LNX-220 LNX-203
+rust-book,src/ch05-00-structs.md,Using Structs to Structure Related Data,https://doc.rust-lang.org/book/ch05-00-structs.html,MIT OR Apache-2.0,adapt,full,1,136,LNX-220
+rust-book,src/ch05-01-defining-structs.md,ch05 01 defining structs,https://doc.rust-lang.org/book/ch05-01-defining-structs.html,MIT OR Apache-2.0,adapt,full,5,2135,LNX-220
+rust-book,src/ch05-02-example-structs.md,ch05 02 example structs,https://doc.rust-lang.org/book/ch05-02-example-structs.html,MIT OR Apache-2.0,adapt,full,4,1902,LNX-220
+rust-book,src/ch05-03-method-syntax.md,ch05 03 method syntax,https://doc.rust-lang.org/book/ch05-03-method-syntax.html,MIT OR Apache-2.0,adapt,full,6,1986,LNX-220 LNX-203
+rust-book,src/ch06-00-enums.md,Enums and Pattern Matching,https://doc.rust-lang.org/book/ch06-00-enums.html,MIT OR Apache-2.0,adapt,full,1,112,
+rust-book,src/ch06-01-defining-an-enum.md,ch06 01 defining an enum,https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html,MIT OR Apache-2.0,adapt,full,3,2723,LNX-220
+rust-book,src/ch06-02-match.md,ch06 02 match,https://doc.rust-lang.org/book/ch06-02-match.html,MIT OR Apache-2.0,adapt,full,6,2178,LNX-220 LNX-202
+rust-book,src/ch06-03-if-let.md,ch06 03 if let,https://doc.rust-lang.org/book/ch06-03-if-let.html,MIT OR Apache-2.0,adapt,full,3,1151,LNX-220
+rust-book,src/ch07-00-managing-growing-projects-with-packages-crates-and-modules.md,"Packages, Crates, and Modules",https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html,MIT OR Apache-2.0,adapt,full,2,476,LNX-104 LNX-220
+rust-book,src/ch07-01-packages-and-crates.md,ch07 01 packages and crates,https://doc.rust-lang.org/book/ch07-01-packages-and-crates.html,MIT OR Apache-2.0,adapt,full,1,662,LNX-220 LNX-104
+rust-book,src/ch07-02-defining-modules-to-control-scope-and-privacy.md,ch07 02 defining modules to control scope and privacy,https://doc.rust-lang.org/book/ch07-02-defining-modules-to-control-scope-and-privacy.html,MIT OR Apache-2.0,adapt,full,4,1247,LNX-220
+rust-book,src/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.md,ch07 03 paths for referring to an item in the module tree,https://doc.rust-lang.org/book/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html,MIT OR Apache-2.0,adapt,full,4,2495,LNX-220
+rust-book,src/ch07-04-bringing-paths-into-scope-with-the-use-keyword.md,ch07 04 bringing paths into scope with the use keyword,https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html,MIT OR Apache-2.0,adapt,full,7,2161,LNX-220 LNX-104 LNX-311
+rust-book,src/ch07-05-separating-modules-into-different-files.md,ch07 05 separating modules into different files,https://doc.rust-lang.org/book/ch07-05-separating-modules-into-different-files.html,MIT OR Apache-2.0,adapt,full,2,1001,LNX-220
+rust-book,src/ch08-00-common-collections.md,Common Collections,https://doc.rust-lang.org/book/ch08-00-common-collections.html,MIT OR Apache-2.0,adapt,full,1,223,LNX-305 LNX-220
+rust-book,src/ch08-01-vectors.md,ch08 01 vectors,https://doc.rust-lang.org/book/ch08-01-vectors.html,MIT OR Apache-2.0,adapt,full,7,2008,LNX-220
+rust-book,src/ch08-02-strings.md,ch08 02 strings,https://doc.rust-lang.org/book/ch08-02-strings.html,MIT OR Apache-2.0,adapt,full,8,2852,LNX-220
+rust-book,src/ch08-03-hash-maps.md,ch08 03 hash maps,https://doc.rust-lang.org/book/ch08-03-hash-maps.html,MIT OR Apache-2.0,adapt,full,7,1989,LNX-220 LNX-203
+rust-book,src/ch09-00-error-handling.md,Error Handling,https://doc.rust-lang.org/book/ch09-00-error-handling.html,MIT OR Apache-2.0,adapt,full,1,223,LNX-220
+rust-book,src/ch09-01-unrecoverable-errors-with-panic.md,ch09 01 unrecoverable errors with panic,https://doc.rust-lang.org/book/ch09-01-unrecoverable-errors-with-panic.html,MIT OR Apache-2.0,adapt,full,1,1426,LNX-220
+rust-book,src/ch09-02-recoverable-errors-with-result.md,ch09 02 recoverable errors with result,https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html,MIT OR Apache-2.0,adapt,full,5,4216,LNX-220
+rust-book,src/ch09-03-to-panic-or-not-to-panic.md,ch09 03 to panic or not to panic,https://doc.rust-lang.org/book/ch09-03-to-panic-or-not-to-panic.html,MIT OR Apache-2.0,adapt,full,6,2318,LNX-220
+rust-book,src/ch10-00-generics.md,"Generic Types, Traits, and Lifetimes",https://doc.rust-lang.org/book/ch10-00-generics.html,MIT OR Apache-2.0,adapt,full,2,980,LNX-220 LNX-203
+rust-book,src/ch10-01-syntax.md,ch10 01 syntax,https://doc.rust-lang.org/book/ch10-01-syntax.html,MIT OR Apache-2.0,adapt,full,6,2481,LNX-220 LNX-203
+rust-book,src/ch10-02-traits.md,ch10 02 traits,https://doc.rust-lang.org/book/ch10-02-traits.html,MIT OR Apache-2.0,adapt,full,8,2922,LNX-220
+rust-book,src/ch10-03-lifetime-syntax.md,ch10 03 lifetime syntax,https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html,MIT OR Apache-2.0,adapt,full,13,5011,LNX-220 LNX-203
+rust-book,src/ch11-00-testing.md,Writing Automated Tests,https://doc.rust-lang.org/book/ch11-00-testing.html,MIT OR Apache-2.0,adapt,full,1,346,LNX-220
+rust-book,src/ch11-01-writing-tests.md,ch11 01 writing tests,https://doc.rust-lang.org/book/ch11-01-writing-tests.html,MIT OR Apache-2.0,adapt,full,7,4077,LNX-220
+rust-book,src/ch11-02-running-tests.md,ch11 02 running tests,https://doc.rust-lang.org/book/ch11-02-running-tests.html,MIT OR Apache-2.0,adapt,full,5,1362,LNX-220
+rust-book,src/ch11-03-test-organization.md,ch11 03 test organization,https://doc.rust-lang.org/book/ch11-03-test-organization.html,MIT OR Apache-2.0,adapt,full,4,2075,LNX-220
+rust-book,src/ch12-00-an-io-project.md,An I/O Project: Building a Command Line Program,https://doc.rust-lang.org/book/ch12-00-an-io-project.html,MIT OR Apache-2.0,adapt,full,1,392,LNX-101
+rust-book,src/ch12-01-accepting-command-line-arguments.md,ch12 01 accepting command line arguments,https://doc.rust-lang.org/book/ch12-01-accepting-command-line-arguments.html,MIT OR Apache-2.0,adapt,full,3,1041,LNX-101 LNX-220
+rust-book,src/ch12-02-reading-a-file.md,ch12 02 reading a file,https://doc.rust-lang.org/book/ch12-02-reading-a-file.html,MIT OR Apache-2.0,adapt,full,1,412,
+rust-book,src/ch12-03-improving-error-handling-and-modularity.md,ch12 03 improving error handling and modularity,https://doc.rust-lang.org/book/ch12-03-improving-error-handling-and-modularity.html,MIT OR Apache-2.0,adapt,full,6,4224,LNX-220 LNX-101 LNX-203
+rust-book,src/ch12-04-testing-the-librarys-functionality.md,ch12 04 testing the librarys functionality,https://doc.rust-lang.org/book/ch12-04-testing-the-librarys-functionality.html,MIT OR Apache-2.0,adapt,full,4,1612,LNX-220 LNX-203
+rust-book,src/ch12-05-working-with-environment-variables.md,ch12 05 working with environment variables,https://doc.rust-lang.org/book/ch12-05-working-with-environment-variables.html,MIT OR Apache-2.0,adapt,full,3,1508,LNX-220 LNX-101 LNX-203
+rust-book,src/ch12-06-writing-to-stderr-instead-of-stdout.md,ch12 06 writing to stderr instead of stdout,https://doc.rust-lang.org/book/ch12-06-writing-to-stderr-instead-of-stdout.html,MIT OR Apache-2.0,adapt,full,5,706,LNX-220
+rust-book,src/ch13-00-functional-features.md,Functional Language Features: Iterators and Closures,https://doc.rust-lang.org/book/ch13-00-functional-features.html,MIT OR Apache-2.0,adapt,full,1,188,LNX-220
+rust-book,src/ch13-01-closures.md,ch13 01 closures,https://doc.rust-lang.org/book/ch13-01-closures.html,MIT OR Apache-2.0,adapt,full,6,3377,LNX-220
+rust-book,src/ch13-02-iterators.md,ch13 02 iterators,https://doc.rust-lang.org/book/ch13-02-iterators.html,MIT OR Apache-2.0,adapt,full,5,1632,LNX-220
+rust-book,src/ch13-03-improving-our-io-project.md,ch13 03 improving our io project,https://doc.rust-lang.org/book/ch13-03-improving-our-io-project.html,MIT OR Apache-2.0,adapt,full,4,1453,LNX-220 LNX-203
+rust-book,src/ch13-04-performance.md,ch13 04 performance,https://doc.rust-lang.org/book/ch13-04-performance.html,MIT OR Apache-2.0,adapt,full,3,453,LNX-307 LNX-220 LNX-203
+rust-book,src/ch14-00-more-about-cargo.md,More About Cargo and Crates.io,https://doc.rust-lang.org/book/ch14-00-more-about-cargo.html,MIT OR Apache-2.0,adapt,full,1,110,LNX-220
+rust-book,src/ch14-01-release-profiles.md,ch14 01 release profiles,https://doc.rust-lang.org/book/ch14-01-release-profiles.html,MIT OR Apache-2.0,adapt,full,1,466,LNX-220
+rust-book,src/ch14-02-publishing-to-crates-io.md,ch14 02 publishing to crates io,https://doc.rust-lang.org/book/ch14-02-publishing-to-crates-io.html,MIT OR Apache-2.0,adapt,full,8,3383,LNX-220 LNX-104
+rust-book,src/ch14-03-cargo-workspaces.md,ch14 03 cargo workspaces,https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html,MIT OR Apache-2.0,adapt,full,5,1945,LNX-220 LNX-104
+rust-book,src/ch14-04-installing-binaries.md,ch14 04 installing binaries,https://doc.rust-lang.org/book/ch14-04-installing-binaries.html,MIT OR Apache-2.0,adapt,full,2,330,LNX-220
+rust-book,src/ch14-05-extending-cargo.md,ch14 05 extending cargo,https://doc.rust-lang.org/book/ch14-05-extending-cargo.html,MIT OR Apache-2.0,adapt,full,2,163,LNX-220
+rust-book,src/ch15-00-smart-pointers.md,Smart Pointers,https://doc.rust-lang.org/book/ch15-00-smart-pointers.html,MIT OR Apache-2.0,adapt,full,1,446,LNX-220
+rust-book,src/ch15-01-box.md,ch15 01 box,https://doc.rust-lang.org/book/ch15-01-box.html,MIT OR Apache-2.0,adapt,full,4,2280,LNX-220
+rust-book,src/ch15-02-deref.md,ch15 02 deref,https://doc.rust-lang.org/book/ch15-02-deref.html,MIT OR Apache-2.0,adapt,full,8,2364,LNX-220 LNX-203
+rust-book,src/ch15-03-drop.md,ch15 03 drop,https://doc.rust-lang.org/book/ch15-03-drop.html,MIT OR Apache-2.0,adapt,full,1,1194,LNX-220
+rust-book,src/ch15-04-rc.md,ch15 04 rc,https://doc.rust-lang.org/book/ch15-04-rc.html,MIT OR Apache-2.0,adapt,full,3,1572,LNX-220
+rust-book,src/ch15-05-interior-mutability.md,ch15 05 interior mutability,https://doc.rust-lang.org/book/ch15-05-interior-mutability.html,MIT OR Apache-2.0,adapt,full,5,3100,LNX-220 LNX-304
+rust-book,src/ch15-06-reference-cycles.md,ch15 06 reference cycles,https://doc.rust-lang.org/book/ch15-06-reference-cycles.html,MIT OR Apache-2.0,adapt,full,5,2806,LNX-220
+rust-book,src/ch16-00-concurrency.md,Fearless Concurrency,https://doc.rust-lang.org/book/ch16-00-concurrency.html,MIT OR Apache-2.0,adapt,full,1,457,LNX-220
+rust-book,src/ch16-01-threads.md,ch16 01 threads,https://doc.rust-lang.org/book/ch16-01-threads.html,MIT OR Apache-2.0,adapt,full,4,2008,LNX-220
+rust-book,src/ch16-02-message-passing.md,ch16 02 message passing,https://doc.rust-lang.org/book/ch16-02-message-passing.html,MIT OR Apache-2.0,adapt,full,5,1854,LNX-220
+rust-book,src/ch16-03-shared-state.md,ch16 03 shared state,https://doc.rust-lang.org/book/ch16-03-shared-state.html,MIT OR Apache-2.0,adapt,full,4,2109,LNX-220 LNX-331 LNX-320
+rust-book,src/ch16-04-extensible-concurrency-sync-and-send.md,ch16 04 extensible concurrency sync and send,https://doc.rust-lang.org/book/ch16-04-extensible-concurrency-sync-and-send.html,MIT OR Apache-2.0,adapt,full,6,779,LNX-220
+rust-book,src/ch17-00-async-await.md,"Fundamentals of Asynchronous Programming: Async, Await, Futures, and Streams",https://doc.rust-lang.org/book/ch17-00-async-await.html,MIT OR Apache-2.0,adapt,full,2,1690,LNX-220
+rust-book,src/ch17-01-futures-and-syntax.md,ch17 01 futures and syntax,https://doc.rust-lang.org/book/ch17-01-futures-and-syntax.html,MIT OR Apache-2.0,adapt,full,5,3247,LNX-220 LNX-203
+rust-book,src/ch17-02-concurrency-with-async.md,ch17 02 concurrency with async,https://doc.rust-lang.org/book/ch17-02-concurrency-with-async.html,MIT OR Apache-2.0,adapt,full,5,3203,LNX-220 LNX-203
+rust-book,src/ch17-03-more-futures.md,ch17 03 more futures,https://doc.rust-lang.org/book/ch17-03-more-futures.html,MIT OR Apache-2.0,adapt,full,3,1695,LNX-220
+rust-book,src/ch17-04-streams.md,ch17 04 streams,https://doc.rust-lang.org/book/ch17-04-streams.html,MIT OR Apache-2.0,adapt,full,2,788,LNX-220
+rust-book,src/ch17-05-traits-for-async.md,ch17 05 traits for async,https://doc.rust-lang.org/book/ch17-05-traits-for-async.html,MIT OR Apache-2.0,adapt,full,7,4537,LNX-220
+rust-book,src/ch17-06-futures-tasks-threads.md,ch17 06 futures tasks threads,https://doc.rust-lang.org/book/ch17-06-futures-tasks-threads.html,MIT OR Apache-2.0,adapt,full,2,943,LNX-220
+rust-book,src/ch18-00-oop.md,Object-Oriented Programming Features,https://doc.rust-lang.org/book/ch18-00-oop.html,MIT OR Apache-2.0,adapt,full,1,142,LNX-220
+rust-book,src/ch18-01-what-is-oo.md,ch18 01 what is oo,https://doc.rust-lang.org/book/ch18-01-what-is-oo.html,MIT OR Apache-2.0,adapt,full,4,1284,LNX-220
+rust-book,src/ch18-02-trait-objects.md,ch18 02 trait objects,https://doc.rust-lang.org/book/ch18-02-trait-objects.html,MIT OR Apache-2.0,adapt,full,5,2192,LNX-220 LNX-307
+rust-book,src/ch18-03-oo-design-patterns.md,ch18 03 oo design patterns,https://doc.rust-lang.org/book/ch18-03-oo-design-patterns.html,MIT OR Apache-2.0,adapt,full,6,4676,LNX-220
+rust-book,src/ch19-00-patterns.md,Patterns and Matching,https://doc.rust-lang.org/book/ch19-00-patterns.html,MIT OR Apache-2.0,adapt,full,1,237,
+rust-book,src/ch19-01-all-the-places-for-patterns.md,ch19 01 all the places for patterns,https://doc.rust-lang.org/book/ch19-01-all-the-places-for-patterns.html,MIT OR Apache-2.0,adapt,full,7,1814,LNX-220 LNX-203
+rust-book,src/ch19-02-refutability.md,ch19 02 refutability,https://doc.rust-lang.org/book/ch19-02-refutability.html,MIT OR Apache-2.0,adapt,full,1,706,LNX-220
+rust-book,src/ch19-03-pattern-syntax.md,ch19 03 pattern syntax,https://doc.rust-lang.org/book/ch19-03-pattern-syntax.html,MIT OR Apache-2.0,adapt,full,11,4688,LNX-220 LNX-202
+rust-book,src/ch20-00-advanced-features.md,Advanced Features,https://doc.rust-lang.org/book/ch20-00-advanced-features.html,MIT OR Apache-2.0,adapt,full,1,195,LNX-220
+rust-book,src/ch20-01-unsafe-rust.md,ch20 01 unsafe rust,https://doc.rust-lang.org/book/ch20-01-unsafe-rust.html,MIT OR Apache-2.0,adapt,full,10,4671,LNX-220
+rust-book,src/ch20-02-advanced-traits.md,ch20 02 advanced traits,https://doc.rust-lang.org/book/ch20-02-advanced-traits.html,MIT OR Apache-2.0,adapt,full,6,3502,LNX-220 LNX-311
+rust-book,src/ch20-03-advanced-types.md,ch20 03 advanced types,https://doc.rust-lang.org/book/ch20-03-advanced-types.html,MIT OR Apache-2.0,adapt,full,5,2384,LNX-220 LNX-203
+rust-book,src/ch20-04-advanced-functions-and-closures.md,ch20 04 advanced functions and closures,https://doc.rust-lang.org/book/ch20-04-advanced-functions-and-closures.html,MIT OR Apache-2.0,adapt,full,3,1326,LNX-203 LNX-220
+rust-book,src/ch20-05-macros.md,ch20 05 macros,https://doc.rust-lang.org/book/ch20-05-macros.html,MIT OR Apache-2.0,adapt,full,9,3921,LNX-220 LNX-203
+rust-book,src/ch21-00-final-project-a-web-server.md,Final Project: Building a Multithreaded Web Server,https://doc.rust-lang.org/book/ch21-00-final-project-a-web-server.html,MIT OR Apache-2.0,adapt,full,1,375,LNX-302 LNX-220
+rust-book,src/ch21-01-single-threaded.md,ch21 01 single threaded,https://doc.rust-lang.org/book/ch21-01-single-threaded.html,MIT OR Apache-2.0,adapt,full,8,3746,LNX-220 LNX-203 LNX-202
+rust-book,src/ch21-02-multithreaded.md,ch21 02 multithreaded,https://doc.rust-lang.org/book/ch21-02-multithreaded.html,MIT OR Apache-2.0,adapt,full,7,5669,LNX-220 LNX-203
+rust-book,src/ch21-03-graceful-shutdown-and-cleanup.md,ch21 03 graceful shutdown and cleanup,https://doc.rust-lang.org/book/ch21-03-graceful-shutdown-and-cleanup.html,MIT OR Apache-2.0,adapt,full,4,1712,LNX-220 LNX-313
+rust-book,src/foreword.md,Foreword,https://doc.rust-lang.org/book/foreword.html,MIT OR Apache-2.0,adapt,full,1,454,LNX-220
+rust-book,src/title-page.md,The Rust Programming Language,https://doc.rust-lang.org/book/title-page.html,MIT OR Apache-2.0,adapt,full,1,186,LNX-220
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/active-active.rst,Convert Storage to Active/Active,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,8,1928,LNX-309
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/active-passive.rst,Create an Active/Passive Cluster,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,4,1825,LNX-309
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/ap-configuration.rst,Configuration Recap,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,11,1697,LNX-309 LNX-311 LNX-312
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/ap-corosync-conf.rst,Sample Corosync Configuration,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,2,67,LNX-309
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/ap-reading.rst,Further Reading,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,1,40,LNX-309
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/apache.rst,Add Apache HTTP Server as a Cluster Service,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,10,2380,LNX-309 LNX-302 LNX-312
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/cluster-setup.rst,Set up a Cluster,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,8,1612,LNX-309 LNX-101 LNX-201
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/fencing.rst,Configure Fencing,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,6,1667,LNX-309
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/index.rst,Clusters from Scratch,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,1,131,LNX-309
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/installation.rst,Installation,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,18,2417,LNX-309 LNX-306 LNX-201
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/intro.rst,Introduction,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,2,150,LNX-309
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/shared-storage.rst,Replicate Storage Using DRBD,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,10,3429,LNX-309 LNX-104 LNX-103
+clusterlabs-docs,doc/sphinx/Clusters_from_Scratch/verification.rst,Start and Verify Cluster,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,5,1027,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/administrative.rst,Administrative Modes,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,7,728,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/agents.rst,Resource Agents,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,13,3864,LNX-309 LNX-303
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/alerts.rst,Alert Agents,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,4,1256,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/cluster.rst,The Cluster Layer,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,2,78,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/configuring.rst,Configuring Pacemaker,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,10,1576,LNX-309 LNX-204
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/index.rst,Pacemaker Administration,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,1,41,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/installing.rst,Installing Cluster Software,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,1,41,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/intro.rst,Introduction,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,2,112,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/moving.rst,Moving Resources,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,7,1531,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/options.rst,Client Options,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,2,835,LNX-309 LNX-101 LNX-204
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/pcs-crmsh.rst,Quick Comparison of pcs and crm shell,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,13,1619,LNX-309 LNX-101
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/tools.rst,Using Pacemaker Command-Line Tools,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,14,3050,LNX-309 LNX-101
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/troubleshooting.rst,Troubleshooting Cluster Problems,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,7,785,LNX-309 LNX-307
+clusterlabs-docs,doc/sphinx/Pacemaker_Administration/upgrading.rst,Upgrading a Pacemaker Cluster,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,14,3110,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/acls.rst,Access Control Lists (ACLs),https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,11,1962,LNX-309 LNX-103 LNX-102
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/alerts.rst,Alerts,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,7,1213,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/ap-samples.rst,Sample Configurations,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,4,538,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/cluster-options.rst,Cluster-Wide Configuration,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,7,3952,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/collective.rst,Collective Resources,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,30,5737,LNX-309 LNX-310 LNX-102
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/constraints.rst,Resource Constraints,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,26,5492,LNX-309 LNX-311 LNX-102
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/fencing.rst,Fencing,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,22,7014,LNX-309 LNX-102
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/index.rst,Pacemaker Explained,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,1,55,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/intro.rst,Introduction,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,2,118,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/local-options.rst,Host-Local Configuration,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,5,2946,LNX-309 LNX-307
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/multi-site-clusters.rst,Multi-Site Clusters and Tickets,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,13,1999,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/nodes.rst,Nodes,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,16,3046,LNX-309 LNX-311 LNX-102
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/operations.rst,Resource Operations,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,14,3802,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/resources.rst,Resources,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,18,3529,LNX-309 LNX-102
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/reusing-configuration.rst,Reusing Parts of the Configuration,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,10,1958,LNX-309
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/rules.rst,Rules,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,21,4634,LNX-309 LNX-311
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/status.rst,Status,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,9,1928,LNX-309 LNX-311
+clusterlabs-docs,doc/sphinx/Pacemaker_Explained/utilization.rst,Utilization and Placement Strategy,https://clusterlabs.org/projects/pacemaker/doc/,CC-BY-SA-4.0,adapt,full,7,1257,LNX-309
 samba-wiki,,Samba wiki,https://wiki.samba.org/,NOASSERTION,link-only,link,1,0,LNX-302
 tlcl,,The Linux Command Line (W. Shotts),https://linuxcommand.org/tlcl.php,CC-BY-NC-ND-3.0,excluded,link,1,0,LNX-101
 cis-benchmarks,,CIS Benchmarks,https://www.cisecurity.org/cis-benchmarks,CC-BY-NC-SA-4.0,excluded,link,1,0,

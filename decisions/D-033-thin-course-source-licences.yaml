@@ -1,0 +1,21 @@
+id: D-033
+title: Modes and reuse for the thin-course sources (T1b)
+decided_by: claude
+options:
+- name: "Per-source licence: PSF, MIT/Apache and CC BY-SA adapt; Git (GPL-2.0) full text but link-only"
+  r1: 5
+  r2: 5
+  r3: 5
+  r4: 4
+  r5: 5
+  r6: 4
+- name: Also ingest the Pro Git book and treat every source as adaptable
+  r1: 1
+  r2: 5
+  r3: 5
+  r4: 5
+  r5: 4
+  r6: 4
+chosen: "Per-source licence: PSF, MIT/Apache and CC BY-SA adapt; Git (GPL-2.0) full text but link-only"
+justification: "Checked upstream on 2026-11-14. Python documentation is under the PSF licence, a permissive BSD-style licence (stream Permissive, adapt). The Rust Book is MIT OR Apache-2.0 (Permissive, adapt). The ClusterLabs Pacemaker guides state CC-BY-SA-4.0 in their Sphinx configuration; the repository has no separate documentation licence file, so the sync writes a notice and the licence basis is recorded in sources.yaml (stream A, adapt). The git/git Documentation is GPL-2.0, so it is stored for search but link-only. The Pro Git book is CC BY-NC-SA and must not be stored (D-004), so it is excluded."
+date: '2026-11-14'

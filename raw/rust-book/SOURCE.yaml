@@ -1,0 +1,14 @@
+id: rust-book
+name: The Rust Programming Language (the Rust Book)
+license: MIT OR Apache-2.0
+license_note: null
+mode: full
+reuse: adapt
+stream: Permissive
+retrieved: '2026-11-14'
+upstream: https://github.com/rust-lang/book
+pin: 2771df165f092a4fbb9f46b5b2e7450f19010adb
+upstream_commit_date: '2026-10-28'
+license_file_upstream: LICENSE-MIT
+text_files: 112
+figures: 28

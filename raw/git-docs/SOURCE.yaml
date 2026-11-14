@@ -1,0 +1,15 @@
+id: git-docs
+name: Git documentation (user manual, tutorials, man pages, technical notes)
+license: GPL-2.0-only
+license_note: Git and its Documentation/ are GPL-2.0 (COPYING). The Pro Git book is
+  CC BY-NC-SA and is not used. Link-only.
+mode: full
+reuse: link-only
+stream: C
+retrieved: '2026-11-14'
+upstream: https://github.com/git/git
+pin: 7fb6055e678f800320d8ab8cd8f201d9493d1ba0
+upstream_commit_date: '2026-11-13'
+license_file_upstream: COPYING
+text_files: 291
+figures: 0

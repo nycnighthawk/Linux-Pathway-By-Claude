@@ -217,6 +217,51 @@ def parse_cac(text: str, rel: str):
     return title, [_sec(1, title, rid, [f"{kind} id: {rid}", *meta, *body])]
 
 
+# ---------------------------------------------------------------- AsciiDoc
+ADOC_HEAD = re.compile(r"^(={1,6})\s+(\S.*?)\s*$")
+ADOC_ID = re.compile(r"^\[\[([\w.:-]+)(?:,[^\]]*)?\]\]\s*$")
+
+
+def parse_adoc(text: str, rel: str):
+    """AsciiDoc (git documentation): '= Title', '== Section' headings; listing/literal blocks are not scanned for headings."""
+    title, secs, cur_lines, pending_id, block = None, [], [], None, None
+    cur = _sec(1, "", "", [])
+
+    def setext(m):                      # "NAME\n----" (man-page style) is a section title, not a listing block
+        t, u = m.group(1), m.group(2)
+        return f"== {t}" if abs(len(t) - len(u)) <= 2 else m.group(0)
+
+    text = re.sub(r"(?m)^([A-Za-z][^\n]*)\n(-{3,}|~{3,}|\^{3,})$", setext, text)
+    for line in text.splitlines():
+        if block:
+            cur_lines.append(line)
+            if line.strip() == block:
+                block = None
+            continue
+        if re.fullmatch(r"(-{4,}|\.{4,}|/{4,}|\*{4,}|_{4,}|={4,})", line.strip()):
+            block = line.strip()
+            cur_lines.append(line)
+            continue
+        idm = ADOC_ID.match(line)
+        if idm:
+            pending_id = idm.group(1)
+            continue
+        hm = ADOC_HEAD.match(line)
+        if hm and len(hm.group(1)) <= MAX_LEVEL:
+            cur["text"] = "\n".join(cur_lines).strip()
+            secs.append(cur)
+            heading = re.sub(r"\s+", " ", re.sub(r"[`*_]", "", hm.group(2))).strip()
+            cur, cur_lines, pending_id = _sec(len(hm.group(1)), heading, pending_id, []), [], None
+            if title is None and len(hm.group(1)) == 1:
+                title = heading
+        else:
+            cur_lines.append(line)
+    cur["text"] = "\n".join(cur_lines).strip()
+    secs.append(cur)
+    secs = [x for x in secs if x["heading"] or x["text"]]
+    return title or Path(rel).stem.replace("-", " ").replace("_", " "), secs
+
+
 # ---------------------------------------------------------------- DITA
 def parse_dita(text: str, rel: str):
     """DITA topics (VirtualBox manual): the topic title, then one section per <section> or nested topic."""
@@ -261,6 +306,8 @@ def parse_file(path: Path, rel: str, src: dict | None = None):
         title, secs = parse_tex(text, rel)
     elif suf == ".xml":
         title, secs = parse_docbook(text, rel)
+    elif suf == ".adoc":
+        title, secs = parse_adoc(text, rel)
     elif suf == ".dita":
         title, secs = parse_dita(text, rel)
     elif rel.endswith(("rule.yml", "group.yml")):
