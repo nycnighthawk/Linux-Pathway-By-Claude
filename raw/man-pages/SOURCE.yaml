@@ -14,14 +14,19 @@ upstream:
 - https://man7.org/linux/man-pages/man8/
 - https://man7.org/linux/man-pages/dir_section_2.html
 - https://man7.org/linux/man-pages/dir_section_7.html
-text_files: 2900
-pages: 2900
+text_files: 4333
+pages: 4333
 failed:
 - 404 https://man7.org/linux/man-pages/man8/nft.8.html
 - 404 https://man7.org/linux/man-pages/man5/sssd.conf.5.html
 - 404 https://man7.org/linux/man-pages/man8/bpftrace.8.html
 - 'error https://man7.org/linux/man-pages/man8/rpm-common.8.html: Invalid IPv6 URL'
+- 404 https://man7.org/linux/man-pages/man1/[rwxXst]*|[ugo]
+- 404 https://man7.org/linux/man-pages/man5/.*
+- 404 https://man7.org/linux/man-pages/man1/o
+- 404 https://man7.org/linux/man-pages/man1/unit
+- 404 https://man7.org/linux/man-pages/man1/any|sys|base|none
 blocked: []
-queue_left: 1276
-cap_reached: true
-pin: 2026-11-14:pages=2900
+queue_left: 0
+cap_reached: false
+pin: 2026-11-14:pages=4333

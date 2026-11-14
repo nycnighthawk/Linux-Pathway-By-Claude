@@ -1,0 +1,239 @@
+---
+{"title": "rpmsign(1) — Linux manual page", "url": "https://man7.org/linux/man-pages/man1/rpmsign.1.html", "retrieved": "2026-11-14", "license": "various (per page)"}
+---
+
+# rpmsign(1) --- Linux manual page
+
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| [NAME](#NAME) \| [SYNOPSIS](#SYNOPSIS) \| [DESCRIPTION](#DESCRIPTION) \| [OPERATIONS](#OPERATIONS) \| [ARGUMENTS](#ARGUMENTS) \| [OPTIONS](#OPTIONS) \| [SIGN OPTIONS](#SIGN_OPTIONS) \| [CONFIGURATION](#CONFIGURATION) \| [EXAMPLES](#EXAMPLES) \| [EXIT STATUS](#EXIT_STATUS) \| [SEE ALSO](#SEE_ALSO) \| [COLOPHON](#COLOPHON) |                                   |
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+|                                                                                                                                                                                                                                                                                                                                    |                                   |
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+
+    RPMSIGN(1)               General Commands Manual               RPMSIGN(1)
+
+## [](#NAME)NAME
+
+           rpmsign - RPM Package Signing
+
+## [](#SYNOPSIS)SYNOPSIS
+
+           rpmsign {--addsign|--resign} [options] [sign-options] PACKAGE_FILE
+           ...
+
+           rpmsign --delsign [options] PACKAGE_FILE ...
+
+           rpmsign --delfilesign [options] PACKAGE_FILE ...
+
+## [](#DESCRIPTION)DESCRIPTION
+
+           rpmsign is used to manipulate digital OpenPGP signatures on rpm
+           package files.
+
+           To create a signature rpmsign needs to verify the package's
+           checksum. As a result V4 packages with MD5/SHA1 checksums cannot
+           be signed in FIPS mode.
+
+## [](#OPERATIONS)OPERATIONS
+
+           --addsign
+               Generate and insert a new OpenPGP signature for each
+               PACKAGE_FILE given unless a signature with identical
+               parameters already exists, in which case no action is taken.
+               Arbitrary number of V6 signatures can be added.
+
+           --resign
+               Generates and inserts a new OpenPGP signature for each
+               PACKAGE_FILE, replacing any and all previous signatures.
+
+           --delsign
+               Delete all OpenPGP signatures from each package PACKAGE_FILE
+               given.
+
+           --delfilesign
+               Delete all IMA and fsverity file signatures from each package
+               PACKAGE_FILE given.
+
+## [](#ARGUMENTS)ARGUMENTS
+
+           PACKAGE_FILE
+               An rpm package file.
+
+## [](#OPTIONS)OPTIONS
+
+           See rpm-common(8) for the options common to all rpm executables.
+
+## [](#SIGN_OPTIONS)SIGN OPTIONS
+
+           --certpath CERT
+               Used with --signverity, use file signing certificate CERT.
+
+           --fskpath KEY
+               Used with --signfiles, use file signing key KEY. This can be
+               used with a PKCS #11 URI as long as OpenSSL has been
+               configured to load the pkcs11 provider. For PKCS #11 keys, the
+               IMA library cannot calculate the IMA key ID so you must
+               provide it; this is done via the %_file_signing_key_id macro.
+               Typically, the key ID is set to the Subject Key Identifier
+               (SKID) of the associated X509 certificate.
+
+           --key-id KEYID
+               Use key KEYID for signing. Overrides %_openpgp_sign_id
+               configuration.
+
+           --rpmv3
+               Request RPM V3 header+payload signature addition on V4
+               packages. These signatures are expensive and redundant baggage
+               on packages where a separate payload digest exists (packages
+               built with rpm >= 4.14). Rpmsign will automatically detect the
+               need for V3 signatures, but this option can be used to request
+               their creation if the packages must be fully signature
+               verifiable with rpm < 4.14 or other interoperability reasons.
+
+               Has no effect when signing V6 packages.
+
+           --rpmv4
+               Request RPM V4 header signature addition on V6 packages.
+               Useful for making V6 packages signature verifiable with rpm
+               4.x versions.
+
+               V4 compatibility signatures are only ever added if the signing
+               algorithm is one of those known to V4: RSA, EcDSA, EdDSA (and
+               original DSA). Only one V4 signature can be present in a
+               package, so this is added only on the first --addsign with a
+               V4 compatible algorithm, and ignored otherwise.
+
+               Has no effect when signing V4 packages.
+
+           --rpmv6
+               Request RPM V6 header signature addition on V4 packages.
+
+               This generally always succeeds as there can be arbitrary
+               number of V6 signatures on a package. A V3/V4 compatibility
+               signatures are added using the same logic as --rpmv4 on a V6
+               package.
+
+               Has no effect when signing V6 packages.
+
+           --signfiles
+               Sign package files. The file signing key (RSA private key)
+               must be set before signing the package, it can be configured
+               on the command line with --fskpath or the macro
+               %_file_signing_key.
+
+           --signverity
+               Sign package files with fsverity signatures. The file signing
+               key (RSA private key) and the signing certificate must be set
+               before signing the package. The key can be configured on the
+               command line with --fskpath or the macro %_file_signing_key,
+               and the cert can be configured on the command line with
+               --certpath or the macro %_file_signing_cert.
+
+           --verityalgo ALG
+               Used with --signverity, to specify the signing algorithm.
+               sha256 and sha512 are supported, with sha256 being the default
+               if this argument is not specified. This can also be specified
+               with the macro %_verity_algorithm.
+
+## [](#CONFIGURATION)CONFIGURATION
+
+           In order to sign packages, you need to create your own OpenPGP key
+           pair (aka certificate) and configure rpm(8) to use it. The
+           following macros are available:
+
+           %_openpgp_sign_id
+               The fingerprint or keyid of the signing key to use. Typically
+               this is the only configuration needed. If omitted, --key-id
+               must be explicitly specified when signing.
+
+           %_openpgp_sign
+               The OpenPGP implementation to use for signing. Supported
+               values are "gpg" for GnuPG (default and traditional) and "sq"
+               for Sequoia PGP.
+
+           Implementation specific macros:
+
+           %_gpg_path
+               The location of your GnuPG keyring if not the default
+               $GNUPGHOME.
+
+           %_gpg_name
+               Legacy macro for configuring user id with GnuPG. Use the
+               implementation independent and non-ambiguous %_openpgp_sign_id
+               instead.
+
+           %_sq_path
+               The location of your Sequoia configuration if not the default.
+
+## [](#EXAMPLES)EXAMPLES
+
+       Example 1. Basic setup
+           Configure RPM to sign packages with Sequoia PGP and a specific key
+           by adding the following contents to the user's rpm-config(5) file
+           (typically ~/.config/rpm/macros):
+
+               %_openpgp_sign sq
+               %_openpgp_sign_id 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08
+
+       Example 2. Basic operations
+           rpmsign --addsign hello-2.0-1.x64_rpm
+               Add a signature to hello-2.0-1.x64_rpm package.
+
+           rpmsign --resign --key-id 771b18d3d7baa28734333c424344591e1964c5fc
+           hello-2.0-1.x64_rpm
+               Replace all signatures in hello-2.0-1.x64_rpm package by a
+               signature using key 771b18d3d7baa28734333c424344591e1964c5fc.
+
+           rpmsign --delsign --delfilesign hello-2.0-1.x64_rpm
+               Delete all signatures from hello-2.0-1.x64_rpm package.
+
+## [](#EXIT_STATUS)EXIT STATUS
+
+           On success, 0 is returned, a nonzero failure code otherwise.
+
+## [](#SEE_ALSO)SEE ALSO
+
+           popt(3), rpm(8), rpm-common(8), rpmkeys(8), rpmbuild(1)
+
+           rpmsign --help - as rpm supports customizing the options via popt
+           aliases it's impossible to guarantee that what's described in the
+           manual matches what's available.
+
+           http://www.rpm.org/ 
+
+## [](#COLOPHON)COLOPHON
+
+           This page is part of the rpm (RPM Package Manager) project.
+           Information about the project can be found at 
+           ⟨https://github.com/rpm-software-management/rpm⟩.  It is not known
+           how to report bugs for this man page; if you know, please send a
+           mail to man-pages@man7.org.  This page was obtained from the
+           project's upstream Git repository
+           ⟨https://github.com/rpm-software-management/rpm.git⟩ on
+           2026-08-04.  (At that time, the date of the most recent commit
+           that was found in the repository was 2026-07-27.)  If you discover
+           any rendering problems in this HTML version of the page, or you
+           believe there is a better or more up-to-date source for the page,
+           or you have corrections or improvements to the information in this
+           COLOPHON (which is not part of the original manual page), send a
+           mail to man-pages@man7.org
+
+    RPM 6.1.90                      2026-08-03                     RPMSIGN(1)
+
+------------------------------------------------------------------------
+
+Pages that refer to this page: [rpmbuild(1)](../man1/rpmbuild.1.html),  [rpm-setup-autosign(1)](../man1/rpm-setup-autosign.1.html),  [rpmbuild-config(5)](../man5/rpmbuild-config.5.html),  [rpm(8)](../man8/rpm.8.html),  [rpm-common(8)](../man8/rpm-common.8.html),  [rpmkeys(8)](../man8/rpmkeys.8.html),  [rpm-plugin-ima(8)](../man8/rpm-plugin-ima.8.html)
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+| HTML rendering created 2026-09-09 by [Michael Kerrisk](https://man7.org/mtk/index.html), author of [*The Linux Programming Interface*](https://man7.org/tlpi/). |                       | [](https://man7.org/tlpi/) |
+|                                                                                                                                                                 |                       |                            |
+| For details of in-depth **Linux/UNIX system programming training courses** that I teach, look [here](https://man7.org/training/).                               |                       |                            |
+|                                                                                                                                                                 |                       |                            |
+| Hosting by [jambit GmbH](https://www.jambit.com/index_en.html).                                                                                                 |                       |                            |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+
+------------------------------------------------------------------------
