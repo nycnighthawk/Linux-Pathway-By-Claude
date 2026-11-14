@@ -1,0 +1,53 @@
+title: "Quiz: Files, links and the directory layout"
+questions:
+  - id: inode
+    prompt: "What does an inode hold?"
+    choices:
+      - "The file name and its parent directory"
+      - "The file's metadata and where its data blocks are, but not its name"
+      - "Only the file contents"
+      - "The path to the file"
+    answer: [1]
+    explain: "Names live in directory entries; the inode holds owner, mode, size, times and block pointers."
+  - id: link-count
+    prompt: "For a regular file, what does the link count in a long listing mean?"
+    choices:
+      - "The number of symbolic links to it"
+      - "The number of names (directory entries) that point to the inode"
+      - "The number of times it was opened"
+      - "The number of users sharing it"
+    answer: [1]
+    explain: "Each hard link adds a name to the same inode. The data is freed when the count reaches zero and nothing has it open."
+  - id: hard-cross-fs
+    prompt: "Why can a hard link not cross a file system boundary?"
+    choices:
+      - "It is slower there"
+      - "It names an inode number, and inode numbers are only meaningful inside one file system"
+      - "The kernel forbids links to directories"
+      - "Symbolic links take its place"
+    answer: [1]
+    explain: "A hard link is a directory entry pointing at an inode of the same file system."
+  - id: delete-original
+    prompt: "You delete the original name of a file that has one hard link and one symbolic link made from it. Which still works?"
+    choices:
+      - "Only the symbolic link"
+      - "Only the hard link"
+      - "Both"
+      - "Neither"
+    answer: [1]
+    explain: "The hard link is another name for the same inode. The symbolic link stores the original path and now dangles."
+  - id: local-software
+    prompt: "Where does a locally compiled tool normally belong?"
+    choices: ["/usr/local/bin", "/etc", "/var/log", "/proc"]
+    answer: [0]
+    explain: "/usr/local is reserved for software the administrator installs outside the package manager."
+  - id: log-dir
+    prompt: "Which directory tree holds a service's log files and other changing data?"
+    choices: ["/var", "/usr", "/boot", "/srv/etc"]
+    answer: [0]
+    explain: "/var holds variable data such as logs, spools and caches."
+  - id: type-char
+    prompt: "Which first character in a long listing marks a symbolic link?"
+    choices: ["d", "-", "l", "s"]
+    answer: [2]
+    explain: "- is a regular file, d a directory, l a symbolic link."

@@ -1,0 +1,49 @@
+title: "Quiz: Navigating the shell: globbing, quoting and history"
+questions:
+  - id: expansion-order
+    prompt: "Who expands *.txt into file names?"
+    choices:
+      - "The command that receives the pattern"
+      - "The shell, before the command starts"
+      - "The kernel when the file is opened"
+      - "The terminal emulator"
+    answer: [1]
+    explain: "The shell rewrites the line first, so the command receives the list of names, not the pattern."
+  - id: no-match
+    prompt: "In bash with default settings, what does ls *.zip pass to ls when no zip file exists?"
+    choices:
+      - "Nothing"
+      - "The literal text *.zip"
+      - "An error from the shell"
+      - "Every file"
+    answer: [1]
+    explain: "An unmatched glob stays literal unless nullglob or failglob is set."
+  - id: quote-variable
+    prompt: "With name='my notes.txt', why does cat $name fail, and what fixes it?"
+    choices:
+      - "The variable is empty; use export"
+      - 'It splits into two words; write cat "$name"'
+      - "Spaces are not allowed in variables; rename the file"
+      - "cat cannot read text files"
+    answer: [1]
+    explain: "Unquoted expansion is split on blanks. Double quotes keep the value as one word."
+  - id: single-quotes
+    prompt: "Which quoting stops variable expansion completely?"
+    choices: ["Double quotes", "Single quotes", "No quotes", "Backticks"]
+    answer: [1]
+    explain: "Single quotes keep every character literal; double quotes still expand variables."
+  - id: history-space
+    prompt: "Which setting makes bash leave out commands that start with a space from the history?"
+    choices: ["HISTSIZE=0", "HISTCONTROL=ignorespace", "set +o history", "HISTFILE=/dev/tty"]
+    answer: [1]
+    explain: "ignorespace (or ignoreboth) skips lines that begin with a space."
+  - id: brace-first
+    prompt: "Which expansion happens first: brace expansion or pathname (glob) expansion?"
+    choices: ["Brace expansion", "Pathname expansion", "They happen together", "It depends on the file system"]
+    answer: [0]
+    explain: "Brace expansion is early; pathname expansion and quote removal come later, so a brace result can then be globbed."
+  - id: which-path
+    prompt: "How can you check which directory a relative path really refers to?"
+    choices: ["echo $0", "pwd, and ls -ld on the path", "history | tail", "type -t cd"]
+    answer: [1]
+    explain: "pwd shows where you are; resolve the path against it, and use ls -ld or realpath to confirm."

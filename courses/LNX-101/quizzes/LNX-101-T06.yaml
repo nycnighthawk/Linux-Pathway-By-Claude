@@ -1,0 +1,53 @@
+title: "Quiz: Regular expressions (BRE and ERE)"
+questions:
+  - id: greedy
+    prompt: "On the line a1b2b, what does a.*b match?"
+    choices: ["a1b", "a1b2b", "a1", "b2b"]
+    answer: [1]
+    explain: "Repetition is greedy and takes as much as it can while the whole pattern still matches."
+  - id: bracket
+    prompt: "On the line a1b2b, what does a[^b]*b match?"
+    choices: ["a1b", "a1b2b", "b2b", "nothing"]
+    answer: [0]
+    explain: "The bracket expression cannot cross a b, so the match stops at the first b."
+  - id: bre-groups
+    prompt: "Which dialect needs backslashes around parentheses to make a group?"
+    choices: ["Basic (BRE)", "Extended (ERE)", "Both", "Neither"]
+    answer: [0]
+    explain: "Basic uses backslash-parenthesis; extended uses plain parentheses."
+  - id: alternation
+    prompt: "grep 'a|b' file finds nothing useful. Why?"
+    choices:
+      - "In basic syntax the bar is a literal character"
+      - "grep has no alternation"
+      - "The pattern needs double quotes"
+      - "Bars only work in sed"
+    answer: [0]
+    explain: "Use grep -E 'a|b', or a backslash before the bar in GNU basic syntax."
+  - id: ipv4
+    prompt: "Why is ^[0-9]{1,3}(\\.[0-9]{1,3}){3}$ not a correct IPv4 validator?"
+    choices:
+      - "It accepts values above 255, such as 999.999.999.999"
+      - "It rejects valid addresses"
+      - "The dot is not escaped"
+      - "It is not anchored"
+    answer: [0]
+    explain: "The pattern checks shape, not meaning. Check the numeric range in code."
+  - id: stall
+    prompt: "Why can a backtracking engine stall on (x+)+y with a long run of x characters?"
+    choices:
+      - "The number of ways to split the run grows exponentially"
+      - "It reads the file twice"
+      - "Plus signs are not allowed"
+      - "The engine runs out of file descriptors"
+    answer: [0]
+    explain: "Nested repetition lets the engine try exponentially many splits before it fails. Use a linear-time engine for outside input."
+  - id: quote
+    prompt: "Why should patterns go in single quotes on the command line?"
+    choices:
+      - "So the shell does not expand characters such as * and $ first"
+      - "grep requires them"
+      - "They make matching faster"
+      - "They select the extended dialect"
+    answer: [0]
+    explain: "Otherwise the shell rewrites the pattern before grep sees it."

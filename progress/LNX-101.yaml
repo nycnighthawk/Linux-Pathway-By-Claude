@@ -1,7 +1,7 @@
 item: LNX-101
 label: Linux Foundations & the Command Line
 branch: build/LNX-101
-state: in-progress
+state: done
 started: '2026-11-14'
 updated: '2026-11-14'
 phases:
@@ -20,13 +20,33 @@ phases:
     - LNX-101-T09
     - LNX-101-T10
   lessons:
-    state: todo
+    state: done
     units: 10
-    done: []
+    done:
+    - LNX-101-T01
+    - LNX-101-T02
+    - LNX-101-T03
+    - LNX-101-T04
+    - LNX-101-T05
+    - LNX-101-T06
+    - LNX-101-T07
+    - LNX-101-T08
+    - LNX-101-T09
+    - LNX-101-T10
   quizzes:
-    state: todo
+    state: done
     units: 10
-    done: []
+    done:
+    - LNX-101-T01
+    - LNX-101-T02
+    - LNX-101-T03
+    - LNX-101-T04
+    - LNX-101-T05
+    - LNX-101-T06
+    - LNX-101-T07
+    - LNX-101-T08
+    - LNX-101-T09
+    - LNX-101-T10
   labs:
     state: done
     units: 10
@@ -42,7 +62,7 @@ phases:
     - LNX-101-T09
     - LNX-101-T10
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -60,3 +80,10 @@ log:
 - '2026-11-14 synth: LNX-101-T10'
 - '2026-11-14 labs: LNX-101-T01, LNX-101-T02, LNX-101-T03, LNX-101-T04, LNX-101-T05, LNX-101-T06, LNX-101-T07, LNX-101-T08,
   LNX-101-T09, LNX-101-T10'
+- '2026-11-14 lessons: LNX-101-T01, LNX-101-T02, LNX-101-T03, LNX-101-T04, LNX-101-T05, LNX-101-T06, LNX-101-T07,
+  LNX-101-T08, LNX-101-T09, LNX-101-T10'
+- '2026-11-14 quizzes: LNX-101-T01, LNX-101-T02, LNX-101-T03, LNX-101-T04, LNX-101-T05, LNX-101-T06, LNX-101-T07,
+  LNX-101-T08, LNX-101-T09, LNX-101-T10'
+- '2026-11-14 checks: done'
+- 2026-11-14 finished
+finished: '2026-11-14'
