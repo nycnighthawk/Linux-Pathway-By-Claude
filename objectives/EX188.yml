@@ -1,0 +1,23 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: EX188
+exam: EX188
+version: RHEL 10 / Podman 5
+source: https://www.redhat.com/en/services/training/ex188-red-hat-certified-specialist-containers-exam
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-220, LNX-310]
+  topics: [LNX-310-T05, LNX-310-T04, LNX-310-T07, LNX-310-T02, LNX-220-T10]
+- id: D2
+  courses: [LNX-310]
+  topics: [LNX-310-T06, LNX-310-T08]
+- id: D3
+  courses: [LNX-310]
+  topics: [LNX-310-T03, LNX-310-T09]
+- id: D4
+  courses: [LNX-310]
+  topics: [LNX-310-T03, LNX-310-T04]
+- id: D5
+  courses: [LNX-310]
+  topics: [LNX-310-T09]

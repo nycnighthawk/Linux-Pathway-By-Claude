@@ -1,0 +1,58 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: EX316
+exam: EX316
+version: OCP 4.18
+source: https://www.redhat.com/en/services/training/red-hat-certified-specialist-openshift-virtualization-ex316
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-315]
+  topics: [LNX-315-T09]
+- id: D2
+  courses: [LNX-315]
+  topics: [LNX-315-T09]
+- id: D3
+  courses: [LNX-312, LNX-315]
+  topics: [LNX-315-T09, LNX-312-T07]
+- id: D4
+  courses: [LNX-311, LNX-315]
+  topics: [LNX-311-T06, LNX-315-T04]
+- id: D5
+  courses: []
+  topics: []
+  gap: true
+- id: D6
+  courses: [LNX-306, LNX-315]
+  topics: [LNX-306-T03, LNX-315-T08, LNX-315-T09]
+- id: D7
+  courses: [LNX-308]
+  topics: [LNX-308-T02]
+  partial: true
+- id: D8
+  courses: [LNX-315]
+  topics: [LNX-315-T10]
+- id: D9
+  courses: [LNX-315]
+  topics: [LNX-315-T09]
+- id: D10
+  courses: [LNX-308, LNX-315]
+  topics: [LNX-315-T11, LNX-308-T05]
+- id: D11
+  courses: [LNX-311]
+  topics: [LNX-311-T03]
+- id: D12
+  courses: [LNX-312, LNX-315]
+  topics: [LNX-312-T04, LNX-315-T09]
+  partial: true
+- id: D13
+  courses: [LNX-315]
+  topics: [LNX-315-T09]
+  partial: true
+- id: D14
+  courses: [LNX-311]
+  topics: [LNX-311-T05]
+  partial: true
+- id: D15
+  courses: [LNX-102]
+  topics: [LNX-102-T03]

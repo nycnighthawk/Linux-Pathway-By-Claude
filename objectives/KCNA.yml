@@ -1,0 +1,20 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: KCNA
+exam: KCNA
+version: current
+source: https://www.cncf.io/training/certification/kcna/
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-310, LNX-311]
+  topics: [LNX-311-T01, LNX-311-T05, LNX-311-T06, LNX-311-T07, LNX-310-T01]
+- id: D2
+  courses: [LNX-310, LNX-311, LNX-312]
+  topics: [LNX-310-T01, LNX-310-T02, LNX-311-T01, LNX-312-T04, LNX-312-T06, LNX-312-T08]
+- id: D3
+  courses: [LNX-311, LNX-313]
+  topics: [LNX-313-T04, LNX-313-T07, LNX-311-T08]
+- id: D4
+  courses: [LNX-307, LNX-311, LNX-312, LNX-313]
+  topics: [LNX-311-T09, LNX-313-T09, LNX-312-T09, LNX-307-T03]

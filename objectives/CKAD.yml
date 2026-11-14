@@ -1,0 +1,23 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: CKAD
+exam: CKAD
+version: K8s v1.35
+source: https://www.cncf.io/training/certification/ckad/
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-310, LNX-313]
+  topics: [LNX-313-T01, LNX-313-T05, LNX-310-T05]
+- id: D2
+  courses: [LNX-311, LNX-313]
+  topics: [LNX-313-T04, LNX-313-T06, LNX-313-T07, LNX-311-T08]
+- id: D3
+  courses: [LNX-313]
+  topics: [LNX-313-T03, LNX-313-T09]
+- id: D4
+  courses: [LNX-311, LNX-313, LNX-314]
+  topics: [LNX-313-T02, LNX-311-T07, LNX-314-T03]
+- id: D5
+  courses: [LNX-312]
+  topics: [LNX-312-T04, LNX-312-T06, LNX-312-T07]

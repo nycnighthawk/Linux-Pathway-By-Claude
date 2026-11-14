@@ -1,0 +1,23 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: LFCS
+exam: LFCS
+version: distro-agnostic
+source: https://training.linuxfoundation.org/certification/linux-foundation-certified-sysadmin-lfcs/
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-102, LNX-104, LNX-204, LNX-308, LNX-310]
+  topics: [LNX-102-T08, LNX-102-T02, LNX-102-T03, LNX-102-T04, LNX-104-T01, LNX-104-T02, LNX-308-T01, LNX-310-T03, LNX-204-T04]
+- id: D2
+  courses: [LNX-102, LNX-201, LNX-202]
+  topics: [LNX-102-T07, LNX-201-T02, LNX-201-T05, LNX-201-T06, LNX-201-T07, LNX-202-T01]
+- id: D3
+  courses: [LNX-103]
+  topics: [LNX-103-T01, LNX-103-T02, LNX-103-T03, LNX-103-T04, LNX-103-T05, LNX-103-T06, LNX-103-T07, LNX-103-T09]
+- id: D4
+  courses: [LNX-101, LNX-203]
+  topics: [LNX-101-T02, LNX-101-T03, LNX-101-T04, LNX-101-T05, LNX-101-T06, LNX-101-T07, LNX-101-T08, LNX-101-T09, LNX-101-T10, LNX-203-T01]
+- id: D5
+  courses: [LNX-101, LNX-102, LNX-204]
+  topics: [LNX-102-T01, LNX-204-T02, LNX-101-T08]

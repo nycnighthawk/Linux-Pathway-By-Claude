@@ -1,0 +1,43 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: RHCE
+exam: EX294
+version: RHEL 9 / Ansible
+source: https://www.redhat.com/en/services/training/ex294-red-hat-certified-engineer-rhce-exam-red-hat-enterprise-linux-9
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: []
+  topics: []
+  gap: true
+- id: D2
+  courses: [LNX-203]
+  topics: [LNX-203-T01]
+- id: D3
+  courses: [LNX-305]
+  topics: [LNX-305-T01, LNX-305-T02, LNX-305-T03]
+- id: D4
+  courses: [LNX-305]
+  topics: [LNX-305-T01]
+- id: D5
+  courses: [LNX-305]
+  topics: [LNX-305-T02, LNX-305-T03, LNX-305-T07]
+- id: D6
+  courses: [LNX-203]
+  topics: [LNX-203-T06]
+- id: D7
+  courses: [LNX-305]
+  topics: [LNX-305-T03]
+  partial: true
+- id: D8
+  courses: [LNX-305]
+  topics: [LNX-305-T02, LNX-305-T07]
+- id: D9
+  courses: [LNX-305]
+  topics: [LNX-305-T03, LNX-305-T05]
+- id: D10
+  courses: [LNX-305]
+  topics: [LNX-305-T05, LNX-305-T02]
+- id: D11
+  courses: [LNX-305]
+  topics: [LNX-305-T02, LNX-305-T04]

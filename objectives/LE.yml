@@ -1,0 +1,68 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: LE
+exam: 010-160
+version: '1.6'
+source: https://wiki.lpi.org/wiki/Linux_Essentials_Objectives_V1.6
+fetched: '2026-11-14'
+objectives:
+- id: '1.1'
+  courses: [LNX-101]
+  topics: [LNX-101-T01]
+- id: '1.2'
+  courses: [LNX-101]
+  topics: [LNX-101-T01]
+  partial: true
+- id: '1.3'
+  courses: [LNX-101]
+  topics: [LNX-101-T01]
+- id: '1.4'
+  courses: [LNX-101]
+  topics: [LNX-101-T01, LNX-101-T10]
+  partial: true
+- id: '2.1'
+  courses: [LNX-101]
+  topics: [LNX-101-T02, LNX-101-T05]
+- id: '2.2'
+  courses: [LNX-101]
+  topics: [LNX-101-T10]
+- id: '2.3'
+  courses: [LNX-101]
+  topics: [LNX-101-T03, LNX-101-T02]
+- id: '2.4'
+  courses: [LNX-101]
+  topics: [LNX-101-T03, LNX-101-T02]
+- id: '3.1'
+  courses: [LNX-101]
+  topics: [LNX-101-T09]
+- id: '3.2'
+  courses: [LNX-101]
+  topics: [LNX-101-T04, LNX-101-T05, LNX-101-T06]
+- id: '3.3'
+  courses: [LNX-203]
+  topics: [LNX-203-T01]
+- id: '4.1'
+  courses: [LNX-101]
+  topics: [LNX-101-T01]
+- id: '4.2'
+  courses: [LNX-102]
+  topics: [LNX-102-T08, LNX-102-T11]
+  partial: true
+- id: '4.3'
+  courses: [LNX-101, LNX-102]
+  topics: [LNX-101-T03, LNX-102-T02, LNX-102-T05, LNX-102-T08]
+- id: '4.4'
+  courses: [LNX-201]
+  topics: [LNX-201-T01, LNX-201-T02, LNX-201-T04]
+- id: '5.1'
+  courses: [LNX-101, LNX-102]
+  topics: [LNX-102-T01, LNX-101-T08]
+- id: '5.2'
+  courses: [LNX-102]
+  topics: [LNX-102-T01]
+- id: '5.3'
+  courses: [LNX-101]
+  topics: [LNX-101-T08]
+- id: '5.4'
+  courses: [LNX-101]
+  topics: [LNX-101-T03, LNX-101-T08]

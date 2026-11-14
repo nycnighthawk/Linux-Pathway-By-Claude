@@ -1,0 +1,37 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: EX362
+exam: EX362
+version: RHEL 9 / IdM 4.8
+source: https://www.redhat.com/en/services/training/ex362-red-hat-certified-specialist-identity-management-exam
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-301]
+  topics: [LNX-301-T06, LNX-301-T09]
+- id: D2
+  courses: [LNX-301]
+  topics: [LNX-301-T02, LNX-301-T03]
+- id: D3
+  courses: [LNX-301]
+  topics: [LNX-301-T03, LNX-301-T06]
+- id: D4
+  courses: [LNX-301]
+  topics: [LNX-301-T02]
+- id: D5
+  courses: [LNX-301, LNX-303]
+  topics: [LNX-301-T06, LNX-303-T01]
+  partial: true
+- id: D6
+  courses: [LNX-301]
+  topics: [LNX-301-T06]
+  partial: true
+- id: D7
+  courses: [LNX-301]
+  topics: [LNX-301-T06]
+- id: D8
+  courses: [LNX-301]
+  topics: [LNX-301-T01, LNX-301-T06]
+- id: D9
+  courses: [LNX-102, LNX-103, LNX-201]
+  topics: [LNX-201-T06, LNX-102-T07, LNX-103-T10]
