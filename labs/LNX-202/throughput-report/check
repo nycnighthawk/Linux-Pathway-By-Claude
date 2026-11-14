@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of the throughput report: every key present, values of the right kind and consistent with each other.
+# The numbers come from your measurements, so this script checks shape and sanity, not truth.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f report.txt ] || { echo "FAIL: report.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+isnum() { printf '%s' "$1" | grep -Eq '^[0-9]+(\.[0-9]+)?$'; }
+isint() { printf '%s' "$1" | grep -Eq '^[0-9]+$'; }
+nic=$(get nic_speed_mbps); mtu=$(get mtu); s1=$(get single_stream_mbps); np=$(get parallel_streams); pm=$(get parallel_mbps); rt=$(get retransmissions); bn=$(get bottleneck)
+isint "$nic" && [ "$nic" -ge 10 ] && ok "nic_speed_mbps = $nic" || fail "nic_speed_mbps must be the rated speed in Mb/s (ethtool IFACE | grep Speed)"
+isint "$mtu" && [ "$mtu" -ge 576 ] && [ "$mtu" -le 9216 ] && ok "mtu = $mtu" || fail "mtu must be an integer between 576 and 9216 (ip link show)"
+isnum "$s1" && ok "single_stream_mbps = $s1" || fail "single_stream_mbps must be a number from one iperf3 stream"
+isint "$np" && [ "$np" -ge 2 ] && ok "parallel_streams = $np" || fail "parallel_streams must be an integer of 2 or more (iperf3 -P N)"
+isnum "$pm" && ok "parallel_mbps = $pm" || fail "parallel_mbps must be the summed rate of the parallel run"
+isint "$rt" && ok "retransmissions = $rt" || fail "retransmissions must be an integer (the Retr column of iperf3, or nstat)"
+case "$bn" in link|cpu|irq|buffer|path|mtu|none) ok "bottleneck = $bn" ;; *) fail "bottleneck must be one of link, cpu, irq, buffer, path, mtu, none" ;; esac
+if isint "$nic" && isnum "$s1" && isnum "$pm"; then
+  awk -v n="$nic" -v a="$s1" -v b="$pm" 'BEGIN{exit !(a <= n*1.05 && b <= n*1.05)}' && ok "no measured rate exceeds the NIC's rated speed by more than 5 percent" || fail "a measured rate above the rated speed means a typo or a different link: check the units (Mb/s)"
+  awk -v a="$s1" -v b="$pm" 'BEGIN{exit !(b >= a*0.9)}' && ok "the parallel run is not slower than a single stream (within 10 percent)" || fail "the parallel run should not be clearly slower than one stream; repeat the measurement"
+fi
+exit "$bad"

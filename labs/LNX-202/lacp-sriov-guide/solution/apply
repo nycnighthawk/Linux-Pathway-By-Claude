@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's/^bond_mode=.*/bond_mode=none/' -e 's/^aggregator_ids=.*/aggregator_ids=none/' -e 's/^partner_mac=.*/partner_mac=none/' \
+  -e 's/^lacp_rate=.*/lacp_rate=none/' -e 's/^sriov_totalvfs=.*/sriov_totalvfs=none/' -e 's/^vfs_enabled=.*/vfs_enabled=none/' \
+  -e 's/^vf_spoofchk=.*/vf_spoofchk=none/' report.txt

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty hardware report to fill in on a host with a bond or an SR-IOV capable NIC.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f report.txt
+printf '# SPDX-License-Identifier: MIT\n# Hardware report: fill in each ? from the machine and switch you inspect. See README.md.\nbond_mode=?\naggregator_ids=?\npartner_mac=?\nlacp_rate=?\nsriov_totalvfs=?\nvfs_enabled=?\nvf_spoofchk=?\n' > report.txt

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's/^nic_speed_mbps=.*/nic_speed_mbps=10000/' -e 's/^mtu=.*/mtu=1500/' -e 's/^single_stream_mbps=.*/single_stream_mbps=9400/' \
+  -e 's/^parallel_streams=.*/parallel_streams=8/' -e 's/^parallel_mbps=.*/parallel_mbps=9420/' -e 's/^retransmissions=.*/retransmissions=12/' \
+  -e 's/^bottleneck=.*/bottleneck=link/' report.txt

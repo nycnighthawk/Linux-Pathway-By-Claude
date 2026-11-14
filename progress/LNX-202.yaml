@@ -29,9 +29,20 @@ phases:
     units: 11
     done: []
   labs:
-    state: todo
+    state: done
     units: 11
-    done: []
+    done:
+    - LNX-202-T01
+    - LNX-202-T02
+    - LNX-202-T03
+    - LNX-202-T04
+    - LNX-202-T05
+    - LNX-202-T06
+    - LNX-202-T07
+    - LNX-202-T08
+    - LNX-202-T09
+    - LNX-202-T10
+    - LNX-202-T11
   checks:
     state: todo
     units: 0
@@ -50,3 +61,5 @@ log:
 - '2026-11-14 synth: LNX-202-T09'
 - '2026-11-14 synth: LNX-202-T10'
 - '2026-11-14 synth: LNX-202-T11'
+- '2026-11-14 labs: LNX-202-T01, LNX-202-T02, LNX-202-T03, LNX-202-T04, LNX-202-T05, LNX-202-T06, LNX-202-T07, LNX-202-T08,
+  LNX-202-T09, LNX-202-T10, LNX-202-T11'

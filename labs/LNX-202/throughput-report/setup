@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty throughput report to fill in from two hosts you can test between.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f report.txt
+printf '# SPDX-License-Identifier: MIT\n# Throughput report: fill in each ? from your own measurements. See README.md.\nnic_speed_mbps=?\nmtu=?\nsingle_stream_mbps=?\nparallel_streams=?\nparallel_mbps=?\nretransmissions=?\nbottleneck=?\n' > report.txt
