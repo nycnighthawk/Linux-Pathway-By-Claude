@@ -1,5 +1,5 @@
 ---
-{"title": "AD DS Design and Planning", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/ad-ds-design-and-planning", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "AD DS Design and Planning", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/ad-ds-design-and-planning", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # AD DS Design and Planning

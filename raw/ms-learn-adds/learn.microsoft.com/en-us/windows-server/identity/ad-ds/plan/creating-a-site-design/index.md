@@ -1,5 +1,5 @@
 ---
-{"title": "Creating a Site Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-site-design", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Creating a Site Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-site-design", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Creating a Site Design
@@ -45,6 +45,8 @@ Associate each subnet object with a site object by referring to the \"Associatin
 
 For more information about how to create subnet objects, see the article [Create a Subnet](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc770372(v=ws.11)).
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -59,55 +61,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Creating a Site Link Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-design?source=recommendations)
-
-    Learn more about: Creating a Site Link Design
-
--   [Creating a Site Link Bridge Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-bridge-design?source=recommendations)
-
-    Learn more about: Creating a Site Link Bridge Design
-
--   [Designing the Site Topology](/en-us/windows-server/identity/ad-ds/plan/designing-the-site-topology?source=recommendations)
-
-    Learn more about: Designing the Site Topology
-
--   [Collecting Network Information](/en-us/windows-server/identity/ad-ds/plan/collecting-network-information?source=recommendations)
-
-    Learn more about: Collecting Network Information
-
--   [Appendix A - Locations and Subnet Prefixes](/en-us/windows-server/identity/ad-ds/plan/appendix-a--locations-and-subnet-prefixes?source=recommendations)
-
-    Learn more about: Appendix A: Locations and Subnet Prefixes
-
--   [Active Directory Replication Concepts](/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts?source=recommendations)
-
-    Learn more about: Active Directory Replication Concepts
-
--   [Planning Domain Controller Placement](/en-us/windows-server/identity/ad-ds/plan/planning-domain-controller-placement?source=recommendations)
-
-    Learn more about: Planning Domain Controller Placement
-
--   [Understanding Active Directory Site Topology](/en-us/windows-server/identity/ad-ds/plan/understanding-active-directory-site-topology?source=recommendations)
-
-    Learn more about: Understanding Active Directory Site Topology
-
-Training
-
-Module
-
-[Introduction to AD DS - Training](/en-us/training/modules/introduction-to-ad-ds/?source=recommendations)
-
-Introduction to AD DS
-
-Certification
-
-[Microsoft Certified: Azure Network Engineer Associate - Certifications](/en-us/credentials/certifications/azure-network-engineer-associate/?source=recommendations)
-
-Demonstrate the design, implementation, and maintenance of Azure networking infrastructure, load balancing traffic, network routing, and more.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

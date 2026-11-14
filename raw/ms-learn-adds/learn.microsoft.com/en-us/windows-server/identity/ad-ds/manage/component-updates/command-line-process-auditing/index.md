@@ -1,5 +1,5 @@
 ---
-{"title": "Command line process auditing", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Command line process auditing", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Command line process auditing
@@ -134,8 +134,6 @@ The following procedure shows how to prevent conflicts by blocking the applicati
 3.  Enable the command line process auditing
 
 4.  Execute the same script as before and observe the events
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

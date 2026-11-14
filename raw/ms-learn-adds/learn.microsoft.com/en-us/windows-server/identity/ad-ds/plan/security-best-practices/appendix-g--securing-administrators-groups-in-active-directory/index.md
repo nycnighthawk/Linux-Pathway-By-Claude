@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix G: Securing Administrators Groups in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-g--securing-administrators-groups-in-active-directory", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix G: Securing Administrators Groups in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-g--securing-administrators-groups-in-active-directory", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix G: Securing Administrators Groups in Active Directory
@@ -301,6 +301,8 @@ From any member server or workstation affected by the GPO changes, log on locall
 5.  Click the **Log On** tab.
 
 6.  In the **Log on as** field, click **Local System** account, and click **OK**.
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

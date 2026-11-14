@@ -1,5 +1,5 @@
 ---
-{"title": "Winlogon automatic restart sign-on (ARSO)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/winlogon-automatic-restart-sign-on--arso-", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Winlogon automatic restart sign-on (ARSO)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/winlogon-automatic-restart-sign-on--arso-", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Winlogon automatic restart sign-on (ARSO)
@@ -210,7 +210,27 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Winlogon Automatic Restart Sign-On (ARSO)](/en-us/windows-server/security/windows-authentication/winlogon-automatic-restart-sign-on-arso?source=recommendations)
+
+    Learn more about: Winlogon Automatic Restart Sign-On (ARSO)
+
+Training
+
+Module
+
+[Secure Windows Server user accounts - Training](/en-us/training/modules/secure-windows-server-user-accounts/?source=recommendations)
+
+Learn how to secure Active Directory user accounts using least privilege, Protected Users group, authentication policy silos, Windows Defender Credential Guard, NTLM blocking, and account remediation techniques.
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

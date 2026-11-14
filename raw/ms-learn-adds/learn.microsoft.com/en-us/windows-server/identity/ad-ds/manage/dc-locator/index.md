@@ -1,5 +1,5 @@
 ---
-{"title": "Locating domain controllers in Windows and Windows Server", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/dc-locator", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Locating domain controllers in Windows and Windows Server", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/dc-locator", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Locating domain controllers in Windows and Windows Server
@@ -172,8 +172,6 @@ Configure administrator-configured forest-level domain name mappings only when y
 -   [The Beginning of the end of Remote Mailslots](https://techcommunity.microsoft.com/t5/storage-at-microsoft/the-beginning-of-the-end-of-remote-mailslots/ba-p/3762048)
 -   [Windows Internet Name Service (WINS)](/en-us/windows-server/networking/technologies/wins/wins-top)
 -   [About mailslots](/en-us/windows/win32/ipc/about-mailslots)
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

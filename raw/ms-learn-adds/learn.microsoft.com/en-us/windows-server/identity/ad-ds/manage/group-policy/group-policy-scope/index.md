@@ -1,5 +1,5 @@
 ---
-{"title": "Group Policy scope", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-scope", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Group Policy scope", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-scope", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Group Policy scope

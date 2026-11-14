@@ -1,5 +1,5 @@
 ---
-{"title": "AD DS Deployment Requirements", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/ad-ds-deployment-requirements", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "AD DS Deployment Requirements", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/ad-ds-deployment-requirements", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # AD DS Deployment Requirements
@@ -58,7 +58,51 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [AD DS Design Requirements](/en-us/windows-server/identity/ad-ds/plan/ad-ds-design-requirements?source=recommendations)
+
+    Learn more about: AD DS Design Requirements
+
+-   [Identifying Your AD DS Design and Deployment Requirements](/en-us/windows-server/identity/ad-ds/plan/identifying-your-ad-ds-design-and-deployment-requirements?source=recommendations)
+
+    Learn more about: Identifying Your AD DS Design and Deployment Requirements
+
+-   [Mapping Your Requirements to an AD DS Deployment Strategy](/en-us/windows-server/identity/ad-ds/plan/mapping-your-requirements-to-an-ad-ds-deployment-strategy?source=recommendations)
+
+    Learn more about: Mapping Your Requirements to an AD DS Deployment Strategy
+
+-   [AD DS Design and Planning](/en-us/windows-server/identity/ad-ds/plan/ad-ds-design-and-planning?source=recommendations)
+
+    Learn more about: AD DS Design and Planning
+
+-   [Understanding AD DS Design](/en-us/windows-server/identity/ad-ds/plan/understanding-ad-ds-design?source=recommendations)
+
+    Learn more about: Understanding AD DS Design
+
+-   [Deploying AD DS in a New Organization](/en-us/windows-server/identity/ad-ds/plan/deploying-ad-ds-in-a-new-organization?source=recommendations)
+
+    Learn more about: Deploying AD DS in a New Organization
+
+-   [Evaluating AD DS Deployment Strategy Examples](/en-us/windows-server/identity/ad-ds/plan/evaluating-ad-ds-deployment-strategy-examples?source=recommendations)
+
+    Learn more about: Evaluating AD DS Deployment Strategy Examples
+
+Training
+
+Module
+
+[Active Directory Domain Services migration - Training](/en-us/training/modules/active-directory-domain-services-migration/?source=recommendations)
+
+Determine the best approach to moving domain controllers to Windows Server 2025.
+
+Certification
+
+[Microsoft Certified: Windows Server Administrator Associate - Certifications](/en-us/credentials/certifications/windows-server-hybrid-administrator/?source=recommendations)
+
+As a Windows Server administrator, you integrate Windows Server environments with Azure services and manage Windows Server in on-premises networks.
 
 ------------------------------------------------------------------------
 

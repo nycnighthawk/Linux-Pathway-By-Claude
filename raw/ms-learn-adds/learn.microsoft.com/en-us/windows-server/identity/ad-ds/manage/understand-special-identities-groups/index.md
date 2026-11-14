@@ -1,5 +1,5 @@
 ---
-{"title": "Special identity groups", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-special-identities-groups", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Special identity groups", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-special-identities-groups", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Special identity groups

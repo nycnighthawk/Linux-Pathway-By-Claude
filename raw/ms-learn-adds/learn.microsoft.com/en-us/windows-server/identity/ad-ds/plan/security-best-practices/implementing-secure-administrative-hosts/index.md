@@ -1,5 +1,5 @@
 ---
-{"title": "Implementing Secure Administrative Hosts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-secure-administrative-hosts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Implementing Secure Administrative Hosts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-secure-administrative-hosts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Implementing Secure Administrative Hosts
@@ -254,7 +254,51 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Implementing Least-Privilege Administrative Models](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-least-privilege-administrative-models?source=recommendations)
+
+    Learn more about: Implementing Least-Privilege Administrative Models
+
+-   [Attractive Accounts for Credential Theft](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/attractive-accounts-for-credential-theft?source=recommendations)
+
+    Learn more about: Attractive Accounts for Credential Theft
+
+-   [Best practices for securing Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/best-practices-for-securing-active-directory?source=recommendations)
+
+    Learn more about best practices for securing Active Directory.
+
+-   [Maintaining a More Secure Environment](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/maintaining-a-more-secure-environment?source=recommendations)
+
+    Learn more about: Maintaining a More Secure Environment
+
+-   [Securing Domain Controllers Against Attack](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/securing-domain-controllers-against-attack?source=recommendations)
+
+    Learn more about securing domain controllers against attack.
+
+-   [Reducing the Active Directory Attack Surface](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/reducing-the-active-directory-attack-surface?source=recommendations)
+
+    Learn more about: Reducing the Active Directory Attack Surface
+
+-   [Appendix F - Securing Domain Admins Groups in Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-f--securing-domain-admins-groups-in-active-directory?source=recommendations)
+
+    Learn more about: Appendix F: Securing Domain Admins Groups in Active Directory
+
+Training
+
+Module
+
+[Perform Windows Server secure administration - Training](/en-us/training/modules/perform-windows-server-secure-administration/?source=recommendations)
+
+Learn how to apply the principle of least privilege, delegate administrative control in Active Directory, implement Privileged Access Workstations (PAWs) with Windows Defender security features, and configure jump servers for secure remote administration.
+
+Certification
+
+[Microsoft Certified: Information Security Administrator Associate - Certifications](/en-us/credentials/certifications/information-security-administrator/?source=recommendations)
+
+As an Information Security Administrator, you plan and implement information security of sensitive data by using Microsoft Purview and related services.
 
 ------------------------------------------------------------------------
 

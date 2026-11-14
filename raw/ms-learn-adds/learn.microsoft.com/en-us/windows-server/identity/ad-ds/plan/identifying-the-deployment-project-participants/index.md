@@ -1,5 +1,5 @@
 ---
-{"title": "Identifying the Deployment Project Participants", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/identifying-the-deployment-project-participants", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Identifying the Deployment Project Participants", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/identifying-the-deployment-project-participants", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Identifying the Deployment Project Participants

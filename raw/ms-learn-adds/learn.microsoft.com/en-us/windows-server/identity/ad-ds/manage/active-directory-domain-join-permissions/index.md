@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory domain join permissions", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/active-directory-domain-join-permissions", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory domain join permissions", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/active-directory-domain-join-permissions", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory domain join permissions
@@ -295,33 +295,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Join a computer to a domain](/en-us/windows-server/identity/ad-ds/manage/join-computer-to-domain?source=recommendations)
-
-    Learn how to add a client computer or server device to a domain in Windows Server.
-
--   [Default workstation number a user can join to the domain - Windows Server](/en-us/troubleshoot/windows-server/active-directory/default-workstation-numbers-join-domain?source=recommendations)
-
-    Describes the default number of workstations a user can join to the domain and how to the change the AD to allow more or fewer machine accounts in the domain.
-
--   [Failure When You Use an Existing Computer Account to Join a Domain - Windows Server](/en-us/troubleshoot/windows-server/active-directory/failure-when-you-use-an-existing-computer-account-to-join-a-domain?source=recommendations)
-
-    Addresses the issue of failing to join a computer to a domain when an existing computer account with the same name already exists.
-
--   [Active Directory Accounts](/en-us/windows-server/identity/ad-ds/manage/understand-default-user-accounts?source=recommendations)
-
-    This article discusses how to create default local Windows Server Active Directory accounts on a domain controller.
-
--   [Redirect users and computers containers - Windows Server](/en-us/troubleshoot/windows-server/active-directory/redirect-users-computers-containers?source=recommendations)
-
-    Describes how to use redirusr and redircmp to redirect user, computer, and group accounts in Active Directory domains.
-
--   [Delegation of Control in AD DS on Windows Server](/en-us/windows-server/identity/ad-ds/manage/delegation-control-wizard?source=recommendations)
-
-    Learn how to delegate administrative control in Active Directory Domain Services on Windows Server.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

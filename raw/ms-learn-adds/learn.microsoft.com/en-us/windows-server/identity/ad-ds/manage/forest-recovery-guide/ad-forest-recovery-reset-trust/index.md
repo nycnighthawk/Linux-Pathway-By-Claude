@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Forest Recovery - Reset a trust password on one side of the trust", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-trust", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Forest Recovery - Reset a trust password on one side of the trust", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-trust", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Forest Recovery - Reset a trust password on one side of the trust
@@ -61,8 +61,6 @@ Resetting the trust password ensures that the DC doesn\'t replicate with potenti
 -   [AD Forest Recovery - Virtualization](ad-forest-recovery-virtualization)
 -   [AD Forest Recovery - Cleanup](ad-forest-recovery-cleanup)
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -77,51 +75,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Netdom trust](/en-us/windows-server/administration/windows-commands/netdom-trust?source=recommendations)
-
-    Netdom trust is a command-line utility that manages, establishes, verifies, or resets trust relationships between domains in Windows Server.
-
--   [AD Forest Recovery - Resetting the computer account on the recovered DC](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-computer-account-dc?source=recommendations)
-
-    Learn more about: AD Forest Recovery - Resetting the computer account on the recovered DC
-
--   [Active Directory Replication Concepts](/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts?source=recommendations)
-
-    Learn more about: Active Directory Replication Concepts
-
--   [Troubleshoot replication error 8461 - Windows Server](/en-us/troubleshoot/windows-server/active-directory/adrepl-troubleshoot-replication-error-8461?source=recommendations)
-
-    This article describes the symptoms, cause, and resolution steps for cases when Active Directory replication fails with error 8461.
-
--   [dcdiag](/en-us/windows-server/administration/windows-commands/dcdiag?source=recommendations)
-
-    DCDiag is used to diagnose Active Directory domain controller health and as a troubleshooting tool by performing several network connectivity tests.
-
--   [Errors when you run DCDIAG commands - Windows Server](/en-us/troubleshoot/windows-server/active-directory/dcdiag-commands-running-errors?source=recommendations)
-
-    Fixes errors that occur when you run DCDIAG.EXE /E or /A or /C commands.
-
--   [Troubleshooting Active Directory Replication Problems](/en-us/windows-server/identity/ad-ds/manage/troubleshoot/troubleshooting-active-directory-replication-problems?source=recommendations)
-
-    Learn more about: Troubleshooting Active Directory Replication Problems
-
-Training
-
-Module
-
-[Manage advanced features of AD DS - Training](/en-us/training/modules/manage-advanced-features-of-ad-ds/?source=recommendations)
-
-Learn how to create trust relationships between AD DS forests and domains, implement Enhanced Security Administrative Environment (ESAE) forests, monitor and troubleshoot AD DS replication, and create custom AD DS partitions.
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

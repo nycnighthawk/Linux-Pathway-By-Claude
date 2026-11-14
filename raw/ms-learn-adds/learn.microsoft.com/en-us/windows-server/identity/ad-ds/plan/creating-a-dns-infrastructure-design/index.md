@@ -1,5 +1,5 @@
 ---
-{"title": "Creating a DNS Infrastructure Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-dns-infrastructure-design", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Creating a DNS Infrastructure Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-dns-infrastructure-design", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Creating a DNS Infrastructure Design
@@ -30,8 +30,6 @@ Before you design your DNS infrastructure to support AD DS, it can be helpful to
 -   [DNS for AD DS Owner Role](../deploy/assigning-the-dns-for-ad-ds-owner-role)
 -   [Integrating AD DS into an Existing DNS Infrastructure](integrating-ad-ds-into-an-existing-dns-infrastructure)
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -46,51 +44,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Reviewing DNS Concepts](/en-us/windows-server/identity/ad-ds/plan/reviewing-dns-concepts?source=recommendations)
-
-    Learn more about: Reviewing DNS Concepts
-
--   [Domain Controller Location](/en-us/windows-server/identity/ad-ds/plan/domain-controller-location?source=recommendations)
-
-    Learn more about: Domain Controller Location
-
--   [Active Directory-Integrated DNS Zones](/en-us/windows-server/identity/ad-ds/plan/active-directory-integrated-dns-zones?source=recommendations)
-
-    Learn more about: Active Directory-Integrated DNS Zones
-
--   [DNS and AD DS](/en-us/windows-server/identity/ad-ds/plan/dns-and-ad-ds?source=recommendations)
-
-    Learn more about: DNS and AD DS
-
--   [DNS for AD DS Owner Role](/en-us/windows-server/identity/ad-ds/deploy/assigning-the-dns-for-ad-ds-owner-role?source=recommendations)
-
-    Information about the DNS for AD DS Owner role.
-
--   [Appendix A - DNS Inventory](/en-us/windows-server/identity/ad-ds/plan/appendix-a--dns-inventory?source=recommendations)
-
-    Learn more about: Appendix A: DNS Inventory
-
--   [Integrating AD DS into an Existing DNS Infrastructure](/en-us/windows-server/identity/ad-ds/plan/integrating-ad-ds-into-an-existing-dns-infrastructure?source=recommendations)
-
-    Learn more about: Integrating AD DS into an Existing DNS Infrastructure
-
-Training
-
-Module
-
-[Implement Windows Server DNS - Training](/en-us/training/modules/implement-windows-server-dns/?source=recommendations)
-
-Learn how to deploy and configure DNS in Windows Server, including DNS architecture, forward and reverse lookup zones, AD-integrated zones, zone transfers, forwarders, conditional forwarding, and stub zones.
-
-Certification
-
-[Microsoft Certified: Azure Network Engineer Associate - Certifications](/en-us/credentials/certifications/azure-network-engineer-associate/?source=recommendations)
-
-Demonstrate the design, implementation, and maintenance of Azure networking infrastructure, load balancing traffic, network routing, and more.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

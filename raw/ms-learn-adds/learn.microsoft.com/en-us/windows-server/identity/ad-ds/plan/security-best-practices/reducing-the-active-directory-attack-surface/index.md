@@ -1,5 +1,5 @@
 ---
-{"title": "Reducing the Active Directory Attack Surface", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/reducing-the-active-directory-attack-surface", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Reducing the Active Directory Attack Surface", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/reducing-the-active-directory-attack-surface", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Reducing the Active Directory Attack Surface
@@ -127,6 +127,8 @@ Although the most privileged groups in Active Directory are described here, ther
 ## Related content {#related-content .heading-anchor}
 
 -   [Tier Model for Active Directory Domain Services](../../tier-model)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

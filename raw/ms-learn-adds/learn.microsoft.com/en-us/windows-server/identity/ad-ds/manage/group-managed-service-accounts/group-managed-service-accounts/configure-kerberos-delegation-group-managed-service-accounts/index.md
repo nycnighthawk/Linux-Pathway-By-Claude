@@ -1,5 +1,5 @@
 ---
-{"title": "Configuring Kerberos delegation for group Managed Service Accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/configure-kerberos-delegation-group-managed-service-accounts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Configuring Kerberos delegation for group Managed Service Accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/configure-kerberos-delegation-group-managed-service-accounts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Configuring Kerberos delegation for group Managed Service Accounts
@@ -91,6 +91,8 @@ If you add SPNs by mistake or want to remove SPNs from the delegation list of th
 -   [Group Managed Service Accounts Overview](group-managed-service-accounts-overview)
 -   [Manage Group Managed Service Accounts](manage-group-managed-service-accounts)
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -105,43 +107,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Manage Group Managed Service Accounts](/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/manage-group-managed-service-accounts?source=recommendations)
-
-    Learn how to manage and use Group Managed Service Accounts (gMSA) in Windows Server.
-
--   [ms-DS-Allowed-To-Delegate-To attribute - Win32 apps](/en-us/windows/win32/adschema/a-msds-allowedtodelegateto?source=recommendations)
-
-    This is an attribute on service account (computer or user account) objects.
-
--   [How to configure Kerberos Constrained Delegation for Web Enrollment proxy pages - Windows Server](/en-us/troubleshoot/windows-server/active-directory/configure-kerberos-constrained-delegation?source=recommendations)
-
-    Discusses how to implement S4U2Proxy and Constrained Delegation on a custom service account or the NetworkServices account for Web Enrollment proxy pages.
-
--   [Create a Key Distribution Service (KDS) Root Key](/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/create-the-key-distribution-services-kds-root-key?source=recommendations)
-
-    Learn how to create a Key Distribution Service root key on a domain controller by using Windows PowerShell to generate group Managed Service Account passwords in Windows Server 2012 or later.
-
--   [Group Managed Service Accounts overview](/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/group-managed-service-accounts-overview?source=recommendations)
-
-    Learn about the group Managed Service Account; practical applications, changes in Microsoft\'s implementation, both hardware and software requirements.
-
-Training
-
-Module
-
-[Manage security in Active Directory - Training](/en-us/training/modules/manage-security-active-directory/?source=recommendations)
-
-Learn how to manage security in Active Directory, including configuring user rights with least privilege, delegating permissions, using the Protected Users group and Credential Guard, blocking NTLM authentication, and finding problematic accounts.
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

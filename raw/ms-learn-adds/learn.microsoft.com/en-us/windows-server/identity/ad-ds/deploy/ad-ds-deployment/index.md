@@ -1,5 +1,5 @@
 ---
-{"title": "AD DS Deployment", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/ad-ds-deployment", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "AD DS Deployment", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/ad-ds-deployment", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # AD DS Deployment

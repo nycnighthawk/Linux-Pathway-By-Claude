@@ -1,5 +1,5 @@
 ---
-{"title": "Reviewing OU Design Concepts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/reviewing-ou-design-concepts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Reviewing OU Design Concepts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/reviewing-ou-design-concepts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Reviewing OU Design Concepts

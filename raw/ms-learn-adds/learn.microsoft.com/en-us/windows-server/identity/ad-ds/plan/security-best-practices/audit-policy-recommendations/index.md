@@ -1,5 +1,5 @@
 ---
-{"title": "System audit policy recommendations", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/audit-policy-recommendations", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "System audit policy recommendations", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/audit-policy-recommendations", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # System audit policy recommendations

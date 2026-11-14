@@ -1,5 +1,5 @@
 ---
-{"title": "How LDAP server cookies are handled", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/how-ldap-server-cookies-are-handled", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "How LDAP server cookies are handled", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/how-ldap-server-cookies-are-handled", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # How LDAP server cookies are handled

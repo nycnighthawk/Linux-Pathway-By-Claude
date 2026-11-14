@@ -1,5 +1,5 @@
 ---
-{"title": "Mapping Design Requirements to Forest Design Models", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/mapping-design-requirements-to-forest-design-models", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Mapping Design Requirements to Forest Design Models", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/mapping-design-requirements-to-forest-design-models", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Mapping Design Requirements to Forest Design Models
@@ -159,8 +159,6 @@ Considerations for service isolation include the following:
     Specific users or applications might have special needs that require the capability to pass through the firewall to contact other forests. You can address these needs individually by opening the appropriate interfaces in the firewall, including those necessary for any trusts to function.
 
 For more information about configuring firewalls for use with AD DS, see [Active Directory in Networks Segmented by Firewalls](https://go.microsoft.com/fwlink/?LinkId=37928).
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

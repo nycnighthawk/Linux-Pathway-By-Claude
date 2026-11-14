@@ -1,5 +1,5 @@
 ---
-{"title": "Creating an Organizational Unit Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-an-organizational-unit-design", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Creating an Organizational Unit Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-an-organizational-unit-design", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Creating an Organizational Unit Design

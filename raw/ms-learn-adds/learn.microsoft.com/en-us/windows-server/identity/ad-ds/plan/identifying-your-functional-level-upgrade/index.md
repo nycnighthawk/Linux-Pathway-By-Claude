@@ -1,5 +1,5 @@
 ---
-{"title": "Identifying your functional level upgrade", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/identifying-your-functional-level-upgrade", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Identifying your functional level upgrade", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/identifying-your-functional-level-upgrade", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Identifying your functional level upgrade

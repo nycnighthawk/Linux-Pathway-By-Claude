@@ -1,5 +1,5 @@
 ---
-{"title": "Finding Additional Resources for Logical Structure Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/finding-additional-resources-for-logical-structure-design", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Finding Additional Resources for Logical Structure Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/finding-additional-resources-for-logical-structure-design", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Finding Additional Resources for Logical Structure Design
@@ -47,8 +47,6 @@ You can find Additional Resources for Logical Structure Design in the following 
 -   For more information about fine-grained password and account lockout policies, see the [AD DS Fine-Grained Password and Account Lockout Policy Step-by-Step Guide](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc770842(v=ws.10)).
 
 -   For more information about naming conventions in AD DS, see article 909264 in the Microsoft Knowledge Base, [Naming conventions in Active Directory for computers, domains, sites, and OUs](https://support.microsoft.com/help/909264/).
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

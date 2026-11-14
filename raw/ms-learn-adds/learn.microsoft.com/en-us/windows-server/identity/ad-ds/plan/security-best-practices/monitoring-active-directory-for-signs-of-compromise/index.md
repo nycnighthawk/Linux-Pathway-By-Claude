@@ -1,5 +1,5 @@
 ---
-{"title": "Monitoring Active Directory for Signs of Compromise", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/monitoring-active-directory-for-signs-of-compromise", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Monitoring Active Directory for Signs of Compromise", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/monitoring-active-directory-for-signs-of-compromise", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Monitoring Active Directory for Signs of Compromise
@@ -677,8 +677,6 @@ Auditing subcategories can be configured by using several methods, including Gro
 
 -   [Advanced Security Audit Policy Step-by-Step Guide](/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/dd408940(v=ws.10))
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -693,41 +691,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Appendix M - Document Links and Recommended Reading](/en-us/windows-server/identity/ad-ds/manage/appendix-m--document-links-and-recommended-reading?source=recommendations)
-
-    Learn more about: Appendix M: Document Links and Recommended Reading
-
--   [System Audit Policy recommendations](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/audit-policy-recommendations?source=recommendations)
-
-    This article provides guidance on Windows audit policy settings, baseline recommendations, and advanced options for both workstations and Windows servers.
-
--   [Advanced Audit Policy Configuration settings](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/advanced-audit-policy-configuration?source=recommendations)
-
-    The Advanced Audit Policy Configuration settings in Group Policy allows admins to specify which security events are audited on Windows systems for tracking activities, security monitoring, and incident detection.
-
--   [Appendix L - Events to Monitor](/en-us/windows-server/identity/ad-ds/plan/appendix-l--events-to-monitor?source=recommendations)
-
-    Learn more about: Appendix L: Events to Monitor
-
--   [Planning for compromise](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/planning-for-compromise?source=recommendations)
-
-    Learn more about planning for compromise
-
--   [Active Directory Privileged Accounts and Groups Guide](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-b--privileged-accounts-and-groups-in-active-directory?source=recommendations)
-
-    Discover Active Directory privileged accounts and groups including Enterprise Admins, Domain Admins, and built-in security groups. Learn rights, permissions, and security best practices for AD administration.
-
-Training
-
-Module
-
-[Implement Windows Server auditing and diagnostics - Training](/en-us/training/modules/implement-windows-server-auditing-diagnostics/?source=recommendations)
-
-Learn how to implement Windows Server auditing for regulatory compliance and security, including basic and advanced audit policies, User Access Logging (UAL), and Setup and Boot Event Collection.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

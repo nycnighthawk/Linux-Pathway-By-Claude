@@ -1,5 +1,5 @@
 ---
-{"title": "Site functions", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/site-functions", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Site functions", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/site-functions", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Site functions
@@ -43,6 +43,8 @@ DFSN uses site information to direct a client to the server that\'s hosting the 
 ## Service location {#service-location .heading-anchor}
 
 By publishing services such as file and print services in AD DS, you allow Active Directory clients to locate the requested service within the same or nearest site. Print services use the location attribute stored in AD DS to let users browse for printers by location without knowing their precise location. For more information about designing and deploying print servers, see [Designing and Deploying Print Servers](/en-us/previous-versions/windows/it-pro/windows-server-2003/cc785842(v=ws.10)).
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

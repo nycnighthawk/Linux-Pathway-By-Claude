@@ -1,5 +1,5 @@
 ---
-{"title": "Enable and use Active Directory Recycle Bin", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/adac/active-directory-recycle-bin", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Enable and use Active Directory Recycle Bin", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/adac/active-directory-recycle-bin", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Enable and use Active Directory Recycle Bin

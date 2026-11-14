@@ -1,5 +1,5 @@
 ---
-{"title": "Best practices for securing Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/best-practices-for-securing-active-directory", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Best practices for securing Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/best-practices-for-securing-active-directory", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Best practices for securing Active Directory
@@ -218,8 +218,6 @@ Each measure is also categorized based on whether it\'s tactical, strategic, pre
 -   [Maintaining a more secure environment](maintaining-a-more-secure-environment)
 
 -   [Appendices](appendices)
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

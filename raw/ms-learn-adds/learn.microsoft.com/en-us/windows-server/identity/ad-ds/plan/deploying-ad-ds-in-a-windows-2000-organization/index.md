@@ -1,5 +1,5 @@
 ---
-{"title": "Deploying AD DS in a Windows 2000 Organization", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/deploying-ad-ds-in-a-windows-2000-organization", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Deploying AD DS in a Windows 2000 Organization", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/deploying-ad-ds-in-a-windows-2000-organization", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Deploying AD DS in a Windows 2000 Organization
@@ -23,6 +23,8 @@ If you want to set the domain or forest functional level to Windows Server 2008 
 Consolidating resource and account domains that are upgraded in place from a Windows 2000 environment as part of your Windows Server 2008 AD DS deployment may require interforest or intraforest domain restructuring. Restructuring AD DS domains between forests helps you reduce the complexity of your organization and the associated administrative costs. Restructuring AD DS domains within a forest helps you to decrease the administrative overhead for your organization by reducing replication traffic, reducing the amount of user and group administration that is required, and simplifying the administration of Group Policy. For more information, see [ADMT Guide: Migrating and Restructuring Active Directory Domains](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc974332(v=ws.10)).
 
 For a list of detailed tasks that you can use to plan and deploy AD DS in an organization that is currently running Windows 2000 Active Directory, see [Checklist: Deploying AD DS in a Windows 2000 Organization](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc732737(v=ws.10)).
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

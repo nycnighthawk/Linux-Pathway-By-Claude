@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Replication Concepts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Replication Concepts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Replication Concepts
@@ -135,6 +135,8 @@ A global catalog server is a domain controller that stores information about all
 Universal group membership caching allows the domain controller to cache universal group membership information for users. You can enable domain controllers that are running Windows Server 2008 to cache universal group memberships by using the Active Directory Sites and Services snap-in.
 
 Enabling universal group membership caching eliminates the need for a global catalog server at every site in a domain, which minimizes network bandwidth usage because a domain controller does not need to replicate all of the objects located in the forest. It also reduces logon times because the authenticating domain controllers do not always need to access a global catalog to obtain universal group membership information. For more information about when to use universal group membership caching, see [Planning Global Catalog Server Placement](../../plan/planning-global-catalog-server-placement).
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

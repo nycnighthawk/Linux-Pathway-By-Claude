@@ -1,5 +1,5 @@
 ---
-{"title": "Managing RID Issuance", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/managing-rid-issuance", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Managing RID Issuance", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/managing-rid-issuance", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Managing RID Issuance
@@ -392,7 +392,55 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Flexible Single Master Operations roles in Windows Server](/en-us/windows-server/identity/ad-ds/manage/understand-fsmo-roles?source=recommendations)
+
+    Learn about the Flexible Single Master Operations (FSMO) roles in Active Directory Domain Services (AD DS) and how to place them effectively.
+
+-   [Transfer Flexible Single Master Operations roles in Windows Server](/en-us/windows-server/identity/ad-ds/manage/manage-fsmo-roles?source=recommendations)
+
+    Learn how to transfer FSMO roles in Active Directory Domain Services (AD DS) to optimize performance and simplify administration.
+
+-   [Active Directory Replication Concepts](/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts?source=recommendations)
+
+    Learn more about: Active Directory Replication Concepts
+
+-   [Active Directory Domain Services Replication Priority Boost](/en-us/windows-server/identity/ad-ds/manage/replication-priority-boost?source=recommendations)
+
+    Learn about what the Active Directory Domain Services Replication Priority Boost feature is and how to manage it.
+
+-   [Read-Only DCs and the Active Directory Schema - Win32 apps](/en-us/windows/win32/ad/rodc-and-active-directory-schema?source=recommendations)
+
+    Windows Server 2008 introduces a new type of domain controller, the Read-only Domain Controller (RODC).
+
+-   [Troubleshoot domain controller deployment - Windows Server](/en-us/troubleshoot/windows-server/active-directory/troubleshoot-domain-controller-deployment?source=recommendations)
+
+    Provides information about troubleshooting domain controller deployment.
+
+-   [Troubleshooting Active Directory Replication Problems](/en-us/windows-server/identity/ad-ds/manage/troubleshoot/troubleshooting-active-directory-replication-problems?source=recommendations)
+
+    Learn more about: Troubleshooting Active Directory Replication Problems
+
+-   [Flexible Single-Master Operation (FSMO) placement and optimization on AD DCs - Windows Server](/en-us/troubleshoot/windows-server/active-directory/fsmo-placement-and-optimization-on-ad-dcs?source=recommendations)
+
+    Certain operations are optimally done on a single domain controller. Describes how Active Directory FSMO roles are positioned in both the forest and the domain for these operations.
+
+Training
+
+Module
+
+[Troubleshoot Active Directory - Training](/en-us/training/modules/troubleshoot-active-directory/?source=recommendations)
+
+Learn how to troubleshoot Active Directory including recovering deleted objects with AD Recycle Bin, managing the AD DS database with NtdsUtil, restoring SYSVOL, troubleshooting replication, and diagnosing hybrid authentication with Microsoft Entra Connect.
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

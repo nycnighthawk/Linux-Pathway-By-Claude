@@ -1,5 +1,5 @@
 ---
-{"title": "Clean up Active Directory Domain Controller server metadata", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/ad-ds-metadata-cleanup", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Clean up Active Directory Domain Controller server metadata", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/ad-ds-metadata-cleanup", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Clean up Active Directory Domain Controller server metadata
@@ -110,6 +110,8 @@ Open Active Directory Sites and Services. Navigate to the **Servers** container 
 -   [Ntdsutil command reference](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc753343(v=ws.10))
 -   [Clean Up Server Metadata reference](/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc816907(v=ws.10))
 -   [Ntdsutil metadata cleanup reference](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc731035(v=ws.10))
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

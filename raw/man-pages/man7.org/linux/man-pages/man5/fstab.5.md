@@ -1,5 +1,5 @@
 ---
-{"title": "fstab(5) — Linux manual page", "url": "https://man7.org/linux/man-pages/man5/fstab.5.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "fstab(5) — Linux manual page", "url": "https://man7.org/linux/man-pages/man5/fstab.5.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # fstab(5) --- Linux manual page

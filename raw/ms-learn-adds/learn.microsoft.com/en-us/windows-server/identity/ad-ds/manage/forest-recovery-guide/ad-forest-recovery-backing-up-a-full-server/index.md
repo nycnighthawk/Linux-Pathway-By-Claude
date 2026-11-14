@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Forest Recovery - Back up a full server", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-backing-up-a-full-server", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Forest Recovery - Back up a full server", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-backing-up-a-full-server", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Forest Recovery - Back up a full server
@@ -104,55 +104,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [AD Forest Recovery - Backing up the System State data](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-backing-up-system-state?source=recommendations)
-
-    Learn more about: AD Forest Recovery - Backing up the System State data
-
--   [AD Forest Recovery - Performing a full server recovery](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-perform-full-server-recovery?source=recommendations)
-
-    A full server recovery is necessary if you\'re restoring to different hardware or a different operating system instance. Bare-Metal recovery is a supported method of backup.
-
--   [Active Directory Forest Recovery - Procedures](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-procedures?source=recommendations)
-
-    View a list of procedures that are used in backing up and restoring domain controllers and Active Directory.
-
--   [Active Directory Forest Recovery - Prerequisites](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-prerequisites?source=recommendations)
-
-    The following document discusses prerequisites that you should be familiar with before devising a forest recovery plan or attempting a recovery.
-
--   [Active Directory Forest Recovery - Perform initial recovery](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-perform-initial-recovery?source=recommendations)
-
-    Beginning with a writeable DC in the forest root domain, complete the steps in this section in order to restore the first DC.
-
--   [Back up system state and bare metal](/en-us/system-center/dpm/back-up-system-state-and-bare-metal?source=recommendations)
-
-    You can use DPM to back up your system state and provide bare metal recovery (BMR) protection.
-
--   [AD Forest Recovery - Devising an AD Forest Recovery Plan](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-devise-a-plan?source=recommendations)
-
-    Learn more about: AD Forest Recovery - Devising an AD Forest Recovery Plan
-
--   [AD Forest Recovery - Configure DNS Server service](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-configure-dns?source=recommendations)
-
-    Learn more about: AD Forest Recovery - Configuring the DNS Server service
-
-Training
-
-Module
-
-[Implement hybrid backup and recovery with Windows Server IaaS - Training](/en-us/training/modules/implement-hybrid-backup-recovery-windows-server-iaas/?source=recommendations)
-
-Learn about Azure Backup before learning to implement Recovery Vaults and Azure Backup Policies. Learn to implement Windows IaaS VM recovery, perform backup and restore of on-premises workloads, and manage Azure VM backups.
-
-Certification
-
-[Microsoft Certified: Windows Server Administrator Associate - Certifications](/en-us/credentials/certifications/windows-server-hybrid-administrator/?source=recommendations)
-
-As a Windows Server administrator, you integrate Windows Server environments with Azure services and manage Windows Server in on-premises networks.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

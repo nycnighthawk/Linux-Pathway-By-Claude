@@ -1,5 +1,5 @@
 ---
-{"title": "Directory Services component updates", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/directory-services-component-updates", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Directory Services component updates", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/directory-services-component-updates", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Directory Services component updates
@@ -478,45 +478,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Raise Domain and Forest Functional Levels in AD DS on Windows Server](/en-us/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels?source=recommendations)
-
-    Learn how to raise domain and forest functional levels in Active Directory Domain Services on Windows Server.
-
--   [Active Directory Domain Services Functional Levels](/en-us/windows-server/identity/ad-ds/active-directory-functional-levels?source=recommendations)
-
-    Discover the capabilities of Active Directory Domain Services functional levels and learn how they impact domain controllers and Windows Server compatibility.
-
--   [Troubleshoot domain controller deployment - Windows Server](/en-us/troubleshoot/windows-server/active-directory/troubleshoot-domain-controller-deployment?source=recommendations)
-
-    Provides information about troubleshooting domain controller deployment.
-
--   [How to raise Active Directory domain and forest functional levels - Windows Server](/en-us/troubleshoot/windows-server/active-directory/raise-active-directory-domain-forest-functional-levels?source=recommendations)
-
-    Describes how to raise Active Directory domain and forest functional levels.
-
--   [Diagnose AD replication failures - Windows Server](/en-us/troubleshoot/windows-server/active-directory/diagnose-replication-failures?source=recommendations)
-
-    Describes how to diagnose Active Directory replication failures.
-
--   [Enable Database 32k pages optional feature in Active Directory Domain Services on Windows Server](/en-us/windows-server/identity/ad-ds/enable-32k-pages-optional-feature?source=recommendations)
-
-    Learn how-to enable the Database 32k pages optional feature in Active Directory Domain Services and how to enable the optional feature using PowerShell.
-
--   [Transfer Flexible Single Master Operations roles in Windows Server](/en-us/windows-server/identity/ad-ds/manage/manage-fsmo-roles?source=recommendations)
-
-    Learn how to transfer FSMO roles in Active Directory Domain Services (AD DS) to optimize performance and simplify administration.
-
-Training
-
-Module
-
-[Active Directory Domain Services migration - Training](/en-us/training/modules/active-directory-domain-services-migration/?source=recommendations)
-
-Determine the best approach to moving domain controllers to Windows Server 2025.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

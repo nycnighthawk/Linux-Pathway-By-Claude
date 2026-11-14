@@ -1,5 +1,5 @@
 ---
-{"title": "Get started with OpenSSH for Windows", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Get started with OpenSSH for Windows", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Get started with OpenSSH for Windows
@@ -252,8 +252,6 @@ Now that you\'re done installing OpenSSH Server for Windows, here are some artic
 -   Learn more about the [OpenSSH Server configuration for Windows](openssh_server_configuration)
 
 **Note:** The author created this article with assistance from AI. [Learn more](/principles-for-ai-generated-content)
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

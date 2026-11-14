@@ -1,5 +1,5 @@
 ---
-{"title": "Maintaining a More Secure Environment", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/maintaining-a-more-secure-environment", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Maintaining a More Secure Environment", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/maintaining-a-more-secure-environment", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Maintaining a More Secure Environment
@@ -98,7 +98,45 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Reducing the Active Directory Attack Surface](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/reducing-the-active-directory-attack-surface?source=recommendations)
+
+    Learn more about: Reducing the Active Directory Attack Surface
+
+-   [Avenues to Compromise](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/avenues-to-compromise?source=recommendations)
+
+    Learn more about: Avenues to Compromise
+
+-   [Best practices for securing Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/best-practices-for-securing-active-directory?source=recommendations)
+
+    Learn more about best practices for securing Active Directory.
+
+-   [Implementing Secure Administrative Hosts](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-secure-administrative-hosts?source=recommendations)
+
+    Learn more about: Implementing Secure Administrative Hosts
+
+-   [Planning for compromise](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/planning-for-compromise?source=recommendations)
+
+    Learn more about planning for compromise
+
+-   [Securing Domain Controllers Against Attack](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/securing-domain-controllers-against-attack?source=recommendations)
+
+    Learn more about securing domain controllers against attack.
+
+-   [Attractive Accounts for Credential Theft](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/attractive-accounts-for-credential-theft?source=recommendations)
+
+    Learn more about: Attractive Accounts for Credential Theft
+
+Training
+
+Module
+
+[Manage security in Active Directory - Training](/en-us/training/modules/manage-security-active-directory/?source=recommendations)
+
+Learn how to manage security in Active Directory, including configuring user rights with least privilege, delegating permissions, using the Protected Users group and Credential Guard, blocking NTLM authentication, and finding problematic accounts.
 
 ------------------------------------------------------------------------
 

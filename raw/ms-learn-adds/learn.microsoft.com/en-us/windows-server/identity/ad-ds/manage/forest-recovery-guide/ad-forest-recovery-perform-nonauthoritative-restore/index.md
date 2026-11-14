@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Forest Recovery - Perform a nonauthoritative restore of Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-perform-nonauthoritative-restore", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Forest Recovery - Perform a nonauthoritative restore of Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-perform-nonauthoritative-restore", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Forest Recovery - Perform a nonauthoritative restore of Active Directory Domain Services
@@ -49,6 +49,8 @@ For example:
 -   [AD Forest Recovery - Redeploy remaining DCs](ad-forest-recovery-restore-additional-dcs)
 -   [AD Forest Recovery - Virtualization](ad-forest-recovery-virtualization)
 -   [AD Forest Recovery - Cleanup](ad-forest-recovery-cleanup)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

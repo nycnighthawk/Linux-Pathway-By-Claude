@@ -5,15 +5,18 @@ license_note: null
 mode: full
 reuse: adapt
 stream: A-compatible
-retrieved: '2026-11-01'
+retrieved: '2026-11-14'
 upstream:
 - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/
 - https://learn.microsoft.com/en-us/windows-server/administration/openssh/
-text_files: 200
-pages: 200
+text_files: 230
+pages: 230
 failed:
 - empty https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/media/enable-32k-pages-optional-feature/powershell-output.png
+- empty https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/media/enable-sam-client-logging-diagnostics/enable-samlib-debug-log.png
+- empty https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/media/enable-sam-client-logging-diagnostics/sam-event-1000-samconnect.png
+- empty https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/media/enable-sam-client-logging-diagnostics/samlib-includearguments-registry.png
 blocked: []
-queue_left: 930
-cap_reached: true
-pin: 2026-11-01:pages=200
+queue_left: 0
+cap_reached: false
+pin: 2026-11-14:pages=230

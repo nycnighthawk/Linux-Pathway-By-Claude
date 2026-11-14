@@ -1,5 +1,5 @@
 ---
-{"title": "FAT_IOCTL_GET_VOLUME_ID(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/fat_ioctl_get_volume_id.2const.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "FAT_IOCTL_GET_VOLUME_ID(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/fat_ioctl_get_volume_id.2const.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # FAT_IOCTL_GET_VOLUME_ID(2const) --- Linux manual page

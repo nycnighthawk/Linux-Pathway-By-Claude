@@ -1,5 +1,5 @@
 ---
-{"title": "getgid(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/getgid.2.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "getgid(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/getgid.2.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # getgid(2) --- Linux manual page

@@ -1,5 +1,5 @@
 ---
-{"title": "OpenSSH Server configuration for Windows Server and Windows", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_server_configuration", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "OpenSSH Server configuration for Windows Server and Windows", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_server_configuration", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # OpenSSH Server configuration for Windows Server and Windows
@@ -235,6 +235,8 @@ The following configuration arguments aren\'t available in the OpenSSH version t
 -   `X11Forwarding`
 -   `X11UseLocalhost`
 -   `XAuthLocation`
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

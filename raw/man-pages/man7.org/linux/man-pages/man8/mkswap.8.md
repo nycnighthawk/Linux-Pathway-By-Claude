@@ -1,0 +1,234 @@
+---
+{"title": "mkswap(8) — Linux manual page", "url": "https://man7.org/linux/man-pages/man8/mkswap.8.html", "retrieved": "2026-11-14", "license": "various (per page)"}
+---
+
+# mkswap(8) --- Linux manual page
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| [NAME](#NAME) \| [SYNOPSIS](#SYNOPSIS) \| [DESCRIPTION](#DESCRIPTION) \| [WARNING](#WARNING) \| [OPTIONS](#OPTIONS) \| [ENVIRONMENT](#ENVIRONMENT) \| [NOTES](#NOTES) \| [SEE ALSO](#SEE_ALSO) \| [REPORTING BUGS](#REPORTING_BUGS) \| [AVAILABILITY](#AVAILABILITY) |                                   |
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+|                                                                                                                                                                                                                                                                      |                                   |
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+
+    MKSWAP(8)                 System Administration                 MKSWAP(8)
+
+## [](#NAME)NAME
+
+           mkswap - set up a Linux swap area
+
+## [](#SYNOPSIS)SYNOPSIS
+
+           mkswap [options] device [blocks]
+
+           mkswap [options] --size size --file file
+
+## [](#DESCRIPTION)DESCRIPTION
+
+           mkswap sets up a Linux swap area on a device or in a file.
+
+           The device argument will usually be a disk partition (something
+           like /dev/sdb7) but can also be a file. The Linux kernel does not
+           look at partition IDs, but many installation scripts will assume
+           that partitions of hex type 82 (LINUX_SWAP) are meant to be swap
+           partitions. (Warning: Solaris also uses this type. Be careful not
+           to kill your Solaris partitions.)
+
+           The blocks parameter is superfluous but retained for backwards
+           compatibility. (It specifies the desired size of the swap area in
+           1024-byte blocks. mkswap will use the entire partition or file if
+           it is omitted. Specifying it is unwise - a typo may destroy your
+           disk.)
+
+           After creating the swap area, you need the swapon(8) command to
+           start using it. Usually swap areas are listed in /etc/fstab so
+           that they can be taken into use at boot time by a swapon -a
+           command in some boot script.
+
+## [](#WARNING)WARNING
+
+           The swap header does not touch the first block. A boot loader or
+           disk label can be there, but it is not a recommended setup. The
+           recommended setup is to use a separate partition for a Linux swap
+           area.
+
+           mkswap, like many others mkfs-like utils, erases the first
+           partition block to make any previous filesystem invisible.
+
+           However, mkswap refuses to erase the first block on a device with
+           a disk label (SUN, BSD, ...).
+
+## [](#OPTIONS)OPTIONS
+
+           -c, --check
+               Check the device (if it is a block device) for bad blocks
+               before creating the swap area. If any bad blocks are found,
+               the count is printed.
+
+           -F, --file
+               Create a swap file with the appropriate file permissions and
+               populated blocks on disk.
+
+           -f, --force
+               Go ahead even if the command is stupid. This allows the
+               creation of a swap area larger than the file or partition it
+               resides on.
+
+               Also, without this option, mkswap will refuse to erase the
+               first block on a device with a partition table.
+
+           -q, --quiet
+               Suppress output and warning messages.
+
+           -L, --label label
+               Specify a label for the device, to allow swapon(8) by label.
+
+           --lock[=mode]
+               Use an exclusive BSD lock for the device or file that is
+               operated upon. The optional argument mode can be yes (1), no
+               (0), or nonblock. If the mode argument is omitted, it defaults
+               to yes. This option overrides the environment variable
+               $LOCK_BLOCK_DEVICE. The default is to not use any lock at all,
+               but using a lock is recommended to avoid collisions with
+               systemd-udevd(8) or other tools.
+
+           -p, --pagesize size
+               Specify the page size (in bytes) to use. This option is
+               usually unnecessary; mkswap reads the size from the kernel.
+
+           -U, --uuid UUID
+               Specify the UUID to use. The default is to generate a UUID.
+               The format of the UUID is a series of hex digits separated by
+               hyphens, like this: "c1b9d5a2-f162-11cf-9ece-0020afc76f16".
+               The UUID parameter may also be one of the following:
+
+               clear
+                   clear the filesystem UUID
+
+               random
+                   generate a new randomly-generated UUID
+
+               time
+                   generate a new time-based UUID
+
+           -e, --endianness ENDIANNESS
+               Specify the ENDIANNESS to use, valid arguments are native,
+               little or big. The default is native.
+
+           -o, --offset offset
+               Specify the offset to write the swap area to.
+
+           -s, --size size
+               Specify the size of the created swap file in bytes and may be
+               followed by a multiplicative suffix: KiB (=1024), MiB
+               (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+               (the "iB" is optional, e.g., "K" has the same meaning as
+               "KiB"). If the file exists and is larger than size, it will be
+               truncated to this size. This option only makes sense when used
+               with --file.
+
+           -v, --swapversion 1
+               Specify the swap-space version. (This option is currently
+               pointless, as the old -v 0 option has become obsolete and now
+               only -v 1 is supported. The kernel has not supported v0
+               swap-space format since 2.5.22 (June 2002). The new version v1
+               is supported since 2.1.117 (August 1998).)
+
+           --verbose
+               Verbose execution. With this option mkswap will output more
+               details about detected problems during swap area set up.
+
+           -h, --help
+               Display help text and exit.
+
+           -V, --version
+               Display version and exit.
+
+## [](#ENVIRONMENT)ENVIRONMENT
+
+           LIBBLKID_DEBUG=all
+               Enable libblkid debug output.
+
+           LOCK_BLOCK_DEVICE=<mode>
+               Use exclusive BSD lock. The mode is "1" or "0". See --lock for
+               more details.
+
+## [](#NOTES)NOTES
+
+           The maximum useful size of a swap area depends on the architecture
+           and the kernel version.
+
+           The maximum number of the pages that is possible to address by
+           swap area header is 4294967295 (32-bit unsigned int). The
+           remaining space on the swap device is ignored.
+
+           Presently, Linux allows 32 swap areas. The areas in use can be
+           seen in the file /proc/swaps.
+
+           mkswap refuses areas smaller than 10 pages.
+
+           If you don’t know the page size that your machine uses, you can
+           look it up with getconf PAGESIZE.
+
+           Aside from mkswap --file, it is also possible to create the
+           swapfile manually before initializing it with mkswap, e.g. using a
+           command like
+
+           Since version 2.41, mkswap --file sets the nocow attribute for
+           newly created files to support swapfiles on Btrfs.
+
+               # dd if=/dev/zero of=swapfile bs=1MiB count=$((8*1024))
+
+           to create 8GiB swapfile.
+
+           In such a case, please read notes from swapon(8) about the swap
+           file use restrictions (holes, preallocation and copy-on-write
+           issues).
+
+## [](#SEE_ALSO)SEE ALSO
+
+           fdisk(8), swapon(8)
+
+## [](#REPORTING_BUGS)REPORTING BUGS
+
+           For bug reports, use the issue tracker
+           <https://github.com/util-linux/util-linux/issues>.
+
+## [](#AVAILABILITY)AVAILABILITY
+
+           The mkswap command is part of the util-linux package which can be
+           downloaded from Linux Kernel Archive
+           <https://www.kernel.org/pub/linux/utils/util-linux/>. This page is
+           part of the util-linux (a random collection of Linux utilities)
+           project. Information about the project can be found at 
+           ⟨https://www.kernel.org/pub/linux/utils/util-linux/⟩. If you have a
+           bug report for this manual page, send it to
+           util-linux@vger.kernel.org. This page was obtained from the
+           project's upstream Git repository
+           ⟨git://git.kernel.org/pub/scm/utils/util-linux/util-linux.git⟩ on
+           2026-08-04. (At that time, the date of the most recent commit that
+           was found in the repository was 2026-08-03.) If you discover any
+           rendering problems in this HTML version of the page, or you
+           believe there is a better or more up-to-date source for the page,
+           or you have corrections or improvements to the information in this
+           COLOPHON (which is not part of the original manual page), send a
+           mail to man-pages@man7.org
+
+    util-linux 2.43.devel-739-eee2e 2026-05-24                      MKSWAP(8)
+
+------------------------------------------------------------------------
+
+Pages that refer to this page: [swapon(2)](../man2/swapon.2.html),  [crypttab(5)](../man5/crypttab.5.html),  [swaplabel(8)](../man8/swaplabel.8.html),  [swapon(8)](../man8/swapon.8.html)
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+| HTML rendering created 2026-09-09 by [Michael Kerrisk](https://man7.org/mtk/index.html), author of [*The Linux Programming Interface*](https://man7.org/tlpi/). |                       | [](https://man7.org/tlpi/) |
+|                                                                                                                                                                 |                       |                            |
+| For details of in-depth **Linux/UNIX system programming training courses** that I teach, look [here](https://man7.org/training/).                               |                       |                            |
+|                                                                                                                                                                 |                       |                            |
+| Hosting by [jambit GmbH](https://www.jambit.com/index_en.html).                                                                                                 |                       |                            |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+
+------------------------------------------------------------------------

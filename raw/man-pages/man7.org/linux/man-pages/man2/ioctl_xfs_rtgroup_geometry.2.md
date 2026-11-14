@@ -1,5 +1,5 @@
 ---
-{"title": "ioctl_xfs_rtgroup_geometry(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/ioctl_xfs_rtgroup_geometry.2.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "ioctl_xfs_rtgroup_geometry(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/ioctl_xfs_rtgroup_geometry.2.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # ioctl_xfs_rtgroup_geometry(2) --- Linux manual page

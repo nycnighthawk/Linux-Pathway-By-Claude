@@ -1,5 +1,5 @@
 ---
-{"title": "Install a Replica Windows Server 2012 Domain Controller in an Existing Domain (Level 200)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/install-a-replica-windows-server-2012-domain-controller-in-an-existing-domain--level-200-", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Install a Replica Windows Server 2012 Domain Controller in an Existing Domain (Level 200)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/install-a-replica-windows-server-2012-domain-controller-in-an-existing-domain--level-200-", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Install a Replica Windows Server 2012 Domain Controller in an Existing Domain (Level 200)

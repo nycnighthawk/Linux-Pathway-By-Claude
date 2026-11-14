@@ -1,5 +1,5 @@
 ---
-{"title": "Delegating Administration of Default Containers and OUs", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/delegating-administration-of-default-containers-and-ous", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Delegating Administration of Default Containers and OUs", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/delegating-administration-of-default-containers-and-ous", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Delegating Administration of Default Containers and OUs
@@ -79,6 +79,8 @@ By default, several well-known users and groups and built-in accounts are create
 When domain controllers are added to the domain, their computer objects are automatically added to the Domain Controller OU. This OU has a default set of policies applied to it. To ensure that these policies are applied uniformly to all domain controllers, we recommend that you not move the computer objects of the domain controllers out of this OU. Failure to apply the default policies can cause a domain controller to fail to function properly.
 
 By default, the service administrators control this OU. Do not delegate control of this OU to individuals other than the service administrators.
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

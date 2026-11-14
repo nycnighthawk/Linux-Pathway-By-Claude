@@ -1,5 +1,5 @@
 ---
-{"title": "Group Policy Management Console", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-management-console", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Group Policy Management Console", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-management-console", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Group Policy Management Console
@@ -114,8 +114,6 @@ To create a GPO to set only user-related policy settings, disable the Computer C
 -   [Backing up, restoring, migrating, and copying Group Policy Objects (GPOs)](group-policy-backup-restore)
 -   [Group Policy Modeling and Group Policy Results](group-policy-modeling-results)
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -130,7 +128,45 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Group Policy processing for Windows](/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-processing?source=recommendations)
+
+    Learn about how Group Policy processing works in Active Directory Domain Services on Windows Server and Windows client computers.
+
+-   [Back Up and Restore Group Policy in Windows](/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-backup-restore?source=recommendations)
+
+    Learn how to back up, restore, migrate, and copy Group Policy Objects by using the Group Policy Management Console in Windows.
+
+-   [Group Policy overview for Windows Server](/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-overview?source=recommendations)
+
+    Learn about what Group Policy does and how it works with Active Directory Domain Services in Windows.
+
+-   [Group Policy preferences in Windows](/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-preferences?source=recommendations)
+
+    Group Policy Preferences allow administrators to configure, deploy, and manage user and computer settings in Active Directory with greater flexibility in Windows.
+
+-   [Group Policy scope in Windows](/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-scope?source=recommendations)
+
+    Learn about how Group Policy scope defines specific users, computers, and organizational units within an Active Directory environment in Windows.
+
+-   [Group Policy Modeling and Results in Windows](/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-modeling-results?source=recommendations)
+
+    Learn how to model group policy results and evaluate group policy settings using the Group Policy Management Console in Windows Server.
+
+-   [Export a GPO to a File - Microsoft Desktop Optimization Pack](/en-us/microsoft-desktop-optimization-pack/agpm/export-a-gpo-to-a-file?source=recommendations)
+
+    Export a GPO to a File
+
+Training
+
+Module
+
+[Implement Group Policy Objects - Training](/en-us/training/modules/implement-group-policy-objects/?source=recommendations)
+
+Implement Group Policy Objects
 
 ------------------------------------------------------------------------
 

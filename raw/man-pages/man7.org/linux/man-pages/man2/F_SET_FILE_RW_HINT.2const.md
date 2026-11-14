@@ -1,5 +1,5 @@
 ---
-{"title": "F_GET_RW_HINT(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/F_SET_FILE_RW_HINT.2const.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "F_GET_RW_HINT(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/F_SET_FILE_RW_HINT.2const.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # F_GET_RW_HINT(2const) --- Linux manual page

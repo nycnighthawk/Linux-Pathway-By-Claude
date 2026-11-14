@@ -1,5 +1,5 @@
 ---
-{"title": "Planning for Compromise", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/planning-for-compromise", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Planning for Compromise", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/planning-for-compromise", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Planning for Compromise
@@ -159,6 +159,8 @@ You can use [Authentication Mechanism Assurance](/en-us/previous-versions/window
 From the perspective of the user, accessing sensitive data from a secured system \"just works,\" and attempting to do so from an unsecured system \"just doesn\'t.\" However, from the perspective of monitoring and managing your environment, you\'re helping to create identifiable patterns in how users access sensitive data and systems, making it easier for you to detect anomalous access attempts.
 
 In environments in which user resistance to long, complex passwords has resulted in insufficient password policies, particularly for VIP users, consider alternate approaches to authentication. Alternate approaches include smart cards (that come in a number of form factors and with additional features to strengthen authentication), biometric controls such as finger-swipe readers, or even authentication data that\'s secured by trusted platform module (TPM) chips in users\' computers. Multi-factor authentication doesn\'t prevent credential theft attacks if a computer is already compromised. However, by giving your users easy-to-use authentication controls you can assign more robust passwords to the accounts of users for whom traditional user name and password controls are unwieldy.
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

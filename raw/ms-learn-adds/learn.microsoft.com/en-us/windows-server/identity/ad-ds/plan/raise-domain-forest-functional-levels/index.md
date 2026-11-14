@@ -1,5 +1,5 @@
 ---
-{"title": "Raise domain and forest functional levels in Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Raise domain and forest functional levels in Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Raise domain and forest functional levels in Active Directory Domain Services

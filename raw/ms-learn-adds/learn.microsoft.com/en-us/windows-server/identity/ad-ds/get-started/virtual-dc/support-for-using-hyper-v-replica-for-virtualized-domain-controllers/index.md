@@ -1,5 +1,5 @@
 ---
-{"title": "Support for using Hyper-V Replica for virtualized domain controllers", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/support-for-using-hyper-v-replica-for-virtualized-domain-controllers", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Support for using Hyper-V Replica for virtualized domain controllers", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/support-for-using-hyper-v-replica-for-virtualized-domain-controllers", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Support for using Hyper-V Replica for virtualized domain controllers
@@ -97,6 +97,8 @@ The following table explains support for virtualized DCs that run Windows Server
 |                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                |
 | \- After DC2-Rec starts, it resumes replication with DC1 using the same invocationID as DC2.                                                                                                                                                                                                                                                    |                                                                                                                                                                |
 +-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

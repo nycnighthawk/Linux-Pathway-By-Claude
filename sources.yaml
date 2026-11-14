@@ -255,7 +255,7 @@ sources:
             "https://man7.org/linux/man-pages/man1/", "https://man7.org/linux/man-pages/man5/", "https://man7.org/linux/man-pages/man8/",
             "https://man7.org/linux/man-pages/dir_section_2.html", "https://man7.org/linux/man-pages/dir_section_7.html"]
     deny_regex: '\.license\.html$|@@'
-    max_pages: 400
+    max_pages: 2900
     delay: 1.0
     url: https://man7.org/linux/man-pages/
     license: "various (per page)"
@@ -324,7 +324,7 @@ sources:
       - https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh-overview
       - https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_server_configuration
     allow: ["https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/", "https://learn.microsoft.com/en-us/windows-server/administration/openssh/"]
-    max_pages: 200
+    max_pages: 1130
     content_selector: "main"
     url: https://learn.microsoft.com/windows-server/identity/ad-ds/
     license: CC-BY-4.0
@@ -339,7 +339,7 @@ sources:
     seeds: ["https://freeipa.readthedocs.io/en/latest/"]
     allow: ["https://freeipa.readthedocs.io/en/latest/"]
     deny_regex: '/(_sources|_static|_images)/'
-    max_pages: 200
+    max_pages: 1300
     content_selector: "div[role=main]"
     url: https://freeipa.readthedocs.io/
     license: NOASSERTION

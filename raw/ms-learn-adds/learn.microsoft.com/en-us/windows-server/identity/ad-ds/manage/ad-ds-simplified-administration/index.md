@@ -1,5 +1,5 @@
 ---
-{"title": "AD DS Simplified Administration", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/ad-ds-simplified-administration", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "AD DS Simplified Administration", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/ad-ds-simplified-administration", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # AD DS Simplified Administration
@@ -264,6 +264,8 @@ There is no need to run these cmdlets, ordinarily; they already automatically ex
 +---------------------------------+--------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | VerifySafeModePassword          | *N/A*                                      | Validate the local Administrator password set meets computer security policy complexity requirements.                                                                                                                                                                                                                                          |
 +---------------------------------+--------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

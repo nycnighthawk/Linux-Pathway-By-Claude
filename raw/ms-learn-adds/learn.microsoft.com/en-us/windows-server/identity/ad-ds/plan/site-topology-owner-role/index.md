@@ -1,5 +1,5 @@
 ---
-{"title": "Site Topology Owner Role", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/site-topology-owner-role", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Site Topology Owner Role", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/site-topology-owner-role", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Site Topology Owner Role

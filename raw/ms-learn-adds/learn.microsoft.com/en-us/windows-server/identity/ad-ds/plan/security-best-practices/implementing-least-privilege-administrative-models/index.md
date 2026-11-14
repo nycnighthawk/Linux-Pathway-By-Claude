@@ -1,5 +1,5 @@
 ---
-{"title": "Implementing Least-Privilege Administrative Models", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-least-privilege-administrative-models", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Implementing Least-Privilege Administrative Models", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-least-privilege-administrative-models", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Implementing Least-Privilege Administrative Models
@@ -394,8 +394,6 @@ The attacker now has one or more certificates that can be presented for authenti
 ## Related content {#related-content .heading-anchor}
 
 -   [Tier Model for Active Directory Domain Services](../../tier-model)
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

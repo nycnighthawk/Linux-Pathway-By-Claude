@@ -1,5 +1,5 @@
 ---
-{"title": "Designing the Site Topology", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/designing-the-site-topology", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Designing the Site Topology", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/designing-the-site-topology", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Designing the Site Topology
@@ -39,8 +39,6 @@ After you complete your site topology design, you must verify that your domain c
 -   [Creating a Site Link Bridge Design](creating-a-site-link-bridge-design)
 
 -   [Finding Additional Resources for Windows Server 2008 Active Directory Site Topology Design](finding-additional-resources-for-windows-server-2008-active-directory-site-topology-design)
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

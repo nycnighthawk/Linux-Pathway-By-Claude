@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Domain Services Component Updates", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/active-directory-domain-services-component-updates", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Domain Services Component Updates", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/active-directory-domain-services-component-updates", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Domain Services Component Updates

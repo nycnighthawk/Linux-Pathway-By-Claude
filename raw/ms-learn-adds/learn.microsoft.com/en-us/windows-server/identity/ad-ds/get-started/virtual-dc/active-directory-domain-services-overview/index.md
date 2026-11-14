@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Domain Services overview", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Domain Services overview", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Domain Services overview

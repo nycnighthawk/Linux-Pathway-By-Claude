@@ -1,5 +1,5 @@
 ---
-{"title": "How to manage OpenSSH with Group Policy", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh-group-policy", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "How to manage OpenSSH with Group Policy", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh-group-policy", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # How to manage OpenSSH with Group Policy

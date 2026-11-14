@@ -1,5 +1,5 @@
 ---
-{"title": "Planning Global Catalog Server Placement", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/planning-global-catalog-server-placement", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Planning Global Catalog Server Placement", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/planning-global-catalog-server-placement", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Planning Global Catalog Server Placement
@@ -47,8 +47,6 @@ For locations that include less than 100 users and that don\'t include a large n
 
 For a worksheet to assist you in documenting where you plan to place global catalog servers and domain controllers with universal group caching enabled, see [Job Aids for Windows Server 2003 Deployment Kit](https://microsoft.com/download/details.aspx?id=9608), download Job_Aids_Designing_and_Deploying_Directory_and_Security_Services.zip, and open Domain Controller Placement (DSSTOPO_4.doc). See the information about locations in which you need to place global catalog servers when you deploy the forest root domain and regional domains.
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -63,7 +61,45 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Active Directory Replication Concepts](/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts?source=recommendations)
+
+    Learn more about: Active Directory Replication Concepts
+
+-   [Planning Domain Controller Placement](/en-us/windows-server/identity/ad-ds/plan/planning-domain-controller-placement?source=recommendations)
+
+    Learn more about: Planning Domain Controller Placement
+
+-   [Read-Only DCs and the Active Directory Schema - Win32 apps](/en-us/windows/win32/ad/rodc-and-active-directory-schema?source=recommendations)
+
+    Windows Server 2008 introduces a new type of domain controller, the Read-only Domain Controller (RODC).
+
+-   [Active Directory Domain Services Replication Priority Boost](/en-us/windows-server/identity/ad-ds/manage/replication-priority-boost?source=recommendations)
+
+    Learn about what the Active Directory Domain Services Replication Priority Boost feature is and how to manage it.
+
+-   [Planning Regional Domain Controller Placement](/en-us/windows-server/identity/ad-ds/plan/planning-regional-domain-controller-placement?source=recommendations)
+
+    Learn more about: Planning Regional Domain Controller Placement
+
+-   [Introduction to Active Directory Replication and Topology Management Using Windows PowerShell (Level 100)](/en-us/windows-server/identity/ad-ds/manage/powershell/introduction-to-active-directory-replication-and-topology-management-using-windows-powershell--level-100-?source=recommendations)
+
+    Learn more about: Introduction to Active Directory Replication and Topology Management Using Windows PowerShell (Level 100)
+
+-   [Step 2 Configure the Multisite Infrastructure](/en-us/windows-server/remote/remote-access/ras/multisite/configure/step-2-configure-the-multisite-infrastructure?source=recommendations)
+
+    Learn about how, to configure a multisite deployment, there are a number of steps required to modify network infrastructure settings.
+
+Training
+
+Module
+
+[Manage AD DS domain controllers and FSMO roles - Training](/en-us/training/modules/manage-active-directory-domain-services-flexible-single-master-operation-roles/?source=recommendations)
+
+Learn how to deploy and manage AD DS domain controllers, maintain availability with backup and recovery, manage the global catalog role, and transfer or seize FSMO roles including schema master, domain-naming master, RID master, infrastructure master, and PDC emulator.
 
 ------------------------------------------------------------------------
 

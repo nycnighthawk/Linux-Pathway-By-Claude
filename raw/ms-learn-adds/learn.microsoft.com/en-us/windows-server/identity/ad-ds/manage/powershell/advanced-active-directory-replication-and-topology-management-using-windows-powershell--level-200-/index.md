@@ -1,5 +1,5 @@
 ---
-{"title": "Advanced Active Directory Replication and Topology Management Using Windows PowerShell (Level 200)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/powershell/advanced-active-directory-replication-and-topology-management-using-windows-powershell--level-200-", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Advanced Active Directory Replication and Topology Management Using Windows PowerShell (Level 200)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/powershell/advanced-active-directory-replication-and-topology-management-using-windows-powershell--level-200-", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Advanced Active Directory Replication and Topology Management Using Windows PowerShell (Level 200)
@@ -254,7 +254,43 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Introduction to Active Directory Replication and Topology Management Using Windows PowerShell (Level 100)](/en-us/windows-server/identity/ad-ds/manage/powershell/introduction-to-active-directory-replication-and-topology-management-using-windows-powershell--level-100-?source=recommendations)
+
+    Learn more about: Introduction to Active Directory Replication and Topology Management Using Windows PowerShell (Level 100)
+
+-   [Active Directory Replication Concepts](/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts?source=recommendations)
+
+    Learn more about: Active Directory Replication Concepts
+
+-   [Troubleshooting Active Directory Replication Problems](/en-us/windows-server/identity/ad-ds/manage/troubleshoot/troubleshooting-active-directory-replication-problems?source=recommendations)
+
+    Learn more about: Troubleshooting Active Directory Replication Problems
+
+-   [Active Directory Domain Services Replication Priority Boost](/en-us/windows-server/identity/ad-ds/manage/replication-priority-boost?source=recommendations)
+
+    Learn about what the Active Directory Domain Services Replication Priority Boost feature is and how to manage it.
+
+-   [Locating Active Directory Domain Controllers in Windows and Windows Server](/en-us/windows-server/identity/ad-ds/manage/dc-locator?source=recommendations)
+
+    Learn how domain controllers are located in Windows and Windows Server using the DC locator algorithm.
+
+Training
+
+Module
+
+[Troubleshoot Active Directory - Training](/en-us/training/modules/troubleshoot-active-directory/?source=recommendations)
+
+Learn how to troubleshoot Active Directory including recovering deleted objects with AD Recycle Bin, managing the AD DS database with NtdsUtil, restoring SYSVOL, troubleshooting replication, and diagnosing hybrid authentication with Microsoft Entra Connect.
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

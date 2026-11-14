@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix A: Locations and Subnet Prefixes", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/appendix-a--locations-and-subnet-prefixes", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix A: Locations and Subnet Prefixes", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/appendix-a--locations-and-subnet-prefixes", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix A: Locations and Subnet Prefixes
@@ -21,6 +21,8 @@ Use the following table to assist in listing the IP version 6 (IPv6) subnet pref
              
              
              
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

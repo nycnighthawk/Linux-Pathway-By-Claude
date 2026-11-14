@@ -1,5 +1,5 @@
 ---
-{"title": "DNS and AD DS", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/dns-and-ad-ds", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "DNS and AD DS", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/dns-and-ad-ds", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # DNS and AD DS
@@ -41,45 +41,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Active Directory-Integrated DNS Zones](/en-us/windows-server/identity/ad-ds/plan/active-directory-integrated-dns-zones?source=recommendations)
-
-    Learn more about: Active Directory-Integrated DNS Zones
-
--   [Integrating AD DS into an Existing DNS Infrastructure](/en-us/windows-server/identity/ad-ds/plan/integrating-ad-ds-into-an-existing-dns-infrastructure?source=recommendations)
-
-    Learn more about: Integrating AD DS into an Existing DNS Infrastructure
-
--   [Domain Controller Location](/en-us/windows-server/identity/ad-ds/plan/domain-controller-location?source=recommendations)
-
-    Learn more about: Domain Controller Location
-
--   [Creating a DNS Infrastructure Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-dns-infrastructure-design?source=recommendations)
-
-    Learn more about: Creating a DNS Infrastructure Design
-
--   [DNS for AD DS Owner Role](/en-us/windows-server/identity/ad-ds/deploy/assigning-the-dns-for-ad-ds-owner-role?source=recommendations)
-
-    Information about the DNS for AD DS Owner role.
-
--   [Appendix A - DNS Inventory](/en-us/windows-server/identity/ad-ds/plan/appendix-a--dns-inventory?source=recommendations)
-
-    Learn more about: Appendix A: DNS Inventory
-
--   [Reviewing DNS Concepts](/en-us/windows-server/identity/ad-ds/plan/reviewing-dns-concepts?source=recommendations)
-
-    Learn more about: Reviewing DNS Concepts
-
-Training
-
-Module
-
-[Introduction to AD DS - Training](/en-us/training/modules/introduction-to-ad-ds/?source=recommendations)
-
-Introduction to AD DS
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

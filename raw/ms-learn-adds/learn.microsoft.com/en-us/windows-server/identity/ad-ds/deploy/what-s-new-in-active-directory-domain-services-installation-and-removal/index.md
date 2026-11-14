@@ -1,5 +1,5 @@
 ---
-{"title": "What's New in Active Directory Domain Services Installation and Removal", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/what-s-new-in-active-directory-domain-services-installation-and-removal", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "What's New in Active Directory Domain Services Installation and Removal", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/what-s-new-in-active-directory-domain-services-installation-and-removal", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # What\'s New in Active Directory Domain Services Installation and Removal
@@ -213,6 +213,8 @@ If the warning appears in the Prerequisites Check page in the Active Directory D
 
 For more information about IDNs, see [Handling Internationalized Domain Names (IDNs)](/en-us/windows/win32/intl/handling-internationalized-domain-names--idns).
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -227,55 +229,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [AD DS Deployment](/en-us/windows-server/identity/ad-ds/deploy/ad-ds-deployment?source=recommendations)
-
-    Learn more about: AD DS Deployment
-
--   [AD DS Simplified Administration](/en-us/windows-server/identity/ad-ds/manage/ad-ds-simplified-administration?source=recommendations)
-
-    Learn more about: AD DS Simplified Administration
-
--   [Install a New Windows Server 2012 Active Directory Forest (Level 200)](/en-us/windows-server/identity/ad-ds/deploy/install-a-new-windows-server-2012-active-directory-forest--level-200-?source=recommendations)
-
-    Learn more about: Install a New Windows Server 2012 Active Directory Forest (Level 200)
-
--   [Install a New Windows Server 2012 Active Directory Child or Tree Domain (Level 200)](/en-us/windows-server/identity/ad-ds/deploy/install-a-new-windows-server-2012-active-directory-child-or-tree-domain--level-200-?source=recommendations)
-
-    Learn more about: Install a New Windows Server 2012 Active Directory Child or Tree Domain (Level 200)
-
--   [Install a Replica Windows Server 2012 Domain Controller in an Existing Domain (Level 200)](/en-us/windows-server/identity/ad-ds/deploy/install-a-replica-windows-server-2012-domain-controller-in-an-existing-domain--level-200-?source=recommendations)
-
-    Learn more about: Install a Replica Windows Server 2012 Domain Controller in an Existing Domain (Level 200)
-
--   [Install Active Directory Domain Services on Windows Server](/en-us/windows-server/identity/ad-ds/deploy/install-active-directory-domain-services--level-100-?source=recommendations)
-
-    Learn more about how to install Active Directory Domain Services in Windows Server using PowerShell, or Server Manager.
-
--   [Safely virtualizing Active Directory Domain Services (AD DS)](/en-us/windows-server/identity/ad-ds/introduction-to-active-directory-domain-services-ad-ds-virtualization-level-100?source=recommendations)
-
-    USN Rollback and safe virtualization of Active Directory
-
--   [Evaluating AD DS Deployment Strategy Examples](/en-us/windows-server/identity/ad-ds/plan/evaluating-ad-ds-deployment-strategy-examples?source=recommendations)
-
-    Learn more about: Evaluating AD DS Deployment Strategy Examples
-
-Training
-
-Module
-
-[Active Directory Domain Services migration - Training](/en-us/training/modules/active-directory-domain-services-migration/?source=recommendations)
-
-Determine the best approach to moving domain controllers to Windows Server 2025.
-
-Certification
-
-[Microsoft Certified: Windows Server Administrator Associate - Certifications](/en-us/credentials/certifications/windows-server-hybrid-administrator/?source=recommendations)
-
-As a Windows Server administrator, you integrate Windows Server environments with Azure services and manage Windows Server in on-premises networks.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

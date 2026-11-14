@@ -1,5 +1,5 @@
 ---
-{"title": "Virtualized Domain Controller Architecture", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/virtualized-domain-controller-architecture", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Virtualized Domain Controller Architecture", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/virtualized-domain-controller-architecture", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Virtualized Domain Controller Architecture
@@ -193,8 +193,6 @@ After the guest employs virtualization safeguards, NTDS replicates Active Direct
 Note
 
 -   If the hypervisor does not provide a VM-Generation ID for comparison, the hypervisor does not support virtualization safeguards and the guest will operate like a virtualized domain controller that runs Windows Server 2008 R2 or earlier. The guest implements USN rollback quarantine protection if there is an attempt to start replicating with USNs that have not advanced past the last highest USN seen by the partner DC. For more information about USN rollback quarantine protection, see [USN and USN Rollback](/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/dd363553(v=ws.10))
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

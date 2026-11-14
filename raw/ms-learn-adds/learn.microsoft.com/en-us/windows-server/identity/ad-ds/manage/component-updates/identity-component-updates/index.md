@@ -1,5 +1,5 @@
 ---
-{"title": "Identity component updates", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/identity-component-updates", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Identity component updates", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/identity-component-updates", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Identity component updates

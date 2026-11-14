@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix M: Document Links and Recommended Reading", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/appendix-m--document-links-and-recommended-reading", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix M: Document Links and Recommended Reading", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/appendix-m--document-links-and-recommended-reading", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix M: Document Links and Recommended Reading
@@ -215,7 +215,43 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Monitoring Active Directory for Signs of Compromise](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/monitoring-active-directory-for-signs-of-compromise?source=recommendations)
+
+    Learn about event log monitoring in Active Directory to improve security
+
+-   [Appendices](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendices?source=recommendations)
+
+    Learn more about: Appendices
+
+-   [Appendix L - Events to Monitor](/en-us/windows-server/identity/ad-ds/plan/appendix-l--events-to-monitor?source=recommendations)
+
+    Learn more about: Appendix L: Events to Monitor
+
+-   [Appendix H - Securing Local Administrator Accounts and Groups](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-h--securing-local-administrator-accounts-and-groups?source=recommendations)
+
+    Learn more about: Appendix H: Securing Local Administrator Accounts and Groups
+
+-   [Appendix G - Securing Administrators Groups in Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-g--securing-administrators-groups-in-active-directory?source=recommendations)
+
+    Learn more about: Appendix G: Securing Administrators Groups in Active Directory
+
+Training
+
+Module
+
+[Manage security in Active Directory - Training](/en-us/training/modules/manage-security-active-directory/?source=recommendations)
+
+Learn how to manage security in Active Directory, including configuring user rights with least privilege, delegating permissions, using the Protected Users group and Credential Guard, blocking NTLM authentication, and finding problematic accounts.
+
+Certification
+
+[Microsoft Certified: Information Security Administrator Associate - Certifications](/en-us/credentials/certifications/information-security-administrator/?source=recommendations)
+
+As an Information Security Administrator, you plan and implement information security of sensitive data by using Microsoft Purview and related services.
 
 ------------------------------------------------------------------------
 

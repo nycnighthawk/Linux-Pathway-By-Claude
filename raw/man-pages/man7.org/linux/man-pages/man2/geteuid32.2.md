@@ -1,5 +1,5 @@
 ---
-{"title": "getuid(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/geteuid32.2.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "getuid(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/geteuid32.2.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # getuid(2) --- Linux manual page

@@ -1,0 +1,29 @@
+item: T1c
+label: Crawl scope
+branch: build/T1c
+state: done
+started: '2026-11-14'
+updated: '2026-11-14'
+phases:
+  crawls:
+    state: done
+    units: 3
+    done:
+    - man-pages
+    - ms-learn
+    - freeipa
+  rebuild:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-14 started
+- '2026-11-14 crawls: man-pages, ms-learn, freeipa'
+- '2026-11-14 rebuild: done'
+- 2026-11-14 finished
+notes:
+- 'man-pages: capped at 2900 pages (man1, 2, 5, 7, 8 seeds); 1276 URLs remain queued, the site keeps surfacing more.
+  4 failed (3x 404, 1 invalid URL).'
+- ms-learn-adds reached its allowed scope at 230 pages; freeipa-docs at 642 pages (queue empty).
+finished: '2026-11-14'

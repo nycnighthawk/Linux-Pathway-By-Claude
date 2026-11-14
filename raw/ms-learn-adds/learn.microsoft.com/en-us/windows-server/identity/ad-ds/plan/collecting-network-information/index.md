@@ -1,5 +1,5 @@
 ---
-{"title": "Collecting Network Information", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/collecting-network-information", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Collecting Network Information", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/collecting-network-information", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Collecting Network Information

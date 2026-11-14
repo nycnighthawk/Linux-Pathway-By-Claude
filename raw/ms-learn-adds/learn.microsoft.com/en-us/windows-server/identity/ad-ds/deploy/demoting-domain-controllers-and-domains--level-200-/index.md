@@ -1,5 +1,5 @@
 ---
-{"title": "Demote domain controllers and domains", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/demoting-domain-controllers-and-domains--level-200-", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Demote domain controllers and domains", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/demoting-domain-controllers-and-domains--level-200-", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Demote domain controllers and domains
@@ -271,6 +271,8 @@ You must restart the computer after demoting the server before you can remove th
 ### Results {#results .heading-anchor}
 
 The **Results** page shows the success or failure of the promotion and any important administrative information. The domain controller automatically reboots after 10 seconds.
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

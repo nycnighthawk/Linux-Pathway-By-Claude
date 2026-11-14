@@ -1,5 +1,5 @@
 ---
-{"title": "Understanding AD DS Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/understanding-ad-ds-design", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Understanding AD DS Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/understanding-ad-ds-design", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Understanding AD DS Design
@@ -15,8 +15,6 @@ Although the Windows Server AD DS design and deployment strategies that are pres
 -   For more information about deploying AD DS in a branch office environment, see the [Read-Only Domain Controller (RODC) Branch Office Planning Guide](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/dd734758(v=ws.10)).
 -   For more information about deploying AD DS in an Exchange environment, see the article [Active Directory in Exchange Server organizations](/en-us/exchange/plan-and-deploy/active-directory/active-directory).
 -   For more information about deploying AD DS in a multiple forest environment, see the article [Multiple Forest Considerations in Windows 2000 and Windows Server 2003](/en-us/previous-versions/windows/it-pro/windows-server-2003/cc739395(v=ws.10)).
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

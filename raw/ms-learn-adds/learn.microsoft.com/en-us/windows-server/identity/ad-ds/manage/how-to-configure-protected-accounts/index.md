@@ -1,5 +1,5 @@
 ---
-{"title": "Guidance about how to configure protected accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/how-to-configure-protected-accounts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Guidance about how to configure protected accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/how-to-configure-protected-accounts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Guidance about how to configure protected accounts
@@ -500,37 +500,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Protected Users Security Group in Windows Server](/en-us/windows-server/security/credentials-protection-and-management/protected-users-security-group?source=recommendations)
-
-    Learn about the Active Directory security group Protected Users feature and how it works in Windows Server.
-
--   [Authentication Policies and Authentication Policy Silos](/en-us/windows-server/security/credentials-protection-and-management/authentication-policies-and-authentication-policy-silos?source=recommendations)
-
-    Learn about authentication policy silos and the policies that can restrict accounts to those silos.
-
--   [How to Configure Protected Accounts](/en-us/windows-server/security/windows-authentication/how-to-configure-protected-accounts?source=recommendations)
-
-    Learn more about: How to Configure Protected Accounts
-
--   [\[MS-ADTS\]: Pre-Windows 2000 Compatible Access Group Object](/en-us/openspecs/windows_protocols/ms-adts/7a76a403-ed8d-4c39-adb7-a3255cab82c5?source=recommendations)
-
-    name: Pre-Windows 2000 operating system Compatible Access RID: 554 member: The initial membership of this group depends
-
--   [Delegation of Control in AD DS on Windows Server](/en-us/windows-server/identity/ad-ds/manage/delegation-control-wizard?source=recommendations)
-
-    Learn how to delegate administrative control in Active Directory Domain Services on Windows Server.
-
-Training
-
-Module
-
-[Secure Windows Server user accounts - Training](/en-us/training/modules/secure-windows-server-user-accounts/?source=recommendations)
-
-Learn how to secure Active Directory user accounts using least privilege, Protected Users group, authentication policy silos, Windows Defender Credential Guard, NTLM blocking, and account remediation techniques.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

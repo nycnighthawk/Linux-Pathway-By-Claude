@@ -1,5 +1,5 @@
 ---
-{"title": "setpgid(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/getpgrp.2.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "setpgid(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/getpgrp.2.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # setpgid(2) --- Linux manual page

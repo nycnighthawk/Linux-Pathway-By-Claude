@@ -1,5 +1,5 @@
 ---
-{"title": "Reviewing DNS Concepts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/reviewing-dns-concepts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Reviewing DNS Concepts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/reviewing-dns-concepts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Reviewing DNS Concepts
@@ -72,6 +72,8 @@ In this example, the following events occur:
 7.  The forwarder then returns the result to the original DNS server.
 8.  The original DNS server then returns the result to the client.
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -86,51 +88,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Active Directory-Integrated DNS Zones](/en-us/windows-server/identity/ad-ds/plan/active-directory-integrated-dns-zones?source=recommendations)
-
-    Learn more about: Active Directory-Integrated DNS Zones
-
--   [Creating a DNS Infrastructure Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-dns-infrastructure-design?source=recommendations)
-
-    Learn more about: Creating a DNS Infrastructure Design
-
--   [Integrating AD DS into an Existing DNS Infrastructure](/en-us/windows-server/identity/ad-ds/plan/integrating-ad-ds-into-an-existing-dns-infrastructure?source=recommendations)
-
-    Learn more about: Integrating AD DS into an Existing DNS Infrastructure
-
--   [Manage DNS zones using DNS server in Windows Server](/en-us/windows-server/networking/dns/manage-dns-zones?source=recommendations)
-
-    Learn how to create DNS zones and manage them with DNS server in Windows Server using PowerShell and the DNS Manager console.
-
--   [DNS and AD DS](/en-us/windows-server/identity/ad-ds/plan/dns-and-ad-ds?source=recommendations)
-
-    Learn more about: DNS and AD DS
-
--   [Recommendations for Domain Name System (DNS) client settings - Windows Server](/en-us/troubleshoot/windows-server/networking/best-practices-for-dns-client-settings?source=recommendations)
-
-    Describes recommendations for configuring DNS client settings.
-
--   [DNS Forwarding and Fallback in Windows Server](/en-us/windows-server/networking/dns/forwarding?source=recommendations)
-
-    DNS forwarding in Windows Server routes queries through conditional forwarders, delegations, and root hints. Learn how timeouts and fallback affect resolution.
-
-Training
-
-Module
-
-[Implement Windows Server DNS - Training](/en-us/training/modules/implement-windows-server-dns/?source=recommendations)
-
-Learn how to deploy and configure DNS in Windows Server, including DNS architecture, forward and reverse lookup zones, AD-integrated zones, zone transfers, forwarders, conditional forwarding, and stub zones.
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 ---
-{"title": "Determining the Number of Domains Required", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/determining-the-number-of-domains-required", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Determining the Number of Domains Required", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/determining-the-number-of-domains-required", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Determining the Number of Domains Required
@@ -124,6 +124,8 @@ After you divide your organization into regional domains, document the regions t
 
 For a worksheet to assist you in documenting the regions you identified, download Job_Aids_Designing_and_Deploying_Directory_and_Security_Services.zip from [Job Aids for Windows Server 2003 Deployment Kit](https://microsoft.com/download/details.aspx?id=9608) and open \"Identifying Regions\" (DSSLOGI_4.doc).
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -138,7 +140,49 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Reviewing the Domain Models](/en-us/windows-server/identity/ad-ds/plan/reviewing-the-domain-models?source=recommendations)
+
+    Learn more about: Reviewing the Domain Models
+
+-   [Selecting the Forest Root Domain](/en-us/windows-server/identity/ad-ds/plan/selecting-the-forest-root-domain?source=recommendations)
+
+    Learn more about: Selecting the Forest Root Domain
+
+-   [Evaluating AD DS Deployment Strategy Examples](/en-us/windows-server/identity/ad-ds/plan/evaluating-ad-ds-deployment-strategy-examples?source=recommendations)
+
+    Learn more about: Evaluating AD DS Deployment Strategy Examples
+
+-   [Determining Whether to Upgrade Existing Domains or Deploy New Domains](/en-us/windows-server/identity/ad-ds/plan/determining-whether-to-upgrade-existing-domains-or-deploy-new-domains?source=recommendations)
+
+    Learn more about: Determining Whether to Upgrade Existing Domains or Deploy New Domains
+
+-   [Understanding the Active Directory Logical Model](/en-us/windows-server/identity/ad-ds/plan/understanding-the-active-directory-logical-model?source=recommendations)
+
+    Learn more about: Understanding the Active Directory Logical Model
+
+-   [Forest Design Models](/en-us/windows-server/identity/ad-ds/plan/forest-design-models?source=recommendations)
+
+    Learn more about: Forest Design Models
+
+-   [Creating a Domain Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-domain-design?source=recommendations)
+
+    Learn more about: Creating a Domain Design
+
+-   [Determining the Number of Forests Required](/en-us/windows-server/identity/ad-ds/plan/determining-the-number-of-forests-required?source=recommendations)
+
+    Learn more about: Determining the Number of Forests Required
+
+Training
+
+Module
+
+[Introduction to AD DS - Training](/en-us/training/modules/introduction-to-ad-ds/?source=recommendations)
+
+Introduction to AD DS
 
 ------------------------------------------------------------------------
 

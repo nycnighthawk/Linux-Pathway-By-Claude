@@ -1,5 +1,5 @@
 ---
-{"title": "Virtualized Domain Controller Troubleshooting", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/virtual-dc/virtualized-domain-controller-troubleshooting", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Virtualized Domain Controller Troubleshooting", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/virtual-dc/virtualized-domain-controller-troubleshooting", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Virtualized Domain Controller Troubleshooting

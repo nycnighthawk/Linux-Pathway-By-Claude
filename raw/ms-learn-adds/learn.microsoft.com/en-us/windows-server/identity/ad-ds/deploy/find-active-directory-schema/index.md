@@ -1,5 +1,5 @@
 ---
-{"title": "Find the current Active Directory schema version", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/find-active-directory-schema", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Find the current Active Directory schema version", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/find-active-directory-schema", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Find the current Active Directory schema version
@@ -115,6 +115,8 @@ The following articles show how to map the **rangeUpper** attribute value with i
 
 -   [Windows Server Active Directory schema updates](schema-updates)
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -129,55 +131,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Schema updates in Windows Server](/en-us/windows-server/identity/ad-ds/deploy/schema-updates?source=recommendations)
-
-    Schema changes made by Adprep.exe listed by operating system version.
-
--   [Active Directory domain-wide schema updates](/en-us/windows-server/identity/ad-ds/deploy/domain-wide-updates?source=recommendations)
-
-    Domain-wide schema updates performed by adprep /domainprep when promoting a Domain Controller
-
--   [Raise Domain and Forest Functional Levels in AD DS on Windows Server](/en-us/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels?source=recommendations)
-
-    Learn how to raise domain and forest functional levels in Active Directory Domain Services on Windows Server.
-
--   [Active Directory Domain Services Functional Levels](/en-us/windows-server/identity/ad-ds/active-directory-functional-levels?source=recommendations)
-
-    Discover the capabilities of Active Directory Domain Services functional levels and learn how they impact domain controllers and Windows Server compatibility.
-
--   [Diagnose AD replication failures - Windows Server](/en-us/troubleshoot/windows-server/active-directory/diagnose-replication-failures?source=recommendations)
-
-    Describes how to diagnose Active Directory replication failures.
-
--   [Verify DNS Functionality to Support Directory Replication](/en-us/windows-server/identity/ad-ds/manage/troubleshoot/verify-dns-functionality-to-support-directory-replication?source=recommendations)
-
-    Learn more about: Verify DNS Functionality to Support Directory Replication
-
--   [Troubleshooting replication error 8418\--Schema mismatch - Windows Server](/en-us/troubleshoot/windows-server/active-directory/replication-error-8418?source=recommendations)
-
-    Helps you to diagnose possible causes replication error 8418, and to determine whether you have to take action or seek assistance.
-
--   [Active Directory replication error 8453 - Windows Server](/en-us/troubleshoot/windows-server/active-directory/replication-error-8453?source=recommendations)
-
-    This article describes how to troubleshoot Active Directory replication error 8453.
-
-Training
-
-Module
-
-[Active Directory Domain Services migration - Training](/en-us/training/modules/active-directory-domain-services-migration/?source=recommendations)
-
-Determine the best approach to moving domain controllers to Windows Server 2025.
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

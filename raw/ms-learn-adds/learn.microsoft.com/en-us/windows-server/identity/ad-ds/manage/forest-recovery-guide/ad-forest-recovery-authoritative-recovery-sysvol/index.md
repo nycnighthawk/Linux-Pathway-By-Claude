@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Forest Recovery - Perform an authoritative synchronization of DFSR-replicated SYSVOL", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-authoritative-recovery-sysvol", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Forest Recovery - Perform an authoritative synchronization of DFSR-replicated SYSVOL", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-authoritative-recovery-sysvol", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Forest Recovery - Perform an authoritative synchronization of DFSR-replicated SYSVOL

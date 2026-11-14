@@ -1,5 +1,5 @@
 ---
-{"title": "Planning Operations Master Role Placement", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/planning-operations-master-role-placement", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Planning Operations Master Role Placement", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/planning-operations-master-role-placement", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Planning Operations Master Role Placement
@@ -87,6 +87,8 @@ You will need to refer to this information when you create the forest root domai
 ## Next steps {#next-steps .heading-anchor}
 
 Additional information about FSMO role placement can be found in the support topic [FSMO placement and optimization on Active Directory domain controllers](https://support.microsoft.com/help/223346)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

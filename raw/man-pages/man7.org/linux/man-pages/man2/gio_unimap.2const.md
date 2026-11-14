@@ -1,5 +1,5 @@
 ---
-{"title": "ioctl_kd(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/gio_unimap.2const.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "ioctl_kd(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/gio_unimap.2const.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # ioctl_kd(2) --- Linux manual page

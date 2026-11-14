@@ -1,5 +1,5 @@
 ---
-{"title": "Creating a Forest Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-forest-design", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Creating a Forest Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-forest-design", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Creating a Forest Design

@@ -1,5 +1,5 @@
 ---
-{"title": "SPN and UPN uniqueness", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/spn-and-upn-uniqueness", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "SPN and UPN uniqueness", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/spn-and-upn-uniqueness", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # SPN and UPN uniqueness
@@ -380,7 +380,39 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Setspn](/en-us/windows-server/administration/windows-commands/setspn?source=recommendations)
+
+    The setspn command reads, modifies, and deletes the Service Principal Names (SPN) directory property for an Active Directory service account.
+
+-   [How to configure SPN for Windows Server](/en-us/windows-server/identity/ad-ds/manage/how-to-configure-spn?source=recommendations)
+
+    Learn how to configure Service Principal Names (SPN) for Active Directory service accounts in Windows Server.
+
+-   [\[MS-ADTS\]: Uniqueness Constraints](/en-us/openspecs/windows_protocols/ms-adts/3c154285-454c-4353-9a99-fb586e806944?source=recommendations)
+
+    During an originating update of the Add, Modify, and Undelete operations on a DC with functional level
+
+-   [Enable Active Directory Recycle Bin in Windows Server](/en-us/windows-server/identity/ad-ds/get-started/adac/active-directory-recycle-bin?source=recommendations)
+
+    Learn how to enable Active Directory Recycle Bin and restore deleted objects in Active Directory Domain Services on Windows Server.
+
+Training
+
+Module
+
+[Troubleshoot Active Directory - Training](/en-us/training/modules/troubleshoot-active-directory/?source=recommendations)
+
+Learn how to troubleshoot Active Directory including recovering deleted objects with AD Recycle Bin, managing the AD DS database with NtdsUtil, restoring SYSVOL, troubleshooting replication, and diagnosing hybrid authentication with Microsoft Entra Connect.
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

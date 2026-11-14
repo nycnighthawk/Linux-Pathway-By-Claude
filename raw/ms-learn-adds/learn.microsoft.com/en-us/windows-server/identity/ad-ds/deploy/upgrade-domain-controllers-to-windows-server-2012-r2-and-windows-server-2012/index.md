@@ -1,5 +1,5 @@
 ---
-{"title": "Upgrade Domain Controllers to Windows Server 2012 R2 and Windows Server 2012", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/upgrade-domain-controllers-to-windows-server-2012-r2-and-windows-server-2012", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Upgrade Domain Controllers to Windows Server 2012 R2 and Windows Server 2012", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/upgrade-domain-controllers-to-windows-server-2012-r2-and-windows-server-2012", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Upgrade Domain Controllers to Windows Server 2012 R2 and Windows Server 2012

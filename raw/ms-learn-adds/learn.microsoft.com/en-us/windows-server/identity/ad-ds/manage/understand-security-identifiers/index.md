@@ -1,5 +1,5 @@
 ---
-{"title": "Security identifiers", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Security identifiers", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Security identifiers
@@ -465,8 +465,6 @@ The prefix of all capability SIDs is S-1-15-3.
 
 -   [Access control overview](/en-us/windows/security/identity-protection/access-control/access-control)
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -481,7 +479,51 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Well-known SIDs - Win32 apps](/en-us/windows/win32/secauthz/well-known-sids?source=recommendations)
+
+    Well-known security identifiers (SIDs) identify generic groups and generic users.
+
+-   [\[MS-DTYP\]: Well-Known SID Structures](/en-us/openspecs/windows_protocols/ms-dtyp/81d92bba-d22b-4a8c-908a-554ab29148ab?source=recommendations)
+
+    Well-known SID structures are a group of SIDs that identify generic users or generic groups. Their values remain constant
+
+-   [Special Identity Groups](/en-us/windows-server/identity/ad-ds/manage/understand-special-identities-groups?source=recommendations)
+
+    Learn about Windows Server special identity groups that are used for Windows access control.
+
+-   [\[MS-ADTS\]: Domain RID Values](/en-us/openspecs/windows_protocols/ms-adts/b9475e91-f00f-4c25-9117-a48e70584625?source=recommendations)
+
+    Constants for defining domain relative identifiers (RIDs). Symbolic name Value
+
+-   [Some SIDs don\'t resolve into friendly names - Windows Server](/en-us/troubleshoot/windows-server/windows-security/sids-not-resolve-into-friendly-names?source=recommendations)
+
+    Some security identifiers that you see in access control lists or Security Audit reports don\'t resolve into friendly names. These might be Capability SIDs.
+
+-   [Security Identifiers - Win32 apps](/en-us/windows/win32/secauthz/security-identifiers?source=recommendations)
+
+    A security identifier (SID) is a unique value of variable length used to identify a trustee. Learn how SIDs work in the Windows security model, including their role in access tokens, security descriptors, and access control entries.
+
+-   [AlwaysInstallElevated - Win32 apps](/en-us/windows/win32/msi/alwaysinstallelevated?source=recommendations)
+
+    Install a Windows Installer package with elevated (system) privileges.
+
+Training
+
+Module
+
+[Secure Windows Server user accounts - Training](/en-us/training/modules/secure-windows-server-user-accounts/?source=recommendations)
+
+Learn how to secure Active Directory user accounts using least privilege, Protected Users group, authentication policy silos, Windows Defender Credential Guard, NTLM blocking, and account remediation techniques.
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

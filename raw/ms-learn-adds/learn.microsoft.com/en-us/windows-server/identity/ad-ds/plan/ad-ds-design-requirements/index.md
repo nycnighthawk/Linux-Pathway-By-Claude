@@ -1,5 +1,5 @@
 ---
-{"title": "AD DS Design Requirements", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/ad-ds-design-requirements", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "AD DS Design Requirements", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/ad-ds-design-requirements", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # AD DS Design Requirements
@@ -54,51 +54,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Identifying Your AD DS Design and Deployment Requirements](/en-us/windows-server/identity/ad-ds/plan/identifying-your-ad-ds-design-and-deployment-requirements?source=recommendations)
-
-    Learn more about: Identifying Your AD DS Design and Deployment Requirements
-
--   [AD DS Deployment Requirements](/en-us/windows-server/identity/ad-ds/plan/ad-ds-deployment-requirements?source=recommendations)
-
-    Learn more about: AD DS Deployment Requirements
-
--   [AD DS Design and Planning](/en-us/windows-server/identity/ad-ds/plan/ad-ds-design-and-planning?source=recommendations)
-
-    Learn more about: AD DS Design and Planning
-
--   [Mapping Your Requirements to an AD DS Deployment Strategy](/en-us/windows-server/identity/ad-ds/plan/mapping-your-requirements-to-an-ad-ds-deployment-strategy?source=recommendations)
-
-    Learn more about: Mapping Your Requirements to an AD DS Deployment Strategy
-
--   [Understanding AD DS Design](/en-us/windows-server/identity/ad-ds/plan/understanding-ad-ds-design?source=recommendations)
-
-    Learn more about: Understanding AD DS Design
-
--   [Evaluating AD DS Deployment Strategy Examples](/en-us/windows-server/identity/ad-ds/plan/evaluating-ad-ds-deployment-strategy-examples?source=recommendations)
-
-    Learn more about: Evaluating AD DS Deployment Strategy Examples
-
--   [Designing the Logical Structure](/en-us/windows-server/identity/ad-ds/plan/designing-the-logical-structure?source=recommendations)
-
-    Learn more about: Designing the Logical Structure
-
-Training
-
-Module
-
-[Introduction to AD DS - Training](/en-us/training/modules/introduction-to-ad-ds/?source=recommendations)
-
-Introduction to AD DS
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

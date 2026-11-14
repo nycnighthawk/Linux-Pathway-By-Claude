@@ -1,5 +1,5 @@
 ---
-{"title": "Integrating AD DS into an Existing DNS Infrastructure", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/integrating-ad-ds-into-an-existing-dns-infrastructure", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Integrating AD DS into an Existing DNS Infrastructure", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/integrating-ad-ds-into-an-existing-dns-infrastructure", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Integrating AD DS into an Existing DNS Infrastructure

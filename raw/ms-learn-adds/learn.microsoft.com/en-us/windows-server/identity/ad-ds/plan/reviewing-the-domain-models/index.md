@@ -1,5 +1,5 @@
 ---
-{"title": "Reviewing the Domain Models", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/reviewing-the-domain-models", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Reviewing the Domain Models", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/reviewing-the-domain-models", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Reviewing the Domain Models
