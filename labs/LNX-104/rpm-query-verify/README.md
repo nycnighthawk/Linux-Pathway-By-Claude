@@ -35,3 +35,4 @@ LAB_DIR=$PWD /path/to/repo/labs/LNX-104/rpm-query-verify/check
 - `rpm -V` prints one line per differing file; a dot means that attribute matches.
 - The lab needs the package `rpm` (it provides `rpm` and `rpmbuild`).
 - Reading material: [the lesson](lesson:LNX-104-T01). Afterwards, try [the quiz](quiz:LNX-104-T01).
+- Run it with `bin/lpc course lab LNX-104 rpm-query-verify`; it resets the workspace each time.
