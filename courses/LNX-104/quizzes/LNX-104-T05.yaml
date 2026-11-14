@@ -1,0 +1,72 @@
+title: 'Quiz: Building from source, shared libraries'
+questions:
+- id: destdir
+  prompt: What does DESTDIR do in make install?
+  choices:
+  - Sets the compiled-in prefix
+  - Selects the compiler
+  - Enables shared libraries
+  - Moves where files land without changing compiled-in paths
+  answer:
+  - 3
+  explain: PREFIX is compiled in; DESTDIR only redirects the install into a staging tree.
+- id: soname
+  prompt: Which name does a linked program record?
+  choices:
+  - The linker name libfoo.so
+  - The package name
+  - The soname, for example libfoo.so.1
+  - The real name libfoo.so.1.4.2
+  answer:
+  - 2
+  explain: The soname changes only when the binary interface breaks.
+- id: order
+  prompt: Which is the correct loader search order?
+  choices:
+  - RPATH if no RUNPATH, LD_LIBRARY_PATH, RUNPATH, cache, default directories
+  - Cache, RUNPATH, LD_LIBRARY_PATH, RPATH
+  - Default directories first
+  - Only the cache
+  answer:
+  - 0
+  explain: ld.so(8) documents this order; the cache is built by ldconfig.
+- id: devel
+  prompt: A configure script says a header is missing. What is the usual fix?
+  choices:
+  - Use LD_PRELOAD
+  - Disable the test
+  - Install the -devel or -dev package
+  - Copy the header by hand
+  answer:
+  - 2
+  explain: Development packages ship headers and the linker-name symlink.
+- id: ldconfig
+  prompt: When must you run ldconfig?
+  choices:
+  - After installing a library into a directory the loader cache covers
+  - After every file edit
+  - Before compiling
+  - Only on boot
+  answer:
+  - 0
+  explain: It rebuilds the soname links and /etc/ld.so.cache.
+- id: runpath
+  prompt: Which flag embeds a run path relative to the executable?
+  choices:
+  - -soname
+  - -Wl,-rpath,'$ORIGIN/../lib'
+  - -L../lib
+  - -fPIC
+  answer:
+  - 1
+  explain: $ORIGIN is the directory of the executable, so the tree stays relocatable.
+- id: ldd-safety
+  prompt: Why avoid ldd on an untrusted program?
+  choices:
+  - It changes the cache
+  - Some versions run the program's loader on it; use readelf -d instead
+  - It deletes libraries
+  - It needs root
+  answer:
+  - 1
+  explain: readelf -d reads the dynamic section without executing anything.

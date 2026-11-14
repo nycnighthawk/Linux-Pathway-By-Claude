@@ -1,0 +1,72 @@
+title: 'Quiz: dnf/rpm: query, verify, history, undo'
+questions:
+- id: owner
+  prompt: Which command shows the package that owns /etc/ssh/sshd_config?
+  choices:
+  - rpm -qf /etc/ssh/sshd_config
+  - rpm -ql /etc/ssh/sshd_config
+  - rpm -qi sshd_config
+  - dnf search sshd_config
+  answer:
+  - 0
+  explain: rpm -qf maps a file path to its owning package; -ql lists the files of a named package.
+- id: verify-flags
+  prompt: What does a verify line starting with S.5 mean?
+  choices:
+  - Size and digest differ from the package record
+  - Only the owner differs
+  - The file is missing
+  - The file is a ghost
+  answer:
+  - 0
+  explain: S is size and 5 is the digest; a dot means the attribute matches.
+- id: verify-conf
+  prompt: Which category letter marks a configuration file in rpm -V output?
+  choices:
+  - c
+  - d
+  - l
+  - g
+  answer:
+  - 0
+  explain: c is config, d documentation, l licence and g ghost.
+- id: undo-vs-rollback
+  prompt: What does dnf history rollback 42 do?
+  choices:
+  - Reverses only transaction 42
+  - Repeats transaction 42
+  - Deletes the history
+  - Reverses every transaction after 42
+  answer:
+  - 3
+  explain: rollback returns to the state after transaction 42; undo reverses one transaction and redo repeats it.
+- id: undo-limit
+  prompt: Why can dnf history undo fail for an upgrade?
+  choices:
+  - The older package version is no longer available
+  - dnf cannot downgrade
+  - History is encrypted
+  - Undo needs a reboot
+  answer:
+  - 0
+  explain: Reverting an upgrade installs the old version again, which needs it in a repository or cache.
+- id: checksig
+  prompt: Which command checks the digests and signature of a package file?
+  choices:
+  - dnf history
+  - rpm -K
+  - rpm -V
+  - rpm -qa
+  answer:
+  - 1
+  explain: rpm -K (--checksig) examines the package file; -V compares installed files with the database.
+- id: check-update
+  prompt: What exit status does dnf check-update return when updates are available?
+  choices:
+  - '2'
+  - '100'
+  - '0'
+  - '1'
+  answer:
+  - 1
+  explain: 100 means updates exist, 0 none, 1 an error.

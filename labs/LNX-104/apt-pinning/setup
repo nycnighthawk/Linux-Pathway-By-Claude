@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a flat local repository with labtool 1.0 and 2.0 and labextra 1.0, and a private apt configuration.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf repo debroot state cache status sources.list preferences apt.conf answers.txt
+mkdir -p repo state/lists/partial cache/archives/partial
+: > status
+mk() { # name version
+    d=debroot/$1_$2
+    mkdir -p "$d/DEBIAN" "$d/usr/share/doc/$1"
+    printf 'Package: %s\nVersion: %s\nArchitecture: all\nMaintainer: Lab <lab@example.invalid>\nDescription: lab package %s %s\n' "$1" "$2" "$1" "$2" > "$d/DEBIAN/control"
+    printf 'lab\n' > "$d/usr/share/doc/$1/README"
+    dpkg-deb --build "$d" "repo/$1_$2_all.deb" >/dev/null
+}
+mk labtool 1.0-1
+mk labtool 2.0-1
+mk labextra 1.0-1
+(cd repo && apt-ftparchive packages . > Packages)
+cat > apt.conf <<CONF
+// SPDX-License-Identifier: MIT
+Dir::Etc::sourcelist "$PWD/sources.list";
+Dir::Etc::sourceparts "/dev/null";
+Dir::Etc::preferences "$PWD/preferences";
+Dir::Etc::preferencesparts "/dev/null";
+Dir::State "$PWD/state";
+Dir::State::status "$PWD/status";
+Dir::Cache "$PWD/cache";
+APT::Sandbox::User "";
+CONF
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\ncandidate_view_command=?\nforce_downgrade_priority=?\ndefault_source_priority=?\nhold_command=?\n' > answers.txt

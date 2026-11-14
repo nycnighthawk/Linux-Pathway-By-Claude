@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: the dependency is satisfied by upgrading the provider, without bypassing the check.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+q() { rpm --root "$PWD/root" "$@" 2>/dev/null; }
+[ "$(q -q --qf '%{VERSION}\n' libgreet)" = 2.0 ] && ok "libgreet is 2.0" || fail "upgrade libgreet to 2.0 with rpm -U (installed: $(q -q --qf '%{VERSION}' libgreet || echo none))"
+[ "$(q -q --qf '%{VERSION}\n' app)" = 1.0 ] && ok "app 1.0 is installed" || fail "install pkgs/app-1.0-1.noarch.rpm after fixing the dependency"
+q -q --requires app | grep -q 'libgreet >= 2.0' && ok "app still requires libgreet >= 2.0 (installed without bypassing it)" || true
+n=$(q -qa | grep -c '^libgreet-')
+[ "$n" = 1 ] && ok "one libgreet version installed" || fail "exactly one libgreet must be installed (found $n)"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get missing_capability)" = libgreet ] && ok "capability" || fail "missing_capability: the capability name rpm -i --test reports for app"
+[ "$(get needed_version)" = 2.0 ] && ok "version" || fail "needed_version: the version app requires at minimum"
+[ "$(get reverse_dependency_option)" = --whatrequires ] && ok "--whatrequires" || fail "reverse_dependency_option: the rpm -q option that lists packages needing libgreet"
+[ "$(get force_option_to_avoid)" = --nodeps ] && ok "--nodeps" || fail "force_option_to_avoid: the rpm option that skips dependency checks"
+exit $bad

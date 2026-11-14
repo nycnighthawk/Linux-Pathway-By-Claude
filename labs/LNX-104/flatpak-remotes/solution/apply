@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export XDG_DATA_HOME="$PWD/xdg"
+flatpak --user remote-add --if-not-exists labrepo lab.flatpakrepo >/dev/null 2>&1 || true
+flatpak --user remote-modify --prio=5 labrepo
+flatpak --user override --nofilesystem=host --filesystem=xdg-documents:ro --unshare=network org.example.Lab
+sed -i -e 's/^remote_details_option=.*/remote_details_option=-d/' -e 's#^system_installation_dir=.*#system_installation_dir=/var/lib/flatpak#' -e 's/^unused_cleanup_command=.*/unused_cleanup_command=flatpak uninstall --unused/' -e 's/^override_command=.*/override_command=flatpak override/' answers.txt

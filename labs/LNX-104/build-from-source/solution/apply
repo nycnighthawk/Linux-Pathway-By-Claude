@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cd src
+make clean >/dev/null
+make EXTRA_LDFLAGS="-Wl,-rpath,'\$\$ORIGIN/../lib'" >/dev/null
+make DESTDIR="$(cd .. && pwd)/stage" PREFIX=/opt/greet EXTRA_LDFLAGS="-Wl,-rpath,'\$\$ORIGIN/../lib'" install >/dev/null
+cd ..
+sed -i -e 's/^library_soname=.*/library_soname=libgreet.so.1/' -e 's/^staging_variable=.*/staging_variable=DESTDIR/' -e 's/^cache_rebuild_command=.*/cache_rebuild_command=ldconfig/' -e 's/^list_needed_command=.*/list_needed_command=ldd/' -e 's/^search_trace_variable=.*/search_trace_variable=LD_DEBUG/' answers.txt

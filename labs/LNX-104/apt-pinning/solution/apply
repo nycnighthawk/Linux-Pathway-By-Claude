@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+printf 'deb [trusted=yes] file:%s/repo ./\n' "$PWD" > sources.list
+cat > preferences <<'PREF'
+# SPDX-License-Identifier: MIT
+Package: labtool
+Pin: version 1.0*
+Pin-Priority: 1001
+
+Package: labextra
+Pin: version *
+Pin-Priority: -1
+PREF
+APT_CONFIG="$PWD/apt.conf" apt-get update >/dev/null 2>&1
+sed -i -e 's/^candidate_view_command=.*/candidate_view_command=apt-cache policy/' -e 's/^force_downgrade_priority=.*/force_downgrade_priority=1000/' -e 's/^default_source_priority=.*/default_source_priority=500/' -e 's/^hold_command=.*/hold_command=apt-mark hold/' answers.txt

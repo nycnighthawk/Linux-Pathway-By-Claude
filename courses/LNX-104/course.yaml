@@ -1,0 +1,142 @@
+id: LNX-104
+title: Software Packages on a Single Host
+summary: 'Installing, querying, verifying and repairing software on one host: rpm and dnf, dpkg and apt, repositories and
+  signing keys, Flatpak, source builds with shared libraries, and dependency troubleshooting.'
+hours: 30
+coverage: full
+outcomes:
+- Query, verify and revert changes with rpm and dnf
+- Choose and hold package versions with apt sources, pins and holds
+- Define repositories safely and manage GPG keys and package signatures
+- Add Flatpak remotes and restrict application permissions
+- Build software from source, stage the install and diagnose shared library problems
+- Classify and repair dependency failures without forcing the package manager
+certifications:
+- cert: LFCS
+  objectives:
+  - D1
+- cert: LPIC1
+  objectives:
+  - '102.3'
+  - '102.4'
+  - '102.5'
+- cert: LPLUS
+  objectives:
+  - D2
+- cert: RHCSA
+  objectives:
+  - D2
+  - D7
+modules:
+- id: rpm-and-deb
+  title: Package managers on RPM and Debian systems
+  lessons:
+  - topic: LNX-104-T01
+    title: 'dnf/rpm: query, verify, history, undo'
+    file: lessons/LNX-104-T01.md
+    minutes: 55
+  - topic: LNX-104-T02
+    title: 'apt/dpkg: sources, pinning, holds'
+    file: lessons/LNX-104-T02.md
+    minutes: 55
+- id: sources-and-trust
+  title: Repositories, keys and Flatpak
+  lessons:
+  - topic: LNX-104-T03
+    title: Repositories and GPG keys
+    file: lessons/LNX-104-T03.md
+    minutes: 55
+  - topic: LNX-104-T04
+    title: Flatpak remotes and packages (RHEL 10 objective)
+    file: lessons/LNX-104-T04.md
+    minutes: 50
+- id: building-and-repair
+  title: Building, libraries and repair
+  lessons:
+  - topic: LNX-104-T05
+    title: Building from source, shared libraries
+    file: lessons/LNX-104-T05.md
+    minutes: 40
+  - topic: LNX-104-T06
+    title: Dependency troubleshooting
+    file: lessons/LNX-104-T06.md
+    minutes: 50
+labs:
+- id: rpm-query-verify
+  topic: LNX-104-T01
+  title: Build, install, query and verify a small RPM
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - rpm
+- id: apt-pinning
+  topic: LNX-104-T02
+  title: Point apt at a local repository and pin versions
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - apt-utils
+- id: repo-signing
+  topic: LNX-104-T03
+  title: Sign a package, import the key and write a strict repository definition
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - rpm
+  - gnupg
+  - createrepo-c
+- id: flatpak-remotes
+  topic: LNX-104-T04
+  title: Add a Flatpak remote and restrict an application's permissions
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - flatpak
+  - gnupg
+- id: build-from-source
+  topic: LNX-104-T05
+  title: Build a shared library, stage the install and make the program find it
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - gcc
+  - make
+  - binutils
+- id: dependency-repair
+  topic: LNX-104-T06
+  title: Read a failed dependency and repair it the safe way
+  env: C
+  license: MIT
+  minutes: 35
+  packages:
+  - rpm
+quizzes:
+- id: LNX-104-T01
+  topic: LNX-104-T01
+  title: 'Quiz: dnf/rpm: query, verify, history, undo'
+  file: quizzes/LNX-104-T01.yaml
+- id: LNX-104-T02
+  topic: LNX-104-T02
+  title: 'Quiz: apt/dpkg: sources, pinning, holds'
+  file: quizzes/LNX-104-T02.yaml
+- id: LNX-104-T03
+  topic: LNX-104-T03
+  title: 'Quiz: Repositories and GPG keys'
+  file: quizzes/LNX-104-T03.yaml
+- id: LNX-104-T04
+  topic: LNX-104-T04
+  title: 'Quiz: Flatpak remotes and packages (RHEL 10 objective)'
+  file: quizzes/LNX-104-T04.yaml
+- id: LNX-104-T05
+  topic: LNX-104-T05
+  title: 'Quiz: Building from source, shared libraries'
+  file: quizzes/LNX-104-T05.yaml
+- id: LNX-104-T06
+  topic: LNX-104-T06
+  title: 'Quiz: Dependency troubleshooting'
+  file: quizzes/LNX-104-T06.yaml

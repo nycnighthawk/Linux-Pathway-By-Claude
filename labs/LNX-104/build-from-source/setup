@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: the source of a tiny shared library and a program that uses it, plus a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src stage answers.txt
+mkdir -p src
+cat > src/greet.h <<'EOF'
+/* SPDX-License-Identifier: MIT */
+const char *greet_text(void);
+EOF
+cat > src/greet.c <<'EOF'
+/* SPDX-License-Identifier: MIT */
+#include "greet.h"
+const char *greet_text(void) { return "hello from libgreet 1"; }
+EOF
+cat > src/main.c <<'EOF'
+/* SPDX-License-Identifier: MIT */
+#include <stdio.h>
+#include "greet.h"
+int main(void) { puts(greet_text()); return 0; }
+EOF
+cat > src/Makefile <<'EOF'
+# SPDX-License-Identifier: MIT
+CC ?= cc
+PREFIX ?= /usr/local
+DESTDIR ?=
+EXTRA_LDFLAGS ?=
+
+all: greeter
+
+libgreet.so.1.0.0: greet.c greet.h
+	$(CC) -fPIC -shared -Wl,-soname,libgreet.so.1 -o $@ greet.c
+	ln -sf $@ libgreet.so.1
+	ln -sf libgreet.so.1 libgreet.so
+
+greeter: main.c libgreet.so.1.0.0
+	$(CC) -o $@ main.c -L. -lgreet $(EXTRA_LDFLAGS)
+
+install: all
+	install -d $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib $(DESTDIR)$(PREFIX)/include
+	install -m 0755 greeter $(DESTDIR)$(PREFIX)/bin/greeter
+	install -m 0755 libgreet.so.1.0.0 $(DESTDIR)$(PREFIX)/lib/libgreet.so.1.0.0
+	ln -sf libgreet.so.1.0.0 $(DESTDIR)$(PREFIX)/lib/libgreet.so.1
+	ln -sf libgreet.so.1 $(DESTDIR)$(PREFIX)/lib/libgreet.so
+	install -m 0644 greet.h $(DESTDIR)$(PREFIX)/include/greet.h
+
+clean:
+	rm -f greeter libgreet.so libgreet.so.1 libgreet.so.1.0.0
+
+.PHONY: all install clean
+EOF
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nlibrary_soname=?\nstaging_variable=?\ncache_rebuild_command=?\nlist_needed_command=?\nsearch_trace_variable=?\n' > answers.txt
