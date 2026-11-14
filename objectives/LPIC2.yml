@@ -1,0 +1,145 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: LPIC2
+exam: 201-450 + 202-450
+version: '4.5'
+source: https://wiki.lpi.org/wiki/LPIC-2_Objectives_V4.5
+fetched: '2026-11-14'
+objectives:
+- id: '200.1'
+  courses: [LNX-307]
+  topics: [LNX-307-T02, LNX-307-T08]
+- id: '200.2'
+  courses: [LNX-307]
+  topics: [LNX-307-T03, LNX-307-T01]
+  partial: true
+- id: '201.1'
+  courses: [LNX-102]
+  topics: [LNX-102-T08]
+- id: '201.2'
+  courses: [LNX-330]
+  topics: [LNX-330-T02]
+- id: '201.3'
+  courses: [LNX-102, LNX-307]
+  topics: [LNX-102-T08, LNX-307-T06]
+- id: '202.1'
+  courses: [LNX-102]
+  topics: [LNX-102-T03, LNX-102-T04]
+- id: '202.2'
+  courses: [LNX-102, LNX-307]
+  topics: [LNX-102-T04, LNX-307-T07]
+- id: '202.3'
+  courses: [LNX-102]
+  topics: [LNX-102-T04]
+  partial: true
+- id: '203.1'
+  courses: [LNX-103]
+  topics: [LNX-103-T02]
+- id: '203.2'
+  courses: [LNX-103]
+  topics: [LNX-103-T02]
+  partial: true
+- id: '203.3'
+  courses: [LNX-103]
+  topics: [LNX-103-T09, LNX-103-T02, LNX-103-T04]
+- id: '204.1'
+  courses: [LNX-103]
+  topics: [LNX-103-T05]
+- id: '204.2'
+  courses: [LNX-103]
+  topics: [LNX-103-T07, LNX-103-T08, LNX-103-T11]
+- id: '204.3'
+  courses: [LNX-103]
+  topics: [LNX-103-T03]
+- id: '205.1'
+  courses: [LNX-201]
+  topics: [LNX-201-T01, LNX-201-T02, LNX-201-T03, LNX-201-T04]
+- id: '205.2'
+  courses: [LNX-201, LNX-202]
+  topics: [LNX-202-T01, LNX-202-T02, LNX-202-T03, LNX-202-T07, LNX-201-T05]
+- id: '205.3'
+  courses: [LNX-201, LNX-202]
+  topics: [LNX-201-T08, LNX-202-T08]
+- id: '206.1'
+  courses: [LNX-104]
+  topics: [LNX-104-T05]
+- id: '206.2'
+  courses: [LNX-103]
+  topics: [LNX-103-T10]
+- id: '206.3'
+  courses: []
+  topics: []
+  gap: true
+- id: '207.1'
+  courses: [LNX-202]
+  topics: [LNX-202-T04]
+- id: '207.2'
+  courses: [LNX-202]
+  topics: [LNX-202-T04]
+- id: '207.3'
+  courses: [LNX-202]
+  topics: [LNX-202-T04]
+- id: '208.1'
+  courses: []
+  topics: []
+  gap: true
+- id: '208.2'
+  courses: []
+  topics: []
+  gap: true
+- id: '208.3'
+  courses: []
+  topics: []
+  gap: true
+- id: '208.4'
+  courses: []
+  topics: []
+  gap: true
+- id: '209.1'
+  courses: [LNX-302]
+  topics: [LNX-302-T01]
+- id: '209.2'
+  courses: [LNX-103, LNX-302]
+  topics: [LNX-103-T07, LNX-302-T09]
+- id: '210.1'
+  courses: [LNX-202]
+  topics: [LNX-202-T05]
+- id: '210.2'
+  courses: [LNX-204, LNX-301]
+  topics: [LNX-204-T01, LNX-301-T03]
+- id: '210.3'
+  courses: [LNX-301]
+  topics: [LNX-301-T01, LNX-301-T03]
+- id: '210.4'
+  courses: [LNX-301]
+  topics: [LNX-301-T01]
+  partial: true
+- id: '211.1'
+  courses: []
+  topics: []
+  gap: true
+- id: '211.2'
+  courses: []
+  topics: []
+  gap: true
+- id: '211.3'
+  courses: []
+  topics: []
+  gap: true
+- id: '212.1'
+  courses: [LNX-201, LNX-202]
+  topics: [LNX-201-T05, LNX-201-T06, LNX-202-T02]
+- id: '212.2'
+  courses: []
+  topics: []
+  gap: true
+- id: '212.3'
+  courses: [LNX-201, LNX-204]
+  topics: [LNX-201-T07, LNX-204-T03]
+- id: '212.4'
+  courses: [LNX-204]
+  topics: [LNX-204-T06, LNX-204-T09, LNX-204-T11]
+- id: '212.5'
+  courses: [LNX-202]
+  topics: [LNX-202-T07]
+  partial: true

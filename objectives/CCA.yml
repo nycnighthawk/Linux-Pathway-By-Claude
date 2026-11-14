@@ -1,0 +1,34 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: CCA
+exam: CCA
+version: current
+source: https://www.cncf.io/training/certification/cca/
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-312]
+  topics: [LNX-312-T05, LNX-312-T03]
+- id: D2
+  courses: [LNX-312]
+  topics: [LNX-312-T07]
+- id: D3
+  courses: [LNX-312]
+  topics: [LNX-312-T09]
+- id: D4
+  courses: [LNX-312]
+  topics: [LNX-312-T05]
+  partial: true
+- id: D5
+  courses: [LNX-312]
+  topics: [LNX-312-T03, LNX-312-T05]
+- id: D6
+  courses: [LNX-312]
+  topics: [LNX-312-T11]
+- id: D7
+  courses: [LNX-312]
+  topics: [LNX-312-T05]
+  partial: true
+- id: D8
+  courses: [LNX-312]
+  topics: [LNX-312-T10, LNX-312-T13]

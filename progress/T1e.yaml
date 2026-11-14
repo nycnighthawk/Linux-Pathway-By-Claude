@@ -6,13 +6,52 @@ started: '2026-11-14'
 updated: '2026-11-14'
 phases:
   certs:
-    state: todo
+    state: done
     units: 21
-    done: []
+    done:
+    - LE
+    - LPIC1
+    - LPIC2
+    - L300
+    - L303
+    - L305
+    - L306
+    - LPLUS
+    - LFCS
+    - RHCSA
+    - RHCE
+    - EX362
+    - EX188
+    - KCNA
+    - KCSA
+    - CKA
+    - CKAD
+    - CKS
+    - CCA
+    - EX316
+    - KDEV
   rebuild:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
 log:
 - 2026-11-14 started
+- '2026-11-14 certs: LE, LPIC1, LPIC2, L300, L303, L305, L306, LPLUS, LFCS, RHCSA, RHCE, EX362, EX188, KCNA, KCSA,
+  CKA, CKAD, CKS, CCA, EX316, KDEV'
+- '2026-11-14 rebuild: done'
+- '2026-11-14 rebuild: done'
+notes:
+- Files are named by the cert ids in taxonomy/courses.yaml, so plan units L300, L303, L305 and L306 are objectives/LPIC3-300.yml,
+  LPIC3-303.yml, LPIC3-305.yml and LPIC3-306.yml.
+- 'Objective ids: LPI uses the vendor ids (wiki.lpi.org objective pages). Red Hat, CNCF, LFCS and CompTIA publish
+  no ids for their points, so D1.. is the domain or study-group order on the page fetched 2026-11-14. KDEV uses
+  the LFD103 chapter number (D2..D13; intro and FAQ chapters omitted). Linux+ XK0-006 is mapped at domain level
+  only.'
+- 'gap: true marks objectives that no topic covers (LPIC-1 X11/desktops/MTA/printing/locale, LPIC-2 web/mail/FTP,
+  Samba DFS, Xen, Vagrant, Gluster, Ceph, pen testing, OADP). Candidates for course scope decisions.'
+- 'Version drift seen on the vendor pages: EX188 now says RHEL 10 and Podman 5 (report says RHEL 9, Podman 4.4);
+  EX316 is OCP 4.18. Update web/report.html in a later pass.'
+- KDEV maps only to LNX-330; LNX-331 and LNX-332 are listed against KDEV in taxonomy but LFD103 does not cover them.
+  EX294 now centres on ansible-navigator and VS Code.
+- 'No licence issue: only ids and our own mappings are stored, no vendor text.'

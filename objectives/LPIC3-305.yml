@@ -1,0 +1,51 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: LPIC3-305
+exam: 305-300
+version: '3.0'
+source: https://wiki.lpi.org/wiki/LPIC-305_Objectives_V3.0
+fetched: '2026-11-14'
+objectives:
+- id: '351.1'
+  courses: [LNX-308, LNX-332]
+  topics: [LNX-308-T01, LNX-308-T04, LNX-332-T01]
+- id: '351.2'
+  courses: []
+  topics: []
+  gap: true
+- id: '351.3'
+  courses: [LNX-308, LNX-332]
+  topics: [LNX-308-T01, LNX-308-T04, LNX-332-T06]
+- id: '351.4'
+  courses: [LNX-308]
+  topics: [LNX-308-T01, LNX-308-T02, LNX-308-T03, LNX-308-T05]
+- id: '351.5'
+  courses: [LNX-308, LNX-315]
+  topics: [LNX-308-T02, LNX-315-T04]
+- id: '352.1'
+  courses: [LNX-310]
+  topics: [LNX-310-T01, LNX-310-T02]
+- id: '352.2'
+  courses: [LNX-308]
+  topics: [LNX-308-T06]
+- id: '352.3'
+  courses: [LNX-310]
+  topics: [LNX-310-T04, LNX-310-T05]
+- id: '352.4'
+  courses: [LNX-311]
+  topics: [LNX-311-T01]
+  partial: true
+- id: '353.1'
+  courses: [LNX-306]
+  topics: [LNX-306-T05, LNX-306-T10]
+  partial: true
+- id: '353.2'
+  courses: [LNX-306, LNX-315]
+  topics: [LNX-306-T04, LNX-315-T08]
+- id: '353.3'
+  courses: [LNX-306]
+  topics: [LNX-306-T03]
+- id: '353.4'
+  courses: []
+  topics: []
+  gap: true

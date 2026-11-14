@@ -1,0 +1,28 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: KCSA
+exam: KCSA
+version: current
+source: https://www.cncf.io/training/certification/kcsa/
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-310]
+  topics: [LNX-310-T08]
+  partial: true
+- id: D2
+  courses: [LNX-314]
+  topics: [LNX-314-T01, LNX-314-T02, LNX-314-T05]
+- id: D3
+  courses: [LNX-314]
+  topics: [LNX-314-T03, LNX-314-T04, LNX-314-T02]
+- id: D4
+  courses: [LNX-314]
+  topics: [LNX-314-T10, LNX-314-T07]
+- id: D5
+  courses: [LNX-314]
+  topics: [LNX-314-T06, LNX-314-T09, LNX-314-T08]
+- id: D6
+  courses: [LNX-303]
+  topics: [LNX-303-T08, LNX-303-T07]
+  partial: true

@@ -1,0 +1,44 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: KDEV
+exam: LFD103
+version: free course + badge
+source: https://training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/
+fetched: '2026-11-14'
+objectives:
+- id: D2
+  courses: [LNX-330]
+  topics: [LNX-330-T01]
+- id: D3
+  courses: [LNX-330]
+  topics: [LNX-330-T06]
+- id: D4
+  courses: [LNX-330]
+  topics: [LNX-330-T06, LNX-330-T11]
+- id: D5
+  courses: [LNX-330]
+  topics: [LNX-330-T02, LNX-330-T03]
+- id: D6
+  courses: [LNX-330]
+  topics: [LNX-330-T01]
+- id: D7
+  courses: [LNX-330]
+  topics: [LNX-330-T02, LNX-330-T03]
+- id: D8
+  courses: [LNX-330]
+  topics: [LNX-330-T05, LNX-330-T06]
+- id: D9
+  courses: [LNX-330]
+  topics: [LNX-330-T05, LNX-330-T06]
+- id: D10
+  courses: [LNX-102, LNX-330]
+  topics: [LNX-330-T04, LNX-102-T08]
+- id: D11
+  courses: [LNX-330]
+  topics: [LNX-330-T07, LNX-330-T08]
+- id: D12
+  courses: [LNX-330]
+  topics: [LNX-330-T09, LNX-330-T10]
+- id: D13
+  courses: [LNX-330]
+  topics: [LNX-330-T11]

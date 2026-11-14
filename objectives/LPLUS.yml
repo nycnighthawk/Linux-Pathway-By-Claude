@@ -1,0 +1,24 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: LPLUS
+exam: XK0-006
+version: V8
+source: https://www.comptia.org/certifications/linux
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-101, LNX-102, LNX-103, LNX-201, LNX-308]
+  topics: [LNX-101-T02, LNX-101-T03, LNX-101-T09, LNX-102-T03, LNX-102-T04, LNX-102-T08, LNX-103-T01, LNX-103-T02, LNX-103-T03, LNX-103-T04, LNX-103-T05, LNX-103-T10, LNX-201-T03, LNX-201-T04, LNX-308-T01]
+- id: D2
+  courses: [LNX-101, LNX-102, LNX-104, LNX-310]
+  topics: [LNX-101-T08, LNX-102-T01, LNX-102-T02, LNX-102-T03, LNX-102-T05, LNX-102-T06, LNX-104-T01, LNX-104-T02, LNX-310-T03]
+- id: D3
+  courses: [LNX-204, LNX-301, LNX-303]
+  topics: [LNX-204-T01, LNX-204-T02, LNX-204-T03, LNX-204-T06, LNX-204-T07, LNX-204-T08, LNX-204-T09, LNX-204-T10, LNX-301-T01, LNX-301-T02, LNX-303-T02]
+- id: D4
+  courses: [LNX-203, LNX-305]
+  topics: [LNX-203-T01, LNX-203-T02, LNX-203-T05, LNX-203-T06, LNX-305-T01, LNX-305-T02, LNX-305-T03]
+  partial: true
+- id: D5
+  courses: [LNX-102, LNX-103, LNX-201, LNX-307]
+  topics: [LNX-307-T02, LNX-307-T04, LNX-307-T07, LNX-103-T02, LNX-201-T06, LNX-201-T08, LNX-102-T04]

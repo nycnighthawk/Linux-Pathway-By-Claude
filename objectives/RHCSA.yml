@@ -1,0 +1,38 @@
+# IDs only: objective ids as published by the vendor (or domain order D1.. where the vendor numbers none),
+# mapped to course and topic ids. No objective text is stored. gap: no topic covers it; partial: covered in part.
+cert: RHCSA
+exam: EX200
+version: RHEL 10
+source: https://www.redhat.com/en/services/training/ex200-red-hat-certified-system-administrator-rhcsa-exam
+fetched: '2026-11-14'
+objectives:
+- id: D1
+  courses: [LNX-101, LNX-201]
+  topics: [LNX-101-T02, LNX-101-T03, LNX-101-T04, LNX-101-T05, LNX-101-T06, LNX-101-T07, LNX-101-T08, LNX-101-T09, LNX-101-T10, LNX-201-T07]
+- id: D2
+  courses: [LNX-104]
+  topics: [LNX-104-T01, LNX-104-T03, LNX-104-T04]
+- id: D3
+  courses: [LNX-203]
+  topics: [LNX-203-T01]
+- id: D4
+  courses: [LNX-102, LNX-201]
+  topics: [LNX-102-T02, LNX-102-T03, LNX-102-T04, LNX-102-T05, LNX-102-T09, LNX-102-T10, LNX-201-T07]
+- id: D5
+  courses: [LNX-103]
+  topics: [LNX-103-T01, LNX-103-T03, LNX-103-T04]
+- id: D6
+  courses: [LNX-103]
+  topics: [LNX-103-T02, LNX-103-T06, LNX-103-T07]
+- id: D7
+  courses: [LNX-102, LNX-104]
+  topics: [LNX-102-T03, LNX-102-T04, LNX-102-T06, LNX-102-T07, LNX-104-T01]
+- id: D8
+  courses: [LNX-201]
+  topics: [LNX-201-T01, LNX-201-T03, LNX-201-T04, LNX-201-T06]
+- id: D9
+  courses: [LNX-102, LNX-204]
+  topics: [LNX-102-T01, LNX-204-T02]
+- id: D10
+  courses: [LNX-101, LNX-201, LNX-204]
+  topics: [LNX-204-T04, LNX-201-T06, LNX-204-T03, LNX-101-T08]

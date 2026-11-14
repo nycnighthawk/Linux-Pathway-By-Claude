@@ -207,3 +207,21 @@ def test_only_if_override_fills_gaps_but_keeps_confident_tags():
     sure = t.tag({"id": "b", "source": "demo", "path": "x/selinux.md", "title": "Using SELinux",
                   "section": "Managing SELinux booleans"}, "Use setsebool and semanage to change SELinux booleans. " * 3)
     assert sure["confidence"] in ("high", "medium") and sure["courses"][0]["code"] == "LNX-204"
+
+
+def test_objective_maps_reference_real_topics():
+    import glob
+    import yaml
+    root = Path(__file__).resolve().parent.parent
+    topics = yaml.safe_load((root / "taxonomy" / "topics.yaml").read_text())["topics"]
+    files = sorted(glob.glob(str(root / "objectives" / "*.yml")))
+    assert files
+    for f in files:
+        d = yaml.safe_load(open(f))
+        ids = [o["id"] for o in d["objectives"]]
+        assert len(ids) == len(set(ids)), f
+        assert d["cert"] == Path(f).stem
+        for o in d["objectives"]:
+            assert bool(o.get("gap")) == (not o["topics"]), (f, o["id"])
+            for t in o["topics"]:
+                assert t in topics and topics[t]["course"] in o["courses"], (f, o["id"], t)
