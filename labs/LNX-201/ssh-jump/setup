@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: two private sshd servers (bastion and target), keys, known_hosts and a skeleton client config.
+set -eu
+cd "${LAB_DIR:-.}"
+pkill -f 'sshd -f .*/sshd_(bastion|target).conf' 2>/dev/null || true
+for f in bastion.pid target.pid; do [ -f "$f" ] && kill "$(cat "$f")" 2>/dev/null || true; done
+rm -rf keys sshd_bastion.conf sshd_target.conf bastion.log target.log known_hosts authorized_keys ssh_config bastion.pid target.pid
+mkdir -p keys /run/sshd
+chmod 700 keys
+ssh-keygen -q -t ed25519 -N '' -C lab-user -f keys/id_lab
+ssh-keygen -q -t ed25519 -N '' -f keys/host_bastion
+ssh-keygen -q -t ed25519 -N '' -f keys/host_target
+cp keys/id_lab.pub authorized_keys
+chmod 600 authorized_keys
+me=$(id -un)
+mk() {   # name address port forwarding
+  cat > "sshd_$1.conf" <<CONF
+# SPDX-License-Identifier: MIT
+ListenAddress $2
+Port $3
+HostKey $PWD/keys/host_$1
+PidFile $PWD/$1.pid
+AuthorizedKeysFile $PWD/authorized_keys
+StrictModes no
+UsePAM no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin yes
+AllowUsers $me
+AllowTcpForwarding $4
+LogLevel DEBUG1
+CONF
+  /usr/sbin/sshd -f "$PWD/sshd_$1.conf" -E "$PWD/$1.log" </dev/null >/dev/null 2>&1
+}
+mk bastion 127.0.0.1 2201 yes
+mk target 127.0.0.2 2202 no
+for _ in 1 2 3 4 5 6 7 8 9 10; do [ -s bastion.pid ] && [ -s target.pid ] && break; sleep 0.3; done
+{
+  printf '[127.0.0.1]:2201 %s\n' "$(cut -d' ' -f1,2 keys/host_bastion.pub)"
+  printf '[127.0.0.2]:2202 %s\n' "$(cut -d' ' -f1,2 keys/host_target.pub)"
+} > known_hosts
+cat > ssh_config <<CFG
+# SPDX-License-Identifier: MIT
+# Client configuration for this lab: use it with  ssh -F ssh_config target hostname
+# TODO: make "target" reachable through "bastion" and verify both host keys.
+Host bastion
+    HostName 127.0.0.1
+    Port 2201
+    User $me
+
+Host target
+    HostName 127.0.0.2
+    Port 2202
+    User $me
+CFG

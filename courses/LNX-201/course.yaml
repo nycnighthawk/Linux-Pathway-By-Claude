@@ -1,0 +1,196 @@
+id: LNX-201
+title: Linux Networking I
+summary: 'Networking on one Linux host: addressing and subnetting, the ip, ss and ethtool tools, persistent configuration
+  with NetworkManager, netplan and networkd, name resolution, routing, firewalls with nftables and firewalld, OpenSSH, packet-level
+  troubleshooting and an introduction to Wi-Fi and 802.1X.'
+hours: 50
+coverage: full
+outcomes:
+- Plan IPv4 and IPv6 subnets and read prefixes, masks and ranges
+- Inspect links, addresses, routes, neighbours and sockets with ip and ss
+- Configure interfaces persistently with NetworkManager, netplan or systemd-networkd
+- Control name resolution with the name service switch, hosts and systemd-resolved
+- Build static routes and a forwarding router, and recognise asymmetric routing
+- Write a default-drop policy with nftables and manage firewalld zones safely
+- Use OpenSSH keys, ProxyJump and port forwarding with strict host-key checking
+- Follow a layered method with mtr, dig and tcpdump to find where traffic fails
+- Describe 802.1X authentication and configure a client profile for it
+certifications:
+- cert: LFCS
+  objectives:
+  - D2
+- cert: LPIC1
+  objectives:
+  - '109.1'
+  - '109.2'
+  - '109.3'
+  - '109.4'
+  - '110.2'
+  - '110.3'
+- cert: LPLUS
+  objectives:
+  - D1
+  - D5
+- cert: RHCSA
+  objectives:
+  - D1
+  - D4
+  - D8
+  - D10
+modules:
+- id: addressing-and-tools
+  title: Addressing and the core tools
+  lessons:
+  - topic: LNX-201-T01
+    title: TCP/IP, IPv4/IPv6, subnetting
+    file: lessons/LNX-201-T01.md
+    minutes: 55
+  - topic: LNX-201-T02
+    title: ip, ss, ethtool
+    file: lessons/LNX-201-T02.md
+    minutes: 55
+- id: configuration-names-routing
+  title: Configuration, names and routing
+  lessons:
+  - topic: LNX-201-T03
+    title: NetworkManager/nmcli, netplan, networkd
+    file: lessons/LNX-201-T03.md
+    minutes: 55
+  - topic: LNX-201-T04
+    title: Name resolution, systemd-resolved
+    file: lessons/LNX-201-T04.md
+    minutes: 50
+  - topic: LNX-201-T05
+    title: Routing and multi-NIC hosts
+    file: lessons/LNX-201-T05.md
+    minutes: 55
+- id: security-and-troubleshooting
+  title: Filtering, remote access and troubleshooting
+  lessons:
+  - topic: LNX-201-T06
+    title: firewalld, nftables
+    file: lessons/LNX-201-T06.md
+    minutes: 60
+  - topic: LNX-201-T07
+    title: 'OpenSSH: keys, ProxyJump, forwarding'
+    file: lessons/LNX-201-T07.md
+    minutes: 55
+  - topic: LNX-201-T08
+    title: 'Troubleshooting: mtr, dig, tcpdump'
+    file: lessons/LNX-201-T08.md
+    minutes: 55
+  - topic: LNX-201-T09
+    title: Wi-Fi and 802.1X
+    file: lessons/LNX-201-T09.md
+    minutes: 30
+labs:
+- id: subnet-plan
+  topic: LNX-201-T01
+  title: Plan the address space of a small site
+  env: C
+  license: MIT
+  minutes: 35
+- id: listener-hunt
+  topic: LNX-201-T02
+  title: Find the mystery listener with ss and ip
+  env: C
+  license: MIT
+  minutes: 30
+  packages:
+  - iproute2
+  - python3
+- id: netplan-static
+  topic: LNX-201-T03
+  title: Render a static netplan file and an offline NetworkManager keyfile
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - netplan.io
+  - network-manager
+- id: name-lookup
+  topic: LNX-201-T04
+  title: Fix a hosts entry, the lookup order and a resolved drop-in
+  env: V
+  license: MIT
+  minutes: 35
+- id: route-through-router
+  topic: LNX-201-T05
+  title: Route between two networks through a forwarding router
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - iproute2
+  - iputils-ping
+- id: nft-input-policy
+  topic: LNX-201-T06
+  title: Write and load a default-drop input policy with nftables
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - nftables
+  - iproute2
+  - python3
+- id: ssh-jump
+  topic: LNX-201-T07
+  title: Reach a private host through a bastion with ProxyJump
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - openssh-server
+  - openssh-client
+- id: read-the-capture
+  topic: LNX-201-T08
+  title: Read a packet capture and name each failure
+  env: C
+  license: MIT
+  minutes: 35
+  packages:
+  - tcpdump
+  - python3
+- id: wifi-field-report
+  topic: LNX-201-T09
+  title: Field report on a wireless client
+  env: H
+  license: MIT
+  minutes: 30
+quizzes:
+- id: LNX-201-T01
+  topic: LNX-201-T01
+  title: 'Quiz: TCP/IP, IPv4/IPv6, subnetting'
+  file: quizzes/LNX-201-T01.yaml
+- id: LNX-201-T02
+  topic: LNX-201-T02
+  title: 'Quiz: ip, ss, ethtool'
+  file: quizzes/LNX-201-T02.yaml
+- id: LNX-201-T03
+  topic: LNX-201-T03
+  title: 'Quiz: NetworkManager/nmcli, netplan, networkd'
+  file: quizzes/LNX-201-T03.yaml
+- id: LNX-201-T04
+  topic: LNX-201-T04
+  title: 'Quiz: Name resolution, systemd-resolved'
+  file: quizzes/LNX-201-T04.yaml
+- id: LNX-201-T05
+  topic: LNX-201-T05
+  title: 'Quiz: Routing and multi-NIC hosts'
+  file: quizzes/LNX-201-T05.yaml
+- id: LNX-201-T06
+  topic: LNX-201-T06
+  title: 'Quiz: firewalld, nftables'
+  file: quizzes/LNX-201-T06.yaml
+- id: LNX-201-T07
+  topic: LNX-201-T07
+  title: 'Quiz: OpenSSH: keys, ProxyJump, forwarding'
+  file: quizzes/LNX-201-T07.yaml
+- id: LNX-201-T08
+  topic: LNX-201-T08
+  title: 'Quiz: Troubleshooting: mtr, dig, tcpdump'
+  file: quizzes/LNX-201-T08.yaml
+- id: LNX-201-T09
+  topic: LNX-201-T09
+  title: 'Quiz: Wi-Fi and 802.1X'
+  file: quizzes/LNX-201-T09.yaml

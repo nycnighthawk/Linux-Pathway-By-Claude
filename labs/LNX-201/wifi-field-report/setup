@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty field report to fill in on a machine with (or without) a wireless adapter.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f report.txt
+printf '# SPDX-License-Identifier: MIT\n# Field report: fill in each ? on the machine you inspect. See README.md for how to find each value.\nwifi_device=?\nrfkill_state=?\nregdomain=?\nsecurity_mode=?\neap_method=?\nserver_cert_validated=?\n' > report.txt

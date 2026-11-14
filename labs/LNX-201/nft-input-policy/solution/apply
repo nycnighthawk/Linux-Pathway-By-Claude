@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+cat > policy.nft <<'NFT'
+# SPDX-License-Identifier: MIT
+flush ruleset
+table inet lab {
+    chain input {
+        type filter hook input priority 10; policy drop;
+        iif lo accept
+        ct state established,related accept
+        ct state invalid drop
+        ip protocol icmp accept
+        ip6 nexthdr ipv6-icmp accept
+        tcp dport 8080 accept
+    }
+}
+NFT
+$SUDO ip netns exec lab-srv nft -f policy.nft

@@ -1,0 +1,72 @@
+title: 'Quiz: firewalld, nftables'
+questions:
+- id: all-chains
+  prompt: What happens to a packet that one base chain accepts and another on the same hook drops?
+  choices:
+  - It is accepted if the accepting chain has higher priority
+  - It is queued
+  - It is dropped, since every chain must accept
+  - It is accepted, first match wins
+  answer:
+  - 2
+  explain: All base chains on a hook are evaluated; a drop anywhere is final.
+- id: nft-check
+  prompt: What does nft -c -f file do?
+  choices:
+  - Compares it with the live ruleset
+  - Converts iptables rules
+  - Checks the file without applying it
+  - Loads it and flushes counters
+  answer:
+  - 2
+  explain: -c is a dry run that parses and validates.
+- id: atomic
+  prompt: What is true about loading a file with nft -f?
+  choices:
+  - It requires a reboot
+  - 'It is atomic: all commands take effect or none'
+  - Each rule is applied separately
+  - It restarts the network
+  answer:
+  - 1
+  explain: A failed file leaves the previous ruleset untouched.
+- id: runtime-permanent
+  prompt: What does firewall-cmd --add-service=https without --permanent change?
+  choices:
+  - Both
+  - Neither until reboot
+  - Only the running configuration
+  - Only the stored configuration
+  answer:
+  - 2
+  explain: Permanent and runtime are separate; --runtime-to-permanent copies one to the other.
+- id: timeout
+  prompt: Which firewall-cmd flag reverts a runtime change after a delay?
+  choices:
+  - --lockdown-on
+  - --check-config
+  - --timeout=<seconds>
+  - --panic-on
+  answer:
+  - 2
+  explain: A timeout is the safe way to test a risky rule remotely.
+- id: default-zone
+  prompt: Which zone does firewall-cmd use when --zone is omitted?
+  choices:
+  - public always
+  - trusted
+  - The default zone
+  - The zone of your interface
+  answer:
+  - 2
+  explain: Omitting --zone applies to the default zone, which may differ from your interface's zone.
+- id: inet-family
+  prompt: Why use the inet family in nftables?
+  choices:
+  - It is faster than ip
+  - It is required for NAT
+  - It adds stateful tracking
+  - One table covers IPv4 and IPv6
+  answer:
+  - 3
+  explain: inet processes both families with the same rules.

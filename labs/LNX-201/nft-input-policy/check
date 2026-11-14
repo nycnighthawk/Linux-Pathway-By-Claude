@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the live server namespace: ruleset shape, then real connections from the client namespace.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+$SUDO ip netns list 2>/dev/null | grep -q '^lab-srv' || { echo "FAIL: namespace lab-srv does not exist; run setup"; exit 1; }
+rs=$($SUDO ip netns exec lab-srv nft list ruleset 2>&1 | tr '\n' ' ' | tr -s ' ')
+printf '%s' "$rs" | grep -Eq 'hook input .*policy drop' && ok "an input chain with policy drop is loaded in lab-srv" || fail "load a base chain on the input hook with policy drop into lab-srv (ip netns exec lab-srv nft -f policy.nft)"
+printf '%s' "$rs" | grep -Eq 'ct state (established,related|related,established) accept' && ok "established and related traffic is accepted" || fail "accept ct state established,related"
+printf '%s' "$rs" | grep -Eq 'icmp' && ok "ICMP is handled" || fail "accept ICMP (and ICMPv6)"
+tryconn() {
+  $SUDO ip netns exec lab-cli python3 - "$1" <<'PY'
+import socket, sys
+s = socket.socket(); s.settimeout(2)
+try:
+    s.connect(("10.2.0.1", int(sys.argv[1]))); print("open")
+except Exception as e:
+    print("closed")
+PY
+}
+[ "$(tryconn 8080)" = open ] && ok "client reaches TCP 8080" || fail "the client cannot connect to TCP 8080"
+[ "$(tryconn 9090)" = closed ] && ok "TCP 9090 is blocked" || fail "TCP 9090 must not be reachable"
+if $SUDO ip netns exec lab-cli ping -c1 -W2 10.2.0.1 >/dev/null 2>&1; then ok "ping still works"; else fail "ping to the server fails (accept ICMP)"; fi
+exit $bad

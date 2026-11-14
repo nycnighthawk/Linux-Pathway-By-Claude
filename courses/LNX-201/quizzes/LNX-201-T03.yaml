@@ -1,0 +1,72 @@
+title: 'Quiz: NetworkManager/nmcli, netplan, networkd'
+questions:
+- id: one-owner
+  prompt: Why should exactly one tool manage an interface?
+  choices:
+  - It saves memory
+  - Two managers overwrite each other's addresses and routes
+  - Only one tool can read YAML
+  - The kernel allows one manager
+  answer:
+  - 1
+  explain: Competing managers fight over the same state, giving settings that change by themselves.
+- id: netplan-try
+  prompt: Which command applies a netplan change and rolls it back unless you confirm?
+  choices:
+  - netplan generate
+  - netplan get
+  - netplan try
+  - netplan apply
+  answer:
+  - 2
+  explain: try applies, then reverts after a timeout without confirmation.
+- id: nmcli-modify
+  prompt: After nmcli connection modify, what makes the change take effect on a running link?
+  choices:
+  - Nothing, it is immediate
+  - Rebooting only
+  - nmcli device delete
+  - nmcli connection up <profile>
+  answer:
+  - 3
+  explain: modify edits the stored profile; reactivating it applies the change.
+- id: netplan-root
+  prompt: How do you render netplan into a scratch directory without touching the host?
+  choices:
+  - netplan set DIR
+  - netplan generate --root-dir DIR
+  - netplan apply --dry-run
+  - netplan try --root DIR
+  answer:
+  - 1
+  explain: --root-dir makes generate read and write below that directory.
+- id: keyfile-perm
+  prompt: What ownership and mode must NetworkManager keyfiles have?
+  choices:
+  - root, 0600
+  - any owner, 0644
+  - root, 0666
+  - user, 0700
+  answer:
+  - 0
+  explain: Profiles may contain secrets, so NetworkManager refuses files with open permissions.
+- id: networkd-order
+  prompt: Which .network file does systemd-networkd use for a link?
+  choices:
+  - The first matching file in lexical order
+  - All matching files merged
+  - The last one
+  - The newest one
+  answer:
+  - 0
+  explain: Files are sorted by name and the first with a matching [Match] wins.
+- id: networkctl
+  prompt: Which command shows the state systemd-networkd applied to eth0?
+  choices:
+  - nmcli device show eth0
+  - ip rule
+  - netplan status eth0 --raw
+  - networkctl status eth0
+  answer:
+  - 3
+  explain: networkctl status lists addresses, gateway, DNS and the unit that matched.
