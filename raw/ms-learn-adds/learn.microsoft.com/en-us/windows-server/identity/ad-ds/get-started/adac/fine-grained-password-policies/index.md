@@ -1,5 +1,5 @@
 ---
-{"title": "Configure fine grained password policies for Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/adac/fine-grained-password-policies", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Configure fine grained password policies for Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/adac/fine-grained-password-policies", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Configure fine grained password policies for Active Directory Domain Services
@@ -132,7 +132,29 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Password policy changes aren\'t applied - Windows Server](/en-us/troubleshoot/windows-server/group-policy/password-policy-changes-not-applied?source=recommendations)
+
+    Provides a solution to an issue where the changes aren\'t applied as expected when you change the password policy.
+
+-   [Redirect users and computers containers - Windows Server](/en-us/troubleshoot/windows-server/active-directory/redirect-users-computers-containers?source=recommendations)
+
+    Describes how to use redirusr and redircmp to redirect user, computer, and group accounts in Active Directory domains.
+
+-   [Enable Active Directory Recycle Bin in Windows Server](/en-us/windows-server/identity/ad-ds/get-started/adac/active-directory-recycle-bin?source=recommendations)
+
+    Learn how to enable Active Directory Recycle Bin and restore deleted objects in Active Directory Domain Services on Windows Server.
+
+Training
+
+Module
+
+[Create and configure Group Policy Objects in Active Directory - Training](/en-us/training/modules/create-configure-group-policy-objects-active-directory/?source=recommendations)
+
+This module focuses on Group Policy objects, including using them to enforce a robust password policy.
 
 ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 ---
-{"title": "Upgrade domain controllers to a newer version of Windows Server", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/upgrade-domain-controllers", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Upgrade domain controllers to a newer version of Windows Server", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/upgrade-domain-controllers", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Upgrade domain controllers to a newer version of Windows Server

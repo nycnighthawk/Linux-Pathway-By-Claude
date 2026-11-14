@@ -1,5 +1,5 @@
 ---
-{"title": "journalctl(1) — Linux manual page", "url": "https://man7.org/linux/man-pages/man1/journalctl.1.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "journalctl(1) — Linux manual page", "url": "https://man7.org/linux/man-pages/man1/journalctl.1.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # journalctl(1) --- Linux manual page

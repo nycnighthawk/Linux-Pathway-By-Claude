@@ -1,5 +1,5 @@
 ---
-{"title": "CA Backup and Restore Windows PowerShell cmdlets", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/ca-backup-and-restore-windows-powershell-cmdlets", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "CA Backup and Restore Windows PowerShell cmdlets", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/ca-backup-and-restore-windows-powershell-cmdlets", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # CA Backup and Restore Windows PowerShell cmdlets

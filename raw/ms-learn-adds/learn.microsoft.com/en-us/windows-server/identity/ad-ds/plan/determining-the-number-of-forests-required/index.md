@@ -1,5 +1,5 @@
 ---
-{"title": "Determining the Number of Forests Required", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/determining-the-number-of-forests-required", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Determining the Number of Forests Required", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/determining-the-number-of-forests-required", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Determining the Number of Forests Required

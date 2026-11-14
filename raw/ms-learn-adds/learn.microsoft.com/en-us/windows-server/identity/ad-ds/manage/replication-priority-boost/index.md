@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Domain Services Replication Priority Boost", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/replication-priority-boost", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Domain Services Replication Priority Boost", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/replication-priority-boost", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Domain Services Replication Priority Boost
@@ -144,51 +144,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Active Directory Replication Concepts](/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts?source=recommendations)
-
-    Learn more about: Active Directory Replication Concepts
-
--   [Troubleshooting Active Directory Replication Problems](/en-us/windows-server/identity/ad-ds/manage/troubleshoot/troubleshooting-active-directory-replication-problems?source=recommendations)
-
-    Learn more about: Troubleshooting Active Directory Replication Problems
-
--   [Advanced Active Directory Replication and Topology Management Using Windows PowerShell (Level 200)](/en-us/windows-server/identity/ad-ds/manage/powershell/advanced-active-directory-replication-and-topology-management-using-windows-powershell--level-200-?source=recommendations)
-
-    Learn more about: Advanced Active Directory Replication and Topology Management Using Windows PowerShell (Level 200)
-
--   [Prevent KCC from creating replication topology - Windows Server](/en-us/troubleshoot/windows-server/active-directory/disable-knowledge-consistency-checker-automatic-generation?source=recommendations)
-
-    Describes how to disable the Knowledge Consistency Checker functions that generate replication topology information for Active Directory Domain Services.
-
--   [Managing RID Issuance](/en-us/windows-server/identity/ad-ds/manage/managing-rid-issuance?source=recommendations)
-
-    Learn more about: Managing RID Issuance
-
--   [Locating Active Directory Domain Controllers in Windows and Windows Server](/en-us/windows-server/identity/ad-ds/manage/dc-locator?source=recommendations)
-
-    Learn how domain controllers are located in Windows and Windows Server using the DC locator algorithm.
-
--   [Duplicate Active Directory replication connections are created - Windows Server](/en-us/troubleshoot/windows-server/active-directory/duplicate-active-directory-replication-connections?source=recommendations)
-
-    Provides a solution to an issue where duplicate Active Directory replication connections are created for one or more domain controllers across one or more sites.
-
-Training
-
-Module
-
-[Active Directory Domain Services migration - Training](/en-us/training/modules/active-directory-domain-services-migration/?source=recommendations)
-
-Determine the best approach to moving domain controllers to Windows Server 2025.
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

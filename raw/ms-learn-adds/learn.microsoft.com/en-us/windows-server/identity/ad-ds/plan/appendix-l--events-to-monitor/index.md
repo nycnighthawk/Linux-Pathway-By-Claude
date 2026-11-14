@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix L: Events to monitor", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/appendix-l--events-to-monitor", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix L: Events to monitor", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/appendix-l--events-to-monitor", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix L: Events to monitor
@@ -419,8 +419,6 @@ Run `wevtutil gp Microsoft-Windows-Security-Auditing /ge /gm:true` to get a deta
 ## See also {#see-also .heading-anchor}
 
 For more information about Windows security event IDs and their meanings, see the Microsoft Support article [Basic security audit policy settings](/en-us/windows/security/threat-protection/auditing/basic-security-audit-policy-settings). You can also download [Windows security audit events](https://www.microsoft.com/en-us/download/details.aspx?id=50034), which provide detailed event information for the referenced operating systems in spreadsheet format.
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

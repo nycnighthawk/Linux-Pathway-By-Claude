@@ -1,5 +1,5 @@
 ---
-{"title": "Deploying AD DS in a New Organization", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/deploying-ad-ds-in-a-new-organization", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Deploying AD DS in a New Organization", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/deploying-ad-ds-in-a-new-organization", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Deploying AD DS in a New Organization
@@ -11,6 +11,8 @@ Thoroughly preparing your Active Directory Domain Services (AD DS) design is ess
 The following illustration shows the steps for deploying Windows Server 2008 AD DS in a network environment that is currently operating without a directory service.
 
 For a list of detailed tasks that you can use to plan and deploy AD DS in a new organization, see [Checklist: Deploying AD DS in a New Organization](/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc725897(v=ws.10)).
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 ---
-{"title": "capget(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/capget.2.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "capget(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/capget.2.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # capget(2) --- Linux manual page

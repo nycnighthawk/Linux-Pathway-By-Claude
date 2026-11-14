@@ -1,5 +1,5 @@
 ---
-{"title": "Finding Additional Resources for Windows Server 2008 Active Directory Site Topology Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/finding-additional-resources-for-windows-server-2008-active-directory-site-topology-design", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Finding Additional Resources for Windows Server 2008 Active Directory Site Topology Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/finding-additional-resources-for-windows-server-2008-active-directory-site-topology-design", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Finding Additional Resources for Windows Server 2008 Active Directory Site Topology Design
@@ -40,6 +40,8 @@ You can find the following documentation about Active Directory Domain Services 
 
 -   For information about how to deploy an RODC, see the [Read-Only Domain Controllers Step-by-Step Guide](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc772234(v=ws.10)).
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -54,43 +56,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Creating a Site Link Bridge Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-bridge-design?source=recommendations)
-
-    Learn more about: Creating a Site Link Bridge Design
-
--   [Creating a Site Link Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-design?source=recommendations)
-
-    Learn more about: Creating a Site Link Design
-
--   [Creating a Site Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-site-design?source=recommendations)
-
-    Learn more about: Creating a Site Design
-
--   [Appendix A - Locations and Subnet Prefixes](/en-us/windows-server/identity/ad-ds/plan/appendix-a--locations-and-subnet-prefixes?source=recommendations)
-
-    Learn more about: Appendix A: Locations and Subnet Prefixes
-
--   [Active Directory Replication Concepts](/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts?source=recommendations)
-
-    Learn more about: Active Directory Replication Concepts
-
-Training
-
-Module
-
-[Deploy and manage Active Directory Domain Services domain controllers - Training](/en-us/training/modules/deploy-manage-active-directory-domain-services-domain-controllers/?source=recommendations)
-
-This module introduces you to the topology of domain controllers within an Active Directory environment. It also starts you down the path of deploying, managing, and migrating a domain controller between servers.
-
-Certification
-
-[Microsoft Certified: Windows Server Administrator Associate - Certifications](/en-us/credentials/certifications/windows-server-hybrid-administrator/?source=recommendations)
-
-As a Windows Server administrator, you integrate Windows Server environments with Azure services and manage Windows Server in on-premises networks.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

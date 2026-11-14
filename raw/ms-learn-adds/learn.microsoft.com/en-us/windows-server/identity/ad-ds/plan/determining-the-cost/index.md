@@ -1,5 +1,5 @@
 ---
-{"title": "Determining the Cost", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/determining-the-cost", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Determining the Cost", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/determining-the-cost", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Determining the Cost
@@ -44,8 +44,6 @@ Use the following table to calculate the cost of each site link based on wide ar
   4,096                        283
 
 These costs don\'t reflect differences in reliability between network links. Set higher costs on any failure-prone network links so that you don\'t have to rely on those links for replication. By setting higher site link costs, you can control replication failover when a site link fails.
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

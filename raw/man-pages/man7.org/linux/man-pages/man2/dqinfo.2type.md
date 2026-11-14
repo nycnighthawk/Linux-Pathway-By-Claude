@@ -1,5 +1,5 @@
 ---
-{"title": "dqinfo(2type) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/dqinfo.2type.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "dqinfo(2type) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/dqinfo.2type.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # dqinfo(2type) --- Linux manual page

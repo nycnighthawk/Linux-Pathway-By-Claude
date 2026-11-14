@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix I: Creating Management Accounts for Protected Accounts and Groups in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/appendix-i--creating-management-accounts-for-protected-accounts-and-groups-in-active-directory", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix I: Creating Management Accounts for Protected Accounts and Groups in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/appendix-i--creating-management-accounts-for-protected-accounts-and-groups-in-active-directory", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix I: Creating Management Accounts for Protected Accounts and Groups in Active Directory
@@ -340,55 +340,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Appendix G - Securing Administrators Groups in Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-g--securing-administrators-groups-in-active-directory?source=recommendations)
-
-    Learn more about: Appendix G: Securing Administrators Groups in Active Directory
-
--   [Appendix E - Securing Enterprise Admins Groups in Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-e--securing-enterprise-admins-groups-in-active-directory?source=recommendations)
-
-    Learn more about: Appendix E: Securing Enterprise Admins Groups in Active Directory
-
--   [Appendix F - Securing Domain Admins Groups in Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-f--securing-domain-admins-groups-in-active-directory?source=recommendations)
-
-    Learn more about: Appendix F: Securing Domain Admins Groups in Active Directory
-
--   [Active Directory Privileged Accounts and Groups Guide](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-b--privileged-accounts-and-groups-in-active-directory?source=recommendations)
-
-    Discover Active Directory privileged accounts and groups including Enterprise Admins, Domain Admins, and built-in security groups. Learn rights, permissions, and security best practices for AD administration.
-
--   [Appendix H - Securing Local Administrator Accounts and Groups](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-h--securing-local-administrator-accounts-and-groups?source=recommendations)
-
-    Learn more about: Appendix H: Securing Local Administrator Accounts and Groups
-
--   [Implementing Least-Privilege Administrative Models](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-least-privilege-administrative-models?source=recommendations)
-
-    Learn more about: Implementing Least-Privilege Administrative Models
-
--   [Appendix D - Securing Built-In Administrator Accounts in Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-d--securing-built-in-administrator-accounts-in-active-directory?source=recommendations)
-
-    Learn more about: Appendix D: Securing Built-In Administrator Accounts in Active Directory
-
--   [Implementing Secure Administrative Hosts](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-secure-administrative-hosts?source=recommendations)
-
-    Learn more about: Implementing Secure Administrative Hosts
-
-Training
-
-Module
-
-[Secure Windows Server user accounts - Training](/en-us/training/modules/secure-windows-server-user-accounts/?source=recommendations)
-
-Learn how to secure Active Directory user accounts using least privilege, Protected Users group, authentication policy silos, Windows Defender Credential Guard, NTLM blocking, and account remediation techniques.
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

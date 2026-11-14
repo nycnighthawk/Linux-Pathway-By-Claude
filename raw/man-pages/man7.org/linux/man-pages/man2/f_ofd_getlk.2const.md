@@ -1,5 +1,5 @@
 ---
-{"title": "fcntl_locking(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/f_ofd_getlk.2const.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "fcntl_locking(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/f_ofd_getlk.2const.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # fcntl_locking(2) --- Linux manual page

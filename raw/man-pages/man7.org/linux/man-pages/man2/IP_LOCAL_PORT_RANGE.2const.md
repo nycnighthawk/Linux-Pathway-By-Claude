@@ -1,5 +1,5 @@
 ---
-{"title": "IP_LOCAL_PORT_RANGE(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/IP_LOCAL_PORT_RANGE.2const.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "IP_LOCAL_PORT_RANGE(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/IP_LOCAL_PORT_RANGE.2const.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # IP_LOCAL_PORT_RANGE(2const) --- Linux manual page

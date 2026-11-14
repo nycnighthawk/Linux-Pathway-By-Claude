@@ -1,5 +1,5 @@
 ---
-{"title": "Service Administrator Scope of Authority", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/service-administrator-scope-of-authority", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Service Administrator Scope of Authority", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/service-administrator-scope-of-authority", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Service Administrator Scope of Authority
@@ -46,7 +46,55 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Determining the Number of Forests Required](/en-us/windows-server/identity/ad-ds/plan/determining-the-number-of-forests-required?source=recommendations)
+
+    Learn more about: Determining the Number of Forests Required
+
+-   [Identifying the Deployment Project Participants](/en-us/windows-server/identity/ad-ds/plan/identifying-the-deployment-project-participants?source=recommendations)
+
+    Learn more about: Identifying the Deployment Project Participants
+
+-   [Creating a Forest Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-forest-design?source=recommendations)
+
+    Learn more about: Creating a Forest Design
+
+-   [Identifying Forest Design Requirements](/en-us/windows-server/identity/ad-ds/plan/identifying-forest-design-requirements?source=recommendations)
+
+    Learn more about: Identifying Forest Design Requirements
+
+-   [Understanding the Active Directory Logical Model](/en-us/windows-server/identity/ad-ds/plan/understanding-the-active-directory-logical-model?source=recommendations)
+
+    Learn more about: Understanding the Active Directory Logical Model
+
+-   [Forest Design Models](/en-us/windows-server/identity/ad-ds/plan/forest-design-models?source=recommendations)
+
+    Learn more about: Forest Design Models
+
+-   [Reviewing the Domain Models](/en-us/windows-server/identity/ad-ds/plan/reviewing-the-domain-models?source=recommendations)
+
+    Learn more about: Reviewing the Domain Models
+
+-   [Autonomy vs. Isolation](/en-us/windows-server/identity/ad-ds/plan/autonomy-vs.-isolation?source=recommendations)
+
+    Learn more about: Autonomy vs. Isolation
+
+Training
+
+Module
+
+[Manage advanced features of AD DS - Training](/en-us/training/modules/manage-advanced-features-of-ad-ds/?source=recommendations)
+
+Learn how to create trust relationships between AD DS forests and domains, implement Enhanced Security Administrative Environment (ESAE) forests, monitor and troubleshoot AD DS replication, and create custom AD DS partitions.
+
+Certification
+
+[Microsoft Certified: Information Security Administrator Associate - Certifications](/en-us/credentials/certifications/information-security-administrator/?source=recommendations)
+
+As an Information Security Administrator, you plan and implement information security of sensitive data by using Microsoft Purview and related services.
 
 ------------------------------------------------------------------------
 

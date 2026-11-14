@@ -1,5 +1,5 @@
 ---
-{"title": "Introduction to Active Directory Replication and Topology Management Using Windows PowerShell (Level 100)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/powershell/introduction-to-active-directory-replication-and-topology-management-using-windows-powershell--level-100-", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Introduction to Active Directory Replication and Topology Management Using Windows PowerShell (Level 100)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/powershell/introduction-to-active-directory-replication-and-topology-management-using-windows-powershell--level-100-", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Introduction to Active Directory Replication and Topology Management Using Windows PowerShell (Level 100)

@@ -1,5 +1,5 @@
 ---
-{"title": "How to configure SPN", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/how-to-configure-spn", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "How to configure SPN", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/how-to-configure-spn", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # How to configure SPN
@@ -132,6 +132,8 @@ For users who aren\'t part of the Domain Admins or Enterprise Admins group, they
 -   [Service Logons Fail Due to Incorrectly Set SPNs](/en-us/previous-versions/windows/it-pro/windows-server-2003/cc772897(v=ws.10))
 
 -   [SetSPN command reference](/en-us/windows-server/administration/windows-commands/setspn)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 ---
-{"title": "Linux manual pages: section 2", "url": "https://man7.org/linux/man-pages/dir_section_2.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "Linux manual pages: section 2", "url": "https://man7.org/linux/man-pages/dir_section_2.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # Linux manual pages: section 2

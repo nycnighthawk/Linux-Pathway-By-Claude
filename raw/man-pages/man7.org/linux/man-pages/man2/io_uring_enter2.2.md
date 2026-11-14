@@ -1,5 +1,5 @@
 ---
-{"title": "io_uring_enter2(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/io_uring_enter2.2.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "io_uring_enter2(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/io_uring_enter2.2.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # io_uring_enter2(2) --- Linux manual page

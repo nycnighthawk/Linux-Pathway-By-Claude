@@ -1,5 +1,5 @@
 ---
-{"title": "Virtualized Domain Controller Deployment and Configuration", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/virtualized-domain-controller-deployment-and-configuration", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Virtualized Domain Controller Deployment and Configuration", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/virtualized-domain-controller-deployment-and-configuration", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Virtualized Domain Controller Deployment and Configuration
@@ -905,8 +905,6 @@ Remove-VMSnapshot
 Rename-VMSnapshot
 Restore-VMSnapshot
 ```
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

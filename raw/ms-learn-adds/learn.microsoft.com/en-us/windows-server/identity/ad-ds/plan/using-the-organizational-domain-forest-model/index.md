@@ -1,5 +1,5 @@
 ---
-{"title": "Using the Organizational Domain Forest Model", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/using-the-organizational-domain-forest-model", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Using the Organizational Domain Forest Model", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/using-the-organizational-domain-forest-model", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Using the Organizational Domain Forest Model
@@ -58,6 +58,8 @@ All domain owners must be aware that if any of these conditions change in the fu
 Note
 
 Another way to minimize security risks to a Windows Server 2008 Active Directory domain is to employ administrator role separation, which requires the deployment of a read-only domain controller (RODC) in your Active Directory infrastructure. An RODC is a new type of domain controller in the Windows Server 2008 operating system that hosts read-only partitions of the Active Directory database. Before the release of Windows Server 2008 , any server maintenance work on a domain controller had to be performed by a domain administrator. In Windows Server 2008 , you can delegate local administrative permissions for an RODC to any domain user without granting that user any administrative rights for the domain or other domain controllers. This permits the delegated user to log on to an RODC and perform maintenance work, such as upgrading a driver, on the server. However, this delegated user cannot log on to any other domain controller or perform any other administrative task in the domain. In this way, any trusted user can be delegated the ability to effectively manage the RODC without compromising the security of the rest of the domain. For more information about RODCs, see [AD DS: Read-Only Domain Controllers](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc732801(v=ws.10)).
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

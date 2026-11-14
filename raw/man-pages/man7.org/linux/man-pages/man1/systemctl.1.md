@@ -1,5 +1,5 @@
 ---
-{"title": "systemctl(1) — Linux manual page", "url": "https://man7.org/linux/man-pages/man1/systemctl.1.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "systemctl(1) — Linux manual page", "url": "https://man7.org/linux/man-pages/man1/systemctl.1.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # systemctl(1) --- Linux manual page

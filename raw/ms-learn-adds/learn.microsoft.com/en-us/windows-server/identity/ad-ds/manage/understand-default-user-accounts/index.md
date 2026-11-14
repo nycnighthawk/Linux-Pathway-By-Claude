@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-default-user-accounts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-default-user-accounts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory accounts
@@ -480,8 +480,6 @@ In addition, installed applications and management agents on domain controllers 
 -   [Security principals](understand-security-principals)
 -   [Access control overview](/en-us/windows/security/identity-protection/access-control/access-control)
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -496,7 +494,51 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Active Directory Security Groups](/en-us/windows-server/identity/ad-ds/manage/understand-security-groups?source=recommendations)
+
+    Become familiar with Windows Server Active Directory security groups, group scope, and group functions. See information on groups, such as members and rights.
+
+-   [Security Principals](/en-us/windows-server/identity/ad-ds/manage/understand-security-principals?source=recommendations)
+
+    This article discusses security principals for Windows Server accounts and security groups and how they work in Active Directory.
+
+-   [Manage User Accounts with Active Directory Users and Computers in Windows Server](/en-us/windows-server/identity/ad-ds/manage-user-accounts-in-windows-server?source=recommendations)
+
+    Create, delete, and manage user accounts in Active Directory Users and Computers. Learn how to manage user account properties, group memberships, and passwords.
+
+-   [Active Directory domain join permissions in Windows Server](/en-us/windows-server/identity/ad-ds/manage/active-directory-domain-join-permissions?source=recommendations)
+
+    This article describes the permissions required in Active Directory to successfully join computers to a Windows Server domain using a new computer account or an existing account.
+
+-   [Active Directory Privileged Accounts and Groups Guide](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-b--privileged-accounts-and-groups-in-active-directory?source=recommendations)
+
+    Discover Active Directory privileged accounts and groups including Enterprise Admins, Domain Admins, and built-in security groups. Learn rights, permissions, and security best practices for AD administration.
+
+-   [Join a computer to a domain](/en-us/windows-server/identity/ad-ds/manage/join-computer-to-domain?source=recommendations)
+
+    Learn how to add a client computer or server device to a domain in Windows Server.
+
+-   [Delegation of Control in AD DS on Windows Server](/en-us/windows-server/identity/ad-ds/manage/delegation-control-wizard?source=recommendations)
+
+    Learn how to delegate administrative control in Active Directory Domain Services on Windows Server.
+
+Training
+
+Module
+
+[Secure Windows Server user accounts - Training](/en-us/training/modules/secure-windows-server-user-accounts/?source=recommendations)
+
+Learn how to secure Active Directory user accounts using least privilege, Protected Users group, authentication policy silos, Windows Defender Credential Guard, NTLM blocking, and account remediation techniques.
+
+Certification
+
+[Microsoft Certified: Information Security Administrator Associate - Certifications](/en-us/credentials/certifications/information-security-administrator/?source=recommendations)
+
+As an Information Security Administrator, you plan and implement information security of sensitive data by using Microsoft Purview and related services.
 
 ------------------------------------------------------------------------
 

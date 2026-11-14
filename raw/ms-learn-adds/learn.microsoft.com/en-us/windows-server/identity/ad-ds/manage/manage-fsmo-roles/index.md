@@ -1,5 +1,5 @@
 ---
-{"title": "Transfer Flexible Single Master Operations roles", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/manage-fsmo-roles", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Transfer Flexible Single Master Operations roles", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/manage-fsmo-roles", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Transfer Flexible Single Master Operations roles
@@ -195,6 +195,8 @@ To transfer the Infrastructure Master role, follow these steps.
 
 If the domain controller that currently holds the Infrastructure Master role has failed, you can use the `Move-ADDirectoryServerOperationMasterRole` with the **Force** parameter to seize the role and move it to a functional domain controller.
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -209,51 +211,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Flexible Single Master Operations roles in Windows Server](/en-us/windows-server/identity/ad-ds/manage/understand-fsmo-roles?source=recommendations)
-
-    Learn about the Flexible Single Master Operations (FSMO) roles in Active Directory Domain Services (AD DS) and how to place them effectively.
-
--   [View and transfer FSMO roles - Windows Server](/en-us/troubleshoot/windows-server/active-directory/view-transfer-fsmo-roles?source=recommendations)
-
-    Describes how to view and transfer FSMO roles.
-
--   [Transfer or seize Operation Master roles - Windows Server](/en-us/troubleshoot/windows-server/active-directory/transfer-or-seize-operation-master-roles-in-ad-ds?source=recommendations)
-
-    Describes how you can use the Ntdsutil.exe utility to move or to seize Operation Master roles, formerly known as Flexible Single Master Operations (FSMO) roles.
-
--   [Managing RID Issuance](/en-us/windows-server/identity/ad-ds/manage/managing-rid-issuance?source=recommendations)
-
-    Learn more about: Managing RID Issuance
-
--   [Troubleshoot domain controller deployment - Windows Server](/en-us/troubleshoot/windows-server/active-directory/troubleshoot-domain-controller-deployment?source=recommendations)
-
-    Provides information about troubleshooting domain controller deployment.
-
--   [Flexible Single-Master Operation (FSMO) placement and optimization on AD DCs - Windows Server](/en-us/troubleshoot/windows-server/active-directory/fsmo-placement-and-optimization-on-ad-dcs?source=recommendations)
-
-    Certain operations are optimally done on a single domain controller. Describes how Active Directory FSMO roles are positioned in both the forest and the domain for these operations.
-
--   [Locating Active Directory Domain Controllers in Windows and Windows Server](/en-us/windows-server/identity/ad-ds/manage/dc-locator?source=recommendations)
-
-    Learn how domain controllers are located in Windows and Windows Server using the DC locator algorithm.
-
-Training
-
-Module
-
-[Manage AD DS domain controllers and FSMO roles - Training](/en-us/training/modules/manage-active-directory-domain-services-flexible-single-master-operation-roles/?source=recommendations)
-
-Learn how to deploy and manage AD DS domain controllers, maintain availability with backup and recovery, manage the global catalog role, and transfer or seize FSMO roles including schema master, domain-naming master, RID master, infrastructure master, and PDC emulator.
-
-Certification
-
-[Microsoft Certified: Windows Server Administrator Associate - Certifications](/en-us/credentials/certifications/windows-server-hybrid-administrator/?source=recommendations)
-
-As a Windows Server administrator, you integrate Windows Server environments with Azure services and manage Windows Server in on-premises networks.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

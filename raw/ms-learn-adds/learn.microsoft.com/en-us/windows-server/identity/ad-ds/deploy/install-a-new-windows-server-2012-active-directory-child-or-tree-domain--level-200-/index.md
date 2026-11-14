@@ -1,5 +1,5 @@
 ---
-{"title": "Install a New Windows Server 2012 Active Directory Child or Tree Domain (Level 200)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/install-a-new-windows-server-2012-active-directory-child-or-tree-domain--level-200-", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Install a New Windows Server 2012 Active Directory Child or Tree Domain (Level 200)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/install-a-new-windows-server-2012-active-directory-child-or-tree-domain--level-200-", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Install a New Windows Server 2012 Active Directory Child or Tree Domain (Level 200)

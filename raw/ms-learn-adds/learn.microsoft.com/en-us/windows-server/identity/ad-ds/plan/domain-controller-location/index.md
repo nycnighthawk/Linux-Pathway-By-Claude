@@ -1,5 +1,5 @@
 ---
-{"title": "Domain Controller Location", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/domain-controller-location", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Domain Controller Location", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/domain-controller-location", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Domain Controller Location
@@ -24,7 +24,45 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Active Directory-Integrated DNS Zones](/en-us/windows-server/identity/ad-ds/plan/active-directory-integrated-dns-zones?source=recommendations)
+
+    Learn more about: Active Directory-Integrated DNS Zones
+
+-   [DNS for AD DS Owner Role](/en-us/windows-server/identity/ad-ds/deploy/assigning-the-dns-for-ad-ds-owner-role?source=recommendations)
+
+    Information about the DNS for AD DS Owner role.
+
+-   [Appendix A - DNS Inventory](/en-us/windows-server/identity/ad-ds/plan/appendix-a--dns-inventory?source=recommendations)
+
+    Learn more about: Appendix A: DNS Inventory
+
+-   [Integrating AD DS into an Existing DNS Infrastructure](/en-us/windows-server/identity/ad-ds/plan/integrating-ad-ds-into-an-existing-dns-infrastructure?source=recommendations)
+
+    Learn more about: Integrating AD DS into an Existing DNS Infrastructure
+
+-   [Creating a DNS Infrastructure Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-dns-infrastructure-design?source=recommendations)
+
+    Learn more about: Creating a DNS Infrastructure Design
+
+-   [Computer Naming](/en-us/windows-server/identity/ad-ds/plan/computer-naming?source=recommendations)
+
+    Learn more about: Computer Naming
+
+-   [DNS and AD DS](/en-us/windows-server/identity/ad-ds/plan/dns-and-ad-ds?source=recommendations)
+
+    Learn more about: DNS and AD DS
+
+Training
+
+Module
+
+[Manage AD DS domain controllers and FSMO roles - Training](/en-us/training/modules/manage-active-directory-domain-services-flexible-single-master-operation-roles/?source=recommendations)
+
+Learn how to deploy and manage AD DS domain controllers, maintain availability with backup and recovery, manage the global catalog role, and transfer or seize FSMO roles including schema master, domain-naming master, RID master, infrastructure master, and PDC emulator.
 
 ------------------------------------------------------------------------
 

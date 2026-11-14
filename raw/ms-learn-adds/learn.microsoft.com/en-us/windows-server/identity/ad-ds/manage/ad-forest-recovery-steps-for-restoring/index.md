@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Forest Recovery - Steps to restore the forest", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/ad-forest-recovery-steps-for-restoring", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Forest Recovery - Steps to restore the forest", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/ad-forest-recovery-steps-for-restoring", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Forest Recovery - Steps to restore the forest
@@ -45,8 +45,6 @@ The steps in this guide are designed to minimize the possibility of reintroducin
 -   [AD Forest Recovery - Redeploy remaining DCs](ad-forest-recovery-restore-additional-dcs)
 -   [AD Forest Recovery - Virtualization](ad-forest-recovery-virtualization)
 -   [AD Forest Recovery - Cleanup](ad-forest-recovery-cleanup)
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

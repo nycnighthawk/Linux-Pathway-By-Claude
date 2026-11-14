@@ -1,5 +1,5 @@
 ---
-{"title": "Designing the Logical Structure", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/designing-the-logical-structure", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Designing the Logical Structure", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/designing-the-logical-structure", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Designing the Logical Structure
@@ -45,8 +45,6 @@ When you design an Active Directory logical structure before you deploy AD DS, y
 -   [Creating an Organizational Unit Design](creating-an-organizational-unit-design)
 
 -   [Appendix A: DNS Inventory](appendix-a--dns-inventory)
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

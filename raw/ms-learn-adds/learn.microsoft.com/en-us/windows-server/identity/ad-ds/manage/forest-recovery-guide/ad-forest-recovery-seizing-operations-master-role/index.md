@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Forest Recovery - Seize an operations master role", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-seizing-operations-master-role", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Forest Recovery - Seize an operations master role", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-seizing-operations-master-role", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Forest Recovery - Seize an operations master role
@@ -105,7 +105,51 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Transfer or seize Operation Master roles - Windows Server](/en-us/troubleshoot/windows-server/active-directory/transfer-or-seize-operation-master-roles-in-ad-ds?source=recommendations)
+
+    Describes how you can use the Ntdsutil.exe utility to move or to seize Operation Master roles, formerly known as Flexible Single Master Operations (FSMO) roles.
+
+-   [Active Directory Forest Recovery - Performing a nonauthoritative restore of Active Directory Domain Services](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-perform-nonauthoritative-restore?source=recommendations)
+
+    The following procedures use the wbadmin.exe to perform a nonauthoritative restore of Active Directory or Active Directory Domain Services (AD DS). If you\'re using a different backup solution or if you intend to complete the authoritative restore of SYSVOL later in the forest recovery process\...
+
+-   [AD Forest Recovery - Adding the GC](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-add-gc?source=recommendations)
+
+    Learn more about: AD Forest Recovery - Adding the GC
+
+-   [AD Forest Recovery - Cleaning metadata of removed writable domain controllers](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-cleaning-metadata-of-removed-dcs?source=recommendations)
+
+    Metadata cleanup removes Active Directory data that identifies a DC to the replication system. Note that outside of a Forest Recovery, metadata cleanup is part of the demotion process of domain controllers, however, when they aren\'t reachable anymore, this process also applies. Use the following procedure to delete the DC objects for DCs that you plan to add back to the network by reinstalling AD DS.
+
+-   [Transfer and seize FSMO roles - Windows Server](/en-us/troubleshoot/windows-server/active-directory/fsmo-transfer-seizure-process?source=recommendations)
+
+    Describes how to transfer and seize Flexible Single Master Operations (FSMO) roles.
+
+-   [AD Forest Recovery - Configure DNS Server service](/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-configure-dns?source=recommendations)
+
+    Learn more about: AD Forest Recovery - Configuring the DNS Server service
+
+-   [View and transfer FSMO roles - Windows Server](/en-us/troubleshoot/windows-server/active-directory/view-transfer-fsmo-roles?source=recommendations)
+
+    Describes how to view and transfer FSMO roles.
+
+Training
+
+Module
+
+[Manage AD DS domain controllers and FSMO roles - Training](/en-us/training/modules/manage-active-directory-domain-services-flexible-single-master-operation-roles/?source=recommendations)
+
+Learn how to deploy and manage AD DS domain controllers, maintain availability with backup and recovery, manage the global catalog role, and transfer or seize FSMO roles including schema master, domain-naming master, RID master, infrastructure master, and PDC emulator.
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

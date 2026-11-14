@@ -1,5 +1,5 @@
 ---
-{"title": "Use the Active Directory Administrative Center Windows PowerShell History Viewer", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/adac/use-active-directory-administrative-center-powershell-history", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Use the Active Directory Administrative Center Windows PowerShell History Viewer", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/adac/use-active-directory-administrative-center-powershell-history", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Use the Active Directory Administrative Center Windows PowerShell History Viewer
@@ -58,8 +58,6 @@ You can repeat this process for other tasks in Active Directory Administrative C
 
 -   [Advanced AD DS Management Using Active Directory Administrative Center (Level 200)](advanced-ad-ds-management-using-active-directory-administrative-center--level-200-)
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -74,7 +72,31 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Advanced AD DS Management Using Active Directory Administrative Center (Level 200)](/en-us/windows-server/identity/ad-ds/get-started/adac/advanced-ad-ds-management-using-active-directory-administrative-center--level-200-?source=recommendations)
+
+    Learn more about Advanced AD DS Management using Active Directory Administrative Center (Level 200).
+
+-   [Manage User Accounts with Active Directory Users and Computers in Windows Server](/en-us/windows-server/identity/ad-ds/manage-user-accounts-in-windows-server?source=recommendations)
+
+    Create, delete, and manage user accounts in Active Directory Users and Computers. Learn how to manage user account properties, group memberships, and passwords.
+
+Training
+
+Module
+
+[Manage Active Directory Domain Services using PowerShell cmdlets - Training](/en-us/training/modules/manage-active-directory-domain-services-use-powershell-cmdlets/?source=recommendations)
+
+This module covers the cmdlets that are used to administer Active Directory Domain Services.
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

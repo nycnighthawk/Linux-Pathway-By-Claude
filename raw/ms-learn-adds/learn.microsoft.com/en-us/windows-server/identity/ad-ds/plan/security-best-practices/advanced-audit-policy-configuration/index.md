@@ -1,5 +1,5 @@
 ---
-{"title": "Advanced Audit Policy Configuration", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/advanced-audit-policy-configuration", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Advanced Audit Policy Configuration", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/advanced-audit-policy-configuration", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Advanced Audit Policy Configuration
@@ -1739,8 +1739,6 @@ The advanced Audit Policy configurations are as follows:
     If both a registry SACL and a global SACL are configured on a computer, the effective SACL is derived by combining the registry SACL and the global SACL. This means that an audit event is generated when an activity matches either the registry key SACL or the global SACL.
 
     -   Event volume: *Varies* on the effective SACL and the level of user activity.
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

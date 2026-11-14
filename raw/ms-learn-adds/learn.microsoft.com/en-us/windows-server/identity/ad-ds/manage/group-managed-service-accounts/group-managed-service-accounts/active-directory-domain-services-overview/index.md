@@ -1,5 +1,5 @@
 ---
-{"title": "Overview of Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/active-directory-domain-services-overview", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Overview of Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/active-directory-domain-services-overview", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Overview of Active Directory Domain Services
@@ -57,27 +57,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Active Directory Domain Services overview](/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview?source=recommendations)
-
-    Find out about Active Directory Domain Services, a directory service that makes network resource data available to authorized network users and administrators.
-
-Training
-
-Module
-
-[Introduction to AD DS - Training](/en-us/training/modules/introduction-to-ad-ds/?source=recommendations)
-
-Introduction to AD DS
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

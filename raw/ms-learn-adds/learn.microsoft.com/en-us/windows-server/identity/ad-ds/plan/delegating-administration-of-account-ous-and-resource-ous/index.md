@@ -1,5 +1,5 @@
 ---
-{"title": "Delegating Administration of Account OUs and Resource OUs", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/delegating-administration-of-account-ous-and-resource-ous", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Delegating Administration of Account OUs and Resource OUs", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/delegating-administration-of-account-ous-and-resource-ous", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Delegating Administration of Account OUs and Resource OUs
@@ -70,55 +70,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Delegating Administration of Default Containers and OUs](/en-us/windows-server/identity/ad-ds/plan/delegating-administration-of-default-containers-and-ous?source=recommendations)
-
-    Learn more about: Delegating Administration of Default Containers and OUs
-
--   [Delegating Administration by Using OU Objects](/en-us/windows-server/identity/ad-ds/plan/delegating-administration-by-using-ou-objects?source=recommendations)
-
-    Learn more about: Delegating Administration by Using OU Objects
-
--   [Delegation of Control in AD DS on Windows Server](/en-us/windows-server/identity/ad-ds/manage/delegation-control-wizard?source=recommendations)
-
-    Learn how to delegate administrative control in Active Directory Domain Services on Windows Server.
-
--   [Creating an Organizational Unit Design](/en-us/windows-server/identity/ad-ds/plan/creating-an-organizational-unit-design?source=recommendations)
-
-    Learn more about: Creating an Organizational Unit Design
-
--   [Reviewing OU Design Concepts](/en-us/windows-server/identity/ad-ds/plan/reviewing-ou-design-concepts?source=recommendations)
-
-    Learn more about: Reviewing OU Design Concepts
-
--   [Active Directory Security Groups](/en-us/windows-server/identity/ad-ds/manage/understand-security-groups?source=recommendations)
-
-    Become familiar with Windows Server Active Directory security groups, group scope, and group functions. See information on groups, such as members and rights.
-
--   [Group Policy overview for Windows Server](/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-overview?source=recommendations)
-
-    Learn about what Group Policy does and how it works with Active Directory Domain Services in Windows.
-
--   [Manage User Accounts with Active Directory Users and Computers in Windows Server](/en-us/windows-server/identity/ad-ds/manage-user-accounts-in-windows-server?source=recommendations)
-
-    Create, delete, and manage user accounts in Active Directory Users and Computers. Learn how to manage user account properties, group memberships, and passwords.
-
-Training
-
-Module
-
-[Introduction to AD DS - Training](/en-us/training/modules/introduction-to-ad-ds/?source=recommendations)
-
-Introduction to AD DS
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

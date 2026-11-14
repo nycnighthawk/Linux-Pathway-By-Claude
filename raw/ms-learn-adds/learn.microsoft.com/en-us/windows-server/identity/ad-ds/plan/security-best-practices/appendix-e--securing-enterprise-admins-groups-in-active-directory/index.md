@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix E: Securing Enterprise Admins Groups in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-e--securing-enterprise-admins-groups-in-active-directory", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix E: Securing Enterprise Admins Groups in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-e--securing-enterprise-admins-groups-in-active-directory", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix E: Securing Enterprise Admins Groups in Active Directory

@@ -1,5 +1,5 @@
 ---
-{"title": "Join a computer to a domain", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/join-computer-to-domain", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Join a computer to a domain", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/join-computer-to-domain", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Join a computer to a domain
@@ -295,6 +295,8 @@ This error typically occurs when the machine\'s password isn\'t synchronized wit
     You\'re prompted to provide the password for the account.
 
 6.  Restart your device for changes to take effect. Follow the steps provided in [Command line method](#command-line-method) to rejoin the domain.
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

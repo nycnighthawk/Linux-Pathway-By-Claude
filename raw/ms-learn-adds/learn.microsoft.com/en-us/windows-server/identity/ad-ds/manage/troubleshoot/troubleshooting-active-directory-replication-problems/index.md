@@ -1,5 +1,5 @@
 ---
-{"title": "Troubleshooting Active Directory Replication Problems", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/troubleshoot/troubleshooting-active-directory-replication-problems", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Troubleshooting Active Directory Replication Problems", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/troubleshoot/troubleshooting-active-directory-replication-problems", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Troubleshooting Active Directory Replication Problems
@@ -233,7 +233,49 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Troubleshoot common AD replication errors - Windows Server](/en-us/troubleshoot/windows-server/active-directory/common-active-directory-replication-errors?source=recommendations)
+
+    Contains troubleshooting information to help you fix Active Directory replication errors.
+
+-   [Diagnose AD replication failures - Windows Server](/en-us/troubleshoot/windows-server/active-directory/diagnose-replication-failures?source=recommendations)
+
+    Describes how to diagnose Active Directory replication failures.
+
+-   [Active Directory Replication Concepts](/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts?source=recommendations)
+
+    Learn more about: Active Directory Replication Concepts
+
+-   [Active Directory Replication fails with Win32 error 8524 - Windows Server](/en-us/troubleshoot/windows-server/active-directory/replication-error-8524?source=recommendations)
+
+    Describes an issue that Active Directory Replications fail with Win32 error 8524 (The DSA operation is unable to proceed because of a DNS lookup failure).
+
+-   [Guidance for troubleshooting Active Directory replication - Windows Server](/en-us/troubleshoot/windows-server/active-directory/troubleshoot-adreplication-guidance?source=recommendations)
+
+    Introduces general guidance for troubleshooting scenarios related to Active Directory replication.
+
+-   [Troubleshoot AD replication error 5 Access is denied - Windows Server](/en-us/troubleshoot/windows-server/active-directory/replications-fail-with-error-5?source=recommendations)
+
+    Discusses the Access is denied error 5 when Active Directory replications fail. This issue can occur in Windows Server 2012 R2, Windows Server 2012, Windows Server 2008 R2, Windows Server 2008, Windows Server 2003 R2, Windows Server 2003, or Microsoft Windows 2000 Server.
+
+-   [Troubleshoot AD replication error -2146893022 - Windows Server](/en-us/troubleshoot/windows-server/active-directory/replication-error-2146893022?source=recommendations)
+
+    This article describes how to troubleshoot a problem in which Active Directory replication fails and generates an error (-2146893022).
+
+-   [Active Directory replication error 8453 - Windows Server](/en-us/troubleshoot/windows-server/active-directory/replication-error-8453?source=recommendations)
+
+    This article describes how to troubleshoot Active Directory replication error 8453.
+
+Training
+
+Module
+
+[Troubleshoot Active Directory - Training](/en-us/training/modules/troubleshoot-active-directory/?source=recommendations)
+
+Learn how to troubleshoot Active Directory including recovering deleted objects with AD Recycle Bin, managing the AD DS database with NtdsUtil, restoring SYSVOL, troubleshooting replication, and diagnosing hybrid authentication with Microsoft Entra Connect.
 
 ------------------------------------------------------------------------
 

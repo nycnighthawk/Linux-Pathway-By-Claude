@@ -1,5 +1,5 @@
 ---
-{"title": "Microsoft accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-microsoft-accounts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Microsoft accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-microsoft-accounts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Microsoft accounts

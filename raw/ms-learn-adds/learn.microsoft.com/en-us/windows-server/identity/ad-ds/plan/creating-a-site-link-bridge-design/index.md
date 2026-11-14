@@ -1,5 +1,5 @@
 ---
-{"title": "Creating a Site Link Bridge Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-bridge-design", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Creating a Site Link Bridge Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-bridge-design", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Creating a Site Link Bridge Design
@@ -32,8 +32,6 @@ If your organization has a hub-and-spoke network topology, you generally do not 
 ### Controlling replication through a firewall {#controlling-replication-through-a-firewall .heading-anchor}
 
 If two domain controllers representing the same domain in two different sites are specifically allowed to communicate with each other only through a firewall, you can disable **Bridge all site links** and create site link bridges for sites on the same side of the firewall. Therefore, if your network is separated by firewalls, we recommend that you disable transitivity of site links and create site link bridges for the network on one side of the firewall.
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

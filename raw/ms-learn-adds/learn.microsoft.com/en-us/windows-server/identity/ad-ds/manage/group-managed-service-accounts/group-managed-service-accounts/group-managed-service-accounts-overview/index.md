@@ -1,5 +1,5 @@
 ---
-{"title": "Group Managed Service Accounts overview", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/group-managed-service-accounts-overview", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Group Managed Service Accounts overview", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/group-managed-service-accounts-overview", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Group Managed Service Accounts overview
@@ -63,8 +63,6 @@ Here are some other resources you can read to learn more about Managed Service A
 -   [Managed Service Accounts: Understanding, Implementing, Best Practices, and Troubleshooting](/en-us/archive/blogs/askds/managed-service-accounts-understanding-implementing-best-practices-and-troubleshooting)
 -   [Active Directory Domain Services Overview](active-directory-domain-services-overview)
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -79,39 +77,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Manage Group Managed Service Accounts](/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/manage-group-managed-service-accounts?source=recommendations)
-
-    Learn how to manage and use Group Managed Service Accounts (gMSA) in Windows Server.
-
--   [Create a Key Distribution Service (KDS) Root Key](/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/create-the-key-distribution-services-kds-root-key?source=recommendations)
-
-    Learn how to create a Key Distribution Service root key on a domain controller by using Windows PowerShell to generate group Managed Service Account passwords in Windows Server 2012 or later.
-
--   [Troubleshoot gMSAs for Windows containers](/en-us/virtualization/windowscontainers/manage-containers/gmsa-troubleshooting?source=recommendations)
-
-    How to troubleshoot group Managed Service Accounts (gMSAs) for Windows containers.
-
--   [Service Accounts in Windows Server](/en-us/windows-server/identity/ad-ds/manage/understand-service-accounts?source=recommendations)
-
-    Learn how service accounts work in Windows Server, including sMSA, gMSA, dMSA, and virtual accounts, and the password policy and minimum length for each type.
-
-Training
-
-Module
-
-[Manage Windows Server settings using PowerShell cmdlets - Training](/en-us/training/modules/manage-windows-server-settings-use-powershell-cmdlets/?source=recommendations)
-
-This module covers cmdlets that are used to configure settings related to Group Policy, Server Manager, Hyper-V, and Internet Information Services (IIS).
-
-Certification
-
-[Microsoft Certified: Windows Server Administrator Associate - Certifications](/en-us/credentials/certifications/windows-server-hybrid-administrator/?source=recommendations)
-
-As a Windows Server administrator, you integrate Windows Server environments with Azure services and manage Windows Server in on-premises networks.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory-Integrated DNS Zones", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/active-directory-integrated-dns-zones", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory-Integrated DNS Zones", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/active-directory-integrated-dns-zones", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory-Integrated DNS Zones
@@ -24,8 +24,6 @@ Note
 
 We recommend that you install DNS when you run the Active Directory Domain Services Installation Wizard (Dcpromo.exe). If you do this, the wizard creates the DNS zone delegation automatically. For more information, see [Deploying a Windows Server 2008 Forest Root Domain](/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc731174(v=ws.10)).
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -40,7 +38,45 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Integrating AD DS into an Existing DNS Infrastructure](/en-us/windows-server/identity/ad-ds/plan/integrating-ad-ds-into-an-existing-dns-infrastructure?source=recommendations)
+
+    Learn more about: Integrating AD DS into an Existing DNS Infrastructure
+
+-   [DNS and AD DS](/en-us/windows-server/identity/ad-ds/plan/dns-and-ad-ds?source=recommendations)
+
+    Learn more about: DNS and AD DS
+
+-   [Reviewing DNS Concepts](/en-us/windows-server/identity/ad-ds/plan/reviewing-dns-concepts?source=recommendations)
+
+    Learn more about: Reviewing DNS Concepts
+
+-   [Domain Controller Location](/en-us/windows-server/identity/ad-ds/plan/domain-controller-location?source=recommendations)
+
+    Learn more about: Domain Controller Location
+
+-   [Creating a DNS Infrastructure Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-dns-infrastructure-design?source=recommendations)
+
+    Learn more about: Creating a DNS Infrastructure Design
+
+-   [DNS for AD DS Owner Role](/en-us/windows-server/identity/ad-ds/deploy/assigning-the-dns-for-ad-ds-owner-role?source=recommendations)
+
+    Information about the DNS for AD DS Owner role.
+
+-   [Recommendations for Domain Name System (DNS) client settings - Windows Server](/en-us/troubleshoot/windows-server/networking/best-practices-for-dns-client-settings?source=recommendations)
+
+    Describes recommendations for configuring DNS client settings.
+
+Training
+
+Module
+
+[Implement Windows Server DNS - Training](/en-us/training/modules/implement-windows-server-dns/?source=recommendations)
+
+Learn how to deploy and configure DNS in Windows Server, including DNS architecture, forward and reverse lookup zones, AD-integrated zones, zone transfers, forwarders, conditional forwarding, and stub zones.
 
 ------------------------------------------------------------------------
 

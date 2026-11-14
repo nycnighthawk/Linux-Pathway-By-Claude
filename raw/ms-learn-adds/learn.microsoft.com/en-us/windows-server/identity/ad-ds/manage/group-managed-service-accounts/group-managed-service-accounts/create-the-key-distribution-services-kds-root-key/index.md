@@ -1,5 +1,5 @@
 ---
-{"title": "Create a Key Distribution Service (KDS) root key", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/create-the-key-distribution-services-kds-root-key", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Create a Key Distribution Service (KDS) root key", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/create-the-key-distribution-services-kds-root-key", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Create a Key Distribution Service (KDS) root key
@@ -61,6 +61,8 @@ For test environments that have only one DC, you can create a KDS root key and s
 ## Related content {#related-content .heading-anchor}
 
 -   [Manage Group Managed Service Accounts](manage-group-managed-service-accounts)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

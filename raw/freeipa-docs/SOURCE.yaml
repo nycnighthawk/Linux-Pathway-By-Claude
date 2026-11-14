@@ -5,13 +5,18 @@ license_note: null
 mode: outline
 reuse: link-only
 stream: Ref
-retrieved: '2026-11-01'
+retrieved: '2026-11-14'
 upstream:
 - https://freeipa.readthedocs.io/en/latest/
-text_files: 200
-pages: 200
-failed: []
+text_files: 642
+pages: 642
+failed:
+- 'error https://freeipa.readthedocs.io/en/latest/genindex.html: list index out of
+  range'
+- 404 https://freeipa.readthedocs.io/en/latest/py-modindex.html
+- 404 https://freeipa.readthedocs.io/en/latest/designs/adtrust/samba-domain-controller.md
+- 404 https://freeipa.readthedocs.io/en/latest/designs/edns/FreeIPA-eDNS-version3.jpg
 blocked: []
-queue_left: 109826
-cap_reached: true
-pin: 2026-11-01:pages=200
+queue_left: 0
+cap_reached: false
+pin: 2026-11-14:pages=642

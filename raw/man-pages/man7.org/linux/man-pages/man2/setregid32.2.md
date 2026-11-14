@@ -1,0 +1,180 @@
+---
+{"title": "setreuid(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/setregid32.2.html", "retrieved": "2026-11-14", "license": "various (per page)"}
+---
+
+# setreuid(2) --- Linux manual page
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| [NAME](#NAME) \| [LIBRARY](#LIBRARY) \| [SYNOPSIS](#SYNOPSIS) \| [DESCRIPTION](#DESCRIPTION) \| [RETURN VALUE](#RETURN_VALUE) \| [ERRORS](#ERRORS) \| [VERSIONS](#VERSIONS) \| [STANDARDS](#STANDARDS) \| [HISTORY](#HISTORY) \| [SEE ALSO](#SEE_ALSO) \| [COLOPHON](#COLOPHON) |                                   |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+|                                                                                                                                                                                                                                                                                 |                                   |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+
+    setreuid(2)                System Calls Manual                setreuid(2)
+
+## [](#NAME)NAME
+
+           setreuid, setregid - set real and/or effective user or group ID
+
+## [](#LIBRARY)LIBRARY
+
+           Standard C library (libc, -lc)
+
+## [](#SYNOPSIS)SYNOPSIS
+
+           #include <unistd.h>
+
+           int setreuid(uid_t ruid, uid_t euid);
+           int setregid(gid_t rgid, gid_t egid);
+
+       Feature Test Macro Requirements for glibc (see
+       feature_test_macros(7)):
+
+           setreuid(), setregid():
+               _XOPEN_SOURCE >= 500
+                   || /* Since glibc 2.19: */ _DEFAULT_SOURCE
+                   || /* glibc <= 2.19: */ _BSD_SOURCE
+
+## [](#DESCRIPTION)DESCRIPTION
+
+           setreuid() sets real and effective user IDs of the calling
+           process.
+
+           Supplying a value of -1 for either the real or effective user ID
+           forces the system to leave that ID unchanged.
+
+           Unprivileged processes may only set the effective user ID to the
+           real user ID, the effective user ID, or the saved set-user-ID.
+
+           Unprivileged users may only set the real user ID to the real user
+           ID or the effective user ID.
+
+           If the real user ID is set (i.e., ruid is not -1) or the effective
+           user ID is set to a value not equal to the previous real user ID,
+           the saved set-user-ID will be set to the new effective user ID.
+
+           Completely analogously, setregid() sets real and effective group
+           ID's of the calling process, and all of the above holds with
+           "group" instead of "user".
+
+## [](#RETURN_VALUE)RETURN VALUE
+
+           On success, zero is returned.  On error, -1 is returned, and errno
+           is set to indicate the error.
+
+           Note: there are cases where setreuid() can fail even when the
+           caller is UID 0; it is a grave security error to omit checking for
+           a failure return from setreuid().
+
+## [](#ERRORS)ERRORS
+
+           EAGAIN The call would change the caller's real UID (i.e., ruid
+                  does not match the caller's real UID), but there was a
+                  temporary failure allocating the necessary kernel data
+                  structures.
+
+           EAGAIN ruid does not match the caller's real UID and this call
+                  would bring the number of processes belonging to the real
+                  user ID ruid over the caller's RLIMIT_NPROC resource limit.
+                  Since Linux 3.1, this error case no longer occurs (but
+                  robust applications should check for this error); see the
+                  description of EAGAIN in execve(2).
+
+           EINVAL One or more of the target user or group IDs is not valid in
+                  this user namespace.
+
+           EPERM  The calling process is not privileged (on Linux, does not
+                  have the necessary capability in its user namespace:
+                  CAP_SETUID in the case of setreuid(), or CAP_SETGID in the
+                  case of setregid()) and a change other than (i) swapping
+                  the effective user (group) ID with the real user (group)
+                  ID, or (ii) setting one to the value of the other or (iii)
+                  setting the effective user (group) ID to the value of the
+                  saved set-user-ID (saved set-group-ID) was specified.
+
+## [](#VERSIONS)VERSIONS
+
+           POSIX.1 does not specify all of the UID changes that Linux permits
+           for an unprivileged process.  For setreuid(), the effective user
+           ID can be made the same as the real user ID or the saved set-user-
+           ID, and it is unspecified whether unprivileged processes may set
+           the real user ID to the real user ID, the effective user ID, or
+           the saved set-user-ID.  For setregid(), the real group ID can be
+           changed to the value of the saved set-group-ID, and the effective
+           group ID can be changed to the value of the real group ID or the
+           saved set-group-ID.  The precise details of what ID changes are
+           permitted vary across implementations.
+
+           POSIX.1 makes no specification about the effect of these calls on
+           the saved set-user-ID and saved set-group-ID.
+
+## [](#STANDARDS)STANDARDS
+
+           POSIX.1-2024.
+
+## [](#HISTORY)HISTORY
+
+           POSIX.1-2001, 4.3BSD (first appeared in 4.2BSD).
+
+           Setting the effective user (group) ID to the saved set-user-ID
+           (saved set-group-ID) is possible since Linux 1.1.37 (1.1.38).
+
+           The original Linux setreuid() and setregid() system calls
+           supported only 16-bit user and group IDs.  Subsequently, Linux 2.4
+           added setreuid32() and setregid32(), supporting 32-bit IDs.  The
+           glibc setreuid() and setregid() wrapper functions transparently
+           deal with the variations across kernel versions.
+
+       C library/kernel differences
+           At the kernel level, user IDs and group IDs are a per-thread
+           attribute.  However, POSIX requires that all threads in a process
+           share the same credentials.  The NPTL threading implementation
+           handles the POSIX requirements by providing wrapper functions for
+           the various system calls that change process UIDs and GIDs.  These
+           wrapper functions (including those for setreuid() and setregid())
+           employ a signal-based technique to ensure that when one thread
+           changes credentials, all of the other threads in the process also
+           change their credentials.  For details, see nptl(7).
+
+## [](#SEE_ALSO)SEE ALSO
+
+           getgid(2), getuid(2), seteuid(2), setgid(2), setresuid(2),
+           setuid(2), capabilities(7), credentials(7), user_namespaces(7)
+
+## [](#COLOPHON)COLOPHON
+
+           This page is part of the man-pages (Linux kernel and C library
+           user-space interface documentation) project.  Information about
+           the project can be found at 
+           ⟨https://www.kernel.org/doc/man-pages/⟩.  If you have a bug report
+           for this manual page, see
+           ⟨https://git.kernel.org/pub/scm/docs/man-pages/man-pages.git/tree/CONTRIBUTING⟩.
+           This page was obtained from the tarball man-pages-6.19.tar.gz
+           fetched from
+           ⟨https://mirrors.edge.kernel.org/pub/linux/docs/man-pages/⟩ on
+           2026-09-09.  If you discover any rendering problems in this HTML
+           version of the page, or you believe there is a better or more up-
+           to-date source for the page, or you have corrections or
+           improvements to the information in this COLOPHON (which is not
+           part of the original manual page), send a mail to
+           man-pages@man7.org
+
+    Linux man-pages 6.19            2026-02-08                    setreuid(2)
+
+------------------------------------------------------------------------
+
+Pages that refer to this page: [execve(2)](../man2/execve.2.html),  [getgid(2)](../man2/getgid.2.html),  [getresuid(2)](../man2/getresuid.2.html),  [getuid(2)](../man2/getuid.2.html),  [seteuid(2)](../man2/seteuid.2.html),  [setgid(2)](../man2/setgid.2.html),  [setresuid(2)](../man2/setresuid.2.html),  [setuid(2)](../man2/setuid.2.html),  [syscalls(2)](../man2/syscalls.2.html),  [capabilities(7)](../man7/capabilities.7.html),  [credentials(7)](../man7/credentials.7.html),  [nptl(7)](../man7/nptl.7.html),  [user_namespaces(7)](../man7/user_namespaces.7.html)
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+| HTML rendering created 2026-09-09 by [Michael Kerrisk](https://man7.org/mtk/index.html), author of [*The Linux Programming Interface*](https://man7.org/tlpi/). |                       | [](https://man7.org/tlpi/) |
+|                                                                                                                                                                 |                       |                            |
+| For details of in-depth **Linux/UNIX system programming training courses** that I teach, look [here](https://man7.org/training/).                               |                       |                            |
+|                                                                                                                                                                 |                       |                            |
+| Hosting by [jambit GmbH](https://www.jambit.com/index_en.html).                                                                                                 |                       |                            |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+
+------------------------------------------------------------------------

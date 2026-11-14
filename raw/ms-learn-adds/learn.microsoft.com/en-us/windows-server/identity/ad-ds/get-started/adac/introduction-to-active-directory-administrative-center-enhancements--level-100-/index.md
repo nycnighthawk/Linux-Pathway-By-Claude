@@ -1,5 +1,5 @@
 ---
-{"title": "Advanced AD DS Management using Active Directory Administrative Center (Level 200)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/adac/introduction-to-active-directory-administrative-center-enhancements--level-100-", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Advanced AD DS Management using Active Directory Administrative Center (Level 200)", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/adac/introduction-to-active-directory-administrative-center-enhancements--level-100-", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Advanced AD DS Management using Active Directory Administrative Center (Level 200)
@@ -533,8 +533,6 @@ To troubleshoot this issue, use these steps:
 ## Related content {#related-content .heading-anchor}
 
 -   [Active Directory Recycle Bin, fine-grained password policy, and PowerShell History Viewer](/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh831702(v=ws.11))
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

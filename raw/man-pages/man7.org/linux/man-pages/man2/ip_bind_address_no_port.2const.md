@@ -1,5 +1,5 @@
 ---
-{"title": "IP_BIND_ADDRESS_NO_PORT(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/ip_bind_address_no_port.2const.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "IP_BIND_ADDRESS_NO_PORT(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/ip_bind_address_no_port.2const.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # IP_BIND_ADDRESS_NO_PORT(2const) --- Linux manual page

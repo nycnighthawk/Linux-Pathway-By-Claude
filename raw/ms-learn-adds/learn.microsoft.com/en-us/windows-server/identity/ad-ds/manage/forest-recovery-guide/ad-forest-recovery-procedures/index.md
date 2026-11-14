@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory forest recovery - procedures", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-procedures", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory forest recovery - procedures", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-procedures", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory forest recovery - procedures

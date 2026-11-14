@@ -1,5 +1,5 @@
 ---
-{"title": "Appendices", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendices", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendices", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendices", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendices
@@ -20,6 +20,8 @@ Appendices are included in this document to augment the information contained in
   [Appendix I: Creating Management Accounts for Protected Accounts and Groups in Active Directory](../../manage/component-updates/appendix-i--creating-management-accounts-for-protected-accounts-and-groups-in-active-directory)   Provides information to create accounts that have limited privileges and can be stringently controlled, but can be used to populate privileged groups in Active Directory when temporary elevation is required.
   [Appendix L: Events to Monitor](../appendix-l--events-to-monitor)                                                                                                                                                                 Lists events for which you should monitor in your environment.
   [Appendix M: Document Links and Recommended Reading](../../manage/appendix-m--document-links-and-recommended-reading)                                                                                                             Contains a list of recommended reading. Also contains a list of links to external documents and their URLs so that readers of hard copies of this document can access this information.
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

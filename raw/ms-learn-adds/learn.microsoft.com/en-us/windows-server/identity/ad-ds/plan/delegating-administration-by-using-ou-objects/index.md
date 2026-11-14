@@ -1,5 +1,5 @@
 ---
-{"title": "Delegating Administration by Using OU Objects", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/delegating-administration-by-using-ou-objects", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Delegating Administration by Using OU Objects", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/delegating-administration-by-using-ou-objects", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Delegating Administration by Using OU Objects
@@ -21,6 +21,8 @@ The forest owner determines the level of authority that is delegated to an OU ow
 -   [Delegating Administration of Default Containers and OUs](delegating-administration-of-default-containers-and-ous)
 
 -   [Delegating Administration of Account OUs and Resource OUs](delegating-administration-of-account-ous-and-resource-ous)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 ---
-{"title": "Setting Site Link Properties", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/setting-site-link-properties", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Setting Site Link Properties", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/setting-site-link-properties", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Setting Site Link Properties
@@ -26,8 +26,6 @@ Setting site link object properties includes the following steps:
 
 -   [Determining the Interval](determining-the-interval)
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -42,7 +40,49 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Creating a Site Link Bridge Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-bridge-design?source=recommendations)
+
+    Learn more about: Creating a Site Link Bridge Design
+
+-   [Creating a Site Link Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-design?source=recommendations)
+
+    Learn more about: Creating a Site Link Design
+
+-   [Creating a Site Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-site-design?source=recommendations)
+
+    Learn more about: Creating a Site Design
+
+-   [Determining the Cost](/en-us/windows-server/identity/ad-ds/plan/determining-the-cost?source=recommendations)
+
+    Learn more about assigning cost values to links
+
+-   [Collecting Network Information](/en-us/windows-server/identity/ad-ds/plan/collecting-network-information?source=recommendations)
+
+    Learn more about: Collecting Network Information
+
+-   [Appendix A - Locations and Subnet Prefixes](/en-us/windows-server/identity/ad-ds/plan/appendix-a--locations-and-subnet-prefixes?source=recommendations)
+
+    Learn more about: Appendix A: Locations and Subnet Prefixes
+
+-   [Determining the Schedule](/en-us/windows-server/identity/ad-ds/plan/determining-the-schedule?source=recommendations)
+
+    Learn more about: Determining the Schedule
+
+-   [Active Directory Replication Concepts](/en-us/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts?source=recommendations)
+
+    Learn more about: Active Directory Replication Concepts
+
+Training
+
+Module
+
+[Set up cost and sales prices for time, expense, and materials in Dynamics 365 Project Operations - Training](/en-us/training/modules/set-up-cost-sales-price/?source=recommendations)
+
+Learn about cost and sales prices.
 
 ------------------------------------------------------------------------
 

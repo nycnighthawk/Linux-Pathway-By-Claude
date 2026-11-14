@@ -1,5 +1,5 @@
 ---
-{"title": "Securing domain controllers against attack", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/securing-domain-controllers-against-attack", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Securing domain controllers against attack", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/securing-domain-controllers-against-attack", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Securing domain controllers against attack
@@ -124,8 +124,6 @@ You can use a combination of AppLocker configuration, \"black hole\" proxy confi
 
 -   [Tier Model for Active Directory Domain Services](../../tier-model)
 
-Reading mode disabled
-
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -140,55 +138,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Reducing the Active Directory Attack Surface](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/reducing-the-active-directory-attack-surface?source=recommendations)
-
-    Learn more about: Reducing the Active Directory Attack Surface
-
--   [Implementing Secure Administrative Hosts](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-secure-administrative-hosts?source=recommendations)
-
-    Learn more about: Implementing Secure Administrative Hosts
-
--   [Best practices for securing Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/best-practices-for-securing-active-directory?source=recommendations)
-
-    Learn more about best practices for securing Active Directory.
-
--   [Maintaining a More Secure Environment](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/maintaining-a-more-secure-environment?source=recommendations)
-
-    Learn more about: Maintaining a More Secure Environment
-
--   [Avenues to Compromise](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/avenues-to-compromise?source=recommendations)
-
-    Learn more about: Avenues to Compromise
-
--   [Implementing Least-Privilege Administrative Models](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-least-privilege-administrative-models?source=recommendations)
-
-    Learn more about: Implementing Least-Privilege Administrative Models
-
--   [Planning for compromise](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/planning-for-compromise?source=recommendations)
-
-    Learn more about planning for compromise
-
--   [Attractive Accounts for Credential Theft](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/attractive-accounts-for-credential-theft?source=recommendations)
-
-    Learn more about: Attractive Accounts for Credential Theft
-
-Training
-
-Module
-
-[Secure Windows Server user accounts - Training](/en-us/training/modules/secure-windows-server-user-accounts/?source=recommendations)
-
-Learn how to secure Active Directory user accounts using least privilege, Protected Users group, authentication policy silos, Windows Defender Credential Guard, NTLM blocking, and account remediation techniques.
-
-Certification
-
-[Microsoft Certified: Information Security Administrator Associate - Certifications](/en-us/credentials/certifications/information-security-administrator/?source=recommendations)
-
-As an Information Security Administrator, you plan and implement information security of sensitive data by using Microsoft Purview and related services.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

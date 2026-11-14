@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix A: Reviewing Key AD DS Terms", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/appendix-a--reviewing-key-ad-ds-terms", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix A: Reviewing Key AD DS Terms", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/appendix-a--reviewing-key-ad-ds-terms", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix A: Reviewing Key AD DS Terms
@@ -94,7 +94,55 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Understanding the Active Directory Logical Model](/en-us/windows-server/identity/ad-ds/plan/understanding-the-active-directory-logical-model?source=recommendations)
+
+    Learn more about: Understanding the Active Directory Logical Model
+
+-   [Evaluating AD DS Deployment Strategy Examples](/en-us/windows-server/identity/ad-ds/plan/evaluating-ad-ds-deployment-strategy-examples?source=recommendations)
+
+    Learn more about: Evaluating AD DS Deployment Strategy Examples
+
+-   [Finding Additional Resources for Logical Structure Design](/en-us/windows-server/identity/ad-ds/plan/finding-additional-resources-for-logical-structure-design?source=recommendations)
+
+    Learn more about: Finding Additional Resources for Logical Structure Design
+
+-   [Reviewing the Domain Models](/en-us/windows-server/identity/ad-ds/plan/reviewing-the-domain-models?source=recommendations)
+
+    Learn more about: Reviewing the Domain Models
+
+-   [Creating an Organizational Unit Design](/en-us/windows-server/identity/ad-ds/plan/creating-an-organizational-unit-design?source=recommendations)
+
+    Learn more about: Creating an Organizational Unit Design
+
+-   [AD DS Design and Planning](/en-us/windows-server/identity/ad-ds/plan/ad-ds-design-and-planning?source=recommendations)
+
+    Learn more about: AD DS Design and Planning
+
+-   [Autonomy vs. Isolation](/en-us/windows-server/identity/ad-ds/plan/autonomy-vs.-isolation?source=recommendations)
+
+    Learn more about: Autonomy vs. Isolation
+
+-   [Using the Organizational Domain Forest Model](/en-us/windows-server/identity/ad-ds/plan/using-the-organizational-domain-forest-model?source=recommendations)
+
+    Learn more about: Using the Organizational Domain Forest Model
+
+Training
+
+Module
+
+[Introduction to AD DS - Training](/en-us/training/modules/introduction-to-ad-ds/?source=recommendations)
+
+Introduction to AD DS
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

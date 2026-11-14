@@ -1,5 +1,5 @@
 ---
-{"title": "Mapping Your Requirements to an AD DS Deployment Strategy", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/mapping-your-requirements-to-an-ad-ds-deployment-strategy", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Mapping Your Requirements to an AD DS Deployment Strategy", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/mapping-your-requirements-to-an-ad-ds-deployment-strategy", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Mapping Your Requirements to an AD DS Deployment Strategy

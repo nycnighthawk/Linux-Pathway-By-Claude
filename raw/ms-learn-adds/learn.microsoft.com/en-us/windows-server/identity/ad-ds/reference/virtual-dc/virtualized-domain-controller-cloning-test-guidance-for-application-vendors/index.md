@@ -1,5 +1,5 @@
 ---
-{"title": "Virtualized Domain Controller Cloning Test Guidance for Application Vendors", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/reference/virtual-dc/virtualized-domain-controller-cloning-test-guidance-for-application-vendors", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Virtualized Domain Controller Cloning Test Guidance for Application Vendors", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/reference/virtual-dc/virtualized-domain-controller-cloning-test-guidance-for-application-vendors", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Virtualized Domain Controller Cloning Test Guidance for Application Vendors
@@ -87,8 +87,6 @@ Service and application vendors should test this scenario because there is an ad
 ### Writable versus read-only domain controllers {#writable-versus-read-only-domain-controllers .heading-anchor}
 
 Service and application vendors should test cloning by using the same type of domain controller (that is, on a writable or read-only domain controller) that service is planned to run on.
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

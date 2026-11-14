@@ -1,5 +1,5 @@
 ---
-{"title": "Evaluating AD DS Deployment Strategy Examples", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/evaluating-ad-ds-deployment-strategy-examples", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Evaluating AD DS Deployment Strategy Examples", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/evaluating-ad-ds-deployment-strategy-examples", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Evaluating AD DS Deployment Strategy Examples
@@ -17,8 +17,6 @@ After reviewing its existing environment and identifying its deployment goals, C
 -   Restructure the africa.concorp.contoso.com domain within the forest to consolidate that domain with the emea.concorp.contoso.com domain.
 
 Raising the forest functional level to Windows Server 2008 will enable Contoso to take full advantage of the new AD DS features. Restructuring the domains within the forest, as shown in the following illustration, will reduce the amount of administration that is necessary for managing the domains.
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix A: DNS Inventory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/appendix-a--dns-inventory", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix A: DNS Inventory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/appendix-a--dns-inventory", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix A: DNS Inventory
@@ -23,8 +23,6 @@ You can use the following tables to assist you in documenting the recursive name
   Name   IPv4 address   IPv6 address   Physical location
   ------ -------------- -------------- -------------------
                                        
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

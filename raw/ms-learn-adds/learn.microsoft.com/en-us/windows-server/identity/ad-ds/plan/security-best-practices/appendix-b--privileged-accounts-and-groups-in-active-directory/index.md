@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix B: Active Directory privileged accounts and groups reference guide", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-b--privileged-accounts-and-groups-in-active-directory", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix B: Active Directory privileged accounts and groups reference guide", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-b--privileged-accounts-and-groups-in-active-directory", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix B: Active Directory privileged accounts and groups reference guide

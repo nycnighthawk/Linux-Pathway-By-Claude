@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix D: Securing Built-in Administrator Accounts in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-d--securing-built-in-administrator-accounts-in-active-directory", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix D: Securing Built-in Administrator Accounts in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-d--securing-built-in-administrator-accounts-in-active-directory", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix D: Securing Built-in Administrator Accounts in Active Directory
@@ -296,8 +296,6 @@ From any member server or workstation affected by the GPO changes, log on locall
 3.  When prompted, provide credentials for the name of the Administrator account at the domain-level.
 
 4.  The Remote Desktop Connection is denied.
-
-Reading mode disabled
 
 ------------------------------------------------------------------------
 

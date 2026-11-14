@@ -1,5 +1,5 @@
 ---
-{"title": "copy_file_range(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/copy_file_range.2.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "copy_file_range(2) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/copy_file_range.2.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # copy_file_range(2) --- Linux manual page

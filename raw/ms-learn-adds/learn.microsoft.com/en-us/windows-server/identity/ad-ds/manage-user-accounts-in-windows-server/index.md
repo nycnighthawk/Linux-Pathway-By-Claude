@@ -1,5 +1,5 @@
 ---
-{"title": "Manage user accounts in Active Directory Users and Computers", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage-user-accounts-in-windows-server", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Manage user accounts in Active Directory Users and Computers", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage-user-accounts-in-windows-server", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Manage user accounts in Active Directory Users and Computers
@@ -339,55 +339,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Active Directory Accounts](/en-us/windows-server/identity/ad-ds/manage/understand-default-user-accounts?source=recommendations)
-
-    This article discusses how to create default local Windows Server Active Directory accounts on a domain controller.
-
--   [Install Active Directory Domain Services on Windows Server](/en-us/windows-server/identity/ad-ds/deploy/install-active-directory-domain-services--level-100-?source=recommendations)
-
-    Learn more about how to install Active Directory Domain Services in Windows Server using PowerShell, or Server Manager.
-
--   [Advanced AD DS Management Using Active Directory Administrative Center (Level 200)](/en-us/windows-server/identity/ad-ds/get-started/adac/advanced-ad-ds-management-using-active-directory-administrative-center--level-200-?source=recommendations)
-
-    Learn more about Advanced AD DS Management using Active Directory Administrative Center (Level 200).
-
--   [Active Directory Security Groups](/en-us/windows-server/identity/ad-ds/manage/understand-security-groups?source=recommendations)
-
-    Become familiar with Windows Server Active Directory security groups, group scope, and group functions. See information on groups, such as members and rights.
-
--   [Join a computer to a domain](/en-us/windows-server/identity/ad-ds/manage/join-computer-to-domain?source=recommendations)
-
-    Learn how to add a client computer or server device to a domain in Windows Server.
-
--   [Change Windows Active Directory and LDS user password through LDAP - Windows Server](/en-us/troubleshoot/windows-server/active-directory/change-windows-active-directory-user-password?source=recommendations)
-
-    This article describes how to change a Windows Active Directory and LDS user password through LDAP.
-
--   [AD DS Operations](/en-us/windows-server/identity/ad-ds/manage/component-updates/ad-ds-operations?source=recommendations)
-
-    Learn more about: AD DS Operations
-
--   [Delegation of Control in AD DS on Windows Server](/en-us/windows-server/identity/ad-ds/manage/delegation-control-wizard?source=recommendations)
-
-    Learn how to delegate administrative control in Active Directory Domain Services on Windows Server.
-
-Training
-
-Module
-
-[Create and manage Active Directory objects - Training](/en-us/training/modules/create-manage-active-directory-objects/?source=recommendations)
-
-Learn how to create and manage Active Directory users, groups, organizational units, managed service accounts, and perform bulk management tasks and domain controller backup and restore operations.
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

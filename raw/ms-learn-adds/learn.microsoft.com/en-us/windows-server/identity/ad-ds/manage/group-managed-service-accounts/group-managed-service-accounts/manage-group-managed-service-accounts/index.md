@@ -1,5 +1,5 @@
 ---
-{"title": "Manage group Managed Service Accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/manage-group-managed-service-accounts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Manage group Managed Service Accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/manage-group-managed-service-accounts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Manage group Managed Service Accounts

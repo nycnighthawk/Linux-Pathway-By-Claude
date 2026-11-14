@@ -1,5 +1,5 @@
 ---
-{"title": "Creating a Site Link Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-design", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Creating a Site Link Design", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/creating-a-site-link-design", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Creating a Site Link Design

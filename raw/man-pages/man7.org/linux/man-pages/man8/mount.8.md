@@ -1,5 +1,5 @@
 ---
-{"title": "mount(8) — Linux manual page", "url": "https://man7.org/linux/man-pages/man8/mount.8.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "mount(8) — Linux manual page", "url": "https://man7.org/linux/man-pages/man8/mount.8.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # mount(8) --- Linux manual page

@@ -1,5 +1,5 @@
 ---
-{"title": "Selecting the Forest Root Domain", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/selecting-the-forest-root-domain", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Selecting the Forest Root Domain", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/selecting-the-forest-root-domain", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Selecting the Forest Root Domain
@@ -92,6 +92,8 @@ It is important for the Active Directory DNS owner to work with the DNS owner fo
 
 Document the DNS prefix and suffix that you select for the forest root domain. At this point, identify what domain will be the forest root. You can add the forest root domain name information to the \"Domain Planning\" worksheet that you created to document your plan for new and upgraded domains and your domain names. To open it, download Job_Aids_Designing_and_Deploying_Directory_and_Security_Services.zip from [Job Aids for Windows Server 2003 Deployment Kit](https://microsoft.com/download/details.aspx?id=9608) and open \"Domain Planning\" (DSSLOGI_5.doc).
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -106,7 +108,55 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Determining the Number of Domains Required](/en-us/windows-server/identity/ad-ds/plan/determining-the-number-of-domains-required?source=recommendations)
+
+    Learn more about: Determining the Number of Domains Required
+
+-   [Assigning Domain Names](/en-us/windows-server/identity/ad-ds/plan/assigning-domain-names?source=recommendations)
+
+    Learn more about: Assigning Domain Names
+
+-   [Install a New Windows Server 2012 Active Directory Child or Tree Domain (Level 200)](/en-us/windows-server/identity/ad-ds/deploy/install-a-new-windows-server-2012-active-directory-child-or-tree-domain--level-200-?source=recommendations)
+
+    Learn more about: Install a New Windows Server 2012 Active Directory Child or Tree Domain (Level 200)
+
+-   [Evaluating AD DS Deployment Strategy Examples](/en-us/windows-server/identity/ad-ds/plan/evaluating-ad-ds-deployment-strategy-examples?source=recommendations)
+
+    Learn more about: Evaluating AD DS Deployment Strategy Examples
+
+-   [Reviewing the Domain Models](/en-us/windows-server/identity/ad-ds/plan/reviewing-the-domain-models?source=recommendations)
+
+    Learn more about: Reviewing the Domain Models
+
+-   [Understanding the Active Directory Logical Model](/en-us/windows-server/identity/ad-ds/plan/understanding-the-active-directory-logical-model?source=recommendations)
+
+    Learn more about: Understanding the Active Directory Logical Model
+
+-   [Upgrading AD RMS to Windows Server 2016](/en-us/windows-server/identity/ad-rms/adrms-deploy?source=recommendations)
+
+    Learn more about: Upgrading AD RMS to Windows Server 2016
+
+-   [Using the Organizational Domain Forest Model](/en-us/windows-server/identity/ad-ds/plan/using-the-organizational-domain-forest-model?source=recommendations)
+
+    Learn more about: Using the Organizational Domain Forest Model
+
+Training
+
+Module
+
+[Introduction to AD DS - Training](/en-us/training/modules/introduction-to-ad-ds/?source=recommendations)
+
+Introduction to AD DS
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

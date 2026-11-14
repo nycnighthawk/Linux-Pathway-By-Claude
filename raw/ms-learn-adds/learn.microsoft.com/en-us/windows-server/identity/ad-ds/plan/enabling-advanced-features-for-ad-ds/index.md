@@ -1,5 +1,5 @@
 ---
-{"title": "Enabling Advanced Features for AD DS", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/enabling-advanced-features-for-ad-ds", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Enabling Advanced Features for AD DS", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/enabling-advanced-features-for-ad-ds", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Enabling Advanced Features for AD DS

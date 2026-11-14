@@ -1,5 +1,5 @@
 ---
-{"title": "Understanding the Active Directory Logical Model", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/understanding-the-active-directory-logical-model", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Understanding the Active Directory Logical Model", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/understanding-the-active-directory-logical-model", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Understanding the Active Directory Logical Model

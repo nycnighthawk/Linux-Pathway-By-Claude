@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix F: Securing Domain Admins Groups in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-f--securing-domain-admins-groups-in-active-directory", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix F: Securing Domain Admins Groups in Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-f--securing-domain-admins-groups-in-active-directory", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix F: Securing Domain Admins Groups in Active Directory
@@ -279,6 +279,8 @@ From any member server or workstation affected by the GPO changes, log on locall
 ## Related content {#related-content .heading-anchor}
 
 -   [Tier Model for Active Directory Domain Services](../../tier-model)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

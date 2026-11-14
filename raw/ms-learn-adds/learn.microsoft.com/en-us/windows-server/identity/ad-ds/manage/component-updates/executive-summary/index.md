@@ -1,5 +1,5 @@
 ---
-{"title": "Best practices for securing Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/executive-summary", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Best practices for securing Active Directory", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/executive-summary", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Best practices for securing Active Directory

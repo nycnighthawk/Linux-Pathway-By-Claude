@@ -1,0 +1,460 @@
+---
+{"title": "networkd.conf(5) — Linux manual page", "url": "https://man7.org/linux/man-pages/man5/networkd.conf.5.html", "retrieved": "2026-11-14", "license": "various (per page)"}
+---
+
+# networkd.conf(5) --- Linux manual page
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| [NAME](#NAME) \| [SYNOPSIS](#SYNOPSIS) \| [DESCRIPTION](#DESCRIPTION) \| [CONFIGURATION DIRECTORIES AND PRECEDENCE](#CONFIGURATION_DIRECTORIES_AND_PRECEDENCE) \| [\[NETWORK\] SECTION OPTIONS](#%5BNETWORK%5D_SECTION_OPTIONS) \| [\[IPV6ACCEPTRA\] SECTION OPTIONS](#%5BIPV6ACCEPTRA%5D_SECTION_OPTIONS) \| [\[IPV6ADDRESSLABEL\] SECTION OPTIONS](#%5BIPV6ADDRESSLABEL%5D_SECTION_OPTIONS) \| [\[DHCPV4\] SECTION OPTIONS](#%5BDHCPV4%5D_SECTION_OPTIONS) \| [\[DHCPV6\] SECTION OPTIONS](#%5BDHCPV6%5D_SECTION_OPTIONS) \| [\[DHCPRELAY\] SECTION OPTIONS](#%5BDHCPRELAY%5D_SECTION_OPTIONS) \| [\[DHCPSERVER\] SECTION OPTIONS](#%5BDHCPSERVER%5D_SECTION_OPTIONS) \| [SEE ALSO](#SEE_ALSO) \| [NOTES](#NOTES) \| [COLOPHON](#COLOPHON) |                                   |
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |                                   |
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+
+    NETWORKD.CONF(5)              networkd.conf              NETWORKD.CONF(5)
+
+## [](#NAME)NAME
+
+           networkd.conf, networkd.conf.d - Global Network configuration
+           files
+
+## [](#SYNOPSIS)SYNOPSIS
+
+               /etc/systemd/networkd.conf
+               /run/systemd/networkd.conf
+               /usr/local/lib/systemd/networkd.conf
+               /usr/lib/systemd/networkd.conf
+               /etc/systemd/networkd.conf.d/*.conf
+               /run/systemd/networkd.conf.d/*.conf
+               /usr/local/lib/systemd/networkd.conf.d/*.conf
+               /usr/lib/systemd/networkd.conf.d/*.conf
+
+## [](#DESCRIPTION)DESCRIPTION
+
+           These configuration files control global network parameters.
+
+## [](#CONFIGURATION_DIRECTORIES_AND_PRECEDENCE)CONFIGURATION DIRECTORIES AND PRECEDENCE
+
+           The default configuration is set during compilation, so
+           configuration is only needed when it is necessary to deviate from
+           those defaults. The main configuration file is loaded from one of
+           the listed directories in order of priority, only the first file
+           found is used: /etc/systemd/, /run/systemd/,
+           /usr/local/lib/systemd/ [1], /usr/lib/systemd/. The vendor version
+           of the file contains commented out entries showing the defaults as
+           a guide to the administrator. Local overrides can also be created
+           by creating drop-ins, as described below. The main configuration
+           file can also be edited for this purpose (or a copy in /etc/ if it
+           is shipped under /usr/), however using drop-ins for local
+           configuration is recommended over modifications to the main
+           configuration file.
+
+           In addition to the main configuration file, drop-in configuration
+           snippets are read from /usr/lib/systemd/*.conf.d/,
+           /usr/local/lib/systemd/*.conf.d/, and /etc/systemd/*.conf.d/.
+           Those drop-ins have higher precedence and override the main
+           configuration file. Files in the *.conf.d/ configuration
+           subdirectories are sorted by their filename in lexicographic
+           order, regardless of in which of the subdirectories they reside.
+           When multiple files specify the same option, for options which
+           accept just a single value, the entry in the file sorted last
+           takes precedence, and for options which accept a list of values,
+           entries are collected as they occur in the sorted files.
+
+           When packages need to customize the configuration, they can
+           install drop-ins under /usr/. Files in /etc/ are reserved for the
+           local administrator, who may use this logic to override the
+           configuration files installed by vendor packages. Drop-ins have to
+           be used to override package drop-ins, since the main configuration
+           file has lower precedence. It is recommended to prefix all
+           filenames in those subdirectories with a two-digit number and a
+           dash, to simplify the ordering. This also defines a concept of
+           drop-in priorities to allow OS vendors to ship drop-ins within a
+           specific range lower than the range used by users. This should
+           lower the risk of package drop-ins overriding accidentally
+           drop-ins defined by users. It is recommended to use the range
+           10-40 for drop-ins in /usr/ and the range 60-90 for drop-ins in
+           /etc/ and /run/, to make sure that local and transient drop-ins
+           take priority over drop-ins shipped by the OS vendor.
+
+           To disable a configuration file supplied by the vendor, the
+           recommended way is to place a symlink to /dev/null in the
+           configuration directory in /etc/, with the same filename as the
+           vendor configuration file.
+
+## [](#%5BNETWORK%5D_SECTION_OPTIONS)\[NETWORK\] SECTION OPTIONS
+
+           The following options are available in the [Network] section:
+
+           SpeedMeter=
+               Takes a boolean. If set to yes, then systemd-networkd measures
+               the traffic of each interface, and networkctl status INTERFACE
+               shows the measured speed. Defaults to no.
+
+               Added in version 244.
+
+           SpeedMeterIntervalSec=
+               Specifies the time interval to calculate the traffic speed of
+               each interface. If SpeedMeter=no, the value is ignored.
+               Defaults to 10sec.
+
+               Added in version 244.
+
+           ManageForeignRoutingPolicyRules=
+               A boolean. When true, systemd-networkd will remove rules that
+               are not configured in .network files (except for rules with
+               protocol "kernel"). When false, it will not remove any foreign
+               rules, keeping them even if they are not configured in a
+               .network file. Defaults to yes.
+
+               Added in version 249.
+
+           ManageForeignRoutes=
+               A boolean. When true, systemd-networkd will remove routes that
+               are not configured in .network files (except for routes with
+               protocol "kernel", "dhcp" when KeepConfiguration= is true or
+               "dhcp", and "static" when KeepConfiguration= is true or
+               "static"). When false, it will not remove any foreign routes,
+               keeping them even if they are not configured in a .network
+               file. Defaults to yes.
+
+               Added in version 246.
+
+           ManageForeignNextHops=
+               A boolean. When true, systemd-networkd will remove nexthops
+               that are not configured in .network files (except for routes
+               with protocol "kernel"). When false, it will not remove any
+               foreign nexthops, keeping them even if they are not configured
+               in a .network file. Defaults to yes.
+
+               Added in version 256.
+
+           RouteTable=
+               Defines the route table name. Takes a whitespace-separated
+               list of the pairs of route table name and number. The route
+               table name and number in each pair are separated with a colon,
+               i.e., "name:number". The route table name must not be
+               "default", "main", or "local", as these route table names are
+               predefined with route table number 253, 254, and 255,
+               respectively. The route table number must be an integer in the
+               range 1...4294967295, except for predefined numbers 253, 254,
+               and 255. This setting can be specified multiple times. If an
+               empty string is specified, then the list specified earlier are
+               cleared. Defaults to unset.
+
+               Added in version 248.
+
+           IPv4Forwarding=
+               Configures IPv4 packet forwarding for the system. Takes a
+               boolean value. This controls the
+               net.ipv4.conf.default.forwarding and
+               net.ipv4.conf.all.forwarding sysctl options. See IP Sysctl[2]
+               for more details about the sysctl options. Defaults to unset
+               and the sysctl options will not be changed.
+
+               If an interface is configured with a .network file that
+               enables IPMasquerade= for IPv4 (that is, "ipv4" or "both"),
+               this setting is implied unless explicitly specified. See
+               IPMasquerade= in systemd.network(5) for more details.
+
+               Added in version 256.
+
+           IPv6Forwarding=
+               Configures IPv6 packet forwarding for the system. Takes a
+               boolean value. This controls the
+               net.ipv6.conf.default.forwarding and
+               net.ipv6.conf.all.forwarding sysctl options. See IP Sysctl[2]
+               for more details about the sysctl options. Defaults to unset
+               and the sysctl options will not be changed.
+
+               If an interface is configured with a .network file that
+               enables IPMasquerade= for IPv6 (that is, "ipv6" or "both"),
+               this setting is implied unless explicitly specified. See
+               IPMasquerade= in systemd.network(5) for more details.
+
+               Added in version 256.
+
+           IPv6PrivacyExtensions=
+               Specifies the default value for per-network
+               IPv6PrivacyExtensions=. Takes a boolean or the special values
+               "prefer-public" and "kernel". See for details in
+               systemd.network(5). Defaults to "no".
+
+               Added in version 254.
+
+           UseDomains=
+               Specifies the network- and protocol-independent default value
+               for the same settings in [IPv6AcceptRA], [DHCPv4], and
+               [DHCPv6] sections below. Takes a boolean, or the special value
+               route. See the same setting in systemd.network(5). Defaults to
+               "no".
+
+               Added in version 256.
+
+## [](#%5BIPV6ACCEPTRA%5D_SECTION_OPTIONS)\[IPV6ACCEPTRA\] SECTION OPTIONS
+
+           This section configures the default setting of the Neighbor
+           Discovery. The following options are available in the
+           [IPv6AcceptRA] section:
+
+           UseDomains=
+               Specifies the network-independent default value for the same
+               setting in the [IPv6AcceptRA] section in systemd.network(5).
+               Takes a boolean, or the special value route. When unspecified,
+               the value specified in the [Network] section in
+               networkd.conf(5), which defaults to "no", will be used.
+
+               Added in version 256.
+
+## [](#%5BIPV6ADDRESSLABEL%5D_SECTION_OPTIONS)\[IPV6ADDRESSLABEL\] SECTION OPTIONS
+
+           An [IPv6AddressLabel] section accepts the following keys. Specify
+           multiple [IPv6AddressLabel] sections to configure multiple address
+           labels. IPv6 address labels are used for address selection. See
+           RFC 3484[3]. Precedence is managed by userspace, and only the
+           label itself is stored in the kernel.
+
+           Label=
+               The label for the prefix, an unsigned integer in the range
+               0...4294967294. 0xffffffff is reserved. This setting is
+               mandatory.
+
+               Added in version 257.
+
+           Prefix=
+               IPv6 prefix is an address with a prefix length, separated by a
+               slash "/" character. This setting is mandatory.
+
+               Added in version 257.
+
+## [](#%5BDHCPV4%5D_SECTION_OPTIONS)\[DHCPV4\] SECTION OPTIONS
+
+           This section configures the default configurations of DHCPv4
+           client. If the DHCPv4 client is enabled on an interface, then the
+           configurations below will be used by default unless explicitly
+           specified in the corresponding .network file. See also
+           systemd.network(5).
+
+           The following options are understood:
+
+           ClientIdentifier=
+               Specifies the default DHCPv4 client identifier to be used.
+               Takes one of mac or duid. If set to mac, the MAC address of
+               each link will be used. If set to duid, an RFC4361-compliant
+               Client ID, which is the combination of IAID and DUID, is used.
+               IAID can be configured by IAID= in each matching .network
+               file. DUID can be configured by DUIDType= and DUIDRawData=.
+               Defaults to duid.
+
+               Added in version 258.
+
+           DUIDType=
+               Specifies how the DUID should be generated. See RFC 3315[4]
+               for a description of all the options.
+
+               This takes an integer in the range 0...65535, or one of the
+               following string values:
+
+               vendor
+                   If "DUIDType=vendor", then the DUID value will be
+                   generated using "43793" as the vendor identifier (systemd)
+                   and hashed contents of machine-id(5). This is the default
+                   if DUIDType= is not specified.
+
+                   Added in version 230.
+
+               uuid
+                   If "DUIDType=uuid", and DUIDRawData= is not set, then the
+                   product UUID is used as a DUID value. If a system does not
+                   have valid product UUID, then an application-specific
+                   machine-id(5) is used as a DUID value. About the
+                   application-specific machine ID, see
+                   sd_id128_get_machine_app_specific(3).
+
+                   Added in version 230.
+
+               link-layer-time[:TIME], link-layer
+                   If "link-layer-time" or "link-layer" is specified, then
+                   the MAC address of the interface is used as a DUID value.
+                   The value "link-layer-time" can take additional time value
+                   after a colon, e.g.  "link-layer-time:2018-01-23 12:34:56
+                   UTC". The default time value is "2000-01-01 00:00:00 UTC".
+
+                   Added in version 240.
+
+               In all cases, DUIDRawData= can be used to override the actual
+               DUID value that is used.
+
+               Added in version 230.
+
+           DUIDRawData=
+               Specifies the DHCP DUID value as a single newline-terminated,
+               hexadecimal string, with each byte separated by ":". The DUID
+               that is sent is composed of the DUID type specified by
+               DUIDType= and the value configured here.
+
+               The DUID value specified here overrides the DUID that
+               systemd-networkd.service(8) generates from the machine ID. To
+               configure DUID per-network, see systemd.network(5). The
+               configured DHCP DUID should conform to the specification in
+               RFC 3315[5], RFC 6355[6]. To configure IAID, see
+               systemd.network(5).
+
+               Example 1. A DUIDType=vendor with a custom value
+
+                   DUIDType=vendor
+                   DUIDRawData=00:00:ab:11:f9:2a:c2:77:29:f9:5c:00
+
+               This specifies a 14 byte DUID, with the type DUID-EN
+               ("00:02"), enterprise number 43793 ("00:00:ab:11"), and
+               identifier value "f9:2a:c2:77:29:f9:5c:00".
+
+               Added in version 230.
+
+           UseDomains=
+               Same as the one in the [IPv6AcceptRA] section, but applied for
+               DHCPv4 protocol.
+
+               Added in version 256.
+
+## [](#%5BDHCPV6%5D_SECTION_OPTIONS)\[DHCPV6\] SECTION OPTIONS
+
+           This section configures the default configurations of DHCPv6
+           client. If the DHCPv6 client is enabled on an interface, then the
+           configurations below will be used by default unless explicitly
+           specified in the corresponding .network file. See also
+           systemd.network(5).
+
+           The following options are understood:
+
+           DUIDType=, DUIDRawData=
+               As in the [DHCPv4] section.
+
+               Added in version 249.
+
+           UseDomains=
+               As in the [DHCPv4] section.
+
+               Added in version 256.
+
+## [](#%5BDHCPRELAY%5D_SECTION_OPTIONS)\[DHCPRELAY\] SECTION OPTIONS
+
+           The [DHCPRelay] section contains host-wide settings for the DHCP
+           relay agent.
+
+           ServerAddress=
+               Specifies the IPv4 address of the upstream DHCP server. This
+               is required for the host to act as a DHCP relay agent.
+
+               Added in version 261.
+
+           OverrideServerIdentifier=
+               Takes a boolean value. When enabled, the Server Identifier
+               Override sub-option and the Relay Agent Flags sub-option in
+               the Relay Agent Information option will be appended to the
+               DHCP message forwarded to the upstream DHCP server. Defaults
+               to false.
+
+               Added in version 261.
+
+           RemoteId=
+               Specifies the remote ID, which is typically used by DHCP
+               servers to identify the DHCP relay agent. Takes a data type
+               and data separated with a colon ("type:value"). The type takes
+               one of "uint8", "uint16", "uint32", "ipv4address",
+               "ipv6address", or "string". Special characters in the data
+               string may be escaped using C-style escapes[7]. If unset, a
+               UUID generated from the local machine ID will be used.
+
+               Added in version 261.
+
+           ExtraOption=
+               Specifies an extra sub-option in the Relay Agent Information
+               option, which is appended to DHCP messages forwarded to the
+               upstream DHCP server. Takes a sub-option code, data type, and
+               data separated with a colon ("code:type:value"). The code is
+               an integer in 1...254. See RemoteId= in the above for the
+               acceptable type and data. This setting can be specified
+               multiple times. When an empty string is specified, all
+               previous assignments are cleared. Defaults to unset, and no
+               extra sub-option will be appended.
+
+               Added in version 261.
+
+## [](#%5BDHCPSERVER%5D_SECTION_OPTIONS)\[DHCPSERVER\] SECTION OPTIONS
+
+           This section configures the default setting of the DHCP server.
+           The following options are available in the [DHCPServer] section:
+
+           PersistLeases=
+               Specifies the default value for per-network PersistLeases=.
+               Takes a boolean or special value "runtime". See for details in
+               systemd.network(5). Defaults to "yes".
+
+               Added in version 256.
+
+## [](#SEE_ALSO)SEE ALSO
+
+           systemd(1), systemd.network(5), systemd-networkd.service(8),
+           machine-id(5), sd_id128_get_machine_app_specific(3)
+
+## [](#NOTES)NOTES
+
+            1. 💣💥🧨💥💥💣 Please note that those configuration files must
+               be available at all times. If /usr/local/ is a separate
+               partition, it may not be available during early boot, and must
+               not be used for configuration.
+
+            2. IP Sysctl
+               https://docs.kernel.org/networking/ip-sysctl.html
+
+            3. RFC 3484
+               https://tools.ietf.org/html/rfc3484
+
+            4. RFC 3315
+               https://tools.ietf.org/html/rfc3315#section-9
+
+            5. RFC 3315
+               http://tools.ietf.org/html/rfc3315#section-9
+
+            6. RFC 6355
+               http://tools.ietf.org/html/rfc6355
+
+            7. C-style escapes
+               https://en.wikipedia.org/wiki/Escape_sequences_in_C#Table_of_escape_sequences
+
+## [](#COLOPHON)COLOPHON
+
+           This page is part of the systemd (systemd system and service
+           manager) project.  Information about the project can be found at
+           ⟨http://www.freedesktop.org/wiki/Software/systemd⟩.  If you have a
+           bug report for this manual page, see
+           ⟨http://www.freedesktop.org/wiki/Software/systemd/#bugreports⟩.
+           This page was obtained from the project's upstream Git repository
+           ⟨https://github.com/systemd/systemd.git⟩ on 2026-08-04.  (At that
+           time, the date of the most recent commit that was found in the
+           repository was 2026-08-03.)  If you discover any rendering
+           problems in this HTML version of the page, or you believe there is
+           a better or more up-to-date source for the page, or you have
+           corrections or improvements to the information in this COLOPHON
+           (which is not part of the original manual page), send a mail to
+           man-pages@man7.org
+
+    systemd 262~devel                                        NETWORKD.CONF(5)
+
+------------------------------------------------------------------------
+
+Pages that refer to this page: [networkctl(1)](../man1/networkctl.1.html),  [networkd.conf(5)](../man5/networkd.conf.5.html),  [systemd.netdev(5)](../man5/systemd.netdev.5.html),  [systemd.network(5)](../man5/systemd.network.5.html),  [systemd.directives(7)](../man7/systemd.directives.7.html),  [systemd.index(7)](../man7/systemd.index.7.html),  [systemd.system-credentials(7)](../man7/systemd.system-credentials.7.html),  [systemd-network-generator.service(8)](../man8/systemd-network-generator.service.8.html)
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+| HTML rendering created 2026-09-09 by [Michael Kerrisk](https://man7.org/mtk/index.html), author of [*The Linux Programming Interface*](https://man7.org/tlpi/). |                       | [](https://man7.org/tlpi/) |
+|                                                                                                                                                                 |                       |                            |
+| For details of in-depth **Linux/UNIX system programming training courses** that I teach, look [here](https://man7.org/training/).                               |                       |                            |
+|                                                                                                                                                                 |                       |                            |
+| Hosting by [jambit GmbH](https://www.jambit.com/index_en.html).                                                                                                 |                       |                            |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+----------------------------+
+
+------------------------------------------------------------------------

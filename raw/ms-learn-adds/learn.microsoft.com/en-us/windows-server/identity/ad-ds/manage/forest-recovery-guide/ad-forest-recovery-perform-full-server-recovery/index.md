@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Forest Recovery - Perform a full server recovery", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-perform-full-server-recovery", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Forest Recovery - Perform a full server recovery", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-perform-full-server-recovery", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Forest Recovery - Perform a full server recovery {#active-directory-forest-recovery----perform-a-full-server-recovery}
@@ -109,6 +109,8 @@ If you need to enable a network adapter from the command prompt to restore from 
 -   [AD Forest Recovery - Redeploy remaining DCs](ad-forest-recovery-restore-additional-dcs)
 -   [AD Forest Recovery - Virtualization](ad-forest-recovery-virtualization)
 -   [AD Forest Recovery - Cleanup](ad-forest-recovery-cleanup)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

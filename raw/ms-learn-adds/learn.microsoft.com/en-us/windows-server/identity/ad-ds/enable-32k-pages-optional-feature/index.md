@@ -1,5 +1,5 @@
 ---
-{"title": "Enable Database 32k pages optional feature in Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/enable-32k-pages-optional-feature", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Enable Database 32k pages optional feature in Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/enable-32k-pages-optional-feature", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Enable Database 32k pages optional feature in Active Directory Domain Services
@@ -105,7 +105,47 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Active Directory Domain Services Functional Levels](/en-us/windows-server/identity/ad-ds/active-directory-functional-levels?source=recommendations)
+
+    Discover the capabilities of Active Directory Domain Services functional levels and learn how they impact domain controllers and Windows Server compatibility.
+
+-   [Database 32k pages for Active Directory on Windows Server](/en-us/windows-server/identity/ad-ds/32k-pages-optional-feature?source=recommendations)
+
+    Learn about Database 32k page optional feature for Active Directory Domain Services and Active Directory Lightweight Domain Services on Windows Server.
+
+-   [Raise Domain and Forest Functional Levels in AD DS on Windows Server](/en-us/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels?source=recommendations)
+
+    Learn how to raise domain and forest functional levels in Active Directory Domain Services on Windows Server.
+
+-   [How to raise Active Directory domain and forest functional levels - Windows Server](/en-us/troubleshoot/windows-server/active-directory/raise-active-directory-domain-forest-functional-levels?source=recommendations)
+
+    Describes how to raise Active Directory domain and forest functional levels.
+
+-   [Learn about upgrading your domain and forest functional levels in Active Directory Domain Services.](/en-us/windows-server/identity/ad-ds/plan/identifying-your-functional-level-upgrade?source=recommendations)
+
+    Upgrade your domain and forest functional level in Active Director Domain Services for Windows Server
+
+-   [Directory Services component updates](/en-us/windows-server/identity/ad-ds/manage/component-updates/directory-services-component-updates?source=recommendations)
+
+    Learn more about: Directory Services component updates
+
+Training
+
+Module
+
+[Active Directory Domain Services migration - Training](/en-us/training/modules/active-directory-domain-services-migration/?source=recommendations)
+
+Determine the best approach to moving domain controllers to Windows Server 2025.
+
+Certification
+
+[Microsoft Certified: Azure Database Administrator Associate - Certifications](/en-us/credentials/certifications/azure-database-administrator-associate/?source=recommendations)
+
+Administer an SQL Server database infrastructure for cloud, on-premises and hybrid relational databases using the Microsoft PaaS relational database offerings.
 
 ------------------------------------------------------------------------
 

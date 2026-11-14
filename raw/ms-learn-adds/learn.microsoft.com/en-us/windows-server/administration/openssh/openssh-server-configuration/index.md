@@ -1,5 +1,5 @@
 ---
-{"title": "OpenSSH Server configuration for Windows Server and Windows", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh-server-configuration", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "OpenSSH Server configuration for Windows Server and Windows", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh-server-configuration", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # OpenSSH Server configuration for Windows Server and Windows
@@ -236,6 +236,8 @@ The following configuration arguments aren\'t available in the OpenSSH version t
 -   `X11UseLocalhost`
 -   `XAuthLocation`
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -250,7 +252,49 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [OpenSSH for Windows overview](/en-us/windows-server/administration/openssh/openssh-overview?source=recommendations)
+
+    Overview of the OpenSSH tools used by Windows administrators for cross-platform management of remote systems.
+
+-   [Get started with OpenSSH Server for Windows](/en-us/windows-server/administration/openssh/openssh_install_firstuse?source=recommendations)
+
+    Learn how to install and connect to remote machines using the OpenSSH Client and Server for Windows.
+
+-   [Key-Based Authentication in OpenSSH for Windows](/en-us/windows-server/administration/openssh/openssh_keymanagement?source=recommendations)
+
+    Find out about OpenSSH Server key-based authentication, generation, and deployment for Windows. See how to use built-in Windows tools or PowerShell to manage keys.
+
+-   [Manage OpenSSH with Group Policy](/en-us/windows-server/administration/openssh/openssh-group-policy?source=recommendations)
+
+    Learn how to create a Group Policy object for OpenSSH
+
+-   [Troubleshoot OpenSSH Communication Through Windows Firewall - Windows Server](/en-us/troubleshoot/windows-server/system-management-components/troubleshoot-openssh-windows-firewall-port22?source=recommendations)
+
+    Discusses how to troubleshoot issues that affect OpenSSH commands that pass through Windows Firewall.
+
+-   [How to Enable OpenSSH Verbose Logging - Windows Server](/en-us/troubleshoot/windows-server/system-management-components/enable-openssh-verbose-logging?source=recommendations)
+
+    Explains how to enable verbose logging for the OpenSSH service.
+
+-   [OpenSSH Client Can\'t Connect To a Server via SSH - Windows Server](/en-us/troubleshoot/windows-server/system-management-components/open-client-can-not-connect-server?source=recommendations)
+
+    Addresses multiple common causes and solutions when encountering OpenSSH connection errors related to host key algorithm mismatches on Windows systems.
+
+-   [Can\'t install OpenSSH Features - Windows Server](/en-us/troubleshoot/windows-server/system-management-components/cant-install-openssh-features?source=recommendations)
+
+    Resolves various issues that occur when you try to install OpenSSH Server and OpenSSH Client on different versions of Windows Server and Windows Client.
+
+Training
+
+Module
+
+[Manage Windows Server settings using PowerShell cmdlets - Training](/en-us/training/modules/manage-windows-server-settings-use-powershell-cmdlets/?source=recommendations)
+
+This module covers cmdlets that are used to configure settings related to Group Policy, Server Manager, Hyper-V, and Internet Information Services (IIS).
 
 ------------------------------------------------------------------------
 

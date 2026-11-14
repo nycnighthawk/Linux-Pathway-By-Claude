@@ -1,5 +1,5 @@
 ---
-{"title": "Back up, restore, migrate, and copy Group Policy Objects", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-backup-restore", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Back up, restore, migrate, and copy Group Policy Objects", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/group-policy/group-policy-backup-restore", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Back up, restore, migrate, and copy Group Policy Objects

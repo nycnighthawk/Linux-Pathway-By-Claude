@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Domain Services (AD DS) configuration wizard page descriptions", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/ad-ds-installation-and-removal-wizard-page-descriptions", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Domain Services (AD DS) configuration wizard page descriptions", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/ad-ds-installation-and-removal-wizard-page-descriptions", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Domain Services (AD DS) configuration wizard page descriptions
@@ -424,7 +424,43 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Install a New Windows Server 2012 Active Directory Child or Tree Domain (Level 200)](/en-us/windows-server/identity/ad-ds/deploy/install-a-new-windows-server-2012-active-directory-child-or-tree-domain--level-200-?source=recommendations)
+
+    Learn more about: Install a New Windows Server 2012 Active Directory Child or Tree Domain (Level 200)
+
+-   [Install a Replica Windows Server 2012 Domain Controller in an Existing Domain (Level 200)](/en-us/windows-server/identity/ad-ds/deploy/install-a-replica-windows-server-2012-domain-controller-in-an-existing-domain--level-200-?source=recommendations)
+
+    Learn more about: Install a Replica Windows Server 2012 Domain Controller in an Existing Domain (Level 200)
+
+-   [AD DS Simplified Administration](/en-us/windows-server/identity/ad-ds/manage/ad-ds-simplified-administration?source=recommendations)
+
+    Learn more about: AD DS Simplified Administration
+
+-   [Install Active Directory Domain Services on Windows Server](/en-us/windows-server/identity/ad-ds/deploy/install-active-directory-domain-services--level-100-?source=recommendations)
+
+    Learn more about how to install Active Directory Domain Services in Windows Server using PowerShell, or Server Manager.
+
+-   [Troubleshoot domain controller deployment - Windows Server](/en-us/troubleshoot/windows-server/active-directory/troubleshoot-domain-controller-deployment?source=recommendations)
+
+    Provides information about troubleshooting domain controller deployment.
+
+Training
+
+Module
+
+[Manage AD DS domain controllers and FSMO roles - Training](/en-us/training/modules/manage-active-directory-domain-services-flexible-single-master-operation-roles/?source=recommendations)
+
+Learn how to deploy and manage AD DS domain controllers, maintain availability with backup and recovery, manage the global catalog role, and transfer or seize FSMO roles including schema master, domain-naming master, RID master, infrastructure master, and PDC emulator.
+
+Certification
+
+[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
+
+Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
 
 ------------------------------------------------------------------------
 

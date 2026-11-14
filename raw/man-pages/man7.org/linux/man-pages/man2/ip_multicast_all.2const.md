@@ -1,5 +1,5 @@
 ---
-{"title": "IP_MULTICAST_ALL(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/ip_multicast_all.2const.html", "retrieved": "2026-11-01", "license": "various (per page)"}
+{"title": "IP_MULTICAST_ALL(2const) — Linux manual page", "url": "https://man7.org/linux/man-pages/man2/ip_multicast_all.2const.html", "retrieved": "2026-11-14", "license": "various (per page)"}
 ---
 
 # IP_MULTICAST_ALL(2const) --- Linux manual page

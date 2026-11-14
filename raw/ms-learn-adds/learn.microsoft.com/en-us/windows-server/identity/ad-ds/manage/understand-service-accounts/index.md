@@ -1,5 +1,5 @@
 ---
-{"title": "Service accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-service-accounts", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Service accounts", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-service-accounts", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Service accounts
@@ -177,47 +177,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Group Managed Service Accounts overview](/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/group-managed-service-accounts-overview?source=recommendations)
-
-    Learn about the group Managed Service Account; practical applications, changes in Microsoft\'s implementation, both hardware and software requirements.
-
--   [Introduction to Active Directory service accounts - Microsoft Entra](/en-us/entra/architecture/service-accounts-on-premises?source=recommendations)
-
-    An introduction to the types of service accounts in Active Directory, and how to secure them.
-
--   [Manage Group Managed Service Accounts](/en-us/windows-server/identity/ad-ds/manage/group-managed-service-accounts/group-managed-service-accounts/manage-group-managed-service-accounts?source=recommendations)
-
-    Learn how to manage and use Group Managed Service Accounts (gMSA) in Windows Server.
-
--   [Delegated Managed Service Accounts overview in Windows Server 2025](/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview?source=recommendations)
-
-    Learn about delegated Managed Service Accounts (DMSA) that authenticate specific machine identities mapped in Active Directory along with Credential Guard to ensure device credentials isolation in Windows Server 2025.
-
--   [Secure group managed service accounts - Microsoft Entra](/en-us/entra/architecture/service-accounts-group-managed?source=recommendations)
-
-    A guide to securing group managed service accounts (gMSAs)
-
--   [Secure standalone managed service accounts - Microsoft Entra](/en-us/entra/architecture/service-accounts-standalone-managed?source=recommendations)
-
-    Learn when to use, how to assess, and to secure standalone managed service accounts (sMSAs)
-
-Training
-
-Module
-
-[Secure Windows Server user accounts - Training](/en-us/training/modules/secure-windows-server-user-accounts/?source=recommendations)
-
-Learn how to secure Active Directory user accounts using least privilege, Protected Users group, authentication policy silos, Windows Defender Credential Guard, NTLM blocking, and account remediation techniques.
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

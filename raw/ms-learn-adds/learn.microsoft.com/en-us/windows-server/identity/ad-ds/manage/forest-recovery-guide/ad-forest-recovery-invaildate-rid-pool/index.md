@@ -1,5 +1,5 @@
 ---
-{"title": "Active Directory Forest Recovery - Invalidate the current RID pool", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-invaildate-rid-pool", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Active Directory Forest Recovery - Invalidate the current RID pool", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-invaildate-rid-pool", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Active Directory Forest Recovery - Invalidate the current RID pool

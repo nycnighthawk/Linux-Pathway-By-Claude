@@ -1,5 +1,5 @@
 ---
-{"title": "Flexible Single Master Operations roles in Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-fsmo-roles", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Flexible Single Master Operations roles in Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-fsmo-roles", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Flexible Single Master Operations roles in Active Directory Domain Services

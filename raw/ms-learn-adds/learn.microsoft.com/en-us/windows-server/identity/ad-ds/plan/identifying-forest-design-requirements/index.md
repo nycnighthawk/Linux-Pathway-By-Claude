@@ -1,5 +1,5 @@
 ---
-{"title": "Identifying Forest Design Requirements", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/identifying-forest-design-requirements", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Identifying Forest Design Requirements", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/identifying-forest-design-requirements", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Identifying Forest Design Requirements
@@ -38,6 +38,8 @@ The design team must document the isolation and autonomy requirements for servic
 
 -   [Autonomy vs. Isolation](autonomy-vs.-isolation)
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -52,55 +54,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Identifying the Deployment Project Participants](/en-us/windows-server/identity/ad-ds/plan/identifying-the-deployment-project-participants?source=recommendations)
-
-    Learn more about: Identifying the Deployment Project Participants
-
--   [Determining the Number of Forests Required](/en-us/windows-server/identity/ad-ds/plan/determining-the-number-of-forests-required?source=recommendations)
-
-    Learn more about: Determining the Number of Forests Required
-
--   [Service Administrator Scope of Authority](/en-us/windows-server/identity/ad-ds/plan/service-administrator-scope-of-authority?source=recommendations)
-
-    Learn more about: Service Administrator Scope of Authority
-
--   [Reviewing the Domain Models](/en-us/windows-server/identity/ad-ds/plan/reviewing-the-domain-models?source=recommendations)
-
-    Learn more about: Reviewing the Domain Models
-
--   [Creating a Forest Design](/en-us/windows-server/identity/ad-ds/plan/creating-a-forest-design?source=recommendations)
-
-    Learn more about: Creating a Forest Design
-
--   [Designing the Logical Structure](/en-us/windows-server/identity/ad-ds/plan/designing-the-logical-structure?source=recommendations)
-
-    Learn more about: Designing the Logical Structure
-
--   [Understanding the Active Directory Logical Model](/en-us/windows-server/identity/ad-ds/plan/understanding-the-active-directory-logical-model?source=recommendations)
-
-    Learn more about: Understanding the Active Directory Logical Model
-
--   [Forest Design Models](/en-us/windows-server/identity/ad-ds/plan/forest-design-models?source=recommendations)
-
-    Learn more about: Forest Design Models
-
-Training
-
-Module
-
-[Introduction to AD DS - Training](/en-us/training/modules/introduction-to-ad-ds/?source=recommendations)
-
-Introduction to AD DS
-
-Certification
-
-[Microsoft Certified: Identity and Access Administrator Associate - Certifications](/en-us/credentials/certifications/identity-and-access-administrator/?source=recommendations)
-
-Demonstrate the features of Microsoft Entra ID to modernize identity solutions, implement hybrid solutions, and implement identity governance.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

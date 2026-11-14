@@ -1,5 +1,5 @@
 ---
-{"title": "Tier model for Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/tier-model", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Tier model for Active Directory Domain Services", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/tier-model", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Tier model for Active Directory Domain Services
@@ -224,6 +224,8 @@ After you deploy the AD DS tier model, complete the following activities to hard
 -   [Mitigating Pass-the-Hash white papers](https://www.microsoft.com/download/details.aspx?id=36036)
 
 **Note:** The author created this article with assistance from AI. [Learn more](/principles-for-ai-generated-content)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 

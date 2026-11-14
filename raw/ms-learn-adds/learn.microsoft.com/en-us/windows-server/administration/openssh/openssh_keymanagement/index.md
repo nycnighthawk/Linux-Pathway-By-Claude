@@ -1,5 +1,5 @@
 ---
-{"title": "Key-based authentication in OpenSSH for Windows", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Key-based authentication in OpenSSH for Windows", "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Key-based authentication in OpenSSH for Windows
@@ -218,6 +218,8 @@ $remotePowershell = "powershell Add-Content -Force -Path $env:ProgramData\ssh\ad
 
 These steps complete the configuration required to use key-based authentication with OpenSSH on Windows. After you run these PowerShell commands, you can connect to the `sshd` host from any client that has the private key.
 
+Reading mode disabled
+
 ------------------------------------------------------------------------
 
 ## Feedback {#ms--feedback .title .is-3}
@@ -232,7 +234,55 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
+
+Documentation
+
+-   [Get started with OpenSSH Server for Windows](/en-us/windows-server/administration/openssh/openssh_install_firstuse?source=recommendations)
+
+    Learn how to install and connect to remote machines using the OpenSSH Client and Server for Windows.
+
+-   [OpenSSH Server Configuration for Windows](/en-us/windows-server/administration/openssh/openssh-server-configuration?source=recommendations)
+
+    Learn about the Windows-specific configuration options for OpenSSH Server on Windows Server and Windows.
+
+-   [OpenSSH for Windows overview](/en-us/windows-server/administration/openssh/openssh-overview?source=recommendations)
+
+    Overview of the OpenSSH tools used by Windows administrators for cross-platform management of remote systems.
+
+-   [Manage OpenSSH with Group Policy](/en-us/windows-server/administration/openssh/openssh-group-policy?source=recommendations)
+
+    Learn how to create a Group Policy object for OpenSSH
+
+-   [OpenSSH Client Can\'t Connect To a Server via SSH - Windows Server](/en-us/troubleshoot/windows-server/system-management-components/open-client-can-not-connect-server?source=recommendations)
+
+    Addresses multiple common causes and solutions when encountering OpenSSH connection errors related to host key algorithm mismatches on Windows systems.
+
+-   [Troubleshoot OpenSSH Communication Through Windows Firewall - Windows Server](/en-us/troubleshoot/windows-server/system-management-components/troubleshoot-openssh-windows-firewall-port22?source=recommendations)
+
+    Discusses how to troubleshoot issues that affect OpenSSH commands that pass through Windows Firewall.
+
+-   [How to Enable OpenSSH Verbose Logging - Windows Server](/en-us/troubleshoot/windows-server/system-management-components/enable-openssh-verbose-logging?source=recommendations)
+
+    Explains how to enable verbose logging for the OpenSSH service.
+
+-   [Upgrade in-box OpenSSH to the Latest OpenSSH Release - Windows Server](/en-us/troubleshoot/windows-server/system-management-components/upgrade-in-box-openssh-to-latest-openssh-release?source=recommendations)
+
+    Discusses the difference between the in-box and GitHub versions of OpenSSH, how to back up your existing configuration, and how to upgrade safely while keeping your service settings intact.
+
+Training
+
+Module
+
+[Develop on a Remote Machine Using SSH with Visual Studio Code - Training](/en-us/training/modules/develop-on-remote-machine/?source=recommendations)
+
+In this module, you\'ll learn how to seamlessly develop on a remote machine using the Visual Studio Code Remote - SSH extension. We\'ll explore how to run and debug code located on a remote machine, while locally using Visual Studio Code\'s full feature set.
+
+Certification
+
+[Microsoft Certified: Windows Server Administrator Associate - Certifications](/en-us/credentials/certifications/windows-server-hybrid-administrator/?source=recommendations)
+
+As a Windows Server administrator, you integrate Windows Server environments with Azure services and manage Windows Server in on-premises networks.
 
 ------------------------------------------------------------------------
 

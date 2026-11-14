@@ -1,5 +1,5 @@
 ---
-{"title": "Appendix H: Securing Local Administrator Accounts and Groups", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-h--securing-local-administrator-accounts-and-groups", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "Appendix H: Securing Local Administrator Accounts and Groups", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-h--securing-local-administrator-accounts-and-groups", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # Appendix H: Securing Local Administrator Accounts and Groups
@@ -271,47 +271,7 @@ Want to try using Ask Learn to clarify or guide you through this topic?
 
 ------------------------------------------------------------------------
 
-## Additional resources {#ms--additional-resources-mobile-heading .title .is-3}
-
-Documentation
-
--   [Appendix G - Securing Administrators Groups in Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-g--securing-administrators-groups-in-active-directory?source=recommendations)
-
-    Learn more about: Appendix G: Securing Administrators Groups in Active Directory
-
--   [Implementing Least-Privilege Administrative Models](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-least-privilege-administrative-models?source=recommendations)
-
-    Learn more about: Implementing Least-Privilege Administrative Models
-
--   [Appendix E - Securing Enterprise Admins Groups in Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-e--securing-enterprise-admins-groups-in-active-directory?source=recommendations)
-
-    Learn more about: Appendix E: Securing Enterprise Admins Groups in Active Directory
-
--   [Appendix I - Creating Management Accounts for Protected Accounts and Groups in Active Directory](/en-us/windows-server/identity/ad-ds/manage/component-updates/appendix-i--creating-management-accounts-for-protected-accounts-and-groups-in-active-directory?source=recommendations)
-
-    Learn more about: Appendix I: Creating Management Accounts for Protected Accounts and Groups in Active Directory
-
--   [Appendix F - Securing Domain Admins Groups in Active Directory](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-f--securing-domain-admins-groups-in-active-directory?source=recommendations)
-
-    Learn more about: Appendix F: Securing Domain Admins Groups in Active Directory
-
--   [Active Directory Privileged Accounts and Groups Guide](/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-b--privileged-accounts-and-groups-in-active-directory?source=recommendations)
-
-    Discover Active Directory privileged accounts and groups including Enterprise Admins, Domain Admins, and built-in security groups. Learn rights, permissions, and security best practices for AD administration.
-
-Training
-
-Module
-
-[Secure Windows Server user accounts - Training](/en-us/training/modules/secure-windows-server-user-accounts/?source=recommendations)
-
-Learn how to secure Active Directory user accounts using least privilege, Protected Users group, authentication policy silos, Windows Defender Credential Guard, NTLM blocking, and account remediation techniques.
-
-Certification
-
-[Microsoft Certified: Information Security Administrator Associate - Certifications](/en-us/credentials/certifications/information-security-administrator/?source=recommendations)
-
-As an Information Security Administrator, you plan and implement information security of sensitive data by using Microsoft Purview and related services.
+## Additional resources {#ms--additional-resources-mobile-heading .title .is-3 hidden=""}
 
 ------------------------------------------------------------------------
 

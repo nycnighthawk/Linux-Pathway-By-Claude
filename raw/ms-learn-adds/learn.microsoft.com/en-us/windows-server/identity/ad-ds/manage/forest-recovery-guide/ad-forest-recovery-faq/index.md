@@ -1,5 +1,5 @@
 ---
-{"title": "AD Forest Recovery - FAQ", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-faq", "retrieved": "2026-11-01", "license": "CC-BY-4.0"}
+{"title": "AD Forest Recovery - FAQ", "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-faq", "retrieved": "2026-11-14", "license": "CC-BY-4.0"}
 ---
 
 # AD Forest Recovery - FAQ
@@ -67,6 +67,8 @@ Although scripts can speed recovery, you must thoroughly test these scripts befo
 -   [AD Forest Recovery - Redeploy remaining DCs](ad-forest-recovery-restore-additional-dcs)
 -   [AD Forest Recovery - Virtualization](ad-forest-recovery-virtualization)
 -   [AD Forest Recovery - Cleanup](ad-forest-recovery-cleanup)
+
+Reading mode disabled
 
 ------------------------------------------------------------------------
 
