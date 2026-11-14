@@ -1,0 +1,72 @@
+title: 'Quiz: Name resolution, systemd-resolved'
+questions:
+- id: order
+  prompt: 'In what order does hosts: files dns consult its sources?'
+  choices:
+  - /etc/hosts first, then DNS
+  - DNS first, then /etc/hosts
+  - Both at once
+  - Only the first listed
+  answer:
+  - 0
+  explain: The sources are tried in the listed order until one answers.
+- id: dig-vs-getent
+  prompt: Why can dig succeed while an application cannot resolve the name?
+  choices:
+  - dig uses a faster cache
+  - dig bypasses the firewall
+  - dig is always right
+  - dig asks DNS only and ignores the switch and /etc/hosts
+  answer:
+  - 3
+  explain: getent hosts follows the name service switch like an application does.
+- id: tilde
+  prompt: What does Domains=~lab.test do in systemd-resolved?
+  choices:
+  - Blocks lab.test
+  - Enables DNSSEC for lab.test
+  - Caches lab.test forever
+  - Routes lab.test queries to that link's server without adding a search suffix
+  answer:
+  - 3
+  explain: A tilde marks a routing-only domain.
+- id: resolvectl
+  prompt: Which command shows which server and domains each link uses?
+  choices:
+  - resolvectl status
+  - resolvectl flush-caches
+  - dig +trace
+  - getent hosts
+  answer:
+  - 0
+  explain: status lists global and per-link DNS servers and domains.
+- id: nxdomain
+  prompt: What does NXDOMAIN mean?
+  choices:
+  - The name does not exist
+  - The name exists with no record of that type
+  - The server failed
+  - The query was refused
+  answer:
+  - 0
+  explain: NOERROR with an empty answer is the second case; SERVFAIL is a server failure.
+- id: ndots
+  prompt: What does options ndots:2 in resolv.conf change?
+  choices:
+  - Names with fewer than two dots are tried with search suffixes first
+  - The number of nameservers
+  - The cache size
+  - The query timeout
+  answer:
+  - 0
+  explain: ndots controls when the search list is applied before the name as given.
+- id: generated
+  prompt: Which file should you change instead of editing a generated resolv.conf?
+  choices:
+  - The symlink target by hand
+  - /etc/hosts
+  - /etc/services
+  - The manager's configuration or a resolved drop-in
+  answer:
+  - 3
+  explain: Generated files are overwritten; configure the owner (NetworkManager, networkd or resolved).

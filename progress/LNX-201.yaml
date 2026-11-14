@@ -1,7 +1,7 @@
 item: LNX-201
 label: Linux Networking I
 branch: build/LNX-201
-state: in-progress
+state: done
 started: '2026-11-14'
 updated: '2026-11-14'
 phases:
@@ -19,19 +19,46 @@ phases:
     - LNX-201-T08
     - LNX-201-T09
   lessons:
-    state: todo
+    state: done
     units: 9
-    done: []
+    done:
+    - LNX-201-T01
+    - LNX-201-T02
+    - LNX-201-T03
+    - LNX-201-T04
+    - LNX-201-T05
+    - LNX-201-T06
+    - LNX-201-T07
+    - LNX-201-T08
+    - LNX-201-T09
   quizzes:
-    state: todo
+    state: done
     units: 9
-    done: []
+    done:
+    - LNX-201-T01
+    - LNX-201-T02
+    - LNX-201-T03
+    - LNX-201-T04
+    - LNX-201-T05
+    - LNX-201-T06
+    - LNX-201-T07
+    - LNX-201-T08
+    - LNX-201-T09
   labs:
-    state: todo
+    state: done
     units: 9
-    done: []
+    done:
+    - LNX-201-T01
+    - LNX-201-T02
+    - LNX-201-T03
+    - LNX-201-T04
+    - LNX-201-T05
+    - LNX-201-T06
+    - LNX-201-T07
+    - LNX-201-T08
+    - LNX-201-T09
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -46,3 +73,12 @@ log:
 - '2026-11-14 synth: LNX-201-T06, LNX-201-T07'
 - '2026-11-14 synth: LNX-201-T08'
 - '2026-11-14 synth: LNX-201-T09'
+- '2026-11-14 lessons: LNX-201-T01, LNX-201-T02, LNX-201-T03, LNX-201-T04, LNX-201-T05, LNX-201-T06, LNX-201-T07,
+  LNX-201-T08, LNX-201-T09'
+- '2026-11-14 quizzes: LNX-201-T01, LNX-201-T02, LNX-201-T03, LNX-201-T04, LNX-201-T05, LNX-201-T06, LNX-201-T07,
+  LNX-201-T08, LNX-201-T09'
+- '2026-11-14 labs: LNX-201-T01, LNX-201-T02, LNX-201-T03, LNX-201-T04, LNX-201-T05, LNX-201-T06, LNX-201-T07, LNX-201-T08,
+  LNX-201-T09'
+- '2026-11-14 checks: done'
+- 2026-11-14 finished
+finished: '2026-11-14'
