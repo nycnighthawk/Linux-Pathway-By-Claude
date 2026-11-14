@@ -1,0 +1,30 @@
+item: LNX-103
+label: Storage & Filesystems
+branch: build/LNX-103
+state: in-progress
+started: '2026-11-14'
+updated: '2026-11-14'
+phases:
+  synth:
+    state: todo
+    units: 11
+    done: []
+  lessons:
+    state: todo
+    units: 11
+    done: []
+  quizzes:
+    state: todo
+    units: 11
+    done: []
+  labs:
+    state: todo
+    units: 11
+    done: []
+  checks:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-14 started
