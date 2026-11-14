@@ -12,6 +12,7 @@ phases:
     - LNX-103-T01
     - LNX-103-T02
     - LNX-103-T03
+    - LNX-103-T04
   lessons:
     state: todo
     units: 11
@@ -34,3 +35,4 @@ log:
 - '2026-11-14 synth: LNX-103-T01'
 - '2026-11-14 synth: LNX-103-T02'
 - '2026-11-14 synth: LNX-103-T03'
+- '2026-11-14 synth: LNX-103-T04'
