@@ -11,6 +11,8 @@ phases:
     done:
     - LNX-307-T01
     - LNX-307-T02
+    - LNX-307-T03
+    - LNX-307-T04
   lessons:
     state: todo
     units: 10
@@ -31,3 +33,5 @@ parked: null
 log:
 - 2026-11-15 started
 - '2026-11-15 synth: LNX-307-T01, LNX-307-T02'
+- '2026-11-15 synth: LNX-307-T03'
+- '2026-11-15 synth: LNX-307-T04'
