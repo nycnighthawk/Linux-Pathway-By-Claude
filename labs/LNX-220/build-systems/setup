@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a small C project with no build description at all.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf proj answers.txt
+mkdir -p proj/src
+cat > proj/src/calc.h <<'X'
+/* SPDX-License-Identifier: MIT */
+#define CALC_FACTOR 3
+int calc_scale(int n);
+X
+cat > proj/src/calc.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include "calc.h"
+int calc_scale(int n) { return n * CALC_FACTOR; }
+X
+cat > proj/src/main.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <stdio.h>
+#include "calc.h"
+int main(void) { printf("%d\n", calc_scale(14)); return 0; }
+X
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nheader_dependency_flag=?\nautomatic_target_variable=?\ncmake_configure_command=?\ncmake_staging_variable=?\ndry_run_flag=?\n' > answers.txt

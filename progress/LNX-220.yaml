@@ -6,9 +6,12 @@ started: '2026-11-15'
 updated: '2026-11-15'
 phases:
   synth:
-    state: todo
+    state: in-progress
     units: 12
-    done: []
+    done:
+    - LNX-220-T01
+    - LNX-220-T02
+    - LNX-220-T03
   lessons:
     state: todo
     units: 12
@@ -28,3 +31,4 @@ phases:
 parked: null
 log:
 - 2026-11-15 started
+- '2026-11-15 synth: LNX-220-T01, LNX-220-T02, LNX-220-T03'

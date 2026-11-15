@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the Makefile (incremental rebuild after a header change) and the CMake project (build and staged install).
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f proj/Makefile ] || fail "write proj/Makefile"
+if [ -f proj/Makefile ]; then
+  ( cd proj && make clean >/dev/null 2>&1; make >/dev/null 2>&1 ) && [ -x proj/calc ] && [ "$(proj/calc)" = 42 ] && ok "make builds ./calc and it prints 42" || fail "make must build proj/calc, which prints 42"
+  if [ -x proj/calc ]; then
+    n=$(cd proj && make -n 2>&1 | grep -c 'cc\|gcc\|clang')
+    [ "$n" = 0 ] && ok "a second make has nothing to do" || fail "make rebuilds although nothing changed"
+    sed -i 's/CALC_FACTOR 3/CALC_FACTOR 4/' proj/src/calc.h
+    ( cd proj && make >/dev/null 2>&1 )
+    [ "$(proj/calc 2>&1)" = 56 ] && ok "editing the header rebuilds both objects (prints 56)" || fail "a header change must rebuild the sources that include it (use -MMD -MP and include the .d files)"
+    sed -i 's/CALC_FACTOR 4/CALC_FACTOR 3/' proj/src/calc.h
+  fi
+  grep -q 'MMD' proj/Makefile && ok "Makefile generates dependency files" || fail "use -MMD -MP in the compile rule"
+  grep -qE '^\.PHONY' proj/Makefile && ok ".PHONY declared" || fail "declare phony targets with .PHONY"
+fi
+[ -f proj/CMakeLists.txt ] || fail "write proj/CMakeLists.txt"
+if [ -f proj/CMakeLists.txt ] && command -v cmake >/dev/null; then
+  rm -rf proj/build cmake-stage
+  if cmake -S proj -B proj/build -DCMAKE_INSTALL_PREFIX=/opt/calc >/dev/null 2>&1 && cmake --build proj/build >/dev/null 2>&1; then
+    ok "cmake configures and builds"
+    DESTDIR="$PWD/cmake-stage" cmake --install proj/build >/dev/null 2>&1
+    [ -x cmake-stage/opt/calc/bin/calc ] && ok "install puts calc in <prefix>/bin under DESTDIR" || fail "install(TARGETS calc RUNTIME DESTINATION bin)"
+    [ "$(cmake-stage/opt/calc/bin/calc 2>&1)" = 42 ] && ok "installed program prints 42" || fail "installed calc does not print 42"
+  else fail "cmake -S proj -B proj/build && cmake --build proj/build must succeed"; fi
+fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get header_dependency_flag)" in -MMD|"-MMD -MP") ok "-MMD" ;; *) fail "header_dependency_flag: the gcc flag that writes a .d dependency file as a side effect of compiling (-MMD)" ;; esac
+[ "$(get automatic_target_variable)" = '$@' ] && ok '$@' || fail 'automatic_target_variable: the automatic variable holding the target name ($@)'
+case "$(get cmake_configure_command)" in "cmake -S . -B build"|"cmake -S"*|"cmake -B"*) ok "cmake configure" ;; *) fail "cmake_configure_command: the command that configures into a build directory (cmake -S . -B build)" ;; esac
+[ "$(get cmake_staging_variable)" = DESTDIR ] && ok "DESTDIR" || fail "cmake_staging_variable: the variable that stages cmake --install"
+case "$(get dry_run_flag)" in -n|--dry-run|--just-print) ok "-n" ;; *) fail "dry_run_flag: the make flag that prints commands without running them (-n)" ;; esac
+exit $bad

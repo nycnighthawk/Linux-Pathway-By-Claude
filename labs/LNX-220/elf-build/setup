@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: two C files, a header, and an answer sheet. Nothing is built.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src obj app app.debug libutil.a answers.txt
+mkdir -p src
+cat > src/util.h <<'X'
+/* SPDX-License-Identifier: MIT */
+int util_square(int n);
+X
+cat > src/util.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include "util.h"
+int util_square(int n) { return n * n; }
+X
+cat > src/main.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <stdio.h>
+#include "util.h"
+int main(void) { printf("square(7)=%d\n", util_square(7)); return 0; }
+X
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nstop_after_compiling_flag=?\nstatic_archive_tool=?\nsymbol_listing_tool=?\nfull_relro_linker_flag=?\ndebug_link_tool=?\n' > answers.txt

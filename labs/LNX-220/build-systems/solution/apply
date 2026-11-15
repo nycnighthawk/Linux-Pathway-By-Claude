@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > proj/Makefile <<'X'
+# SPDX-License-Identifier: MIT
+CC ?= cc
+CFLAGS ?= -O2 -g
+CPPFLAGS += -MMD -MP
+SRC := $(wildcard src/*.c)
+OBJ := $(SRC:src/%.c=obj/%.o)
+
+calc: $(OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+obj/%.o: src/%.c | obj
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+obj:
+	mkdir -p $@
+
+clean:
+	rm -rf obj calc
+
+-include $(OBJ:.o=.d)
+.PHONY: clean
+X
+cat > proj/CMakeLists.txt <<'X'
+# SPDX-License-Identifier: MIT
+cmake_minimum_required(VERSION 3.16)
+project(calc C)
+add_executable(calc src/main.c src/calc.c)
+target_include_directories(calc PRIVATE src)
+install(TARGETS calc RUNTIME DESTINATION bin)
+X
+sed -i -e 's/^header_dependency_flag=.*/header_dependency_flag=-MMD/' -e 's/^automatic_target_variable=.*/automatic_target_variable=$@/' -e 's/^cmake_configure_command=.*/cmake_configure_command=cmake -S . -B build/' -e 's/^cmake_staging_variable=.*/cmake_staging_variable=DESTDIR/' -e 's/^dry_run_flag=.*/dry_run_flag=-n/' answers.txt

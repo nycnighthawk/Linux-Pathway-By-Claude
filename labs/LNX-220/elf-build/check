@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the build by inspecting the ELF files it produced.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f obj/main.o ] && [ -f obj/util.o ] && ok "objects obj/main.o and obj/util.o exist" || fail "compile each source to an object: cc -c src/main.c -o obj/main.o (and util.c)"
+if [ -f libutil.a ]; then
+  ar t libutil.a 2>/dev/null | grep -qx util.o && ok "libutil.a archives util.o" || fail "libutil.a must contain util.o (ar rcs libutil.a obj/util.o)"
+else fail "create the static archive libutil.a"; fi
+[ -x app ] || { fail "link the program app from obj/main.o and libutil.a"; echo "(stopping: no app yet)"; exit 1; }
+out=$(./app 2>&1); [ "$out" = "square(7)=49" ] && ok "app prints square(7)=49" || fail "app output is wrong: $out"
+readelf -h app 2>/dev/null | grep -q 'Type:.*DYN' && ok "position-independent executable (ET_DYN)" || fail "build a PIE: -fPIE at compile time and -pie at link time"
+readelf -lW app 2>/dev/null | grep -q GNU_RELRO && ok "PT_GNU_RELRO segment present" || fail "link with -Wl,-z,relro"
+readelf -dW app 2>/dev/null | grep -qE 'BIND_NOW|FLAGS.*NOW' && ok "BIND_NOW set (full RELRO)" || fail "link with -Wl,-z,now"
+readelf -S app 2>/dev/null | grep -q '\.symtab' && fail "app must be stripped (no .symtab); keep the symbols in app.debug" || ok "app is stripped"
+[ -f app.debug ] && readelf -S app.debug 2>/dev/null | grep -q '\.debug_info' && ok "app.debug holds DWARF" || fail "create app.debug with objcopy --only-keep-debug (build with -g)"
+readelf -x .gnu_debuglink app 2>/dev/null | grep -q . && ok "app has a .gnu_debuglink to app.debug" || fail "add the link: objcopy --add-gnu-debuglink=app.debug app"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get stop_after_compiling_flag)" = "-c" ] && ok "-c" || fail "stop_after_compiling_flag: the cc flag that stops before linking"
+[ "$(get static_archive_tool)" = ar ] && ok "ar" || fail "static_archive_tool: the binutils tool that builds .a files"
+case "$(get symbol_listing_tool)" in nm|readelf) ok "symbol tool" ;; *) fail "symbol_listing_tool: a binutils tool that lists symbols (nm)" ;; esac
+case "$(get full_relro_linker_flag)" in "-z now"|"-Wl,-z,now"|"-z,now") ok "-z now" ;; *) fail "full_relro_linker_flag: the linker option that turns on eager binding (-z now)" ;; esac
+[ "$(get debug_link_tool)" = objcopy ] && ok "objcopy" || fail "debug_link_tool: the tool that adds .gnu_debuglink"
+exit $bad
