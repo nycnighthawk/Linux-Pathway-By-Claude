@@ -58,6 +58,10 @@ modules:
     title: Patch rings
     file: lessons/LNX-304-T07.md
     minutes: 45
+  - topic: LNX-304-T08
+    title: bootc / image mode, rpm-ostree
+    file: lessons/LNX-304-T08.md
+    minutes: 45
 labs:
 - id: rpm-spec
   topic: LNX-304-T01
@@ -118,6 +122,12 @@ labs:
   env: V
   license: MIT
   minutes: 30
+- id: bootc-containerfile
+  topic: LNX-304-T08
+  title: Write a bootc Containerfile
+  env: V
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-304-T01
   topic: LNX-304-T01
@@ -147,3 +157,7 @@ quizzes:
   topic: LNX-304-T07
   title: 'Quiz: Patch rings'
   file: quizzes/LNX-304-T07.yaml
+- id: LNX-304-T08
+  topic: LNX-304-T08
+  title: 'Quiz: bootc / image mode, rpm-ostree'
+  file: quizzes/LNX-304-T08.yaml

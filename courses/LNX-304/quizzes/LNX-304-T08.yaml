@@ -1,0 +1,62 @@
+title: 'Quiz: bootc / image mode, rpm-ostree'
+questions:
+- id: usr
+  prompt: On a bootc system, where do operating system programs and default configuration come from?
+  choices:
+  - Local dnf installs
+  - The read-only /usr from the image
+  - /var
+  - The home directory
+  answer:
+  - 1
+  explain: 'A) wrong: installs happen in the build. B) correct: /usr is part of the image. C) wrong: /var is persistent state. D) wrong: unrelated.'
+- id: etc
+  prompt: A host edited a file in /etc and a new image changes the default of that file. What does an update do?
+  choices:
+  - Discards the local edit
+  - Keeps the local edit (three-way merge) and applies new defaults to files not changed locally
+  - Refuses to update
+  - Deletes /etc
+  answer:
+  - 1
+  explain: 'A) wrong: local state is preserved. B) correct: that is the /etc merge rule. C) wrong: the update proceeds. D) wrong: nothing is deleted.'
+- id: rollback
+  prompt: How does bootc rollback work?
+  choices:
+  - It downgrades each package
+  - It selects the previous deployment for the next boot
+  - It restores a backup tape
+  - It rebuilds the image
+  answer:
+  - 1
+  explain: 'A) wrong: there is no per-package history. B) correct: the old deployment is still on disk. C) wrong: unrelated. D) wrong: the registry holds images.'
+- id: overlay
+  prompt: You fix a bug on one host with rpm-ostree usroverlay. What is the status of the fix?
+  choices:
+  - Permanent on all hosts
+  - Temporary on that host until reboot; the fix must go into the Containerfile
+  - Saved in /etc
+  - Signed automatically
+  answer:
+  - 1
+  explain: 'A) wrong: it affects one host. B) correct: the overlay disappears at reboot. C) wrong: it changes /usr. D) wrong: signing is separate.'
+- id: blast
+  prompt: Why are rings and automatic rollback essential in image-based delivery?
+  choices:
+  - Images are larger
+  - A bad image on a shared tag reaches every host that follows it
+  - Registries are slow
+  - Kernels are bigger
+  answer:
+  - 1
+  explain: 'A) wrong: size is not the issue. B) correct: the unit of delivery is the whole system. C) wrong: unrelated. D) wrong: unrelated.'
+- id: secrets
+  prompt: Why must secrets not be baked into a bootc image?
+  choices:
+  - Images cannot hold files
+  - Anyone able to pull the image can read them
+  - dnf forbids it
+  - They slow boot
+  answer:
+  - 1
+  explain: 'A) wrong: they can. B) correct: registry access equals read access. C) wrong: not enforced. D) wrong: not the issue.'
