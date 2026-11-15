@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run the playbook in check mode, for real and again, then tamper with the result and ask for a preview.
+set -u
+export LC_ALL=C.UTF-8 ANSIBLE_NOCOLOR=1
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f site.yml ] || { echo "FAIL: site.yml is missing; run setup"; exit 1; }
+recap() { sed -n 's/^localhost .*changed=\([0-9]*\).*failed=\([0-9]*\).*/\1 \2/p' | tail -1; }
+rm -rf out
+out=$(ansible-playbook site.yml --check 2>&1); read c f <<< "$(printf '%s\n' "$out" | recap)"
+[ "${f:-1}" = 0 ] && ok "--check on a fresh machine does not fail" || { fail "--check fails on a fresh machine: a task that reads the result of a skipped task needs check_mode: false and a guard"; printf '%s\n' "$out" | tail -6; }
+[ ! -e out/data/PG_VERSION ] && [ ! -e out/app.conf ] && ok "--check changed nothing" || fail "--check must not create files"
+out=$(ansible-playbook site.yml 2>&1); read c f <<< "$(printf '%s\n' "$out" | recap)"
+{ [ "${f:-1}" = 0 ] && [ "${c:-0}" != 0 ]; } && ok "first real run changes things (changed=$c)" || { fail "first real run should succeed and change something"; printf '%s\n' "$out" | tail -6; }
+out=$(ansible-playbook site.yml 2>&1); read c f <<< "$(printf '%s\n' "$out" | recap)"
+[ "${c:-9}" = 0 ] && ok "second run: changed=0" || { fail "second run must report changed=0 (got ${c:-none}); look at which tasks say changed:"; printf '%s\n' "$out" | grep -B1 '^changed:' | grep TASK | head -5; }
+[ "$(grep -c '^setting=1$' out/app.conf 2>/dev/null)" = 1 ] && ok "setting=1 appears exactly once" || fail "app.conf must hold setting=1 exactly once"
+grep -q '[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}T' out/motd 2>/dev/null && fail "motd contains a timestamp: a value that changes every run makes the file change every run" || ok "motd has no timestamp"
+[ "$(cat out/data/PG_VERSION 2>/dev/null)" = 16 ] && ok "data version is 16" || fail "out/data/PG_VERSION must contain 16"
+out=$(ansible-playbook site.yml --check 2>&1); read c f <<< "$(printf '%s\n' "$out" | recap)"
+{ [ "${c:-9}" = 0 ] && [ "${f:-1}" = 0 ]; } && ok "--check on a converged host predicts nothing" || fail "--check on a converged host must report changed=0"
+printf 'setting=2\n' > out/app.conf
+before=$(sha256sum out/app.conf)
+out=$(ansible-playbook site.yml --check --diff 2>&1); read c f <<< "$(printf '%s\n' "$out" | recap)"
+{ [ "${c:-0}" != 0 ] && [ "$(sha256sum out/app.conf)" = "$before" ]; } && ok "drift is predicted by --check and left alone" || fail "after tampering, --check should predict a change and leave the file as it is"
+ansible-playbook site.yml >/dev/null 2>&1
+[ "$(grep -c '' out/app.conf)" = 1 ] && grep -q '^setting=1$' out/app.conf && ok "a real run repairs the drift" || fail "after the repair app.conf must hold only setting=1"
+grep -q 'check_mode: false' site.yml && ok "the read-only probe runs in check mode too" || fail "give the task that reads the data version check_mode: false so --check can run it"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get check_option)" in --check|-C) ok "check option" ;; *) fail "check_option: the ansible-playbook option for a dry run" ;; esac
+[ "$(get diff_option)" = --diff ] || [ "$(get diff_option)" = -D ] && ok "diff option" || fail "diff_option: the option that prints what would change in files"
+[ "$(get task_keyword_to_run_in_check_mode)" = "check_mode: false" ] && ok "check_mode keyword" || fail "task_keyword_to_run_in_check_mode: the task keyword and value that make a task run even during --check (write it as keyword: value)"
+[ "$(get check_mode_variable)" = ansible_check_mode ] && ok "check mode variable" || fail "check_mode_variable: the variable that is true during a dry run"
+[ "$(get keyword_to_decide_changed)" = changed_when ] && ok "changed_when" || fail "keyword_to_decide_changed: the task keyword that overrides whether a result counts as changed"
+exit $bad

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a playbook that works once and then changes something on every run.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf ansible.cfg inventory site.yml templates out answers.txt
+mkdir -p inventory templates
+cat > ansible.cfg <<'CFG'
+# SPDX-License-Identifier: MIT
+[defaults]
+inventory = inventory/hosts
+host_key_checking = False
+deprecation_warnings = False
+interpreter_python = auto_silent
+CFG
+printf '# SPDX-License-Identifier: MIT\nlocalhost ansible_connection=local\n' > inventory/hosts
+cat > templates/motd.j2 <<'Y'
+{# SPDX-License-Identifier: MIT #}
+Managed host, configured at {{ now(utc=true).isoformat() }}
+Y
+cat > site.yml <<'PLAY'
+# SPDX-License-Identifier: MIT
+- name: A playbook that is not safe to repeat
+  hosts: localhost
+  gather_facts: false
+  vars:
+    lab_out: "{{ playbook_dir }}/out"
+  tasks:
+    - name: Create the output directory
+      ansible.builtin.file:
+        path: "{{ lab_out }}"
+        state: directory
+        mode: "0755"
+    - name: Add a setting to the application file
+      ansible.builtin.shell: echo "setting=1" >> "{{ lab_out }}/app.conf"
+    - name: Render the message of the day
+      ansible.builtin.template:
+        src: motd.j2
+        dest: "{{ lab_out }}/motd"
+        mode: "0644"
+    - name: Initialise the data directory
+      ansible.builtin.command: sh -c 'mkdir -p "{{ lab_out }}/data" && echo 16 > "{{ lab_out }}/data/PG_VERSION"'
+    - name: Read the data version
+      ansible.builtin.command: cat "{{ lab_out }}/data/PG_VERSION"
+      register: data_version
+    - name: Show the data version
+      ansible.builtin.debug:
+        msg: "data version {{ data_version.stdout | default('unknown') }}"
+PLAY
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\ncheck_option=?\ndiff_option=?\ntask_keyword_to_run_in_check_mode=?\ncheck_mode_variable=?\nkeyword_to_decide_changed=?\n' > answers.txt

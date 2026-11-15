@@ -36,6 +36,7 @@ phases:
     - LNX-305-T04
     - LNX-305-T05
     - LNX-305-T06
+    - LNX-305-T07
   checks:
     state: todo
     units: 0
@@ -58,3 +59,4 @@ log:
 - '2026-11-15 labs: LNX-305-T04'
 - '2026-11-15 labs: LNX-305-T05'
 - '2026-11-15 labs: LNX-305-T06'
+- '2026-11-15 labs: LNX-305-T07'
