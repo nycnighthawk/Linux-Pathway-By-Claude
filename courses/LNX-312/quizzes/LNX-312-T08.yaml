@@ -7,7 +7,7 @@ questions:
   explain: 'A) correct. B) wrong: headless means no cluster IP. C) wrong. D) wrong.'
 - id: ndots
   prompt: A Pod has ndots 5 and three search suffixes. How many queries does a successful lookup of api.example.com send (ignoring AAAA)?
-  choices: [1, 2, 4, 6]
+  choices: ['1', '2', '4', '6']
   answer: [2]
   explain: 'A) wrong. B) wrong. C) correct: three failed suffix tries then the absolute name. D) wrong.'
 - id: dns-policy

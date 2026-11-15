@@ -1,7 +1,7 @@
 item: LNX-312
 label: Container & Kubernetes Networking
 branch: build/LNX-312
-state: in-progress
+state: done
 started: '2026-11-15'
 updated: '2026-11-15'
 phases:
@@ -74,7 +74,7 @@ phases:
     - LNX-312-T12
     - LNX-312-T13
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -131,3 +131,6 @@ log:
 - '2026-11-15 lessons: LNX-312-T13'
 - '2026-11-15 quizzes: LNX-312-T13'
 - '2026-11-15 labs: LNX-312-T13'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'

@@ -17,7 +17,7 @@ questions:
   explain: 'A) wrong. B) correct: same-subnet traffic is routed natively. C) wrong. D) wrong.'
 - id: overhead
   prompt: Roughly how many bytes does VXLAN over IPv4 add per packet?
-  choices: [8, 20, 50, 100]
+  choices: ['8', '20', '50', '100']
   answer: [2]
   explain: 'A) wrong: that is the UDP header alone. B) wrong. C) correct: outer Ethernet, IP, UDP and VXLAN headers. D) wrong.'
 - id: cilium

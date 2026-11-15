@@ -2,12 +2,12 @@ title: 'Quiz: MTU and throughput'
 questions:
 - id: vxlan
   prompt: Underlay MTU is 1500 and the CNI uses VXLAN over IPv4. What is the Pod MTU?
-  choices: [1500, 1480, 1450, 1400]
+  choices: ['1500', '1480', '1450', '1400']
   answer: [2]
   explain: 'A) wrong. B) wrong: that is IP-in-IP. C) correct: 50 bytes of overhead. D) wrong.'
 - id: ping
   prompt: What payload size gives a 1450-byte packet with ping -M do -s?
-  choices: [1450, 1422, 1400, 1472]
+  choices: ['1450', '1422', '1400', '1472']
   answer: [1]
   explain: 'A) wrong. B) correct: 1450 minus 20 IP and 8 ICMP. C) wrong. D) wrong: that fits 1500.'
 - id: clamp
