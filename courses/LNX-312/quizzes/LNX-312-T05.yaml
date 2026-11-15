@@ -1,0 +1,27 @@
+title: 'Quiz: eBPF datapath and Hubble'
+questions:
+- id: socket-lb
+  prompt: What does socket-level Service translation avoid for in-cluster traffic?
+  choices: [Per-packet NAT and reverse NAT on the node, Any need for EndpointSlices, DNS lookups, The Pod network]
+  answer: [0]
+  explain: 'A) correct: the destination is rewritten at connect time. B) wrong. C) wrong. D) wrong.'
+- id: api-address
+  prompt: Why does the agent need the real API server address when kube-proxy is gone?
+  choices: [No Service translation exists yet when the agent starts, To avoid TLS, Because the API is on UDP, For DNS only]
+  answer: [0]
+  explain: 'A) correct: the ClusterIP of the API server cannot be resolved before the datapath runs. B) wrong. C) wrong. D) wrong.'
+- id: dsr
+  prompt: Which are properties of DSR? (select two)
+  choices: [The backend replies directly to the client, It needs metadata carried in the packet so MTU matters, It removes the need for a Service, It works only with IPv6]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: maglev
+  prompt: Why choose Maglev hashing for an external VIP served by several nodes?
+  choices: [Most flows keep their backend when the backend set changes, It encrypts traffic, It disables conntrack, It is the only algorithm that works]
+  answer: [0]
+  explain: 'A) correct: consistent hashing limits disruption. B) wrong. C) wrong. D) wrong.'
+- id: l7-cost
+  prompt: What is the main risk of enabling L7 visibility for every flow in the cluster?
+  choices: [A proxy is started for the covered traffic, adding latency and memory, Flows are no longer recorded, Policy stops working, DNS fails]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

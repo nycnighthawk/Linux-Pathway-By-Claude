@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > kubeadm-init.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: InitConfiguration
+skipPhases:
+  - addon/kube-proxy
+nodeRegistration:
+  criSocket: unix:///run/containerd/containerd.sock
+J
+cat > cilium-values.yaml <<'J'
+# SPDX-License-Identifier: MIT
+kubeProxyReplacement: true
+k8sServiceHost: 10.0.0.10
+k8sServicePort: 6443
+routingMode: native
+ipv4NativeRoutingCIDR: 10.244.0.0/16
+autoDirectNodeRoutes: true
+loadBalancer:
+  mode: dsr
+  algorithm: maglev
+bpf:
+  masquerade: true
+hubble:
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+J

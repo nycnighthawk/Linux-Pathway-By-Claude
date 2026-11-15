@@ -50,6 +50,10 @@ modules:
     title: kube-proxy modes (iptables, IPVS, nftables), Service types
     file: lessons/LNX-312-T04.md
     minutes: 45
+  - topic: LNX-312-T05
+    title: eBPF datapath, kube-proxy replacement, Hubble
+    file: lessons/LNX-312-T05.md
+    minutes: 50
 labs:
 - id: netns-bridge-nat
   topic: LNX-312-T01
@@ -84,6 +88,12 @@ labs:
   env: C
   license: MIT
   minutes: 25
+- id: kpr-values
+  topic: LNX-312-T05
+  title: Configure a kube-proxy-free cluster
+  env: C
+  license: MIT
+  minutes: 25
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -101,3 +111,7 @@ quizzes:
   topic: LNX-312-T03
   title: 'Quiz: Flannel, Calico, Cilium compared'
   file: quizzes/LNX-312-T03.yaml
+- id: LNX-312-T05
+  topic: LNX-312-T05
+  title: 'Quiz: eBPF datapath, kube-proxy replacement, Hubble'
+  file: quizzes/LNX-312-T05.yaml
