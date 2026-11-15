@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import csv
+fleet = list(csv.DictReader(open("fleet.csv")))
+canary = {"web01", "api01", "batch1", "cache1", "db1r"}
+out = ["host,ring"]
+seen = {}
+for f in fleet:
+    h = f["host"]
+    if f["env"] == "lab": r = 0
+    elif f["freeze"] == "yes": r = 4
+    elif h in canary: r = 1
+    elif f["service"] == "db": r = 2 if f["role"] == "replica" else 3
+    elif f["service"] in ("web", "api") and int(''.join(c for c in h if c.isdigit())) <= 4: r = 2
+    else: r = 3
+    out.append("%s,%d" % (h, r))
+open("rings.csv", "w").write("\n".join(out) + "\n")
+PY

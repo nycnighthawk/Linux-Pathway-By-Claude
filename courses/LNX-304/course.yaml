@@ -1,0 +1,191 @@
+id: LNX-304
+title: Software Packages at Scale
+summary: 'Building, signing and distributing software for fleets: RPM spec files and rpmbuild with mock, Debian packaging
+  with debhelper and sbuild, signing and key rotation, repository tooling (createrepo_c, aptly, Pulp), dated snapshots, Katello
+  content views, patch rings, image mode with bootc and rpm-ostree, Image Builder, and multi-week rollouts.'
+hours: 50
+coverage: partial
+outcomes:
+- Write an RPM spec file, build with rpmbuild and mock, and read the build log
+- Build Debian packages with debhelper and a clean-chroot builder
+- Sign packages and repositories and rotate keys without breaking clients
+- Publish and mirror repositories with createrepo_c, aptly and Pulp
+- Freeze repository state in dated snapshots and promote them through stages
+- Organise content views and lifecycle environments for a managed fleet
+- Define patch rings and a rollback rule
+- Explain image mode with bootc and rpm-ostree and build images with Image Builder
+- Plan a multi-week rollout with gates and stop conditions
+certifications:
+- cert: LPLUS
+  objectives: []
+- cert: RHCE
+  objectives: []
+modules:
+- id: building
+  title: Building packages
+  lessons:
+  - topic: LNX-304-T01
+    title: 'RPM: spec, rpmbuild, mock'
+    file: lessons/LNX-304-T01.md
+    minutes: 45
+  - topic: LNX-304-T02
+    title: 'DEB: debhelper, sbuild'
+    file: lessons/LNX-304-T02.md
+    minutes: 45
+- id: trust-and-repos
+  title: Signing and repositories
+  lessons:
+  - topic: LNX-304-T03
+    title: Signing and key rotation
+    file: lessons/LNX-304-T03.md
+    minutes: 45
+  - topic: LNX-304-T04
+    title: createrepo_c, aptly, Pulp 3
+    file: lessons/LNX-304-T04.md
+    minutes: 45
+  - topic: LNX-304-T05
+    title: Dated snapshots
+    file: lessons/LNX-304-T05.md
+    minutes: 45
+  - topic: LNX-304-T06
+    title: Katello content views
+    file: lessons/LNX-304-T06.md
+    minutes: 45
+- id: delivery
+  title: Patching and image-based delivery
+  lessons:
+  - topic: LNX-304-T07
+    title: Patch rings
+    file: lessons/LNX-304-T07.md
+    minutes: 45
+  - topic: LNX-304-T08
+    title: bootc / image mode, rpm-ostree
+    file: lessons/LNX-304-T08.md
+    minutes: 45
+  - topic: LNX-304-T09
+    title: Image Builder
+    file: lessons/LNX-304-T09.md
+    minutes: 45
+  - topic: LNX-304-T10
+    title: Multi-week fleet rollouts
+    file: lessons/LNX-304-T10.md
+    minutes: 45
+labs:
+- id: rpm-spec
+  topic: LNX-304-T01
+  title: Package a script as an RPM
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - rpm
+- id: deb-package
+  topic: LNX-304-T02
+  title: Package a script as a .deb
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - dpkg-dev
+  - debhelper
+  - fakeroot
+- id: sign-rpm
+  topic: LNX-304-T03
+  title: Sign an RPM and rotate the key
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - rpm
+  - gnupg
+- id: repo-build
+  topic: LNX-304-T04
+  title: Build RPM and Debian repositories
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - rpm
+  - createrepo-c
+  - apt-utils
+  - dpkg-dev
+- id: snapshot-promote
+  topic: LNX-304-T05
+  title: Snapshot
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - rpm
+  - createrepo-c
+- id: content-view-plan
+  topic: LNX-304-T06
+  title: Plan content views and environments
+  env: S
+  license: MIT
+  minutes: 30
+- id: patch-rings
+  topic: LNX-304-T07
+  title: Assign hosts to patch rings
+  env: V
+  license: MIT
+  minutes: 30
+- id: bootc-containerfile
+  topic: LNX-304-T08
+  title: Write a bootc Containerfile
+  env: V
+  license: MIT
+  minutes: 30
+- id: image-blueprint
+  topic: LNX-304-T09
+  title: Write an Image Builder blueprint
+  env: V
+  license: MIT
+  minutes: 30
+- id: rollout-plan
+  topic: LNX-304-T10
+  title: Plan a 600-host rollout
+  env: O
+  license: MIT
+  minutes: 40
+quizzes:
+- id: LNX-304-T01
+  topic: LNX-304-T01
+  title: 'Quiz: RPM: spec, rpmbuild, mock'
+  file: quizzes/LNX-304-T01.yaml
+- id: LNX-304-T02
+  topic: LNX-304-T02
+  title: 'Quiz: DEB: debhelper, sbuild'
+  file: quizzes/LNX-304-T02.yaml
+- id: LNX-304-T03
+  topic: LNX-304-T03
+  title: 'Quiz: Signing and key rotation'
+  file: quizzes/LNX-304-T03.yaml
+- id: LNX-304-T04
+  topic: LNX-304-T04
+  title: 'Quiz: createrepo_c, aptly, Pulp 3'
+  file: quizzes/LNX-304-T04.yaml
+- id: LNX-304-T05
+  topic: LNX-304-T05
+  title: 'Quiz: Dated snapshots'
+  file: quizzes/LNX-304-T05.yaml
+- id: LNX-304-T06
+  topic: LNX-304-T06
+  title: 'Quiz: Katello content views'
+  file: quizzes/LNX-304-T06.yaml
+- id: LNX-304-T07
+  topic: LNX-304-T07
+  title: 'Quiz: Patch rings'
+  file: quizzes/LNX-304-T07.yaml
+- id: LNX-304-T08
+  topic: LNX-304-T08
+  title: 'Quiz: bootc / image mode, rpm-ostree'
+  file: quizzes/LNX-304-T08.yaml
+- id: LNX-304-T09
+  topic: LNX-304-T09
+  title: 'Quiz: Image Builder'
+  file: quizzes/LNX-304-T09.yaml
+- id: LNX-304-T10
+  topic: LNX-304-T10
+  title: 'Quiz: Multi-week fleet rollouts'
+  file: quizzes/LNX-304-T10.yaml

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > rollout-plan.txt <<'X'
+# SPDX-License-Identifier: MIT
+fleet_total=600
+wave_sizes=12,12,30,60,120,150,180
+exceptions_expected=36
+soak_days_wave1=4
+stop_failed_hosts_per_wave=1
+stop_on=slo_breach,data_loss,rollback_failed
+pause_owner=on_call
+lift_owner=sponsor
+rollback=snapshot
+rollback_window_days=10
+point_of_no_return=named,approval_required
+notice_days=21
+owner_missing_target=0
+tail_process=exceptions_register
+review=post_campaign
+X

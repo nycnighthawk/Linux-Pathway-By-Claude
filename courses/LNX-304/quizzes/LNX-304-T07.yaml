@@ -1,0 +1,62 @@
+title: 'Quiz: Patch rings'
+questions:
+- id: representative
+  prompt: What makes a canary ring useful?
+  choices:
+  - It is as small as possible
+  - It contains a representative host of every service tier that later rings contain
+  - It consists of volunteers
+  - It is chosen by hostname
+  answer:
+  - 1
+  explain: 'A) wrong: too small hides problems. B) correct: a bug can only show where the code path runs. C) wrong: volunteers are not representative. D) wrong: names say nothing about workload.'
+- id: replicas
+  prompt: In which order are a database primary and its replica patched?
+  choices:
+  - Primary first
+  - Replica first, then the primary
+  - Both together
+  - Neither
+  answer:
+  - 1
+  explain: 'A) wrong: a failed primary update risks the service. B) correct: the replica tests the update and keeps service if it fails. C) wrong: both down loses redundancy. D) wrong: both are patched.'
+- id: effective
+  prompt: dnf reports the kernel package updated. What else shows whether the host is actually protected?
+  choices:
+  - Nothing, the package is installed
+  - That the running kernel (uname -r) matches the new one, i.e. the reboot happened
+  - The disk size
+  - The hostname
+  answer:
+  - 1
+  explain: 'A) wrong: the old kernel keeps running until reboot. B) correct: effective state needs the reboot or restart. C) wrong: unrelated. D) wrong: unrelated.'
+- id: gate
+  prompt: Which gate is sound?
+  choices:
+  - A human looks at a dashboard when they have time
+  - A pre-agreed threshold on error rate that stops the rollout automatically
+  - No gate; wait for complaints
+  - Gate only on update job exit code
+  answer:
+  - 1
+  explain: 'A) wrong: it is skipped under pressure. B) correct: automate the stop, let a human decide to continue. C) wrong: late and noisy. D) wrong: a successful install says nothing about health.'
+- id: soak
+  prompt: Why does a memory-leak regression need a longer soak than a boot failure?
+  choices:
+  - Leaks only appear after hours or days of running
+  - Boot failures are harmless
+  - Soak does not matter
+  - Leaks affect only canaries
+  answer:
+  - 0
+  explain: 'A) correct: slow failures need time to show. B) wrong: boot failures are visible at once, not harmless. C) wrong: it is a control. D) wrong: leaks affect any host.'
+- id: exceptions
+  prompt: What should every patching exception have?
+  choices:
+  - An owner, a reason, compensating controls and an expiry date
+  - A permanent waiver
+  - No record
+  - Ring 0 placement
+  answer:
+  - 0
+  explain: 'A) correct: otherwise it becomes permanent risk. B) wrong: no review. C) wrong: no audit. D) wrong: ring 0 is for lab hosts.'

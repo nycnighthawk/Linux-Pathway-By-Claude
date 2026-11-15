@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: packages in incoming/, no repository.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf incoming repo
+mkdir incoming
+mkrpm() { # name version
+  local t; t=$(mktemp -d); mkdir -p "$t/SPECS"
+  cat > "$t/SPECS/p.spec" <<X
+Name: $1
+Version: $2
+Release: 1
+Summary: Lab package $1
+License: MIT
+BuildArch: noarch
+%description
+Lab package.
+%install
+install -D -m 0755 /dev/null %{buildroot}/usr/bin/$1
+%files
+/usr/bin/$1
+%changelog
+* Mon Jan 01 2024 Lab <lab@example.invalid> - $2-1
+- lab
+X
+  rpmbuild --define "_topdir $t" -bb "$t/SPECS/p.spec" >/dev/null 2>&1
+  cp "$t"/RPMS/noarch/*.rpm incoming/
+  rm -rf "$t"
+}
+mkdeb() {
+  local t; t=$(mktemp -d); mkdir -p "$t/DEBIAN" "$t/usr/bin"
+  printf '#!/bin/sh\necho %s\n' "$1" > "$t/usr/bin/$1"; chmod 755 "$t/usr/bin/$1"
+  printf 'Package: %s\nVersion: 1.0\nArchitecture: all\nMaintainer: Lab <lab@example.invalid>\nDescription: lab package\n' "$1" > "$t/DEBIAN/control"
+  dpkg-deb --build "$t" "incoming/$1_1.0_all.deb" >/dev/null 2>&1
+  rm -rf "$t"
+}
+mkrpm site-a 1.0; mkrpm site-b 1.0; mkrpm site-a 1.1
+mkdeb site-a; mkdeb site-b

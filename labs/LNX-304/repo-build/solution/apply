@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p repo/rpm repo/deb
+cp incoming/site-a-1.0-1.noarch.rpm incoming/site-b-1.0-1.noarch.rpm repo/rpm/
+createrepo_c repo/rpm >/dev/null
+cp incoming/site-a-1.1-1.noarch.rpm repo/rpm/
+createrepo_c --update repo/rpm >/dev/null
+cp incoming/*.deb repo/deb/
+( cd repo/deb && apt-ftparchive packages . > Packages 2>/dev/null && gzip -k -f Packages && apt-ftparchive release . > Release )

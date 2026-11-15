@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Validate rings.csv against fleet.csv.
+set -u
+cd "${LAB_DIR:-.}"
+[ -f fleet.csv ] || { echo "FAIL: run setup first"; exit 1; }
+[ -f rings.csv ] || { echo "FAIL: rings.csv is missing (header: host,ring)"; exit 1; }
+exec python3 - <<'PY'
+import csv, sys, collections
+fleet = list(csv.DictReader(open("fleet.csv")))
+rows = list(csv.DictReader(open("rings.csv")))
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+ring = {}
+dup = [h for h, n in collections.Counter(r.get("host", "") for r in rows).items() if n > 1]
+for r in rows:
+    try: ring[r["host"]] = int(r["ring"])
+    except Exception: fail("bad row: %r" % (r,))
+hosts = {f["host"]: f for f in fleet}
+missing = sorted(set(hosts) - set(ring)); extra = sorted(set(ring) - set(hosts))
+if not dup and not missing and not extra: ok("every host appears exactly once")
+else: fail("hosts: missing %s, unknown %s, duplicated %s" % (missing[:5], extra[:5], dup[:5]))
+if any(not 0 <= v <= 4 for v in ring.values()): fail("rings must be 0 to 4")
+if bad: sys.exit(1)
+lab = {h for h, f in hosts.items() if f["env"] == "lab"}
+frozen = {h for h, f in hosts.items() if f["freeze"] == "yes"}
+r0 = {h for h, v in ring.items() if v == 0}; r4 = {h for h, v in ring.items() if v == 4}
+ok("ring 0 is the lab hosts") if r0 == lab else fail("ring 0 must be exactly the lab hosts")
+ok("ring 4 is the frozen hosts") if r4 == frozen else fail("ring 4 must be exactly the hosts with freeze=yes")
+r1 = [h for h, v in ring.items() if v == 1]
+ok("canary has %d hosts" % len(r1)) if 5 <= len(r1) <= 6 else fail("ring 1 must have 5 or 6 hosts (has %d)" % len(r1))
+svc = {hosts[h]["service"] for h in r1}
+need = {"web", "api", "batch", "cache", "db"}
+ok("canary covers every service") if need <= svc else fail("ring 1 lacks services: %s" % sorted(need - svc))
+if any(hosts[h]["service"] == "db" and hosts[h]["role"] != "replica" for h in r1): fail("a database primary is in the canary ring")
+else: ok("only replicas of the database are in the canary")
+pairs = collections.defaultdict(dict)
+for h, f in hosts.items():
+    if f["pair"]: pairs[f["pair"]][f["role"]] = ring[h]
+if all(p["replica"] < p["primary"] for p in pairs.values()): ok("replicas are patched before their primaries")
+else: fail("in every pair the replica's ring must be lower than the primary's")
+cnt = collections.Counter(ring.values())
+if all(cnt[i] > 0 for i in (1, 2, 3)): ok("rings 1 to 3 are non-empty")
+else: fail("rings 1, 2 and 3 must each have hosts")
+if cnt[3] > max(cnt[1], cnt[2], cnt[0], cnt[4]): ok("ring 3 is the largest")
+else: fail("ring 3 (main production) must be the largest ring")
+sys.exit(bad)
+PY

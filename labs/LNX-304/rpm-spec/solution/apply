@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > hello-site.spec <<'EOF'
+Name:           hello-site
+Version:        1.0
+Release:        1%{?dist}
+Summary:        Site greeting script
+License:        MIT
+BuildArch:      noarch
+Source0:        %{name}-%{version}.tar.gz
+Requires:       /bin/sh
+
+%description
+A tiny script and its configuration, used to practise packaging.
+
+%prep
+%autosetup
+
+%build
+# nothing to compile
+
+%install
+install -D -m 0755 hello-site %{buildroot}%{_bindir}/hello-site
+install -D -m 0644 hello-site.conf %{buildroot}%{_sysconfdir}/hello-site.conf
+
+%check
+./hello-site | grep -q hello
+
+%files
+%license LICENSE
+%{_bindir}/hello-site
+%config(noreplace) %{_sysconfdir}/hello-site.conf
+
+%changelog
+* Sun Nov 15 2026 Lab Packager <lab@example.com> - 1.0-1
+- First package
+EOF
+cp hello-site.spec rpmbuild/SPECS/
+rpmbuild --define "_topdir $PWD/rpmbuild" -ba rpmbuild/SPECS/hello-site.spec >/dev/null 2>&1

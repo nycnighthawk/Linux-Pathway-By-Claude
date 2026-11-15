@@ -1,0 +1,62 @@
+title: 'Quiz: Katello content views'
+questions:
+- id: cvversion
+  prompt: What does publishing a content view create?
+  choices:
+  - A new host
+  - An immutable numbered content view version
+  - A new repository upstream
+  - A registered activation key
+  answer:
+  - 1
+  explain: 'A) wrong: hosts register separately. B) correct: the version is the snapshot. C) wrong: upstream is untouched. D) wrong: keys are created separately.'
+- id: promote
+  prompt: A new view version is published but Prod hosts see no updates. Why?
+  choices:
+  - Publishing does not promote; the version must be promoted to the Prod environment
+  - The hosts are offline
+  - Filters are disabled
+  - The product has no repositories
+  answer:
+  - 0
+  explain: 'A) correct: promotion places the version in the environment. B) wrong: not implied. C) wrong: unrelated. D) wrong: the view itself holds content.'
+- id: activationkey
+  prompt: What does an activation key give a registering host?
+  choices:
+  - A root password
+  - Its organisation, lifecycle environment, content view and subscriptions
+  - A kernel
+  - A new IP address
+  answer:
+  - 1
+  explain: 'A) wrong: not a credential for login. B) correct: it is a registration recipe. C) wrong: unrelated. D) wrong: unrelated.'
+- id: filters
+  prompt: Which practice with filters is sound?
+  choices:
+  - Exclude any package you dislike without testing
+  - Keep few filters, document them and test them on a canary host
+  - Use package-name filters for every view
+  - Never use filters
+  answer:
+  - 1
+  explain: 'A) wrong: it can break dependencies on clients. B) correct: filters are powerful and easy to misuse. C) wrong: blunt and fragile. D) wrong: an errata date filter is the usual way to get a dated view.'
+- id: incremental
+  prompt: What is an incremental update used for?
+  choices:
+  - A normal weekly publish
+  - A fast minor version with only selected errata for an emergency
+  - Deleting old versions
+  - Registering many hosts
+  answer:
+  - 1
+  explain: 'A) wrong: weekly publishes are full. B) correct: it is the expedited path and should be folded back later. C) wrong: that is clean-up. D) wrong: unrelated.'
+- id: upgrade
+  prompt: What must be in the view and activation key for an in-place OS upgrade of a Satellite-registered host?
+  choices:
+  - Only the source version repositories
+  - The repositories for both the source and the target versions (including target minor-version ones)
+  - Nothing
+  - A second Satellite
+  answer:
+  - 1
+  explain: 'A) wrong: the target is needed. B) correct: otherwise the upgrade is inhibited. C) wrong: the tool needs content. D) wrong: not required.'

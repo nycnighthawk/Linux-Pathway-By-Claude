@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}/hello-site-1.0"
+mkdir -p debian/source
+cat > debian/control <<'X'
+Source: hello-site
+Section: misc
+Priority: optional
+Maintainer: Lab Student <student@example.invalid>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+
+Package: hello-site
+Architecture: all
+Description: Site greeting script
+ A tiny script and its configuration file, packaged for the lab.
+X
+cat > debian/changelog <<'X'
+hello-site (1.0-1) unstable; urgency=medium
+
+  * Initial package.
+
+ -- Lab Student <student@example.invalid>  Mon, 01 Jan 2024 00:00:00 +0000
+X
+printf 'MIT License (lab sample)\n' > debian/copyright
+printf '3.0 (native)\n' > debian/source/format
+printf '#!/usr/bin/make -f\n%%:\n\tdh $@\n' > debian/rules
+chmod +x debian/rules
+printf 'hello-site usr/bin\nhello-site.conf etc\n' > debian/install
+dpkg-buildpackage -us -uc -b >/dev/null 2>&1

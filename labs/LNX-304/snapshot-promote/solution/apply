@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cp -al source snapshots/2026-11-01; chmod -R a-w snapshots/2026-11-01
+cp incoming/site-a-1.1-1.noarch.rpm source/
+createrepo_c --update source >/dev/null
+cp -al source snapshots/2026-11-08; chmod -R a-w snapshots/2026-11-08
+ln -sfn ../snapshots/2026-11-08 channels/dev; echo "2026-11-08 dev 2026-11-08" >> promotions.log
+ln -sfn ../snapshots/2026-11-08 channels/prod; echo "2026-11-09 prod 2026-11-08" >> promotions.log
+ln -sfn ../snapshots/2026-11-01 channels/prod; echo "2026-11-10 prod 2026-11-01 rollback" >> promotions.log

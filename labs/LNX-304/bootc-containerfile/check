@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f Containerfile ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok()   { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+grep -Eiq '^FROM +[^ ?]*bootc' Containerfile && ok "FROM a bootc base image" || fail "FROM must name a bootc base image"
+grep -Eq '^RUN .*dnf -y install .*chrony' Containerfile && grep -Eq '^RUN .*dnf -y install .*tmux' Containerfile && ok "chrony and tmux are installed" || fail "install chrony and tmux with dnf -y install"
+grep -E '^RUN .*dnf -y install' Containerfile | grep -q 'dnf clean all' && ok "package cache is cleaned in the same layer" || fail "run dnf clean all in the same RUN as the install"
+grep -Eq '^COPY +(site/)?10-site\.toml +/usr/lib/bootc/kargs\.d/10-site\.toml' Containerfile && ok "kargs drop-in is copied to kargs.d" || fail "COPY 10-site.toml to /usr/lib/bootc/kargs.d/10-site.toml"
+if [ -f site/10-site.toml ]; then
+python3 - <<'PY' && ok "10-site.toml parses and declares kargs" || fail "site/10-site.toml must be valid TOML with kargs = [\"audit=1\"]"
+import sys, tomllib
+d = tomllib.load(open("site/10-site.toml", "rb"))
+k = d.get("kargs")
+sys.exit(0 if isinstance(k, list) and "audit=1" in k and all(isinstance(x, str) for x in k) else 1)
+PY
+else fail "write site/10-site.toml"; fi
+grep -Eq '^RUN .*systemctl enable .*chronyd\.service' Containerfile && ok "chronyd.service enabled" || fail "systemctl enable chronyd.service"
+last=$(grep -Ev '^\s*(#|$)' Containerfile | tail -1)
+[ "$last" = "RUN bootc container lint" ] && ok "last step is bootc container lint" || fail "the last instruction must be RUN bootc container lint"
+grep -Eq '^(VOLUME|ENTRYPOINT|CMD)' Containerfile && fail "an OS image must not use VOLUME, ENTRYPOINT or CMD" || ok "no VOLUME, ENTRYPOINT or CMD"
+grep -Eiq '(password|passwd|token|secret)=' Containerfile && fail "no secrets in the image" || ok "no secrets in the Containerfile"
+exit $bad

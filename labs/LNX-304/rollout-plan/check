@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f rollout-plan.txt ] || { echo "FAIL: rollout-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" rollout-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+isint() { printf '%s' "$1" | grep -Eq '^[0-9]+$'; }
+t=$(get fleet_total); [ "$t" = 600 ] && ok "fleet_total 600" || fail "fleet_total must be 600"
+x=$(get exceptions_expected); if isint "$x" && [ "$x" -ge 10 ] && [ "$x" -le 60 ]; then ok "$x hosts expected in the exceptions register"; else fail "exceptions_expected: 10 to 60"; x=0; fi
+w=$(get wave_sizes)
+if printf '%s' "$w" | grep -Eq '^[0-9]+(,[0-9]+)+$'; then
+  python3 - "$w" "$t" "$x" <<'PY' && ok "wave sizes are sane" || { echo "FAIL: wave_sizes: first <= 15, second 5..30, then non-decreasing, total = fleet_total - exceptions_expected"; exit 1; }
+import sys
+w = [int(v) for v in sys.argv[1].split(",")]; t = int(sys.argv[2]) if sys.argv[2].isdigit() else 0; x = int(sys.argv[3])
+good = len(w) >= 4 and w[0] <= 15 and 5 <= w[1] <= 30 and all(w[i] <= w[i + 1] for i in range(1, len(w) - 1)) and sum(w) == t - x
+sys.exit(0 if good else 1)
+PY
+  [ $? -eq 0 ] || bad=1
+else fail "wave_sizes: comma list of counts"; fi
+s=$(get soak_days_wave1); if isint "$s" && [ "$s" -ge 2 ] && [ "$s" -le 7 ]; then ok "soak $s days"; else fail "soak_days_wave1: 2 to 7"; s=0; fi
+v=$(get stop_failed_hosts_per_wave); if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 3 ]; then ok "stop at $v failed host(s) per wave"; else fail "stop_failed_hosts_per_wave: 1 to 3"; fi
+so=$(get stop_on)
+for k in slo_breach data_loss rollback_failed; do case ",$so," in *",$k,"*) ok "stop on $k" ;; *) fail "stop_on must include $k" ;; esac; done
+[ "$(get pause_owner)" = on_call ] && ok "on-call may pause" || fail "pause_owner: on_call"
+[ "$(get lift_owner)" = sponsor ] && ok "the sponsor lifts a stop" || fail "lift_owner: sponsor"
+case "$(get rollback)" in snapshot|restore|reinstall) ok "rollback by $(get rollback)" ;; *) fail "rollback: snapshot, restore or reinstall" ;; esac
+r=$(get rollback_window_days); if isint "$r" && [ "$r" -ge $((s + 3)) ]; then ok "rollback possible for $r days"; else fail "rollback_window_days must be at least soak_days_wave1 + 3"; fi
+[ "$(get point_of_no_return)" = "named,approval_required" ] && ok "point of no return is named and needs approval" || fail "point_of_no_return: named,approval_required"
+n=$(get notice_days); if isint "$n" && [ "$n" -ge 14 ] && [ "$n" -le 30 ]; then ok "owners get $n days notice"; else fail "notice_days: 14 to 30"; fi
+[ "$(get owner_missing_target)" = 0 ] && ok "every host has an owner before wave 1" || fail "owner_missing_target must be 0"
+[ "$(get tail_process)" = exceptions_register ] && ok "the tail runs through an exceptions register" || fail "tail_process: exceptions_register"
+[ "$(get review)" = post_campaign ] && ok "a post-campaign review is planned" || fail "review: post_campaign"
+exit "$bad"
