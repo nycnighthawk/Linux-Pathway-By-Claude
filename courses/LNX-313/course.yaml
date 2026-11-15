@@ -1,0 +1,43 @@
+id: LNX-313
+title: Kubernetes App Delivery & GitOps
+summary: 'Designing, shipping and operating applications on Kubernetes: Pod design with init containers and native sidecars,
+  configuration, Secrets, security contexts and limits, probes and debugging, rollout strategies, Jobs and CronJobs, Helm
+  chart authoring, GitOps with Argo CD and Flux, a first operator, metrics and tracing, and the developer inner loop.'
+hours: 50
+coverage: full
+outcomes:
+- Design Pods with init containers and native sidecars and reason about start and stop ordering
+- Configure applications with ConfigMaps, Secrets, security contexts and resource limits
+- Write probes that tell the truth and debug running Pods with logs and ephemeral containers
+- Choose and implement rolling, blue/green and canary releases
+- Run batch work with Jobs and CronJobs without duplicates or silent failures
+- Author, test and release Helm charts, and deliver them with Argo CD or Flux
+- Explain the controller pattern by building a small operator
+- Instrument applications with Prometheus metrics and OpenTelemetry, and set up a fast inner loop
+certifications:
+- cert: CKAD
+  objectives:
+  - D1
+  - D2
+  - D3
+  - D4
+modules:
+- id: workload-design
+  title: Designing workloads
+  lessons:
+  - topic: LNX-313-T01
+    title: 'Pod design: init and sidecar containers'
+    file: lessons/LNX-313-T01.md
+    minutes: 55
+labs:
+- id: pod-with-sidecar
+  topic: LNX-313-T01
+  title: A Pod with an init container
+  env: C
+  license: MIT
+  minutes: 30
+quizzes:
+- id: LNX-313-T01
+  topic: LNX-313-T01
+  title: 'Quiz: Pod design: init and sidecar containers'
+  file: quizzes/LNX-313-T01.yaml
