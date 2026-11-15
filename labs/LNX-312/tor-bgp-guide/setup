@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+printf 'switch_os=\nlocal_as=\npeer_as=\nsession_state=\nprefixes_received=\nbfd=\ngraceful_restart=\necmp_paths=\nprefix_filter=\n' > report.txt
+: > notes.txt

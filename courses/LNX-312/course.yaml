@@ -88,6 +88,10 @@ modules:
     title: MTU, encapsulation overhead, throughput
     file: lessons/LNX-312-T12.md
     minutes: 40
+  - topic: LNX-312-T13
+    title: BGP to physical top-of-rack switches
+    file: lessons/LNX-312-T13.md
+    minutes: 30
 labs:
 - id: netns-bridge-nat
   topic: LNX-312-T01
@@ -170,6 +174,12 @@ labs:
   env: S
   license: MIT
   minutes: 40
+- id: tor-bgp-guide
+  topic: LNX-312-T13
+  title: Bring up a BGP session to a top-of-rack switch
+  env: H
+  license: MIT
+  minutes: 45
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -219,3 +229,7 @@ quizzes:
   topic: LNX-312-T12
   title: 'Quiz: MTU, encapsulation overhead, throughput'
   file: quizzes/LNX-312-T12.yaml
+- id: LNX-312-T13
+  topic: LNX-312-T13
+  title: 'Quiz: BGP to physical top-of-rack switches'
+  file: quizzes/LNX-312-T13.yaml

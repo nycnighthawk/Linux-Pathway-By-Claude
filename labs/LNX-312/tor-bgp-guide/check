@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f report.txt ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get switch_os)" in frr|sonic|eos|cumulus|nxos|junos|other) ok switch_os ;; *) fail "switch_os must be frr, sonic, eos, cumulus, nxos, junos or other" ;; esac
+for k in local_as peer_as; do get $k | grep -Eq '^[0-9]+$' && ok $k || fail "$k must be an integer"; done
+[ "$(get local_as)" != "$(get peer_as)" ] 2>/dev/null && get local_as | grep -Eq '^[0-9]+$' && ok "eBGP: the two AS numbers differ" || fail "this is an eBGP session: local_as and peer_as must differ"
+case "$(get session_state)" in established|active|idle|connect) ok session_state ;; *) fail "session_state must be established, active, idle or connect" ;; esac
+for k in prefixes_received ecmp_paths; do get $k | grep -Eq '^[0-9]+$' && ok $k || fail "$k must be an integer"; done
+case "$(get bfd)" in up|down|none) ok bfd ;; *) fail "bfd must be up, down or none" ;; esac
+for k in graceful_restart prefix_filter; do case "$(get $k)" in yes|no) ok $k ;; *) fail "$k must be yes or no" ;; esac; done
+[ "$(wc -l < notes.txt)" -ge 3 ] && ok "notes.txt has the commands and outputs" || fail "notes.txt needs at least three lines"
+exit $bad
