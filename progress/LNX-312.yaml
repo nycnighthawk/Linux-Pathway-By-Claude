@@ -1,0 +1,31 @@
+item: LNX-312
+label: Container & Kubernetes Networking
+branch: build/LNX-312
+state: in-progress
+started: '2026-11-15'
+updated: '2026-11-15'
+phases:
+  synth:
+    state: in-progress
+    units: 13
+    done:
+    - LNX-312-T04
+  lessons:
+    state: todo
+    units: 13
+    done: []
+  quizzes:
+    state: todo
+    units: 13
+    done: []
+  labs:
+    state: todo
+    units: 13
+    done: []
+  checks:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-15 started
