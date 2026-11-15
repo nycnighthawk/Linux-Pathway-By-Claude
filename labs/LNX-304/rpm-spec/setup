@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a source tarball and nothing else.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf rpmbuild hello-site.spec src hello-site-1.0.tar.gz
+mkdir -p src/hello-site-1.0
+cat > src/hello-site-1.0/hello-site <<'EOF'
+#!/bin/sh
+echo "hello from the site package"
+EOF
+chmod +x src/hello-site-1.0/hello-site
+printf '# hello-site configuration\ngreeting=hello\n' > src/hello-site-1.0/hello-site.conf
+printf 'MIT License (lab sample)\n' > src/hello-site-1.0/LICENSE
+tar -C src -czf hello-site-1.0.tar.gz hello-site-1.0
+rm -rf src
+mkdir -p rpmbuild/SOURCES rpmbuild/SPECS
+cp hello-site-1.0.tar.gz rpmbuild/SOURCES/

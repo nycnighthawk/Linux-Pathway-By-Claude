@@ -124,13 +124,13 @@ topics:
   LNX-304-T01: {course: LNX-304, title: "RPM: spec, rpmbuild, mock", depth: 4, env: C}
   LNX-304-T02: {course: LNX-304, title: "DEB: debhelper, sbuild", depth: 3, env: C}
   LNX-304-T03: {course: LNX-304, title: "Signing and key rotation", depth: 3, env: C}
-  LNX-304-T04: {course: LNX-304, title: "createrepo_c, aptly, Pulp 3", depth: 3, env: C}
+  LNX-304-T04: {course: LNX-304, title: "createrepo_c, aptly, Pulp 3", depth: 3, env: C, query: [createrepo, repodata, aptly, pulp, repository, mirror]}
   LNX-304-T05: {course: LNX-304, title: "Dated snapshots", depth: 3, env: C}
   LNX-304-T06: {course: LNX-304, title: "Katello content views", depth: 3, env: S}
   LNX-304-T07: {course: LNX-304, title: "Patch rings", depth: 3, env: V}
   LNX-304-T08: {course: LNX-304, title: "bootc / image mode, rpm-ostree", depth: 3, env: V}
   LNX-304-T09: {course: LNX-304, title: "Image Builder", depth: 2, env: V}
-  LNX-304-T10: {course: LNX-304, title: "Multi-week fleet rollouts", depth: 2, env: O}
+  LNX-304-T10: {course: LNX-304, title: "Multi-week fleet rollouts", depth: 2, env: O, query: [rollout, canary, staged, fleet, maintenance]}
   LNX-305-T01: {course: LNX-305, title: "Inventories, variable precedence", depth: 4, env: C}
   LNX-305-T02: {course: LNX-305, title: "Playbooks, handlers, loops, Jinja2", depth: 4, env: V}
   LNX-305-T03: {course: LNX-305, title: "Roles, collections, execution environments", depth: 3, env: C}

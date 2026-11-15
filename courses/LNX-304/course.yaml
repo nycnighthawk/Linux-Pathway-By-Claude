@@ -1,0 +1,44 @@
+id: LNX-304
+title: Software Packages at Scale
+summary: 'Building, signing and distributing software for fleets: RPM spec files and rpmbuild with mock, Debian packaging
+  with debhelper and sbuild, signing and key rotation, repository tooling (createrepo_c, aptly, Pulp), dated snapshots, Katello
+  content views, patch rings, image mode with bootc and rpm-ostree, Image Builder, and multi-week rollouts.'
+hours: 50
+coverage: partial
+outcomes:
+- Write an RPM spec file, build with rpmbuild and mock, and read the build log
+- Build Debian packages with debhelper and a clean-chroot builder
+- Sign packages and repositories and rotate keys without breaking clients
+- Publish and mirror repositories with createrepo_c, aptly and Pulp
+- Freeze repository state in dated snapshots and promote them through stages
+- Organise content views and lifecycle environments for a managed fleet
+- Define patch rings and a rollback rule
+- Explain image mode with bootc and rpm-ostree and build images with Image Builder
+- Plan a multi-week rollout with gates and stop conditions
+certifications:
+- cert: LPLUS
+  objectives: []
+- cert: RHCE
+  objectives: []
+modules:
+- id: building
+  title: Building packages
+  lessons:
+  - topic: LNX-304-T01
+    title: 'RPM: spec, rpmbuild, mock'
+    file: lessons/LNX-304-T01.md
+    minutes: 45
+labs:
+- id: rpm-spec
+  topic: LNX-304-T01
+  title: Package a script as an RPM
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - rpm
+quizzes:
+- id: LNX-304-T01
+  topic: LNX-304-T01
+  title: 'Quiz: RPM: spec, rpmbuild, mock'
+  file: quizzes/LNX-304-T01.yaml
