@@ -51,9 +51,20 @@ phases:
     - LNX-310-T10
     - LNX-310-T11
   labs:
-    state: todo
+    state: done
     units: 11
-    done: []
+    done:
+    - LNX-310-T01
+    - LNX-310-T02
+    - LNX-310-T03
+    - LNX-310-T04
+    - LNX-310-T05
+    - LNX-310-T06
+    - LNX-310-T07
+    - LNX-310-T08
+    - LNX-310-T09
+    - LNX-310-T10
+    - LNX-310-T11
   checks:
     state: todo
     units: 0
@@ -77,3 +88,5 @@ log:
   LNX-310-T08, LNX-310-T09, LNX-310-T10, LNX-310-T11'
 - '2026-11-15 quizzes: LNX-310-T01, LNX-310-T02, LNX-310-T03, LNX-310-T04, LNX-310-T05, LNX-310-T06, LNX-310-T07,
   LNX-310-T08, LNX-310-T09, LNX-310-T10, LNX-310-T11'
+- '2026-11-15 labs: LNX-310-T01, LNX-310-T02, LNX-310-T03, LNX-310-T04, LNX-310-T05, LNX-310-T06, LNX-310-T07, LNX-310-T08,
+  LNX-310-T09, LNX-310-T10, LNX-310-T11'

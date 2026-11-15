@@ -251,3 +251,13 @@ def test_cli_end_to_end(root, tmp_path):
     assert r.returncode == 0 and (root / "site" / "courses" / "index.html").is_file(), r.stdout + r.stderr
     r = subprocess.run([sys.executable, "-m", "lpc", "course", "lab", "LNX-900"], env=env, capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_argv_runs_scripts_through_their_interpreter_on_windows(tmp_path):
+    py = tmp_path / "check"
+    py.write_text("#!/usr/bin/env python3\nprint(1)\n")
+    sh = tmp_path / "setup"
+    sh.write_text("#!/usr/bin/env bash\ntrue\n")
+    assert course._argv([str(py)], nt=False) == [str(py)]
+    assert course._argv([str(py)], nt=True) == [sys.executable, str(py)]
+    assert course._argv([str(sh)], nt=True)[-1] == str(sh) and len(course._argv([str(sh)], nt=True)) == 2

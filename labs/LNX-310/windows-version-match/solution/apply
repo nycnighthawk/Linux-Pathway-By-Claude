@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+import json, os
+from pathlib import Path
+
+os.chdir(os.environ.get("LAB_DIR", "."))
+REL = {"ws2016": 2016, "ws2019": 2019, "ws2022": 2022, "ws2025": 2025}
+plan = {}
+for p in json.loads(Path("pairs.json").read_text(encoding="utf-8")):
+    h, i = p["host"], p["image"]
+    if h == "win11-24h2":
+        v = "process" if i in ("ws2025", "ws2022") else "hyperv"
+    else:
+        v = "impossible" if REL[i] > REL[h] else ("process" if REL[i] == REL[h] else "hyperv")
+    plan["%s|%s" % (h, i)] = v
+Path("plan.json").write_text(json.dumps(plan, indent=2), encoding="utf-8")
+Path("Dockerfile").write_text(
+    "# SPDX-License-Identifier: MIT\n"
+    "FROM mcr.microsoft.com/windows/servercore:ltsc2022\n"
+    "SHELL [\"powershell\", \"-Command\", \"$ErrorActionPreference = 'Stop';\"]\n"
+    "COPY app C:/app\n"
+    "USER ContainerUser\n"
+    "ENTRYPOINT [\"C:\\\\app\\\\server.exe\"]\n", encoding="utf-8")
+Path("answers.txt").write_text("# SPDX-License-Identifier: MIT\nk8s_isolation=process\nlatest_tag=no\n", encoding="utf-8")
