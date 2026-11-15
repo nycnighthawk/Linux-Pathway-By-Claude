@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Compare the answers with the recorded evidence and inspect debug.sh.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f inspect.json ] && [ -f events.txt ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+code=$(python3 -c "import json; print(json.load(open('inspect.json'))[0]['State']['ExitCode'])")
+sig=$(python3 -c "import signal,sys; print(signal.Signals($code-128).name)")
+[ "$(get exit_signal)" = "$sig" ] && ok "exit signal $sig" || fail "exit_signal: exit code minus 128 is the signal number (143 - 128 = 15)"
+oomflag=$(python3 -c "import json; print(json.load(open('inspect.json'))[0]['State']['OOMKilled'])")
+oomcnt=$(awk '$1=="oom_kill"{print $2}' memory.events)
+want=no; { [ "$oomflag" = True ] || [ "${oomcnt:-0}" -gt 0 ]; } && want=yes
+[ "$(get oom_killed)" = "$want" ] && ok "oom_killed=$want" || fail "oom_killed: yes only if OOMKilled is true or memory.events counts oom_kill"
+t1=$(grep ' die ' events.txt | sed -n 1p | cut -d' ' -f1); t2=$(grep ' die ' events.txt | sed -n 2p | cut -d' ' -f1)
+d=$(( $(date -u -d "$t2" +%s) - $(date -u -d "$t1" +%s) ))
+[ "$(get restart_interval_seconds)" = "$d" ] && ok "interval $d s" || fail "restart_interval_seconds: seconds between the first two die events"
+form=exec; python3 -c "import json,sys; e=json.load(open('inspect.json'))[0]['Config']['Entrypoint']; sys.exit(0 if e[:2]==['/bin/sh','-c'] else 1)" && form=shell
+[ "$(get entrypoint_form)" = "$form" ] && ok "entrypoint is $form form" || fail "entrypoint_form: ['/bin/sh','-c',...] is the shell form"
+[ "$(get root_cause)" = "stop_timeout" ] && ok "root cause" || fail "root_cause: kill signal 15 is followed by a die with 137 thirty seconds later; which cause fits (oom, stop_timeout, crash, bad_command)?"
+[ "$(get fix)" = "exec_form" ] && ok "fix" || fail "fix: what lets the application receive SIGTERM directly?"
+[ -f debug.sh ] || { fail "debug.sh missing"; exit 1; }
+body=$(grep -v '^[[:space:]]*#' debug.sh)
+pid=$(python3 -c "import json; print(json.load(open('inspect.json'))[0]['State']['Pid'])")
+{ echo "$body" | grep -Eq "docker inspect.*State\.Pid|podman inspect.*State\.Pid" || echo "$body" | grep -Eq "(-t|--target)[ =]\"?$pid"; } && ok "PID obtained" || fail "debug.sh: read State.Pid with docker inspect (or use $pid)"
+echo "$body" | grep -Eq "nsenter[^|;&]*(-n|--net)\b" && ok "joins the network namespace" || fail "debug.sh: nsenter -t PID -n ..."
+echo "$body" | grep -Eq "nsenter[^|;&]*(-m|-a|--mount|--all)\b" && fail "debug.sh: do not join the mount namespace; the host's tcpdump would disappear" || ok "mount namespace not joined"
+echo "$body" | grep -Eq "tcpdump.*8443" && echo "$body" | grep -q "/tmp/api.pcap" && ok "tcpdump on 8443 to /tmp/api.pcap" || fail "debug.sh: tcpdump ... port 8443 -w /tmp/api.pcap"
+exit "$bad"
