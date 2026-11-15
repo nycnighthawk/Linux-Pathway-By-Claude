@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > backup.sh <<'X'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+mkdir -p offsite
+stamp=$(date -u +%Y%m%dT%H%M%S)
+tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
+mkdir "$tmp/prod"
+python3 - "$tmp/prod/app.db" <<'PY'
+import sqlite3, sys
+src = sqlite3.connect("prod/app.db"); dst = sqlite3.connect(sys.argv[1])
+src.backup(dst); dst.close(); src.close()
+PY
+tar -czf "offsite/app-$stamp.tar.gz" -C "$tmp" prod
+(cd offsite && sha256sum "app-$stamp.tar.gz" > "app-$stamp.tar.gz.sha256")
+ls -1t offsite/*.tar.gz | tail -n +8 | while read -r f; do rm -f "$f" "$f.sha256"; done
+echo "backup: offsite/app-$stamp.tar.gz"
+X
+cat > restore-drill.sh <<'X'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+. ./targets.env
+start=$(date +%s)
+b=$(ls -1t offsite/*.tar.gz | head -1)
+rm -rf scratch; mkdir scratch
+cs=false
+if (cd offsite && sha256sum -c "$(basename "$b").sha256" >/dev/null 2>&1); then cs=true; fi
+rows_restored=0; rows_lost=0
+if [ "$cs" = true ]; then
+  tar -xzf "$b" -C scratch
+  mv scratch/prod/app.db scratch/app.db; rmdir scratch/prod
+  rows_restored=$(python3 -c "import sqlite3; print(sqlite3.connect('scratch/app.db').execute('select count(*) from orders').fetchone()[0])")
+  rows_prod=$(python3 -c "import sqlite3; print(sqlite3.connect('prod/app.db').execute('select count(*) from orders').fetchone()[0])")
+  rows_lost=$((rows_prod - rows_restored))
+fi
+rto=$(( $(date +%s) - start ))
+python3 - "$cs" "$rows_restored" "$rows_lost" "$rto" "$RTO_TARGET_SECONDS" "$RPO_TARGET_ROWS" <<'PY'
+import json, sys
+cs, rr, rl, rto, rt, pt = sys.argv[1:]
+cs = cs == "true"; rr, rl, rto, rt, pt = int(rr), int(rl), int(rto), int(rt), int(pt)
+rto_met = rto <= rt; rpo_met = rl <= pt
+json.dump({"checksum_ok": cs, "rows_restored": rr, "rows_lost": rl, "rto_seconds": rto, "rto_met": rto_met,
+           "rpo_met": rpo_met, "status": "pass" if cs and rto_met and rpo_met else "fail"}, open("drill-report.json", "w"), indent=1)
+PY
+[ "$cs" = true ] || { echo "checksum mismatch: backup is damaged" >&2; exit 1; }
+X
+chmod +x backup.sh restore-drill.sh

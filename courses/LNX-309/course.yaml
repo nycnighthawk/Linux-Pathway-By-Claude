@@ -36,6 +36,10 @@ modules:
     title: PostgreSQL replication
     file: lessons/LNX-309-T04.md
     minutes: 45
+  - topic: LNX-309-T05
+    title: DR drills
+    file: lessons/LNX-309-T05.md
+    minutes: 45
 labs:
 - id: pcs-build
   topic: LNX-309-T01
@@ -66,6 +70,12 @@ labs:
   minutes: 45
   packages:
   - postgresql
+- id: dr-drill
+  topic: LNX-309-T05
+  title: Run a backup
+  env: V
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-309-T01
   topic: LNX-309-T01
@@ -83,3 +93,7 @@ quizzes:
   topic: LNX-309-T04
   title: 'Quiz: PostgreSQL replication'
   file: quizzes/LNX-309-T04.yaml
+- id: LNX-309-T05
+  topic: LNX-309-T05
+  title: 'Quiz: DR drills'
+  file: quizzes/LNX-309-T05.yaml
