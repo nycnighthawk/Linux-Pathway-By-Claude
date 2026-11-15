@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a small tree to protect and an aide.conf that names the databases but defines no rules.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf target db aide.conf report.txt answers.txt
+mkdir -p target/conf target/bin target/logs db
+printf 'port=8080\nmode=prod\n' > target/conf/app.conf
+printf '#!/bin/sh\necho tool\n' > target/bin/tool; chmod 755 target/bin/tool
+printf 'started\n' > target/logs/app.log
+cat > aide.conf <<C
+# SPDX-License-Identifier: MIT
+database_in=file:$PWD/db/aide.db
+database_out=file:$PWD/db/aide.db.new
+database_new=file:$PWD/db/aide.db.new
+report_url=stdout
+log_level=warning
+# TODO: define a group of attributes, add a rule for $PWD/target and exclude the volatile logs directory
+C
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\ninit_command=?\ncheck_command=?\nexit_bit_for_changed=?\nwhy_baseline_offline=?\n' > answers.txt

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the policy files and the stack order; no PAM is exercised, the files are parsed.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+# value of a "key = value" or bare "key" line, ignoring comments
+val() { sed -e 's/#.*//' "$2" 2>/dev/null | awk -F'=' -v k="$1" '{gsub(/[ \t]/,"",$1)} $1==k {v=$2; gsub(/^[ \t]+|[ \t]+$/,"",v); print (NF>1?v:"yes"); exit}'; }
+fc=etc/security/faillock.conf
+[ "$(val deny $fc)" = 4 ] && ok "deny = 4" || fail "faillock.conf: set deny = 4"
+[ "$(val fail_interval $fc)" = 900 ] && ok "fail_interval = 900" || fail "faillock.conf: set fail_interval = 900"
+[ "$(val unlock_time $fc)" = 600 ] && ok "unlock_time = 600" || fail "faillock.conf: set unlock_time = 600"
+[ -n "$(val audit $fc)" ] && ok "audit enabled" || fail "faillock.conf: enable audit"
+[ -n "$(val even_deny_root $fc)" ] && ok "even_deny_root enabled" || fail "faillock.conf: enable even_deny_root"
+pq=etc/security/pwquality.conf
+[ "$(val minlen $pq)" = 14 ] && ok "minlen = 14" || fail "pwquality.conf: set minlen = 14"
+[ "$(val minclass $pq)" = 3 ] && ok "minclass = 3" || fail "pwquality.conf: set minclass = 3"
+[ "$(val retry $pq)" = 3 ] && ok "retry = 3" || fail "pwquality.conf: set retry = 3"
+[ -n "$(val enforce_for_root $pq)" ] && ok "enforce_for_root enabled" || fail "pwquality.conf: enable enforce_for_root"
+for f in system-auth password-auth; do
+  p=etc/pam.d/$f
+  line() { grep -n -E "$1" "$p" | grep -v -E '^[0-9]+:[[:space:]]*#' | head -1 | cut -d: -f1; }
+  pre=$(line 'auth[[:space:]]+(required|requisite)[[:space:]]+pam_faillock\.so.*preauth')
+  unix=$(line 'auth[[:space:]]+(sufficient|\[success=[0-9]+ default=ignore\])[[:space:]]+pam_unix\.so')
+  af=$(line 'auth[[:space:]]+(required|\[default=die\])[[:space:]]+pam_faillock\.so.*authfail')
+  acc=$(line 'account[[:space:]]+required[[:space:]]+pam_faillock\.so')
+  if [ -n "$pre" ] && [ -n "$unix" ] && [ "$pre" -lt "$unix" ]; then ok "$f: preauth comes before pam_unix"; else fail "$f: add 'auth required pam_faillock.so preauth' before the pam_unix auth line"; fi
+  if [ -n "$af" ] && [ -n "$unix" ] && [ "$af" -gt "$unix" ]; then ok "$f: authfail comes after pam_unix"; else fail "$f: add 'auth required pam_faillock.so authfail' after the pam_unix auth line"; fi
+  [ -n "$acc" ] && ok "$f: account line present" || fail "$f: add 'account required pam_faillock.so'"
+done
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get remote_logins_use_file)" = password-auth ] && ok "SSH uses password-auth" || fail "remote_logins_use_file: which generated stack file do remote services such as sshd include?"
+[ "$(get reset_command)" = "faillock --user alice --reset" ] && ok "reset command" || fail "reset_command: clear alice's failure records with the faillock tool"
+case "$(get negative_credit_means)" in *minimum*|*"at least"*|*required*|*require*) ok "credit sign" ;; *) fail "negative_credit_means: what does a negative dcredit value mean (one phrase)?" ;; esac
+exit $bad

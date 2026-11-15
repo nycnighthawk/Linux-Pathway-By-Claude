@@ -1,0 +1,63 @@
+title: 'Quiz: auditd'
+questions:
+- id: auid
+  prompt: What is auid, and why does it matter?
+  choices:
+  - The audit daemon's own user
+  - A random session token
+  - The login uid, which survives su and sudo and names the person
+  - The effective uid of the process
+  answer:
+  - 2
+  explain: auid is set at login and carried through privilege changes, so records identify the human. The effective uid is usually root after
+    sudo.
+- id: immutable
+  prompt: What does -e 2 do?
+  choices:
+  - Enables two plugins
+  - Doubles log retention
+  - Excludes root
+  - Locks the audit configuration until reboot
+  answer:
+  - 3
+  explain: The immutable flag stops rule changes by an intruder with root, but a mistaken rule stays until reboot.
+- id: both-arch
+  prompt: Why write execve rules for both arch=b64 and arch=b32?
+  choices:
+  - 32-bit binaries use a different syscall table and would escape a b64-only rule
+  - b32 is for IPv6
+  - It halves log size
+  - The kernel requires pairs
+  answer:
+  - 0
+  explain: Syscall numbers differ by ABI, so a 32-bit process can bypass a 64-bit rule. There is no pairing requirement.
+- id: open-all
+  prompt: Why is auditing every open call a poor design?
+  choices:
+  - open is not auditable
+  - It floods the log, hits the backlog limit and loses useful events
+  - It needs SELinux
+  - It changes file contents
+  answer:
+  - 1
+  explain: Selective rules on events that matter keep the signal; more logging can produce less evidence.
+- id: search
+  prompt: Which command finds events by rule key and translates ids?
+  choices:
+  - augenrules --check
+  - ausearch -k identity -i
+  - aureport -au
+  - auditctl -l
+  answer:
+  - 1
+  explain: ausearch searches by key and -i interprets numbers; auditctl lists loaded rules, aureport summarises, augenrules builds the rule file.
+- id: offhost
+  prompt: Why forward audit records off the host?
+  choices:
+  - A root attacker can edit or stop the local trail, but not a remote copy
+  - It is required by SELinux
+  - Disks are small
+  - Syslog is faster
+  answer:
+  - 0
+  explain: Central collection protects evidence from the host's own compromise.

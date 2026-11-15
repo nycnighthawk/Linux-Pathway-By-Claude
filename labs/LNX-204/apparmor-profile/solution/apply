@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.profile <<'P'
+# SPDX-License-Identifier: MIT
+#include <tunables/global>
+profile report /usr/local/bin/report {
+  #include <abstractions/base>
+  capability net_bind_service,
+  network inet stream,
+  /etc/report/** r,
+  /var/log/report.log w,
+  /var/lib/report/** rwk,
+  /usr/local/bin/report mr,
+  deny /home/** rwx,
+  deny /etc/shadow rwx,
+}
+P
+sed -i -e 's/^status_command=.*/status_command=aa-status/' -e 's/^enforce_command=.*/enforce_command=aa-enforce report/' -e 's#^reload_command=.*#reload_command=apparmor_parser -r report.profile#' -e 's/^unconfined_transition_mode=.*/unconfined_transition_mode=ux/' -e 's/^learning_tool=.*/learning_tool=aa-genprof/' answers.txt

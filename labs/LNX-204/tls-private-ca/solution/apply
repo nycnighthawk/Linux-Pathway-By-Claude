@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out ca.key 2>/dev/null
+openssl req -x509 -new -key ca.key -sha256 -days 3650 -subj "/CN=Lab Root CA" -addext "basicConstraints=critical,CA:TRUE,pathlen:0" -addext "keyUsage=critical,keyCertSign,cRLSign" -out ca.pem
+openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out server.key 2>/dev/null
+chmod 600 server.key
+openssl req -new -key server.key -subj "/CN=app.lab.example" -out server.csr
+cat > ext.cnf <<'X'
+subjectAltName=DNS:app.lab.example,DNS:app,IP:127.0.0.1
+basicConstraints=critical,CA:FALSE
+keyUsage=critical,digitalSignature
+extendedKeyUsage=serverAuth
+X
+openssl x509 -req -in server.csr -CA ca.pem -CAkey ca.key -CAcreateserial -days 90 -sha256 -extfile ext.cnf -out server.pem 2>/dev/null
+rm -f ext.cnf ca.srl
+sed -i -e 's/^broken_pem_problem=.*/broken_pem_problem=no subjectAltName extension/' -e 's/^expiry_check_command=.*/expiry_check_command=openssl x509 -checkend 1209600 -noout -in server.pem/' -e 's/^inspect_server_command=.*/inspect_server_command=openssl s_client -connect host:443 -servername host -showcerts/' -e 's/^san_option_for_req=.*/san_option_for_req=-addext/' -e 's/^root_not_in_chain_sent_by_server=.*/root_not_in_chain_sent_by_server=true, it should not be sent because clients hold the trust anchor/' answers.txt

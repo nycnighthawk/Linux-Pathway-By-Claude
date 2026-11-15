@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat >> aide.conf <<C
+Mine = p+u+g+s+m+sha256
+$PWD/target Mine
+!$PWD/target/logs
+C
+aide -c aide.conf --init >/dev/null 2>&1 || true
+mv db/aide.db.new db/aide.db
+echo 'mode=debug' >> target/conf/app.conf
+aide -c aide.conf --check > report.txt 2>&1 || true
+sed -i -e 's/^init_command=.*/init_command=aide -c aide.conf --init/' -e 's/^check_command=.*/check_command=aide -c aide.conf --check/' -e 's/^exit_bit_for_changed=.*/exit_bit_for_changed=4/' -e 's/^why_baseline_offline=.*/why_baseline_offline=an attacker could regenerate a writable database/' answers.txt

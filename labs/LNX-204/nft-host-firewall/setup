@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an IPv4-only table with an accept-all input policy.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f host.nft answers.txt
+cat > host.nft <<'N'
+# SPDX-License-Identifier: MIT
+table ip filter {
+  chain input {
+    type filter hook input priority 0; policy accept;
+    tcp dport 22 accept
+  }
+}
+N
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nsyntax_check_command=?\nload_command=?\nlist_command=?\nrevert_safety_net=?\nfamily_for_ipv4_and_ipv6=?\n' > answers.txt

@@ -1,0 +1,87 @@
+item: LNX-204
+label: Linux Security Fundamentals
+branch: build/LNX-204
+state: done
+started: '2026-11-15'
+updated: '2026-11-15'
+phases:
+  synth:
+    state: done
+    units: 11
+    done:
+    - LNX-204-T01
+    - LNX-204-T02
+    - LNX-204-T03
+    - LNX-204-T04
+    - LNX-204-T05
+    - LNX-204-T06
+    - LNX-204-T07
+    - LNX-204-T08
+    - LNX-204-T09
+    - LNX-204-T10
+    - LNX-204-T11
+  lessons:
+    state: done
+    units: 11
+    done:
+    - LNX-204-T01
+    - LNX-204-T02
+    - LNX-204-T03
+    - LNX-204-T04
+    - LNX-204-T05
+    - LNX-204-T06
+    - LNX-204-T07
+    - LNX-204-T08
+    - LNX-204-T09
+    - LNX-204-T10
+    - LNX-204-T11
+  quizzes:
+    state: done
+    units: 11
+    done:
+    - LNX-204-T01
+    - LNX-204-T02
+    - LNX-204-T03
+    - LNX-204-T04
+    - LNX-204-T05
+    - LNX-204-T06
+    - LNX-204-T07
+    - LNX-204-T08
+    - LNX-204-T09
+    - LNX-204-T10
+    - LNX-204-T11
+  labs:
+    state: done
+    units: 11
+    done:
+    - LNX-204-T01
+    - LNX-204-T02
+    - LNX-204-T03
+    - LNX-204-T04
+    - LNX-204-T05
+    - LNX-204-T06
+    - LNX-204-T07
+    - LNX-204-T08
+    - LNX-204-T09
+    - LNX-204-T10
+    - LNX-204-T11
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-15 started
+- '2026-11-15 synth: LNX-204-T01, LNX-204-T02, LNX-204-T03'
+- '2026-11-15 synth: LNX-204-T04, LNX-204-T05'
+- '2026-11-15 synth: LNX-204-T06, LNX-204-T07'
+- '2026-11-15 synth: LNX-204-T08, LNX-204-T09, LNX-204-T10, LNX-204-T11'
+- '2026-11-15 labs: LNX-204-T01, LNX-204-T02, LNX-204-T03, LNX-204-T04, LNX-204-T05, LNX-204-T06'
+- '2026-11-15 labs: LNX-204-T07, LNX-204-T08, LNX-204-T09, LNX-204-T10, LNX-204-T11'
+- '2026-11-15 quizzes: LNX-204-T01, LNX-204-T02, LNX-204-T03, LNX-204-T04, LNX-204-T05, LNX-204-T06, LNX-204-T07,
+  LNX-204-T08, LNX-204-T09, LNX-204-T10, LNX-204-T11'
+- '2026-11-15 lessons: LNX-204-T01, LNX-204-T02, LNX-204-T03, LNX-204-T04, LNX-204-T05, LNX-204-T06, LNX-204-T07,
+  LNX-204-T08, LNX-204-T09, LNX-204-T10, LNX-204-T11'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse the profile with apparmor_parser (no kernel load) and check the rules as text.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+f=report.profile
+[ -f "$f" ] || { echo "FAIL: report.profile missing"; exit 1; }
+if out=$(apparmor_parser -Q -K -N "$f" 2>&1); then ok "apparmor_parser accepts the profile"; else fail "apparmor_parser -Q -K rejects the profile: $(printf '%s' "$out" | grep -v Cache | head -1)"; fi
+body=$(sed -e 's/#include.*//' -e 's/#.*//' "$f")
+printf '%s\n' "$body" | grep -q 'flags=(complain)' && fail "remove flags=(complain): the profile must enforce" || ok "profile enforces"
+grep -q '#include <abstractions/base>' "$f" && ok "base abstraction included" || fail "keep #include <abstractions/base>"
+printf '%s\n' "$body" | grep -E '^\s*/\*\*\s+[rwxkmlia]*[wx]' >/dev/null && fail "no allow rule on /** with write or execute" || ok "no catch-all write or execute rule"
+printf '%s\n' "$body" | grep -E '^\s*capability\s*,' >/dev/null && fail "list capabilities by name, not 'capability,'" || ok "no blanket capability rule"
+printf '%s\n' "$body" | grep -E '^\s*capability\s+net_bind_service\s*,' >/dev/null && ok "capability net_bind_service" || fail "allow capability net_bind_service,"
+printf '%s\n' "$body" | grep -E '^\s*network\s*,' >/dev/null && fail "restrict network to 'network inet stream,'" || ok "no blanket network rule"
+printf '%s\n' "$body" | grep -E '^\s*network\s+inet\s+stream\s*,' >/dev/null && ok "network inet stream" || fail "allow network inet stream,"
+printf '%s\n' "$body" | grep -E '^\s*/etc/report/\*\*\s+r\s*,' >/dev/null && ok "reads its config" || fail "allow /etc/report/** r,"
+printf '%s\n' "$body" | grep -E '^\s*/var/log/report\.log\s+(w|a|rw)\s*,' >/dev/null && ok "writes its log" || fail "allow /var/log/report.log w,"
+printf '%s\n' "$body" | grep -E '^\s*/var/lib/report/\*\*\s+rwk\s*,' >/dev/null && ok "state directory" || fail "allow /var/lib/report/** rwk,"
+printf '%s\n' "$body" | grep -E '^\s*/usr/local/bin/report\s+mr\s*,' >/dev/null && ok "maps its own binary" || fail "allow /usr/local/bin/report mr,"
+printf '%s\n' "$body" | grep -E '^\s*deny\s+/home/\*\*\s+rwx\s*,' >/dev/null && ok "home denied" || fail "add deny /home/** rwx,"
+printf '%s\n' "$body" | grep -E '^\s*deny\s+/etc/shadow\s+[rwxa]+\s*,' >/dev/null && ok "shadow denied" || fail "add deny /etc/shadow rwx,"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get status_command)" = aa-status ] && ok "aa-status" || fail "status_command: shows loaded profiles and modes"
+case "$(get enforce_command)" in "aa-enforce "*) ok "aa-enforce" ;; *) fail "enforce_command: switch a profile to enforce mode (aa-enforce <profile>)" ;; esac
+case "$(get reload_command)" in "apparmor_parser -r "*) ok "reload" ;; *) fail "reload_command: replace a loaded profile with apparmor_parser -r <file>" ;; esac
+[ "$(get unconfined_transition_mode)" = ux ] && ok "ux is the unconfined transition" || fail "unconfined_transition_mode: the execute mode that runs the child without confinement"
+case "$(get learning_tool)" in aa-genprof|aa-logprof) ok "learning tool" ;; *) fail "learning_tool: the tool that builds a profile from observed behaviour" ;; esac
+exit $bad

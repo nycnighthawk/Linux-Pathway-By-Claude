@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > host.nft <<'N'
+# SPDX-License-Identifier: MIT
+table inet filter {
+  set mgmt4 {
+    type ipv4_addr
+    flags interval
+    elements = { 10.20.0.0/24 }
+  }
+  chain input {
+    type filter hook input priority filter;
+    # everything not accepted below is dropped
+    policy drop;
+    iif lo accept
+    ct state invalid drop
+    ct state { established, related } accept
+    ip protocol icmp icmp type echo-request limit rate 10/second accept
+    icmpv6 type { echo-request, destination-unreachable, packet-too-big, time-exceeded, parameter-problem, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert } accept
+    ip saddr @mgmt4 tcp dport 22 ct state new accept
+    tcp dport { 80, 443 } ct state new accept
+    limit rate 5/minute log prefix "nft-drop: "
+  }
+}
+N
+sed -i -e 's/^syntax_check_command=.*/syntax_check_command=nft -c -f host.nft/' -e 's/^load_command=.*/load_command=nft -f host.nft/' -e 's/^list_command=.*/list_command=nft list ruleset/' -e 's/^revert_safety_net=.*/revert_safety_net=arm a systemd-run timer that restores the old rules/' -e 's/^family_for_ipv4_and_ipv6=.*/family_for_ipv4_and_ipv6=inet/' answers.txt

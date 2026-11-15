@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a copy of two PAM stack files without lockout, and default (commented) policy files.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf etc answers.txt
+mkdir -p etc/pam.d etc/security
+for f in system-auth password-auth; do
+cat > etc/pam.d/$f <<'PAM'
+# SPDX-License-Identifier: MIT
+auth        required      pam_env.so
+auth        sufficient    pam_unix.so try_first_pass nullok
+auth        required      pam_deny.so
+
+account     required      pam_unix.so
+
+password    requisite     pam_pwquality.so local_users_only
+password    sufficient    pam_unix.so sha512 shadow try_first_pass use_authtok
+password    required      pam_deny.so
+
+session     required      pam_limits.so
+session     required      pam_unix.so
+PAM
+done
+printf '# SPDX-License-Identifier: MIT\n# deny = 3\n# fail_interval = 900\n# unlock_time = 600\n# even_deny_root\n# audit\n' > etc/security/faillock.conf
+printf '# SPDX-License-Identifier: MIT\n# minlen = 8\n# minclass = 0\n# retry = 3\n# enforce_for_root\n' > etc/security/pwquality.conf
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nremote_logins_use_file=?\nreset_command=?\nnegative_credit_means=?\n' > answers.txt

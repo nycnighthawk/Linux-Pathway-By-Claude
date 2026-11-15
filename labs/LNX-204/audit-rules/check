@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the rule file as text (the kernel is not touched) and the investigation answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+f=rules.d/50-lab.rules
+[ -f "$f" ] || { fail "write rules.d/50-lab.rules"; }
+if [ -f "$f" ]; then
+  body=$(sed -e 's/#.*//' "$f" | grep -v '^[[:space:]]*$')
+  if printf '%s\n' "$body" | grep -q -v -E '^(-w |-a |-b |-f |-e |-D|-r |-i)'; then fail "every non-comment line must be an audit rule (-w, -a, -b, -f, -e, -D ...)"; else ok "every line looks like an audit rule"; fi
+  has() { printf '%s\n' "$body" | grep -q -E "$1"; }
+  has '^-w /etc/passwd +-p +[rwxa]*w[rwxa]*a?.* -k identity' && ok "watch /etc/passwd" || fail "-w /etc/passwd -p wa -k identity"
+  has '^-w /etc/shadow +-p +[rwxa]*w.* -k identity' && ok "watch /etc/shadow" || fail "-w /etc/shadow -p wa -k identity"
+  has '^-w /etc/sudoers +-p +[rwxa]*w.* -k scope' && ok "watch sudoers" || fail "-w /etc/sudoers -p wa -k scope"
+  has '^-w /etc/sudoers.d/ +-p +[rwxa]*w.* -k scope' && ok "watch sudoers.d" || fail "-w /etc/sudoers.d/ -p wa -k scope"
+  has '^-w /etc/ssh/sshd_config +-p +[rwxa]*w.* -k sshd_config' && ok "watch sshd_config" || fail "-w /etc/ssh/sshd_config -p wa -k sshd_config"
+  printf '%s\n' "$body" | grep -E '^-a always,exit' | grep -E 'arch=b64' | grep -E -- '-S execve' | grep -q -F 'auid>=1000' && ok "execve rule for 64-bit calls" || fail "execve rule with arch=b64 and auid>=1000"
+  printf '%s\n' "$body" | grep -E '^-a always,exit' | grep -E 'arch=b32' | grep -E -- '-S execve' | grep -q -F 'auid>=1000' && ok "execve rule for 32-bit calls" || fail "the same execve rule with arch=b32"
+  printf '%s\n' "$body" | grep -E '^-a ' | grep -q -E -- '-S (open|openat|all)( |$)' && fail "do not audit every open: the log would drown" || ok "no catch-all open rule"
+  last=$(printf '%s\n' "$body" | tail -1); [ "$last" = "-e 2" ] && ok "last line is -e 2 (immutable)" || fail "the last line must be -e 2"
+  printf '%s\n' "$body" | grep -q -E '^-b [0-9]+' && ok "backlog set" || fail "set a backlog: -b 8192"
+fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get who_changed_sshd_config_auid)" = 1002 ] && ok "auid 1002 changed sshd_config" || fail "who_changed_sshd_config_auid: find the key sshd_config with ausearch -if audit.log -k sshd_config -i"
+case "$(get editor_used)" in /usr/bin/vim.basic|vim.basic|vim) ok "editor" ;; *) fail "editor_used: the exe field of that event" ;; esac
+case "$(get report_command)" in "aureport"*) ok "aureport" ;; *) fail "report_command: the summary tool, for example aureport -x --summary" ;; esac
+case "$(get rule_reload_command)" in "augenrules --load") ok "augenrules" ;; *) fail "rule_reload_command: merge rules.d into audit.rules and load" ;; esac
+[ "$(get immutable_flag)" = "-e 2" ] && ok "-e 2" || fail "immutable_flag: the control rule that locks the configuration until reboot"
+exit $bad

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+ausearch -if audit.log -m AVC -i > denials.txt
+sed -i -e 's/^search_command=.*/search_command=ausearch -m AVC -ts recent/' \
+ -e 's/^db_denial_fix=.*/db_denial_fix=setsebool -P httpd_can_network_connect_db on/' \
+ -e "s#^label_rule_fix=.*#label_rule_fix=semanage fcontext -a -t httpd_sys_content_t '/srv/web(/.*)?'#" \
+ -e 's#^label_apply_command=.*#label_apply_command=restorecon -Rv /srv/web#' \
+ -e 's/^port_fix=.*/port_fix=semanage port -a -t http_port_t -p tcp 8081/' \
+ -e 's/^single_domain_permissive=.*/single_domain_permissive=semanage permissive -a httpd_t/' \
+ -e 's/^why_not_chcon=.*/why_not_chcon=the change is lost at the next relabel/' answers.txt

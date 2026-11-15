@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an audit log excerpt with three SELinux denials and a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f audit.log denials.txt answers.txt
+cat > audit.log <<'L'
+type=AVC msg=audit(1731600000.101:501): avc:  denied  { name_connect } for  pid=2210 comm="php-fpm" dest=5432 scontext=system_u:system_r:httpd_t:s0 tcontext=system_u:object_r:postgresql_port_t:s0 tclass=tcp_socket permissive=0
+type=SYSCALL msg=audit(1731600000.101:501): arch=c000003e syscall=42 success=no exit=-13 a0=7 a1=7ffd5c0 a2=10 a3=0 items=0 ppid=2100 pid=2210 auid=4294967295 uid=48 gid=48 euid=48 suid=48 fsuid=48 egid=48 sgid=48 fsgid=48 tty=(none) ses=4294967295 comm="php-fpm" exe="/usr/sbin/php-fpm" subj=system_u:system_r:httpd_t:s0 key=(null)
+type=EOE msg=audit(1731600000.101:501):
+type=AVC msg=audit(1731600060.202:502): avc:  denied  { read open } for  pid=2301 comm="nginx" path="/srv/web/index.html" dev="vda1" ino=131077 scontext=system_u:system_r:httpd_t:s0 tcontext=unconfined_u:object_r:user_home_t:s0 tclass=file permissive=0
+type=SYSCALL msg=audit(1731600060.202:502): arch=c000003e syscall=257 success=no exit=-13 a0=ffffff9c a1=55d0c0 a2=0 a3=0 items=0 ppid=2300 pid=2301 auid=4294967295 uid=977 gid=977 euid=977 suid=977 fsuid=977 egid=977 sgid=977 fsgid=977 tty=(none) ses=4294967295 comm="nginx" exe="/usr/sbin/nginx" subj=system_u:system_r:httpd_t:s0 key=(null)
+type=EOE msg=audit(1731600060.202:502):
+type=AVC msg=audit(1731600120.303:503): avc:  denied  { name_bind } for  pid=2410 comm="nginx" src=8081 scontext=system_u:system_r:httpd_t:s0 tcontext=system_u:object_r:unreserved_port_t:s0 tclass=tcp_socket permissive=0
+type=SYSCALL msg=audit(1731600120.303:503): arch=c000003e syscall=49 success=no exit=-13 a0=6 a1=55e0f0 a2=10 a3=0 items=0 ppid=2400 pid=2410 auid=4294967295 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=(none) ses=4294967295 comm="nginx" exe="/usr/sbin/nginx" subj=system_u:system_r:httpd_t:s0 key=(null)
+type=EOE msg=audit(1731600120.303:503):
+L
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nsearch_command=?\ndb_denial_fix=?\nlabel_rule_fix=?\nlabel_apply_command=?\nport_fix=?\nsingle_domain_permissive=?\nwhy_not_chcon=?\n' > answers.txt

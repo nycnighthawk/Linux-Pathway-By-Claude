@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade sudoers.d/10-webops with visudo for syntax and with text rules for scope.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+f=sudoers.d/10-webops
+[ -f "$f" ] || { fail "sudoers.d/10-webops is missing"; exit 1; }
+body=$(sed -e 's/#.*//' "$f")
+if visudo -cf "$f" >/dev/null 2>&1; then ok "visudo accepts the file"; else fail "visudo -cf $f reports a syntax error"; fi
+printf '%s\n' "$body" | grep -q '^[[:space:]]*%webops' && ok "rule is granted to group webops" || fail "grant the rule to %webops"
+if printf '%s\n' "$body" | grep -E '^[[:space:]]*[^D][^=]*=' | grep -q -E '[*]|vim|vi |less|nano|bash|sh$|ALL[[:space:]]*$'; then fail "no wildcards, editors, shells or ALL as a command in the rule"; else ok "no wildcard, editor or shell in rules"; fi
+printf '%s\n' "$body" | grep -q 'NOPASSWD' && fail "remove NOPASSWD" || ok "a password is still required"
+for c in restart reload status; do
+  printf '%s\n' "$body" | grep -q "/usr/bin/systemctl $c nginx.service" && ok "allows systemctl $c nginx.service" || fail "allow exactly: /usr/bin/systemctl $c nginx.service"
+done
+printf '%s\n' "$body" | grep -q 'sudoedit /etc/nginx/nginx.conf' && ok "sudoedit for the one config file" || fail "allow sudoedit /etc/nginx/nginx.conf for safe editing"
+printf '%s\n' "$body" | grep -E '^[[:space:]]*Defaults' | grep -q 'log_output' && ok "terminal output is logged" || fail "add 'Defaults:%webops log_output'"
+printf '%s\n' "$body" | grep -E '^[[:space:]]*Defaults' | grep -q 'use_pty' && ok "use_pty is on" || fail "add use_pty to the Defaults line"
+printf '%s\n' "$body" | grep -E '\(root\)' | grep -q . && ok "runas user is root only" || fail "restrict the runas user to (root)"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get safe_edit_command)" in sudoedit|"sudo -e"|"sudoedit "*) ok "safe editing command" ;; *) fail "safe_edit_command: the sudo way to edit a root-owned file without running the editor as root" ;; esac
+case "$(get list_my_rights_command)" in "sudo -l"|"sudo -ll") ok "list rights" ;; *) fail "list_my_rights_command: how a user lists what sudo allows them" ;; esac
+case "$(get syntax_check_command)" in "visudo -c"*|"visudo --check"*) ok "syntax check" ;; *) fail "syntax_check_command: the safe way to validate sudoers" ;; esac
+case "$(get why_wildcard_is_unsafe)" in *".."*|*traversal*|*"any argument"*|*arguments*|*path*) ok "wildcard reason" ;; *) fail "why_wildcard_is_unsafe: one phrase on what the * lets a user pass" ;; esac
+exit $bad

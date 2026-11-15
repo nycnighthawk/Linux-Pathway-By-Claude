@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# nft -c validates the syntax in the kernel's parser without applying anything; text rules grade the policy.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+f=host.nft
+[ -f "$f" ] || { echo "FAIL: host.nft missing"; exit 1; }
+out=$(nft -c -f "$f" 2>&1); rc=$?
+# without privilege the netlink cache cannot be built: retry through sudo, then a private user and network namespace
+if [ $rc -ne 0 ] && printf '%s' "$out" | grep -q 'Operation not permitted'; then
+  out=$(sudo -n nft -c -f "$f" 2>&1); rc=$?
+  if [ $rc -ne 0 ] && printf '%s' "$out" | grep -q -E 'Operation not permitted|password|sudo:'; then out=$(unshare -Urn nft -c -f "$f" 2>&1); rc=$?; fi
+fi
+if [ $rc -eq 0 ]; then ok "nft -c accepts the ruleset"; else fail "nft -c -f host.nft: $(printf '%s' "$out" | head -1)"; fi
+b=$(sed -e 's/#.*//' "$f")
+has() { printf '%s\n' "$b" | tr '\n' ' ' | grep -q -E "$1"; }
+has 'table inet [a-z]+' && ok "dual-stack inet table" || fail "use 'table inet filter' so IPv4 and IPv6 share the policy"
+has 'hook input[^;]*;[^;]*policy drop' && ok "input policy drop" || fail "input chain needs policy drop"
+has 'iif(name)? "?lo"? accept' && ok "loopback accepted" || fail "accept loopback: iif lo accept"
+has 'ct state invalid drop' && ok "invalid state dropped" || fail "add: ct state invalid drop"
+has 'ct state \{? ?established, ?related ?\}? accept' && ok "established and related accepted" || fail "add: ct state { established, related } accept"
+has 'icmpv6 type \{[^}]*nd-neighbor-solicit' && has 'icmpv6 type \{[^}]*nd-neighbor-advert' && ok "neighbour discovery allowed" || fail "allow ICMPv6 including nd-neighbor-solicit and nd-neighbor-advert"
+has 'icmpv6 type \{[^}]*packet-too-big' && ok "packet-too-big allowed" || fail "allow ICMPv6 packet-too-big (path MTU)"
+has 'set [a-z_0-9]+ *\{[^}]*type ipv4_addr[^}]*10\.20\.0\.0/24' && ok "management set 10.20.0.0/24" || fail "define a set of type ipv4_addr holding 10.20.0.0/24 (flags interval)"
+has 'ip saddr @[a-z_0-9]+ tcp dport 22' && ok "SSH only from the management set" || fail "allow tcp dport 22 only with: ip saddr @<set>"
+printf '%s\n' "$b" | grep -E 'tcp dport 22' | grep -v -q '@' && fail "no unscoped rule for port 22" || ok "no unscoped SSH rule"
+has 'tcp dport \{ ?80, ?443 ?\}' && ok "web ports" || fail "allow tcp dport { 80, 443 }"
+has 'limit rate [0-9]+/(second|minute)' && ok "a rate limit is used" || fail "use at least one limit rate (ICMP echo or logging)"
+has 'log' && ok "drops are logged" || fail "log the final drops with a prefix, rate limited"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get syntax_check_command)" in "nft -c -f "*) ok "check command" ;; *) fail "syntax_check_command: validate without applying" ;; esac
+case "$(get load_command)" in "nft -f "*) ok "load command" ;; *) fail "load_command: load the file atomically" ;; esac
+case "$(get list_command)" in "nft list ruleset") ok "list command" ;; *) fail "list_command: print the active ruleset" ;; esac
+case "$(get revert_safety_net)" in *timer*|*"systemd-run"*|*"at now"*|*"second session"*) ok "safety net" ;; *) fail "revert_safety_net: how do you avoid a lockout when applying remotely (one phrase)?" ;; esac
+[ "$(get family_for_ipv4_and_ipv6)" = inet ] && ok "inet family" || fail "family_for_ipv4_and_ipv6: the nftables family that covers both"
+exit $bad

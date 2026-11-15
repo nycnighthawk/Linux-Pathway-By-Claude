@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a profile from a learning run that is still in complain mode and allows far too much.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f report.profile answers.txt
+cat > report.profile <<'P'
+# SPDX-License-Identifier: MIT
+#include <tunables/global>
+profile report /usr/local/bin/report flags=(complain) {
+  #include <abstractions/base>
+  capability,
+  network,
+  /** rwix,
+}
+P
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nstatus_command=?\nenforce_command=?\nreload_command=?\nunconfined_transition_mode=?\nlearning_tool=?\n' > answers.txt

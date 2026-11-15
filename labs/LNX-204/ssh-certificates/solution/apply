@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+ssh-keygen -q -s ca/user_ca -I alice@lab -n alice,deploy -V +8h user/id_ed25519.pub
+echo deploy > auth_principals/alice
+cat > sshd_config <<S
+# SPDX-License-Identifier: MIT
+HostKey $PWD/hostkey
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+X11Forwarding no
+MaxAuthTries 3
+AuthenticationMethods publickey
+TrustedUserCAKeys $PWD/ca/user_ca.pub
+AuthorizedPrincipalsFile $PWD/auth_principals/%u
+S
+sed -i -e 's/^verify_effective_config_command=.*/verify_effective_config_command=sshd -T/' -e 's/^cert_inspect_command=.*/cert_inspect_command=ssh-keygen -L -f cert/' -e 's/^server_directive_trusting_the_ca=.*/server_directive_trusting_the_ca=TrustedUserCAKeys/' -e 's/^host_cert_known_hosts_marker=.*/host_cert_known_hosts_marker=@cert-authority/' answers.txt
