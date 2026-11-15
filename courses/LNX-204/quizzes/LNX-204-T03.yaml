@@ -1,0 +1,66 @@
+title: 'Quiz: SSH hardening, SSH certificates'
+questions:
+- id: sshd-T
+  prompt: Which command shows the effective sshd configuration after includes and first-match rules?
+  choices:
+  - cat /etc/ssh/sshd_config
+  - systemctl cat sshd
+  - sshd -T
+  - sshd -t
+  answer:
+  - 2
+  explain: sshd -T prints the evaluated values (add -C to test Match blocks). sshd -t only checks syntax, and the files alone can mislead because
+    the first obtained value wins.
+- id: cert-trust
+  prompt: What does a server need in order to accept user certificates from a CA?
+  choices:
+  - A known_hosts entry
+  - Every user's public key in authorized_keys
+  - The CA private key
+  - TrustedUserCAKeys pointing at the CA public key (and principal rules)
+  answer:
+  - 3
+  explain: The server trusts the CA public key and checks principals and validity. Per-user keys are what certificates replace, the private key
+    must never leave the CA, and known_hosts is the client's host-trust file.
+- id: principals
+  prompt: A certificate has principal ops, but the account is alice and no principals file is configured. What happens?
+  choices:
+  - Login succeeds but without a TTY
+  - Login succeeds
+  - Login fails, because by default the principal must equal the account name
+  - The server falls back to password login
+  answer:
+  - 2
+  explain: Without AuthorizedPrincipalsFile or a command, the principal must match the target user name. The other outcomes do not occur.
+- id: lifetime
+  prompt: Why prefer short-lived certificates to long-lived keys plus revocation?
+  choices:
+  - Revocation of SSH keys is unsupported
+  - They are faster to verify
+  - They expire on their own, which limits the damage of a stolen key without distributing a revocation list
+  - They remove the need for a CA
+  answer:
+  - 2
+  explain: Expiry is the practical revocation mechanism at scale. Revocation lists exist (RevokedKeys) but are hard to distribute, verification
+    speed is the same, and a CA is still required.
+- id: agent-fwd
+  prompt: Why is ProxyJump preferred over agent forwarding to a bastion?
+  choices:
+  - With forwarding, root on the bastion can use your agent socket while you are connected
+  - Agent forwarding is disabled in OpenSSH 10
+  - ProxyJump encrypts twice
+  - Forwarding is slower
+  answer:
+  - 0
+  explain: Forwarded agent sockets are usable by anyone with root on the remote machine. ProxyJump keeps keys local and just relays the connection.
+- id: host-cert
+  prompt: How does a client trust host certificates signed by a host CA?
+  choices:
+  - A @cert-authority line in known_hosts naming the CA key and host pattern
+  - ssh-keyscan on every connection
+  - The host sends the CA private key
+  - StrictHostKeyChecking=no
+  answer:
+  - 0
+  explain: The @cert-authority marker lets the client accept any host certificate from that CA for matching names, removing trust-on-first-use
+    prompts. Disabling checking removes security.

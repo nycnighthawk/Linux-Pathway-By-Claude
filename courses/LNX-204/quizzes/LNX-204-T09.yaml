@@ -1,0 +1,52 @@
+title: 'Quiz: OpenSCAP scans and remediation'
+questions:
+- id: oval-xccdf
+  prompt: What is the relation between XCCDF and OVAL?
+  choices:
+  - XCCDF holds benchmark and profiles; OVAL expresses the machine checks
+  - OVAL is a scanner
+  - XCCDF is a package manager
+  - They are the same format
+  answer:
+  - 0
+  explain: XCCDF organises rules and profiles, and its checks usually refer to OVAL definitions.
+- id: tailoring
+  prompt: Why use a tailoring file?
+  choices:
+  - To sign the content
+  - To change selections and variables without editing the shared content
+  - To speed up scans
+  - To scan containers
+  answer:
+  - 1
+  explain: It keeps site decisions separate from upstream content, so updates do not erase them.
+- id: remediate
+  prompt: What is the safe way to use automatic remediation?
+  choices:
+  - Scan, read failures, test the fix on a clone or with check mode, apply in stages, rescan
+  - Never rescan
+  - Apply every rule
+  - Run it on production first
+  answer:
+  - 0
+  explain: Remediation can break services or lock out access, so test before production.
+- id: compliance-security
+  prompt: Does a 100 percent score mean the host is secure?
+  choices:
+  - Only on RHEL
+  - No, it means the host matches the benchmark; unpatched services and gaps outside the profile remain
+  - Only if scanned twice
+  - 'Yes'
+  answer:
+  - 1
+  explain: Compliance measures configuration against a chosen policy, not overall risk.
+- id: oscap-exit
+  prompt: What does an oscap xccdf eval exit status of 2 mean?
+  choices:
+  - Two hosts were scanned
+  - At least one rule failed
+  - The profile is missing
+  - The scanner crashed
+  answer:
+  - 1
+  explain: Exit 2 signals evaluation completed with failures; 1 signals an error.
