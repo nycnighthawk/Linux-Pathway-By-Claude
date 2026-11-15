@@ -13,7 +13,7 @@ outcomes:
 - Plan and run release upgrades with Leapp and detect drift on long-lived hosts
 - Decommission servers with a secure-wipe procedure
 certifications:
-- cert: LPLUS
+- cert: RHCE
   objectives: []
 - cert: LPIC3-305
   objectives: []
