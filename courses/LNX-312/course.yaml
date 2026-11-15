@@ -1,36 +1,72 @@
-# Reference slice for the course toolchain (work item T0): one lesson, one lab and one quiz.
-# The full course is built by work item LNX-312, which sets coverage: full and adds every topic.
 id: LNX-312
 title: Container & Kubernetes Networking
-summary: How Pod and Service traffic actually reaches its target on a Linux node, and how to inspect, build and debug it.
-hours: 30
-coverage: partial
+summary: 'How container and Pod traffic reaches its target on Linux: namespaces, veth and bridges, the CNI contract, Flannel,
+  Calico and Cilium, kube-proxy modes and Services, eBPF datapaths, Ingress and Gateway API, NetworkPolicy, CoreDNS, service
+  meshes, MetalLB and BGP, ClusterMesh, MTU and encapsulation overhead.'
+hours: 50
+coverage: full
 outcomes:
-  - Explain how a Service gives a changing set of Pods one stable address
-  - Compare the iptables, IPVS and nftables modes of kube-proxy
-  - Choose the Service type that fits an exposure requirement
-  - Write and check a small nftables ruleset that behaves like one Service
+- Rebuild a container network by hand with namespaces, veth pairs, a bridge and NAT
+- Explain the CNI contract and write a minimal plugin
+- Compare Flannel, Calico and Cilium and choose between overlay and routed designs
+- Compare the iptables, IPVS and nftables modes of kube-proxy and choose the Service type for an exposure requirement
+- Write NetworkPolicy and Cilium L7 policy and test them
+- Route external traffic with Ingress, Gateway API, MetalLB and BGP
+- Debug cluster DNS and service discovery, and size MTU for encapsulation overhead
 certifications:
-  - cert: CKA
-    objectives: ["D3"]
+- cert: CCA
+  objectives:
+  - D1
+  - D2
+  - D3
+  - D4
+  - D5
+  - D6
+  - D7
+  - D8
+- cert: CKA
+  objectives:
+  - D3
 modules:
-  - id: services-data-plane
-    title: Services and the node data plane
-    lessons:
-      - topic: LNX-312-T04
-        title: kube-proxy modes and Service types
-        file: lessons/LNX-312-T04.md
-        minutes: 45
+- id: node-plumbing
+  title: Container networking on the node
+  lessons:
+  - topic: LNX-312-T01
+    title: 'netns + veth + bridge + NAT: a container network by hand'
+    file: lessons/LNX-312-T01.md
+    minutes: 60
+- id: services-datapath
+  title: Services and the data plane
+  lessons:
+  - topic: LNX-312-T04
+    title: kube-proxy modes (iptables, IPVS, nftables), Service types
+    file: lessons/LNX-312-T04.md
+    minutes: 45
 labs:
-  - id: nft-service-map
-    topic: LNX-312-T04
-    title: A ClusterIP Service as an nftables verdict map
-    env: C
-    license: MIT
-    minutes: 30
-    packages: [nftables]
+- id: netns-bridge-nat
+  topic: LNX-312-T01
+  title: Build a container network by hand
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - iproute2
+  - nftables
+  - iputils-ping
+- id: nft-service-map
+  topic: LNX-312-T04
+  title: A ClusterIP Service as an nftables verdict map
+  env: C
+  license: MIT
+  minutes: 30
+  packages:
+  - nftables
 quizzes:
-  - id: LNX-312-T04
-    topic: LNX-312-T04
-    title: "Quiz: kube-proxy modes and Service types"
-    file: quizzes/LNX-312-T04.yaml
+- id: LNX-312-T01
+  topic: LNX-312-T01
+  title: 'Quiz: netns + veth + bridge + NAT: a container network by hand'
+  file: quizzes/LNX-312-T01.yaml
+- id: LNX-312-T04
+  topic: LNX-312-T04
+  title: 'Quiz: kube-proxy modes (iptables, IPVS, nftables), Service types'
+  file: quizzes/LNX-312-T04.yaml
