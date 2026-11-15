@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Inspect the signing certificate, its key and the diagnosis with openssl.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+command -v openssl >/dev/null || { echo "FAIL: openssl not installed"; exit 1; }
+[ -f modprobe.log ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok()   { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+[ -s mok.der ] && [ -s mok.priv ] || { fail "mok.der and mok.priv are required"; exit 1; }
+t=$(openssl x509 -inform DER -in mok.der -noout -text 2>&1) || { fail "mok.der must be a DER certificate (openssl ... -outform DER)"; exit 1; }
+ok "mok.der is a DER certificate"
+echo "$t" | grep -q "Code Signing" && ok "extendedKeyUsage is codeSigning" || fail "the certificate needs extendedKeyUsage=codeSigning"
+echo "$t" | grep -q "CA:FALSE" && ok "not a CA" || fail "basicConstraints must be CA:FALSE"
+echo "$t" | grep -q "Digital Signature" && ok "keyUsage digitalSignature" || fail "keyUsage needs digitalSignature"
+echo "$t" | grep -q "TLS Web Server" && fail "a module signing certificate must not allow TLS server use" || ok "no unrelated usages"
+days=$(python3 - <<'PY'
+import subprocess, datetime, re
+o = subprocess.run(["openssl","x509","-inform","DER","-in","mok.der","-noout","-dates"],capture_output=True,text=True).stdout
+f = lambda k: datetime.datetime.strptime(re.search(k+r"=(.*)", o).group(1).strip(), "%b %d %H:%M:%S %Y %Z")
+print((f("notAfter") - f("notBefore")).days)
+PY
+)
+if [ "${days:-0}" -ge 365 ] && [ "${days:-0}" -le 3700 ]; then ok "validity $days days (long enough for a driver lifecycle, not unbounded)"; else fail "validity must be between 1 and about 10 years (found ${days:-0} days)"; fi
+bits=$(echo "$t" | sed -n 's/.*Public-Key: (\([0-9]*\) bit).*/\1/p' | head -1)
+[ "${bits:-0}" -ge 2048 ] && ok "key size ${bits} bits" || fail "RSA key must be at least 2048 bits"
+a=$(openssl x509 -inform DER -in mok.der -noout -pubkey | openssl sha256)
+b=$(openssl pkey -in mok.priv -pubout 2>/dev/null | openssl sha256)
+[ "$a" = "$b" ] && ok "mok.priv matches mok.der" || fail "mok.priv does not match the certificate"
+perm=$(stat -c %a mok.priv)
+case "$perm" in 600|400) ok "private key is mode $perm" ;; *) fail "mok.priv must be mode 600 or 400 (found $perm)" ;; esac
+grep -q "mokutil --import mok.der" enroll.sh 2>/dev/null && ok "enroll.sh imports the certificate with mokutil" || fail "enroll.sh must run: mokutil --import mok.der"
+grep -q "^cause=key-not-enrolled$" diagnosis.txt 2>/dev/null && ok "diagnosis: the signing key is not enrolled" || fail "diagnosis.txt: cause=key-not-enrolled"
+grep -q "^fix=mokutil-import$" diagnosis.txt 2>/dev/null && ok "fix: enrol through MOK" || fail "diagnosis.txt: fix=mokutil-import"
+grep -q "^keep_secure_boot=yes$" diagnosis.txt 2>/dev/null && ok "Secure Boot stays enabled" || fail "diagnosis.txt: keep_secure_boot=yes"
+exit $bad

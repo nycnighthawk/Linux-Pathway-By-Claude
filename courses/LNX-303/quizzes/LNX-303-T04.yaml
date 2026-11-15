@@ -1,0 +1,79 @@
+title: 'Quiz: IMA/EVM, lockdown'
+questions:
+- id: modes
+  prompt: Which IMA action refuses access to a file whose hash or signature does not match?
+  choices:
+  - measure
+  - appraise
+  - audit
+  - hash
+  answer:
+  - 1
+  explain: 'A) wrong: measure records a hash in the log and the TPM. B) correct: appraisal compares and denies on mismatch. C) wrong:
+    audit only writes an event. D) wrong: hash selects the digest algorithm to use.'
+- id: fix
+  prompt: Why does ima_appraise=fix not protect against a root attacker on a running system?
+  choices:
+  - It disables the TPM
+  - The kernel regenerates the stored hash, so a modified file looks valid
+  - It only works on tmpfs
+  - It blocks all writes
+  answer:
+  - 1
+  explain: 'A) wrong: the TPM is unaffected. B) correct: fix mode trusts the current content and labels it. C) wrong: it applies to
+    real filesystems. D) wrong: it does not block writes.'
+- id: evm
+  prompt: What does EVM add to IMA?
+  choices:
+  - A second measurement log
+  - An HMAC or signature over the security attributes, so offline edits to labels and hashes are detected
+  - Network attestation
+  - Encryption of file contents
+  answer:
+  - 1
+  explain: 'A) wrong: the log belongs to IMA. B) correct: EVM protects security.ima, SELinux labels, mode and owner. C) wrong: attestation
+    is a verifier service. D) wrong: it does not encrypt.'
+- id: order
+  prompt: In an IMA policy, why do the dont_measure and dont_appraise rules for procfs and tmpfs come first?
+  choices:
+  - Alphabetical order is required
+  - The first matching rule decides, so exclusions must precede broad rules
+  - They run faster
+  - Later rules would be ignored for all files
+  answer:
+  - 1
+  explain: 'A) wrong: order is semantic, not alphabetical. B) correct: a broad rule placed first would already have decided. C) wrong:
+    speed is incidental. D) wrong: only files matched earlier are affected.'
+- id: file-check
+  prompt: What goes wrong if you appraise func=FILE_CHECK for all files read by root?
+  choices:
+  - Nothing, it is the safest rule
+  - Unsigned configuration and unit files are denied, and the system can fail to boot
+  - The TPM is cleared
+  - Lockdown is disabled
+  answer:
+  - 1
+  explain: 'A) wrong: it is the riskiest rule. B) correct: most configuration files have no signature. C) wrong: policy does not touch
+    the TPM that way. D) wrong: unrelated.'
+- id: lockdown
+  prompt: Which statement about kernel lockdown is correct?
+  choices:
+  - It can be lowered by root at runtime
+  - It blocks ways root could modify the running kernel, and can be raised but not lowered at runtime
+  - It signs executables
+  - It replaces Secure Boot
+  answer:
+  - 1
+  explain: 'A) wrong: that would defeat it. B) correct: integrity blocks /dev/mem, unsigned modules and unsigned kexec, among others.
+    C) wrong: signing is IMA. D) wrong: it complements Secure Boot.'
+- id: script
+  prompt: A policy appraises executed programs. Why can python3 /dev/shm/x.py still run an unsigned script?
+  choices:
+  - Python is exempt from IMA
+  - The kernel sees the signed interpreter being executed, and the script is only data it reads
+  - /dev/shm is always trusted
+  - Scripts are signed automatically
+  answer:
+  - 1
+  explain: 'A) wrong: Python is subject to the same rules as any program. B) correct: unless an interpreter opts in to script checks,
+    scripts are plain file reads. C) wrong: it is a writable tmpfs. D) wrong: nothing signs them.'

@@ -1,0 +1,79 @@
+title: 'Quiz: Long-term compliance drift'
+questions:
+- id: window
+  prompt: A configuration-management agent reapplies the desired state every 30 minutes. What does that period define?
+  choices:
+  - The size of the baseline
+  - The longest time a manual change can persist before being reverted, the drift window
+  - The scan duration
+  - The number of exceptions
+  answer:
+  - 1
+  explain: 'A) wrong: it says nothing about baseline size. B) correct: convergence bounds drift by its schedule. C) wrong: scans are separate.
+    D) wrong: exceptions are a governance matter.'
+- id: decay
+  prompt: Which is an example of decay, not drift?
+  choices:
+  - An administrator opens a port and forgets it
+  - A new benchmark release tightens a control, so an unchanged host stops being compliant
+  - Two tools fight over a setting
+  - A package replaces a config file
+  answer:
+  - 1
+  explain: 'A) wrong: that is an operator change on the host. B) correct: the standard moved, not the host. C) wrong: that is an automation
+    conflict on the host. D) wrong: that is a software change on the host.'
+- id: silent
+  prompt: A dashboard says 98 percent of hosts are compliant. What should you check first?
+  choices:
+  - The colour scheme
+  - Whether the percentage counts only hosts that still check in, and how old the newest scan is
+  - The number of rules
+  - The CPU use of the scanner
+  answer:
+  - 1
+  explain: 'A) wrong: presentation does not matter. B) correct: a silent agent removes hosts from the denominator. C) wrong: rule count
+    does not explain the number. D) wrong: irrelevant.'
+- id: replace
+  prompt: What does replacing hosts every 30 days from a rebuilt image achieve?
+  choices:
+  - It eliminates the need for scanning
+  - It bounds the accumulation of unknown change, and moves the compliance work to the image pipeline
+  - It makes exceptions unnecessary
+  - It removes the need for an owner
+  answer:
+  - 1
+  explain: 'A) wrong: images and hosts still need scans. B) correct: drift cannot outlive the host, but stale images become the risk.
+    C) wrong: exceptions still exist. D) wrong: the image needs an owner.'
+- id: exception
+  prompt: Which exception record is adequate?
+  choices:
+  - Rule name only
+  - Rule, reason, compensating control, owner and an expiry date
+  - A ticket number
+  - A screenshot of the scan
+  answer:
+  - 1
+  explain: 'A) wrong: it cannot be reviewed. B) correct: expiry and owner force a decision to be renewed. C) wrong: tickets get archived.
+    D) wrong: a screenshot is not a record.'
+- id: autorepair
+  prompt: Why log every automatic repair made by configuration management?
+  choices:
+  - Repairs are always errors
+  - A setting that keeps being repaired points to a conflicting tool or a baseline that blocks a legitimate need
+  - To fill the disk
+  - Logging is required by SELinux
+  answer:
+  - 1
+  explain: 'A) wrong: repairs are normal. B) correct: repeating repairs reveal the root cause. C) wrong: that is not a goal. D) wrong:
+    SELinux has no such rule.'
+- id: calendar
+  prompt: Which event is best handled by a calendar with an owner?
+  choices:
+  - A user typing a wrong command
+  - Distribution end of life, certificate expiry and key rotation dates
+  - A random kernel crash
+  - A network packet loss
+  answer:
+  - 1
+  explain: 'A) wrong: not predictable. B) correct: these dates are known in advance and change compliance without a local edit. C) wrong:
+    unpredictable. D) wrong: unpredictable.'

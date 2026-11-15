@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > payments.hcl <<'EOF'
+# payments service: read its own secrets and its database credentials, nothing else
+path "secret/data/payments/*" {
+  capabilities = ["read"]
+}
+path "secret/metadata/payments/*" {
+  capabilities = ["list"]
+}
+path "database/creds/payments-ro" {
+  capabilities = ["read"]
+}
+path "sys/*" {
+  capabilities = ["deny"]
+}
+EOF
+age-keygen -o key.txt 2>/dev/null
+chmod 600 key.txt
+rec=$(age-keygen -y key.txt)
+age -r "$rec" -o secrets.env.age secrets.env
+rm -f secrets.env
+cat > .sops.yaml <<EOF
+creation_rules:
+  - path_regex: secrets/.*\.yaml\$
+    age: $rec
+EOF
+echo key.txt > .gitignore

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a plain-text secrets file and a too-broad policy.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f secrets.env secrets.env.age key.txt .sops.yaml .gitignore payments.hcl broad.hcl
+cat > secrets.env <<'EOF'
+DB_PASSWORD=correct-horse-battery
+API_TOKEN=tok_live_51Nabc123
+EOF
+cp secrets.env .original.env
+cat > broad.hcl <<'EOF'
+path "secret/*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+EOF

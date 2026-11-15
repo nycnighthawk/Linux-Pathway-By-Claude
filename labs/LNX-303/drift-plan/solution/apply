@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > drift-plan.txt <<'EOF'
+# SPDX-License-Identifier: MIT
+scan_frequency_days=7
+enforcement=both
+max_host_age_days=30
+agent_silence_alert_hours=24
+exception_max_days=365
+exception_review=monthly
+baseline_owner=platform-security
+baseline_review_months=6
+evidence_retention_months=36
+metrics=pass_rate,time_to_detect,time_to_remediate,exception_age,drift_per_host
+lifecycle_calendar=certificate_expiry,os_eol,key_rotation,secure_boot_dbx
+independent_check=openscap-scan-from-central-collector
+EOF

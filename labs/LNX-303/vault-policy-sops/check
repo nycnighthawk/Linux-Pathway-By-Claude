@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse the policy and test the age round trip.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+command -v age >/dev/null && command -v age-keygen >/dev/null || { echo "FAIL: install the age package"; exit 1; }
+[ -f .original.env ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import os, re, subprocess, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+# --- policy
+if not os.path.exists("payments.hcl"):
+    fail("payments.hcl is missing")
+else:
+    txt = re.sub(r"#.*", "", open("payments.hcl").read())
+    blocks = re.findall(r'path\s+"([^"]+)"\s*\{\s*capabilities\s*=\s*\[([^\]]*)\]', txt)
+    pol = {p: set(re.findall(r'"([a-z]+)"', c)) for p, c in blocks}
+    if pol.get("secret/data/payments/*") == {"read"}: ok("read-only on the payments secrets (KV v2 data path)")
+    else: fail('grant exactly ["read"] on "secret/data/payments/*"')
+    if pol.get("database/creds/payments-ro") == {"read"}: ok("read on the read-only database credentials")
+    else: fail('grant ["read"] on "database/creds/payments-ro"')
+    if "deny" in pol.get("sys/*", set()): ok("sys/* is explicitly denied")
+    else: fail('deny "sys/*"')
+    wide = [p for p in pol if p in ("secret/*", "*", "secret/data/*") or p.rstrip("*") in ("secret/", "")]
+    if not wide: ok("no wildcard over all secrets")
+    else: fail("do not grant on %s" % wide)
+    if not any("sudo" in c or "delete" in c or "update" in c or "create" in c for p, c in pol.items() if p != "sys/*"): ok("no write, delete or sudo capability")
+    else: fail("the payments service only reads: remove create, update, delete and sudo")
+# --- age
+if os.path.exists("secrets.env"): fail("plain-text secrets.env is still on disk; delete it after encrypting")
+else: ok("the plain-text file is gone")
+if os.path.exists("secrets.env.age") and os.path.exists("key.txt"):
+    r = subprocess.run(["age", "-d", "-i", "key.txt", "secrets.env.age"], capture_output=True, text=True)
+    if r.returncode == 0 and r.stdout == open(".original.env").read(): ok("secrets.env.age decrypts to the original with key.txt")
+    else: fail("secrets.env.age does not decrypt to the original secrets")
+    head = open("secrets.env.age", "rb").read(40)
+    if head.startswith(b"age-encryption.org/v1") or head.startswith(b"-----BEGIN AGE"): ok("the file is age encrypted")
+    else: fail("secrets.env.age is not in age format")
+    if b"correct-horse" in open("secrets.env.age", "rb").read(): fail("plain text found inside the encrypted file")
+    else: ok("no plain text in the encrypted file")
+    perm = oct(os.stat("key.txt").st_mode & 0o777)
+    if perm in ("0o600", "0o400"): ok("key.txt is private (%s)" % perm[2:])
+    else: fail("chmod 600 key.txt")
+else:
+    fail("create key.txt (age-keygen) and secrets.env.age (age -r RECIPIENT)")
+rec = subprocess.run(["age-keygen", "-y", "key.txt"], capture_output=True, text=True).stdout.strip() if os.path.exists("key.txt") else ""
+s = open(".sops.yaml").read() if os.path.exists(".sops.yaml") else ""
+if rec and rec in s and "creation_rules" in s and "age:" in s: ok(".sops.yaml names the age recipient for this key")
+else: fail(".sops.yaml needs creation_rules with age: <your public recipient>")
+if "AGE-SECRET-KEY" in s: fail("the private key must never appear in .sops.yaml")
+g = open(".gitignore").read().split() if os.path.exists(".gitignore") else []
+if "key.txt" in g: ok("key.txt is ignored by Git")
+else: fail("add key.txt to .gitignore")
+sys.exit(bad)
+PY

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Recompute the expected SBOM and findings from the inputs and compare.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f advisories.json ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import csv, json, os, re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+def key(v):
+    a, _, b = v.partition("-")
+    num = [(0, int(x)) if x.isdigit() else (1, 0) for x in a.split(".")]
+    rev = [int(x) for x in re.findall(r"\d+", b)] or [0]
+    return (num, rev)
+pk = [l.split() for l in open("packages.txt") if l.strip()]
+inst = dict(pk)
+# --- SBOM
+try:
+    s = json.load(open("sbom.cdx.json"))
+except Exception as e:
+    fail("sbom.cdx.json is missing or not JSON"); s = None
+if s is not None:
+    if s.get("bomFormat") == "CycloneDX" and str(s.get("specVersion", "")).startswith("1."): ok("CycloneDX header (bomFormat, specVersion)")
+    else: fail("bomFormat must be CycloneDX with a 1.x specVersion")
+    comps = {c.get("name"): c for c in s.get("components", [])}
+    if set(comps) == set(inst): ok("one component per installed package (%d)" % len(inst))
+    else: fail("components must match packages.txt exactly (missing %s, extra %s)" % (sorted(set(inst) - set(comps)), sorted(set(comps) - set(inst))))
+    good = all(c.get("version") == inst.get(n) and c.get("purl", "").startswith("pkg:deb/debian/%s@%s" % (n, inst.get(n))) for n, c in comps.items() if n in inst)
+    if good and comps: ok("every component has its version and a pkg:deb purl")
+    else: fail('every component needs the installed version and purl "pkg:deb/debian/NAME@VERSION"')
+    if all(c.get("type") == "library" for c in comps.values()) and comps: ok("component type library")
+    else: fail("component type must be library")
+# --- findings
+vex = {(x["cve"], x["package"]) for x in json.load(open("vex.json")) if x["status"] == "not_affected"}
+exp = []
+for a in json.load(open("advisories.json")):
+    n = a["package"]
+    if (a["cve"], n) in vex: continue
+    if a["fixed"] is None or key(inst[n]) < key(a["fixed"]): exp.append(a)
+try:
+    rows = list(csv.DictReader(open("findings.csv")))
+except Exception:
+    rows = []
+    fail("findings.csv is missing")
+if rows:
+    got = [r.get("cve") for r in rows]
+    want = [a["cve"] for a in exp]
+    if sorted(got) == sorted(want): ok("exactly the affected CVEs are listed (%d)" % len(want))
+    else:
+        fail("findings differ: missing %s, unexpected %s" % (sorted(set(want) - set(got)), sorted(set(got) - set(want))))
+    if "CVE-2026-1005" not in got: ok("the VEX not_affected entry is suppressed")
+    else: fail("CVE-2026-1005 is covered by a VEX not_affected statement")
+    if "CVE-2026-1002" not in got: ok("a CVE whose fix is already installed is not reported (backport)")
+    else: fail("curl already has the fixed build: do not report CVE-2026-1002")
+    if "CVE-2026-1006" in got and [r for r in rows if r["cve"] == "CVE-2026-1006"][0].get("fixed") == "unfixed": ok("the unfixed finding stays visible and is marked unfixed")
+    else: fail("keep CVE-2026-1006 and write unfixed in the fixed column")
+    if rows[0].get("cve") == "CVE-2026-1003" and rows[0].get("kev", "").lower() == "yes": ok("known-exploited vulnerability is first")
+    else: fail("sort known-exploited (kev) findings first")
+    order = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}
+    rest = [order.get(r.get("severity", ""), 9) for r in rows if r.get("kev", "").lower() != "yes"]
+    if rest == sorted(rest): ok("remaining findings are ordered by severity")
+    else: fail("order the remaining findings by severity, highest first")
+sys.exit(bad)
+PY

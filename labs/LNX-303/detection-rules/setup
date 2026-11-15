@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a draft with the usual mistakes.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f audit.rules local-falco.yaml draft.rules
+cat > draft.rules <<'EOF'
+-a always,exit -F arch=b64 -S execve -k exec
+-w /etc/passwd -p r -k identity
+EOF

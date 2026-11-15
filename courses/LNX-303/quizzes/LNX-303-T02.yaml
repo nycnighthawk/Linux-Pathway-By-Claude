@@ -1,0 +1,79 @@
+title: 'Quiz: LUKS2, Clevis/Tang, TPM2 (swtpm)'
+questions:
+- id: master-key
+  prompt: Why can you change a LUKS passphrase without re-encrypting the data?
+  choices:
+  - The data is encrypted with the passphrase directly
+  - A random master key encrypts the data, and each slot stores that key encrypted under its own passphrase
+  - The header is rewritten with a new cipher
+  - The TPM holds the data key
+  answer:
+  - 1
+  explain: 'A) wrong: then every change would require re-encryption. B) correct: slots wrap the master key, so only the wrapper changes.
+    C) wrong: the cipher stays the same. D) wrong: a TPM is one possible slot policy, not the design.'
+- id: pcr7
+  prompt: What is the main advantage of sealing to PCR 7 alone instead of PCRs 0, 2 and 4?
+  choices:
+  - It makes the key longer
+  - It survives firmware and bootloader updates while still reflecting the Secure Boot state
+  - It removes the need for a recovery passphrase
+  - It works without a TPM
+  answer:
+  - 1
+  explain: 'A) wrong: key length is unrelated. B) correct: PCR 7 tracks the Secure Boot authority, not each component hash.
+    C) wrong: recovery is always required. D) wrong: sealing needs a TPM.'
+- id: tang
+  prompt: A thief steals a server bound only to a Tang server and powers it up outside your network. What happens?
+  choices:
+  - The disk unlocks because the TPM is present
+  - The disk stays locked because the key cannot be rebuilt without the server
+  - The disk unlocks with the server's last cached key
+  - The disk is wiped
+  answer:
+  - 1
+  explain: 'A) wrong: a Tang-only policy does not use the TPM. B) correct: the client must reach Tang to derive the key. C) wrong:
+    Tang keeps no client state and the client stores no key. D) wrong: nothing erases data.'
+- id: sss
+  prompt: What does clevis sss with t=2 and three sub-pins (two tang, one tpm2) require?
+  choices:
+  - All three pins to succeed
+  - Any two of the three pins to succeed
+  - Only the TPM pin
+  - Both tang pins and never the TPM
+  answer:
+  - 1
+  explain: 'A) wrong: that would be t=3. B) correct: Shamir sharing releases the key when two shares are available. C) wrong:
+    t=2 cannot be met by one pin. D) wrong: the TPM can be one of the two.'
+- id: thumbprint
+  prompt: Why must you compare the key thumbprint shown during clevis luks bind with tang-show-keys on the server?
+  choices:
+  - To speed up the exchange
+  - To avoid trusting whichever machine answered the first request
+  - To rotate the Tang keys
+  - To enable HTTPS
+  answer:
+  - 1
+  explain: 'A) wrong: no effect on speed. B) correct: an unchecked thumbprint binds the disk to an impostor. C) wrong: rotation is a separate server task.
+    D) wrong: the protocol does not need TLS to protect the secret.'
+- id: initramfs
+  prompt: A Tang-bound server hangs at boot with no network configured. What is the likely cause?
+  choices:
+  - The initramfs lacks the Clevis module or network arguments such as rd.neednet=1
+  - The LUKS header is full
+  - The TPM is disabled
+  - The disk is too large
+  answer:
+  - 0
+  explain: 'A) correct: Tang is queried before the root filesystem exists, so the initramfs must bring up the network.
+    B) wrong: a full header does not stop Tang. C) wrong: Tang does not need a TPM. D) wrong: size is irrelevant.'
+- id: swtpm
+  prompt: What is a software TPM (swtpm) suitable for?
+  choices:
+  - Protecting production keys on a hypervisor
+  - Testing TPM-based binding in VMs and CI
+  - Replacing Secure Boot
+  - Encrypting live migration traffic
+  answer:
+  - 1
+  explain: 'A) wrong: anyone with host access can read its state. B) correct: it emulates the interface for testing. C) wrong: it is
+    unrelated to the boot chain signatures. D) wrong: migration encryption is a separate setting.'

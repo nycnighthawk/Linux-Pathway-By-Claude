@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > findings.json <<'EOF'
+{
+  "account": "deploy",
+  "source_ip": "203.0.113.9",
+  "first_access": "2026-11-14T03:12:44",
+  "persistence": [
+    "/var/spool/cron/crontabs/deploy",
+    "/home/deploy/.ssh/authorized_keys",
+    "/etc/ld.so.preload"
+  ],
+  "c2": "198.51.100.77:4444",
+  "deleted_binary_pid": 4242,
+  "steps": ["isolate-network", "capture-memory", "copy-proc-exe", "image-disk", "hash-evidence", "rebuild"]
+}
+EOF
+(cd evidence && sha256sum *) > evidence-hashes.txt

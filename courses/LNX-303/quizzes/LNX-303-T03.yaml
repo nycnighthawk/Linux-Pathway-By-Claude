@@ -1,0 +1,79 @@
+title: 'Quiz: Secure Boot, signed modules'
+questions:
+- id: dbx
+  prompt: What does the dbx contain?
+  choices:
+  - Keys and hashes that firmware must refuse to run
+  - The platform owner's private key
+  - Kernel module signatures
+  - The list of enrolled MOK keys
+  answer:
+  - 0
+  explain: 'A) correct: dbx is the forbidden signature database. B) wrong: private keys are never stored in firmware. C) wrong: module
+    signatures are appended to the modules. D) wrong: MOK is managed by shim, separately.'
+- id: shim
+  prompt: Why do most distributions boot through shim?
+  choices:
+  - Firmware trusts Microsoft's third-party certificate, and shim carries the distribution's own trust forward
+  - Shim encrypts the disk
+  - Shim replaces the kernel keyring
+  - Shim is required by systemd
+  answer:
+  - 0
+  explain: 'A) correct: shim is signed once and then verifies GRUB and the kernel with the distribution key and MOK. B) wrong: unrelated
+    to disk encryption. C) wrong: the kernel has its own keyring. D) wrong: systemd does not require it.'
+- id: mok
+  prompt: What is the Machine Owner Key list for?
+  choices:
+  - Letting a local administrator trust additional keys without changing firmware databases
+  - Storing user passwords
+  - Replacing the Platform Key
+  - Signing the initramfs automatically
+  answer:
+  - 0
+  explain: 'A) correct: keys enrolled through mokutil are trusted by shim and passed to the kernel. B) wrong: it holds certificates,
+    not passwords. C) wrong: PK is firmware level. D) wrong: nothing signs the initramfs automatically.'
+- id: rejected
+  prompt: modprobe reports Key was rejected by service for a third-party module on a Secure Boot system. What is the best fix?
+  choices:
+  - Disable Secure Boot in firmware
+  - Sign the module with a code-signing key that is enrolled through MOK
+  - Delete the module
+  - Set lockdown=none
+  answer:
+  - 1
+  explain: 'A) wrong: this removes protection for every other component. B) correct: the key must be in a trusted keyring. C) wrong:
+    it loses the driver. D) wrong: lockdown does not decide whether a key is trusted.'
+- id: eku
+  prompt: Which extended key usage should a module-signing certificate carry?
+  choices:
+  - serverAuth
+  - codeSigning
+  - emailProtection
+  - clientAuth
+  answer:
+  - 1
+  explain: 'A) wrong: that is for TLS servers. B) correct: it limits the certificate to signing code. C) wrong: that is for S/MIME mail.
+    D) wrong: that is for client authentication.'
+- id: sbat
+  prompt: What problem does SBAT solve?
+  choices:
+  - Encrypting boot partitions
+  - Revoking a whole family of vulnerable loaders with a generation number instead of one dbx hash each
+  - Sharing keys between machines
+  - Speeding up boot
+  answer:
+  - 1
+  explain: 'A) wrong: it does not encrypt. B) correct: shim compares binary generation numbers with a policy variable. C) wrong: it
+    shares nothing. D) wrong: it is a security mechanism.'
+- id: lockdown
+  prompt: What does kernel lockdown add to Secure Boot?
+  choices:
+  - It blocks ways a privileged user could bypass the chain, such as loading unsigned code or writing kernel memory
+  - It signs every file on the disk
+  - It disables the TPM
+  - It makes the initramfs read-only
+  answer:
+  - 0
+  explain: 'A) correct: lockdown ties root to the kernel boundary. B) wrong: file signing is IMA. C) wrong: the TPM is unaffected.
+    D) wrong: it does not change the initramfs.'

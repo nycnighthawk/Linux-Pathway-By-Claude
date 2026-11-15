@@ -1,0 +1,193 @@
+id: LNX-303
+title: Advanced Security & Compliance
+summary: 'Security engineering beyond the basics: running a private PKI, disk encryption bound to TPM and network, Secure
+  Boot and signed modules, kernel integrity with IMA/EVM and lockdown, runtime detection with Falco and auditd, network intrusion
+  detection, vulnerability and SBOM scanning, compliance as code, secrets management, forensics and long-term drift control.'
+hours: 60
+outcomes:
+- Build a two-tier certificate authority, publish revocation data and predict client behaviour
+- Bind disk encryption to a TPM or a Tang server and plan recovery
+- Explain the Secure Boot chain and sign kernel modules with an enrolled key
+- Write IMA measurement and appraisal policy and use kernel lockdown
+- Write Falco rules and auditd rules that detect real attacker behaviour
+- Tune Suricata and fail2ban against attack traffic without blocking legitimate users
+- Generate SBOMs, read vulnerability data and decide what is actually exploitable
+- Tailor a compliance profile as code and interpret scan results
+- Manage secrets with OpenBao or Vault policies and sops
+- Triage a compromised Linux host and preserve evidence
+- Detect and control configuration drift over a long period
+certifications:
+- cert: LPIC3-303
+  objectives: []
+modules:
+- id: keys-and-boot
+  title: Keys
+  lessons:
+  - topic: LNX-303-T01
+    title: 'X.509 PKI: CA, CRL, OCSP'
+    file: lessons/LNX-303-T01.md
+    minutes: 45
+  - topic: LNX-303-T02
+    title: LUKS2, Clevis/Tang, TPM2 (swtpm)
+    file: lessons/LNX-303-T02.md
+    minutes: 45
+  - topic: LNX-303-T03
+    title: Secure Boot, signed modules
+    file: lessons/LNX-303-T03.md
+    minutes: 45
+  - topic: LNX-303-T04
+    title: IMA/EVM, lockdown
+    file: lessons/LNX-303-T04.md
+    minutes: 45
+- id: detection
+  title: Detection and response
+  lessons:
+  - topic: LNX-303-T05
+    title: Falco, auditd advanced
+    file: lessons/LNX-303-T05.md
+    minutes: 45
+  - topic: LNX-303-T06
+    title: Suricata, fail2ban
+    file: lessons/LNX-303-T06.md
+    minutes: 45
+  - topic: LNX-303-T10
+    title: Linux forensics basics
+    file: lessons/LNX-303-T10.md
+    minutes: 45
+- id: supply-and-compliance
+  title: Supply chain
+  lessons:
+  - topic: LNX-303-T07
+    title: OVAL, Trivy, SBOMs
+    file: lessons/LNX-303-T07.md
+    minutes: 45
+  - topic: LNX-303-T08
+    title: Compliance as code
+    file: lessons/LNX-303-T08.md
+    minutes: 45
+  - topic: LNX-303-T09
+    title: OpenBao/Vault, sops
+    file: lessons/LNX-303-T09.md
+    minutes: 45
+  - topic: LNX-303-T11
+    title: Long-term compliance drift
+    file: lessons/LNX-303-T11.md
+    minutes: 45
+labs:
+- id: pki-two-tier
+  topic: LNX-303-T01
+  title: Build a two-tier CA and revoke a certificate
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - openssl
+- id: luks-unlock-policy
+  topic: LNX-303-T02
+  title: Write the unlock policy for an unattended encrypted server
+  env: V
+  license: MIT
+  minutes: 35
+- id: module-signing-key
+  topic: LNX-303-T03
+  title: Create a module-signing key and diagnose a rejected module
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - openssl
+- id: ima-policy
+  topic: LNX-303-T04
+  title: Write a staged IMA policy
+  env: V
+  license: MIT
+  minutes: 35
+- id: detection-rules
+  topic: LNX-303-T05
+  title: Write audit rules and a Falco rule that catch a webshell
+  env: V
+  license: MIT
+  minutes: 40
+- id: ban-and-detect
+  topic: LNX-303-T06
+  title: Ban brute force and detect a probe
+  env: V
+  license: MIT
+  minutes: 40
+- id: sbom-triage
+  topic: LNX-303-T07
+  title: Build an SBOM and triage the findings
+  env: C
+  license: MIT
+  minutes: 40
+- id: tailor-profile
+  topic: LNX-303-T08
+  title: Tailor a compliance profile with an exception register
+  env: V
+  license: MIT
+  minutes: 35
+- id: vault-policy-sops
+  topic: LNX-303-T09
+  title: Write a least-privilege secrets policy and encrypt a secrets file
+  env: C
+  license: MIT
+  minutes: 35
+  packages:
+  - age
+- id: triage-host
+  topic: LNX-303-T10
+  title: Triage a compromised host from collected evidence
+  env: V
+  license: MIT
+  minutes: 45
+- id: drift-plan
+  topic: LNX-303-T11
+  title: Plan continuous assurance for a fleet
+  env: O
+  license: MIT
+  minutes: 30
+quizzes:
+- id: LNX-303-T01
+  topic: LNX-303-T01
+  title: 'Quiz: X.509 PKI: CA, CRL, OCSP'
+  file: quizzes/LNX-303-T01.yaml
+- id: LNX-303-T02
+  topic: LNX-303-T02
+  title: 'Quiz: LUKS2, Clevis/Tang, TPM2 (swtpm)'
+  file: quizzes/LNX-303-T02.yaml
+- id: LNX-303-T03
+  topic: LNX-303-T03
+  title: 'Quiz: Secure Boot, signed modules'
+  file: quizzes/LNX-303-T03.yaml
+- id: LNX-303-T04
+  topic: LNX-303-T04
+  title: 'Quiz: IMA/EVM, lockdown'
+  file: quizzes/LNX-303-T04.yaml
+- id: LNX-303-T05
+  topic: LNX-303-T05
+  title: 'Quiz: Falco, auditd advanced'
+  file: quizzes/LNX-303-T05.yaml
+- id: LNX-303-T06
+  topic: LNX-303-T06
+  title: 'Quiz: Suricata, fail2ban'
+  file: quizzes/LNX-303-T06.yaml
+- id: LNX-303-T07
+  topic: LNX-303-T07
+  title: 'Quiz: OVAL, Trivy, SBOMs'
+  file: quizzes/LNX-303-T07.yaml
+- id: LNX-303-T08
+  topic: LNX-303-T08
+  title: 'Quiz: Compliance as code'
+  file: quizzes/LNX-303-T08.yaml
+- id: LNX-303-T09
+  topic: LNX-303-T09
+  title: 'Quiz: OpenBao/Vault, sops'
+  file: quizzes/LNX-303-T09.yaml
+- id: LNX-303-T10
+  topic: LNX-303-T10
+  title: 'Quiz: Linux forensics basics'
+  file: quizzes/LNX-303-T10.yaml
+- id: LNX-303-T11
+  topic: LNX-303-T11
+  title: 'Quiz: Long-term compliance drift'
+  file: quizzes/LNX-303-T11.yaml
