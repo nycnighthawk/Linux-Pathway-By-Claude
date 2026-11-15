@@ -21,9 +21,20 @@ phases:
     - LNX-204-T10
     - LNX-204-T11
   lessons:
-    state: todo
+    state: done
     units: 11
-    done: []
+    done:
+    - LNX-204-T01
+    - LNX-204-T02
+    - LNX-204-T03
+    - LNX-204-T04
+    - LNX-204-T05
+    - LNX-204-T06
+    - LNX-204-T07
+    - LNX-204-T08
+    - LNX-204-T09
+    - LNX-204-T10
+    - LNX-204-T11
   quizzes:
     state: done
     units: 11
@@ -55,7 +66,7 @@ phases:
     - LNX-204-T10
     - LNX-204-T11
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -69,3 +80,6 @@ log:
 - '2026-11-15 labs: LNX-204-T07, LNX-204-T08, LNX-204-T09, LNX-204-T10, LNX-204-T11'
 - '2026-11-15 quizzes: LNX-204-T01, LNX-204-T02, LNX-204-T03, LNX-204-T04, LNX-204-T05, LNX-204-T06, LNX-204-T07,
   LNX-204-T08, LNX-204-T09, LNX-204-T10, LNX-204-T11'
+- '2026-11-15 lessons: LNX-204-T01, LNX-204-T02, LNX-204-T03, LNX-204-T04, LNX-204-T05, LNX-204-T06, LNX-204-T07,
+  LNX-204-T08, LNX-204-T09, LNX-204-T10, LNX-204-T11'
+- '2026-11-15 checks: done'

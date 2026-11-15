@@ -1,6 +1,6 @@
 title: 'Quiz: SSH hardening, SSH certificates'
 questions:
-- id: sshd-T
+- id: sshd-effective
   prompt: Which command shows the effective sshd configuration after includes and first-match rules?
   choices:
   - cat /etc/ssh/sshd_config

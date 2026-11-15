@@ -13,15 +13,6 @@ outcomes:
 - Build a private TLS certificate authority and inspect servers with openssl
 - Triage CVEs and advisories by exposure rather than by score alone
 certifications:
-- cert: LFCS
-  objectives:
-  - D1
-  - D5
-- cert: LPIC1
-  objectives:
-  - '110.1'
-  - '110.2'
-  - '110.3'
 - cert: LPIC2
   objectives:
   - '210.2'
@@ -34,9 +25,6 @@ certifications:
   objectives:
   - D9
   - D10
-- cert: CKS
-  objectives:
-  - D3
 modules:
 - id: accounts-and-access
   title: Accounts, privilege and remote access
@@ -225,4 +213,3 @@ quizzes:
   topic: LNX-204-T11
   title: 'Quiz: CVE and errata triage'
   file: quizzes/LNX-204-T11.yaml
-coverage: partial
