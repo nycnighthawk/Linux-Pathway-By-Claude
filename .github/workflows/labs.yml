@@ -89,8 +89,19 @@ jobs:
       matrix: ${{ fromJson(needs.plan.outputs.w) }}
     name: W ${{ matrix.course }}/${{ matrix.lab }}
     steps:
+      # raw/ holds paths longer than the Windows limit and the lab harness never reads it
       - uses: actions/checkout@v6
-        with: {lfs: false}
+        with:
+          lfs: false
+          sparse-checkout: |
+            .github
+            bin
+            courses
+            labs
+            objectives
+            taxonomy
+            tools
+            requirements.txt
       - uses: actions/setup-python@v6
         with: {python-version: "3.12", cache: pip}
       - run: pip install -r requirements.txt
