@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a single-stage Containerfile with the usual problems.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f Containerfile .containerignore .dockerignore
+cat > Containerfile <<'EOT'
+# SPDX-License-Identifier: MIT
+FROM golang:latest
+ENV API_TOKEN=abc123
+RUN apt-get update
+RUN apt-get install -y build-essential curl
+ADD https://example.com/tool.sh /tool.sh
+RUN curl -fsSL https://example.com/install.sh | sh
+WORKDIR /src
+COPY . .
+RUN go build -o /app ./cmd/app
+CMD /app --serve
+EOT
