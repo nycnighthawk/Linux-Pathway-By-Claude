@@ -51,6 +51,13 @@ modules:
     title: Katello content views
     file: lessons/LNX-304-T06.md
     minutes: 45
+- id: delivery
+  title: Patching and image-based delivery
+  lessons:
+  - topic: LNX-304-T07
+    title: Patch rings
+    file: lessons/LNX-304-T07.md
+    minutes: 45
 labs:
 - id: rpm-spec
   topic: LNX-304-T01
@@ -105,6 +112,12 @@ labs:
   env: S
   license: MIT
   minutes: 30
+- id: patch-rings
+  topic: LNX-304-T07
+  title: Assign hosts to patch rings
+  env: V
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-304-T01
   topic: LNX-304-T01
@@ -130,3 +143,7 @@ quizzes:
   topic: LNX-304-T06
   title: 'Quiz: Katello content views'
   file: quizzes/LNX-304-T06.yaml
+- id: LNX-304-T07
+  topic: LNX-304-T07
+  title: 'Quiz: Patch rings'
+  file: quizzes/LNX-304-T07.yaml
