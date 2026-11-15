@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an offline root CA and the OpenSSL configuration for an intermediate.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf root.key root.pem inter.* db ok.* bad.* crl.pem ca.cnf ext.cnf
+openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out root.key 2>/dev/null
+openssl req -x509 -new -key root.key -sha256 -days 3650 -subj "/O=Lab/CN=Lab Root CA" \
+  -addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,keyCertSign,cRLSign" \
+  -addext "subjectKeyIdentifier=hash" -out root.pem
+cat > ca.cnf <<'EOF'
+[ca]
+default_ca = CA_default
+
+[CA_default]
+dir               = .
+database          = db/index.txt
+new_certs_dir     = db
+serial            = db/serial
+crlnumber         = db/crlnumber
+certificate       = inter.pem
+private_key       = inter.key
+default_md        = sha256
+default_days     = 90
+default_crl_days = 7
+unique_subject    = no
+policy            = policy_any
+x509_extensions   = v3_leaf
+
+[policy_any]
+organizationName = optional
+commonName       = supplied
+
+[v3_leaf]
+basicConstraints     = critical,CA:FALSE
+keyUsage             = critical,digitalSignature
+extendedKeyUsage     = serverAuth
+subjectAltName       = DNS:app.internal.example
+authorityKeyIdentifier = keyid
+
+[v3_inter]
+basicConstraints       = critical,CA:TRUE,pathlen:0
+keyUsage               = critical,keyCertSign,cRLSign
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid
+EOF

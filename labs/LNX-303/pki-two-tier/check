@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Verify the chain, the extensions and the revocation behaviour with openssl.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+command -v openssl >/dev/null || { echo "FAIL: openssl not installed"; exit 1; }
+[ -f root.pem ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok()   { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+for f in inter.pem ok.pem bad.pem crl.pem; do
+  [ -s "$f" ] || { fail "$f is missing"; }
+done
+[ $bad -eq 0 ] || exit 1
+txt() { openssl x509 -in "$1" -noout -text; }
+if openssl verify -CAfile root.pem inter.pem >/dev/null 2>&1; then ok "inter.pem chains to the root"; else fail "inter.pem is not signed by root.pem"; fi
+t=$(txt inter.pem)
+echo "$t" | grep -q "CA:TRUE, pathlen:0" && ok "intermediate has CA:TRUE with pathlen:0" || fail "intermediate needs basicConstraints CA:TRUE,pathlen:0"
+echo "$t" | grep -q "Certificate Sign" && echo "$t" | grep -q "CRL Sign" && ok "intermediate may sign certificates and CRLs" || fail "intermediate needs keyUsage keyCertSign,cRLSign"
+for n in ok bad; do
+  t=$(txt $n.pem)
+  echo "$t" | grep -q "CA:FALSE" && ok "$n.pem is an end-entity certificate" || fail "$n.pem must have CA:FALSE"
+  echo "$t" | grep -q "DNS:app.internal.example" && ok "$n.pem carries the subjectAltName" || fail "$n.pem lacks the subjectAltName"
+  echo "$t" | grep -q "TLS Web Server Authentication" && ok "$n.pem is limited to server authentication" || fail "$n.pem lacks extendedKeyUsage serverAuth"
+  if openssl verify -CAfile root.pem -untrusted inter.pem $n.pem >/dev/null 2>&1; then ok "$n.pem chains to the root through the intermediate"; else fail "$n.pem does not verify without revocation checking"; fi
+done
+c=$(openssl crl -in crl.pem -noout -text 2>&1)
+openssl crl -in crl.pem -noout -CAfile inter.pem >/dev/null 2>&1 && ok "CRL is signed by the intermediate" || fail "crl.pem is not signed by inter.pem"
+sn_bad=$(openssl x509 -in bad.pem -noout -serial | cut -d= -f2)
+sn_ok=$(openssl x509 -in ok.pem -noout -serial | cut -d= -f2)
+echo "$c" | grep -q "Serial Number: $sn_bad" && ok "CRL lists the serial of bad.pem" || fail "CRL does not list bad.pem"
+echo "$c" | grep -q "Serial Number: $sn_ok" && fail "CRL must not list ok.pem" || ok "CRL does not list ok.pem"
+echo "$c" | grep -qi "Key Compromise" && ok "revocation reason is keyCompromise" || fail "record the reason keyCompromise"
+if openssl verify -crl_check -CAfile root.pem -untrusted inter.pem -CRLfile crl.pem ok.pem >/dev/null 2>&1; then ok "ok.pem passes verification with the CRL"; else fail "ok.pem must verify with -crl_check"; fi
+out=$(openssl verify -crl_check -CAfile root.pem -untrusted inter.pem -CRLfile crl.pem bad.pem 2>&1)
+echo "$out" | grep -qi "revoked" && ok "bad.pem is rejected as revoked" || fail "bad.pem must be rejected as revoked"
+exit $bad

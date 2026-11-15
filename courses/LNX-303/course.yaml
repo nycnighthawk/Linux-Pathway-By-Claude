@@ -1,0 +1,44 @@
+id: LNX-303
+title: Advanced Security & Compliance
+summary: 'Security engineering beyond the basics: running a private PKI, disk encryption bound to TPM and network, Secure
+  Boot and signed modules, kernel integrity with IMA/EVM and lockdown, runtime detection with Falco and auditd, network intrusion
+  detection, vulnerability and SBOM scanning, compliance as code, secrets management, forensics and long-term drift control.'
+hours: 60
+coverage: partial
+outcomes:
+- Build a two-tier certificate authority, publish revocation data and predict client behaviour
+- Bind disk encryption to a TPM or a Tang server and plan recovery
+- Explain the Secure Boot chain and sign kernel modules with an enrolled key
+- Write IMA measurement and appraisal policy and use kernel lockdown
+- Write Falco rules and auditd rules that detect real attacker behaviour
+- Tune Suricata and fail2ban against attack traffic without blocking legitimate users
+- Generate SBOMs, read vulnerability data and decide what is actually exploitable
+- Tailor a compliance profile as code and interpret scan results
+- Manage secrets with OpenBao or Vault policies and sops
+- Triage a compromised Linux host and preserve evidence
+- Detect and control configuration drift over a long period
+certifications:
+- cert: LPIC3-303
+  objectives: []
+modules:
+- id: keys-and-boot
+  title: Keys
+  lessons:
+  - topic: LNX-303-T01
+    title: 'X.509 PKI: CA, CRL, OCSP'
+    file: lessons/LNX-303-T01.md
+    minutes: 45
+labs:
+- id: pki-two-tier
+  topic: LNX-303-T01
+  title: Build a two-tier CA and revoke a certificate
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - openssl
+quizzes:
+- id: LNX-303-T01
+  topic: LNX-303-T01
+  title: 'Quiz: X.509 PKI: CA, CRL, OCSP'
+  file: quizzes/LNX-303-T01.yaml
