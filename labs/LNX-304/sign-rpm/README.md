@@ -9,7 +9,7 @@
 ## Your task
 
 1. Generate key one in the lab keyring without a passphrase (lab only): `gpg --homedir gnupg --batch --passphrase '' --quick-generate-key "Lab Key One <one@example.invalid>" ed25519 sign 1y`.
-2. Export its public half to `one.asc` (`--armor --export`). Sign the package with `rpmsign --define "_gpg_path $PWD/gnupg" --define "_gpg_name Lab Key One" --addsign hello-site-1.0-1.noarch.rpm`.
+2. Export its public half to `one.asc` (`--armor --export`). Sign the package with `rpmsign --define "_gpg_path $PWD/gnupg" --define "_gpg_name Lab Key One" --addsign hello-site-1.0-1.noarch.rpm`. On Ubuntu the rpm macro points at `/usr/bin/gpg2`, which may not exist; add `--define "__gpg /usr/bin/gpg"` if rpmsign cannot exec gpg.
 3. Create `Lab Key Two` the same way, export `two.asc`, and copy the package to `hello-site-rotated.rpm`; replace its signature using key two (`--resign`... or `--addsign` on the copy).
 4. Make a usable revocation certificate for key one. GnuPG wrote one when it created the key, as `gnupg/openpgp-revocs.d/<fingerprint>.rev`, with the key block commented out by a leading colon on each line. Copy it to `revoke-one.asc` and remove the leading colon from the lines of the key block (this makes it importable, so store it offline).
 
