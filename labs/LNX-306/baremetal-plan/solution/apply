@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > baremetal-plan.txt <<'X'
+# SPDX-License-Identifier: MIT
+inventory_key=serial
+lifecycle_states=racked,discovered,prepared,ready,deployed,in_service,released,retired
+prepare_tests=memory,disk,network,firmware
+default_boot=disk
+build_mode_default=off
+build_mode_approval=required
+discovery_auto_install=no
+bmc_network=isolated
+bmc_default_credentials=changed
+bmc_rotation_days=90
+dhcp_snooping=enabled
+install_source=pinned_snapshot
+templates_in_git=yes
+reinstall_role=separate
+wipe_on_release=yes
+platform_backup_test_months=3
+vm_ownership=iac
+X

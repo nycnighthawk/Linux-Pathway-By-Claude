@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+chmod -R u+w snapshots 2>/dev/null || true
+rm -rf source incoming snapshots channels promotions.log
+mkdir source incoming snapshots channels
+mkrpm() {
+  local t; t=$(mktemp -d); mkdir -p "$t/SPECS"
+  cat > "$t/SPECS/p.spec" <<X
+Name: site-a
+Version: $1
+Release: 1
+Summary: Lab package
+License: MIT
+BuildArch: noarch
+%description
+Lab package.
+%install
+install -D -m 0755 /dev/null %{buildroot}/usr/bin/site-a
+%files
+/usr/bin/site-a
+%changelog
+* Mon Jan 01 2024 Lab <lab@example.invalid> - $1-1
+- lab
+X
+  rpmbuild --define "_topdir $t" -bb "$t/SPECS/p.spec" >/dev/null 2>&1
+  cp "$t"/RPMS/noarch/*.rpm "$2/"
+  rm -rf "$t"
+}
+mkrpm 1.0 source; mkrpm 1.1 incoming
+createrepo_c source >/dev/null

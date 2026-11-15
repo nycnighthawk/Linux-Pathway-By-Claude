@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > site-base.toml <<'X'
+name = "site-base"
+description = "Site baseline server"
+version = "1.2.0"
+distro = "rhel-10"
+
+[[packages]]
+name = "chrony"
+
+[[packages]]
+name = "tmux"
+
+[[customizations.user]]
+name = "ops"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleExampleExampleExampleExampleExample ops@example.org"
+groups = ["wheel"]
+
+[customizations.services]
+enabled = ["chronyd", "sshd"]
+
+[customizations.firewall.services]
+enabled = ["ssh"]
+
+[customizations.kernel]
+append = "audit=1"
+
+[[customizations.filesystem]]
+mountpoint = "/var"
+minsize = 5368709120
+X
+cat > site-snapshot.toml <<'X'
+id = "site-snapshot"
+name = "site-snapshot"
+type = "yum-baseurl"
+url = "https://repo.example.org/snapshots/2026-11-08/el10/baseos/"
+check_gpg = true
+check_ssl = true
+system = false
+X

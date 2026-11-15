@@ -1,0 +1,79 @@
+title: 'Quiz: RPM: spec, rpmbuild, mock'
+questions:
+- id: noreplace
+  prompt: What does %config(noreplace) do when the package ships a changed default for a file the administrator edited?
+  choices:
+  - Overwrites the admin's file without warning
+  - Keeps the admin's file and writes the new default as a .rpmnew file
+  - Deletes the file
+  - Refuses the upgrade
+  answer:
+  - 1
+  explain: 'A) wrong: that is the risk it avoids. B) correct: local edits survive and the new default is available beside it. C) wrong:
+    nothing is deleted. D) wrong: the upgrade proceeds.'
+- id: phases
+  prompt: Which rpmbuild option builds the binary and source packages together?
+  choices:
+  - -bp
+  - -bb
+  - -ba
+  - -bc
+  answer:
+  - 2
+  explain: 'A) wrong: -bp stops after %prep. B) wrong: -bb builds the binary packages only. C) correct: -ba builds both. D) wrong: -bc stops
+    after %build.'
+- id: mock
+  prompt: Why build in mock instead of on a developer workstation?
+  choices:
+  - Mock builds are faster
+  - The chroot contains only the declared build dependencies, so hidden dependencies show up as failures
+  - Mock signs packages automatically
+  - Mock is required by RPM
+  answer:
+  - 1
+  explain: 'A) wrong: speed is not the aim. B) correct: a clean room exposes missing BuildRequires. C) wrong: signing is a separate step.
+    D) wrong: rpmbuild works without it.'
+- id: scriptlet-arg
+  prompt: In a %postun scriptlet the first argument is 0. What happened?
+  choices:
+  - First installation
+  - Upgrade
+  - The last instance of the package was removed
+  - The package failed to install
+  answer:
+  - 2
+  explain: 'A) wrong: install gives 1 in %post and %pre. B) wrong: upgrade gives 1 or more remaining instances, usually 1 in postun.
+    C) correct: 0 means no instances remain. D) wrong: failures are not reported that way.'
+- id: release
+  prompt: A package is rebuilt with a fix but Version and Release are unchanged. What happens on clients?
+  choices:
+  - They upgrade automatically
+  - They do not see an update, because the package manager compares version-release
+  - They downgrade
+  - The repository rejects it
+  answer:
+  - 1
+  explain: 'A) wrong: nothing differs for the solver. B) correct: the release must be bumped. C) wrong: a downgrade would need a lower number.
+    D) wrong: createrepo does not enforce this.'
+- id: network
+  prompt: A spec downloads dependencies during %build. Why is this a problem in a build system?
+  choices:
+  - It makes the package larger
+  - Build farms usually block outbound traffic, and unpinned downloads are neither verifiable nor reproducible
+  - RPM forbids it by syntax
+  - It breaks %files
+  answer:
+  - 1
+  explain: 'A) wrong: size is not the issue. B) correct: inputs must be pinned and checksummed before the build. C) wrong: syntax allows it. D) wrong:
+    %files is unrelated.'
+- id: rpm-v
+  prompt: What does rpm -V package report?
+  choices:
+  - Files whose digest, mode, owner or size differ from the package database
+  - The package's changelog
+  - The packages that depend on it
+  - Its build log
+  answer:
+  - 0
+  explain: 'A) correct: it verifies installed files against the recorded values. B) wrong: that is rpm -q --changelog. C) wrong: that
+    is rpm -q --whatrequires. D) wrong: build logs are not in the database.'

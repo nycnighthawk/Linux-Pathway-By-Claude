@@ -1,0 +1,62 @@
+title: 'Quiz: createrepo_c, aptly, Pulp 3'
+questions:
+- id: repomd
+  prompt: Which file does a dnf client read first, and which is therefore the one to sign?
+  choices:
+  - primary.xml.gz
+  - repodata/repomd.xml
+  - the .repo file
+  - the largest package
+  answer:
+  - 1
+  explain: 'A) wrong: it is listed by repomd.xml. B) correct: it lists the other metadata files and their checksums. C) wrong: that is client configuration. D) wrong: packages are fetched later.'
+- id: update
+  prompt: What is createrepo_c --update for?
+  choices:
+  - Upgrading installed packages
+  - Re-reading only packages that changed since the last run
+  - Signing the repository
+  - Deleting old versions
+  answer:
+  - 1
+  explain: 'A) wrong: that is dnf upgrade. B) correct: it reuses cached metadata for unchanged files. C) wrong: signing is separate. D) wrong: it does not remove packages.'
+- id: pulpchain
+  prompt: In Pulp 3, what does a distribution do?
+  choices:
+  - Downloads content from upstream
+  - Maps a stable URL path to a publication
+  - Stores private keys
+  - Builds packages
+  answer:
+  - 1
+  explain: 'A) wrong: that is a remote and a sync. B) correct: moving the distribution to another publication is the rollback. C) wrong: signing services do that. D) wrong: Pulp manages content, not builds.'
+- id: ondemand
+  prompt: What is the trade-off of the Pulp on_demand policy?
+  choices:
+  - It uses more disk
+  - It saves disk, but a package is fetched from upstream at first request
+  - It disables signatures
+  - It makes the repository read-only
+  answer:
+  - 1
+  explain: 'A) wrong: it uses less. B) correct: the upstream must be reachable for packages not yet cached. C) wrong: signing is unaffected. D) wrong: unrelated.'
+- id: atomic
+  prompt: How should a mirror be published so that clients never see a partial update?
+  choices:
+  - Sync in place during the day
+  - Build in a staging directory, validate, then switch with a symlink or atomic rename
+  - Delete the index first
+  - Disable caching
+  answer:
+  - 1
+  explain: 'A) wrong: clients may fetch mid-sync. B) correct: the switch is atomic. C) wrong: this breaks clients. D) wrong: caching is not the cause.'
+- id: flat
+  prompt: How does a client source entry for a flat Debian repository end?
+  choices:
+  - With the suite name
+  - With ./ in place of a suite and component
+  - With a port number
+  - With .rpm
+  answer:
+  - 1
+  explain: 'A) wrong: that is the dists layout. B) correct: the slash form means Packages and Release sit in that directory. C) wrong: not part of the syntax. D) wrong: that is the other family.'

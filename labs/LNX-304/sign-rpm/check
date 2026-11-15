@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Verify signatures against throwaway RPM databases.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+command -v rpm >/dev/null && command -v gpg >/dev/null || { echo "FAIL: install rpm and gnupg"; exit 1; }
+[ -d gnupg ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok()   { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+verify() { # key pkg
+  local db; db=$(mktemp -d)
+  rpm --dbpath "$db" --import "$1" 2>/dev/null
+  rpm --dbpath "$db" -K "$2" 2>&1
+  rm -rf "$db"
+}
+for f in one.asc two.asc; do [ -s "$f" ] && ok "$f exported" || fail "export the public key to $f (gpg --armor --export)"; done
+pkg=hello-site-1.0-1.noarch.rpm; rot=hello-site-rotated.rpm
+[ -f "$pkg" ] || { fail "$pkg missing"; exit 1; }
+if [ -s one.asc ]; then
+  out=$(verify one.asc "$pkg")
+  echo "$out" | grep -qiE 'signature|pgp' && ! echo "$out" | grep -qiE 'NOKEY|NOT OK|BAD' && ok "package verifies with key one" || fail "sign $pkg with key one (rpmsign --addsign); rpm -K said: $out"
+fi
+[ -f "$rot" ] && ok "rotated package exists" || fail "copy the package to $rot and re-sign it with key two"
+if [ -s two.asc ] && [ -f "$rot" ]; then
+  out=$(verify two.asc "$rot")
+  echo "$out" | grep -qiE 'signature|pgp' && ! echo "$out" | grep -qiE 'NOKEY|NOT OK|BAD' && ok "rotated package verifies with key two" || fail "re-sign $rot with key two; rpm -K said: $out"
+  if [ -s one.asc ]; then
+    out=$(verify one.asc "$rot")
+    echo "$out" | grep -qiE 'NOKEY|NOT OK|BAD' && ok "key one alone does not verify the rotated package" || fail "the rotated package must be signed only by key two"
+  fi
+fi
+[ -s revoke-one.asc ] && grep -q '^-----BEGIN PGP PUBLIC KEY BLOCK' revoke-one.asc && ok "revocation certificate for key one exists" || fail "create revoke-one.asc from gnupg/openpgp-revocs.d (remove the leading colon of the key block)"
+n=$(gpg --homedir gnupg --list-keys --with-colons 2>/dev/null | grep -c '^pub')
+[ "$n" -ge 2 ] && ok "two keys in the lab keyring" || fail "create both keys in ./gnupg"
+exit $bad

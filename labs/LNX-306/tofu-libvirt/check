@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f main.tf ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+t = open("main.tf").read()
+code = re.sub(r"(?m)^\s*(#|//).*$", "", t)
+def has(p): return re.search(p, code, re.S) is not None
+def block(kind, *labels):
+    pat = kind + "".join(r'\s+"%s"' % re.escape(l) for l in labels) + r"\s*\{"
+    m = re.search(pat, code)
+    if not m: return None
+    depth, i = 1, m.end()
+    while i < len(code) and depth:
+        depth += {"{": 1, "}": -1}.get(code[i], 0); i += 1
+    return code[m.end():i - 1]
+ok("terraform block pins the tool and the provider") if has(r'terraform\s*\{.*required_version\s*=.*required_providers\s*\{.*source\s*=\s*"dmacvicar/libvirt".*version\s*=') else fail("terraform { required_version, required_providers { libvirt = { source = \"dmacvicar/libvirt\", version = ... } } }")
+ok("provider has a uri") if has(r'provider\s+"libvirt"\s*\{[^}]*uri\s*=') else fail('provider "libvirt" { uri = "qemu:///system" }')
+ok("variable ssh_public_key (string)") if has(r'variable\s+"ssh_public_key"\s*\{[^}]*type\s*=\s*string') else fail('variable "ssh_public_key" { type = string }')
+ok("variable vm_names is a set(string)") if has(r'variable\s+"vm_names"\s*\{[^}]*type\s*=\s*set\(string\)') else fail('variable "vm_names" { type = set(string) }')
+pool = block("resource", "libvirt_pool", "site")
+ok("pool site exists") if pool is not None else fail('resource "libvirt_pool" "site"')
+ok("pool is protected from destroy") if pool and re.search(r"lifecycle\s*\{[^}]*prevent_destroy\s*=\s*true", pool, re.S) else fail("lifecycle { prevent_destroy = true } on the pool")
+base = block("resource", "libvirt_volume", "base")
+ok("base volume with source and qcow2 format") if base and re.search(r"source\s*=", base) and re.search(r'format\s*=\s*"qcow2"', base) else fail('libvirt_volume.base needs source and format = "qcow2"')
+disk = block("resource", "libvirt_volume", "disk")
+ok("VM disks overlay the base volume per VM") if disk and "for_each = var.vm_names" in re.sub(r"\s+", " ", disk) and "base_volume_id" in disk else fail("libvirt_volume.disk: for_each = var.vm_names and base_volume_id")
+seed = block("resource", "libvirt_cloudinit_disk", "seed")
+ok("seed per VM from a template") if seed and "for_each" in seed and "templatefile(" in seed else fail("libvirt_cloudinit_disk.seed: for_each and user_data = templatefile(...)")
+vm = block("resource", "libvirt_domain", "vm")
+if vm:
+    ok("domain per VM with a seed") if "for_each" in vm and re.search(r"cloudinit\s*=", vm) else fail("libvirt_domain.vm: for_each and cloudinit")
+    ok("network interface waits for a lease") if re.search(r"network_interface\s*\{[^}]*wait_for_lease\s*=\s*true", vm, re.S) else fail("network_interface { wait_for_lease = true ... }")
+    ok("disk block uses a volume") if re.search(r"disk\s*\{[^}]*volume_id\s*=", vm, re.S) else fail("disk { volume_id = ... }")
+else: fail('resource "libvirt_domain" "vm"')
+ok("output addresses") if has(r'output\s+"addresses"') else fail('output "addresses"')
+if re.search(r"ssh-(ed25519|rsa)\s+AAAA", t) or re.search(r'(?i)(password|passwd)\s*=\s*"[^"]+"', code): fail("no literal SSH key or password in main.tf")
+else: ok("no literal key or password")
+sys.exit(bad)
+PY
+rc=$?
+if [ $rc -eq 0 ] && command -v tofu >/dev/null; then tofu fmt -check main.tf >/dev/null 2>&1 && echo "ok:   tofu fmt -check passes" || { echo "FAIL: run tofu fmt on main.tf"; rc=1; }; fi
+exit $rc

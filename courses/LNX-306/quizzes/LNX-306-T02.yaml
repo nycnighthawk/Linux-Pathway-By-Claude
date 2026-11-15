@@ -1,0 +1,62 @@
+title: 'Quiz: PXE/iPXE/HTTP boot'
+questions:
+- id: opt93
+  prompt: What does DHCP option 93 carry?
+  choices:
+  - The hostname
+  - The client system architecture (BIOS, x86-64 UEFI, ARM64 UEFI and so on)
+  - The lease time
+  - The repository URL
+  answer:
+  - 1
+  explain: 'A) wrong: option 12 is the hostname. B) correct: the server uses it to choose the boot file. C) wrong: option 51. D) wrong: no such option.'
+- id: loop
+  prompt: A UEFI client keeps loading iPXE forever. What is the usual cause?
+  choices:
+  - The disk is full
+  - The server gives the iPXE binary to clients that already run iPXE, because option 175 is not matched
+  - The kernel is too old
+  - TFTP is disabled
+  answer:
+  - 1
+  explain: 'A) wrong: unrelated. B) correct: tag clients with option 175 and serve them a script URL. C) wrong: the kernel is never reached. D) wrong: the first load works.'
+- id: tftp
+  prompt: Why move everything after the first file to HTTP?
+  choices:
+  - HTTP is encrypted by default
+  - TFTP is slow and fragile for large files, while HTTP is fast and easy to cache and proxy
+  - UEFI forbids TFTP
+  - HTTP needs no DHCP
+  answer:
+  - 1
+  explain: 'A) wrong: plain HTTP is not encrypted. B) correct: kernels and initrds are large. C) wrong: TFTP is allowed. D) wrong: DHCP is still needed.'
+- id: safedefault
+  prompt: What should the boot service answer to a machine that is in service?
+  choices:
+  - The installer
+  - A script that exits to the local disk
+  - Nothing, so it hangs
+  - A rescue shell
+  answer:
+  - 1
+  explain: 'A) wrong: reinstalls production by accident. B) correct: exit falls through to the disk. C) wrong: hanging stalls a reboot. D) wrong: gives away access.'
+- id: secureboot
+  prompt: Why does Secure Boot affect network boot?
+  choices:
+  - It blocks DHCP
+  - The first-stage loader must be signed by a trusted key, so distributions use a signed shim and GRUB
+  - It disables the network card
+  - It requires TFTP
+  answer:
+  - 1
+  explain: 'A) wrong: DHCP is separate. B) correct: unsigned loaders do not run. C) wrong: the card works. D) wrong: no such requirement.'
+- id: relay
+  prompt: How does DHCP reach a server on another subnet?
+  choices:
+  - Through a DHCP relay (ip helper) on the router, which adds the gateway address
+  - Through a TFTP proxy
+  - It cannot
+  - Through DNS
+  answer:
+  - 0
+  explain: 'A) correct: the server picks the scope from the relay address. B) wrong: unrelated. C) wrong: relays are standard. D) wrong: unrelated.'

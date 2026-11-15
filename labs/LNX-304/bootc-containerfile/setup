@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf Containerfile site
+mkdir site
+cat > Containerfile <<'X'
+# Complete this file (see README.md)
+FROM ?
+RUN ?
+X

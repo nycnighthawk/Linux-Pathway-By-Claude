@@ -1,0 +1,62 @@
+title: 'Quiz: Signing and key rotation'
+questions:
+- id: debmodel
+  prompt: What does the Debian family sign to authenticate a whole repository?
+  choices:
+  - Every .deb file
+  - The Release file (InRelease or Release.gpg), which lists the checksums of the indexes
+  - The kernel
+  - The sources.list file
+  answer:
+  - 1
+  explain: 'A) wrong: archive packages are not signed one by one. B) correct: signing the top of the hash tree covers everything below. C) wrong: unrelated. D) wrong: that is local configuration.'
+- id: repogpg
+  prompt: What does repo_gpgcheck=1 check?
+  choices:
+  - The signature on the repository metadata
+  - The package payload only
+  - The TLS certificate
+  - The disk space
+  answer:
+  - 0
+  explain: 'A) correct: the signed repomd.xml authenticates the metadata. B) wrong: that is gpgcheck. C) wrong: TLS is separate. D) wrong: unrelated.'
+- id: nokey
+  prompt: rpm -K prints NOKEY for a package. What is the cause?
+  choices:
+  - The file is corrupt
+  - The public key that made the signature is not imported
+  - The package is unsigned
+  - The key expired
+  answer:
+  - 1
+  explain: 'A) wrong: corruption gives a bad digest or signature. B) correct: import it with rpm --import. C) wrong: an unsigned package says so. D) wrong: expiry is reported differently.'
+- id: offline
+  prompt: Why keep the primary key offline and sign with a subkey?
+  choices:
+  - Subkeys are faster
+  - Routine signing never exposes the primary, and a subkey can be replaced or extended without changing the identity
+  - It is required by GnuPG
+  - It makes packages smaller
+  answer:
+  - 1
+  explain: 'A) wrong: speed is not the reason. B) correct: it limits the blast radius and eases renewal. C) wrong: GnuPG does not require it. D) wrong: no effect on size.'
+- id: rotation
+  prompt: Which rotation plan avoids an outage?
+  choices:
+  - Replace the key on the server and tell clients later
+  - Deliver the new key first, sign with both for a while, then retire the old one
+  - Disable signature checking during the change
+  - Wait for the old key to expire
+  answer:
+  - 1
+  explain: 'A) wrong: clients that lack the key fail at once. B) correct: overlap lets every step be undone. C) wrong: it removes the protection. D) wrong: expiry is the outage you are avoiding.'
+- id: trustedyes
+  prompt: An import problem blocks updates. What is the correct response?
+  choices:
+  - Set trusted=yes or gpgcheck=0 permanently
+  - Fix the key delivery (import the right key through a channel you control) and keep verification on
+  - Delete the repository
+  - Use HTTP instead of HTTPS
+  answer:
+  - 1
+  explain: 'A) wrong: it removes the control and is rarely reverted. B) correct: solve the cause. C) wrong: it does not fix anything. D) wrong: it weakens transport.'

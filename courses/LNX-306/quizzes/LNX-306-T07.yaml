@@ -1,0 +1,62 @@
+title: 'Quiz: BMC, IPMI and Redfish'
+questions:
+- id: bmc
+  prompt: Why can a BMC power-cycle a server that is switched off at the operating-system level?
+  choices:
+  - It is a separate small computer with its own network port and firmware, powered whenever the server has standby power
+  - It runs inside the kernel
+  - It uses the host network card only
+  - It needs the OS agent installed
+  answer:
+  - 0
+  explain: 'A) correct: it is independent of the host. B) wrong: it is separate hardware. C) wrong: it has its own port. D) wrong: no agent is needed.'
+- id: once
+  prompt: Which Redfish settings make a PXE boot apply for one boot only?
+  choices:
+  - BootSourceOverrideTarget Pxe with BootSourceOverrideEnabled Once
+  - BootSourceOverrideTarget Pxe with BootSourceOverrideEnabled Continuous
+  - ResetType ForceOff
+  - PowerState Pxe
+  answer:
+  - 0
+  explain: 'A) correct: the override is cleared after one boot. B) wrong: it would stay for every boot. C) wrong: that turns the machine off. D) wrong: not a valid state.'
+- id: password
+  prompt: Why prefer ipmitool -E (password from the environment) over -P?
+  choices:
+  - A password on the command line is visible in the process list
+  - -E is faster
+  - -P is not supported
+  - -E encrypts the network traffic
+  answer:
+  - 0
+  explain: 'A) correct: other users can read process arguments. B) wrong: no speed change. C) wrong: it works but is unsafe. D) wrong: encryption depends on lanplus.'
+- id: suite0
+  prompt: What is the danger of IPMI cipher suite 0?
+  choices:
+  - It permits sessions without authentication or encryption
+  - It limits sessions to one user
+  - It disables serial-over-LAN
+  - It forces TLS
+  answer:
+  - 0
+  explain: 'A) correct: anyone who reaches the port may act. B) wrong: unrelated. C) wrong: unrelated. D) wrong: IPMI does not use TLS.'
+- id: allowable
+  prompt: Why should a Redfish client read the allowable values and system ids from the service?
+  choices:
+  - Vendors differ in ids and accepted values, so assumptions break on the first different model
+  - The standard forbids caching
+  - It is required for TLS
+  - Values never change
+  answer:
+  - 0
+  explain: 'A) correct: discover instead of assume. B) wrong: not forbidden. C) wrong: unrelated. D) wrong: they differ by model and firmware.'
+- id: nohw
+  prompt: Which is a way to practise BMC automation without servers?
+  choices:
+  - A mock Redfish service, sushy-emulator or virtualbmc in front of libvirt guests
+  - Run ipmitool against a public address
+  - Disable the firewall
+  - Use ping
+  answer:
+  - 0
+  explain: 'A) correct: emulators and mocks behave like a BMC. B) wrong: attacking others is not practice. C) wrong: unrelated. D) wrong: ping does not manage power.'

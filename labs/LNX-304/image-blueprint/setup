@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f site-base.toml site-snapshot.toml
+: > site-base.toml
+: > site-snapshot.toml

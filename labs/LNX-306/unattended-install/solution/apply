@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > ks.cfg <<'X'
+# SPDX-License-Identifier: MIT
+text
+lang en_US.UTF-8
+keyboard us
+timezone UTC --utc
+network --bootproto=dhcp --hostname=node01.example.org --activate
+rootpw --lock
+user --name=ops --groups=wheel --lock
+sshkey --username=ops "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleExampleExampleExampleExampleExample ops@example.org"
+selinux --enforcing
+firewall --enabled --ssh
+services --enabled=sshd,chronyd
+ignoredisk --only-use=vda
+zerombr
+clearpart --all --initlabel --drives=vda
+autopart --type=lvm
+reboot
+
+%packages
+@core
+chrony
+%end
+
+%post --log=/root/ks-post.log
+echo built > /etc/site-build
+%end
+X
+cat > user-data <<'X'
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US.UTF-8
+  keyboard: {layout: us}
+  identity:
+    hostname: node01
+    username: ops
+    password: "$6$rounds=4096$labsalt$0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijkl"
+  ssh:
+    install-server: true
+    allow-pw: false
+    authorized-keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleExampleExampleExampleExampleExample ops@example.org"
+  storage:
+    layout:
+      name: lvm
+  packages: [chrony]
+  late-commands:
+    - curtin in-target --target=/target -- systemctl enable chrony
+X

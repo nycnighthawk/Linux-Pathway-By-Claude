@@ -1,0 +1,62 @@
+title: 'Quiz: Kickstart, preseed, autoinstall'
+questions:
+- id: clearpart
+  prompt: What is the danger of "clearpart --all --initlabel" with no drive filter?
+  choices:
+  - It only clears the boot disk
+  - It can wipe every disk the installer sees, including data disks
+  - It forces a reboot
+  - It disables SELinux
+  answer:
+  - 1
+  explain: 'A) wrong: it is not limited to one disk by default. B) correct: pair it with ignoredisk --only-use and --drives. C) wrong: unrelated. D) wrong: unrelated.'
+- id: rootpw
+  prompt: Which is the safest root setting in an answer file?
+  choices:
+  - rootpw --plaintext changeme
+  - rootpw --lock together with an SSH key for a named administrator
+  - An empty root password
+  - A shared password in the URL
+  answer:
+  - 1
+  explain: 'A) wrong: a readable shared secret. B) correct: no password to steal; access by key. C) wrong: anyone can log in. D) wrong: URLs are logged.'
+- id: ksdelivery
+  prompt: How do you tell Anaconda to use a Kickstart file served over HTTP?
+  choices:
+  - ks=http://... in /etc/fstab
+  - The kernel argument inst.ks=http://server/path/ks.cfg
+  - A DNS TXT record only
+  - It cannot be done
+  answer:
+  - 1
+  explain: 'A) wrong: fstab is not read by the installer. B) correct: inst.ks takes URLs, nfs and hd locations. C) wrong: no such mechanism. D) wrong: it is the usual method.'
+- id: preseedtime
+  prompt: Why can a preseed file fetched over the network fail to answer the network questions?
+  choices:
+  - Preseed does not support networks
+  - The network is configured before the file is fetched, so those questions are asked first
+  - HTTP is blocked by Debian
+  - The file is too big
+  answer:
+  - 1
+  explain: 'A) wrong: it supports it. B) correct: set netcfg values as boot parameters or embed the file in the initrd. C) wrong: not blocked. D) wrong: size is irrelevant.'
+- id: autoinstallsafe
+  prompt: Why does Ubuntu autoinstall wait for confirmation unless the autoinstall kernel argument is present?
+  choices:
+  - A bug in Subiquity
+  - A safety feature, so that an installation that would erase disks needs explicit consent
+  - To download updates
+  - To pick a language
+  answer:
+  - 1
+  explain: 'A) wrong: it is deliberate. B) correct: the argument is the consent. C) wrong: unrelated. D) wrong: unrelated.'
+- id: handoff
+  prompt: What should the answer file hand over to at the end?
+  choices:
+  - Nothing; it should configure everything
+  - Configuration management or cloud-init, which converge repeatedly
+  - A manual checklist
+  - The BIOS
+  answer:
+  - 1
+  explain: 'A) wrong: the installer runs once and is hard to test. B) correct: keep the file minimal and let repeatable tools do the rest. C) wrong: not repeatable. D) wrong: unrelated.'

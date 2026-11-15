@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Inspect the built .deb with dpkg-deb.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+command -v dpkg-deb >/dev/null || { echo "FAIL: dpkg-deb not found (install dpkg-dev)"; exit 1; }
+[ -d hello-site-1.0 ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok()   { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+deb=$(ls hello-site_1.0-1_all.deb 2>/dev/null | head -1)
+[ -n "$deb" ] && ok "binary package built: $deb" || { fail "no hello-site_1.0-1_all.deb (cd hello-site-1.0 && dpkg-buildpackage -us -uc -b)"; exit 1; }
+f() { dpkg-deb -f "$deb" "$1" 2>/dev/null; }
+[ "$(f Package)" = hello-site ] && ok "Package hello-site" || fail "Package must be hello-site"
+[ "$(f Version)" = 1.0-1 ] && ok "Version 1.0-1" || fail "Version must be 1.0-1 (changelog)"
+[ "$(f Architecture)" = all ] && ok "Architecture all" || fail "script only: Architecture: all"
+[ -n "$(f Description)" ] && ok "has a description" || fail "add a Description"
+list=$(dpkg-deb -c "$deb" 2>/dev/null)
+echo "$list" | grep -q ' \./usr/bin/hello-site$' && ok "/usr/bin/hello-site packaged" || fail "install hello-site into usr/bin"
+echo "$list" | grep ' \./usr/bin/hello-site$' | grep -q '^-rwxr-xr-x' && ok "script is mode 0755" || fail "/usr/bin/hello-site must be mode 0755"
+echo "$list" | grep -q ' \./etc/hello-site.conf$' && ok "/etc/hello-site.conf packaged" || fail "install hello-site.conf into etc"
+dpkg-deb -I "$deb" conffiles 2>/dev/null | grep -qx /etc/hello-site.conf && ok "config file is a conffile" || fail "files under /etc must become conffiles (debhelper compat 13 does this)"
+[ -x hello-site-1.0/debian/rules ] && grep -q 'dh \$@' hello-site-1.0/debian/rules && ok "rules uses dh" || fail "debian/rules must be executable and call dh \$@"
+grep -q 'debhelper-compat' hello-site-1.0/debian/control 2>/dev/null && ok "Build-Depends names debhelper-compat" || fail "Build-Depends: debhelper-compat (= 13)"
+[ -f hello-site-1.0/debian/copyright ] && ok "debian/copyright exists" || fail "add debian/copyright"
+exit $bad

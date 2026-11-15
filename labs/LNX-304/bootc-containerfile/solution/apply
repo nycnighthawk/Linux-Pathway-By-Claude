@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p site
+printf '# Site kernel arguments\nkargs = ["audit=1"]\n' > site/10-site.toml
+cat > Containerfile <<'X'
+FROM registry.example.org/base/rhel10-bootc:10.0
+RUN dnf -y install chrony tmux && dnf clean all
+COPY site/10-site.toml /usr/lib/bootc/kargs.d/10-site.toml
+RUN systemctl enable chronyd.service
+RUN bootc container lint
+X

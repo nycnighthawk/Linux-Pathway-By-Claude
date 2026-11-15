@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Consistency grading of a content-view plan.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f content-plan.txt ] || { echo "FAIL: content-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" content-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+isint() { printf '%s' "$1" | grep -Eq '^[0-9]+$'; }
+e=$(get environments); n=$(printf '%s' "$e" | tr ',' '\n' | grep -c .)
+if [ "$n" -ge 3 ] && [ "$n" -le 4 ] && [ "${e##*,}" = prod ]; then ok "environments $e"; else fail "environments: 3 or 4 names ending in prod"; fi
+v=$(get base_views); if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 3 ]; then ok "$v base view(s)"; else fail "base_views: 1 to 3"; fi
+v=$(get composite_views); if [ "$v" = none ] || { isint "$v" && [ "$v" -le 3 ]; }; then ok "composite views: $v"; else fail "composite_views: none or up to 3"; fi
+case "$(get errata_filter)" in date|type) ok "errata filter $(get errata_filter)" ;; *) fail "errata_filter: date or type" ;; esac
+[ "$(get promotion_approval)" = required ] && ok "promotion needs approval" || fail "promotion_approval: required"
+[ "$(get publish_and_promote)" = automated ] && ok "publish and promote are automated" || fail "publish_and_promote: automated"
+v=$(get canary_percent); if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 10 ]; then ok "canary $v percent"; else fail "canary_percent: 1 to 10"; fi
+v=$(get retention_versions); if isint "$v" && [ "$v" -ge 3 ] && [ "$v" -le 10 ]; then ok "keep $v versions"; else fail "retention_versions: 3 to 10"; fi
+[ "$(get emergency_path)" = incremental ] && ok "emergency path is an incremental update" || fail "emergency_path: incremental"
+[ "$(get capsules)" = per_site ] && ok "a capsule at each site" || fail "capsules: per_site"
+[ "$(get registration)" = activation_key ] && ok "hosts register with activation keys" || fail "registration: activation_key"
+v=$(get backup_test_months); if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 6 ]; then ok "restore tested every $v months"; else fail "backup_test_months: 1 to 6"; fi
+o=$(get owner); if [ -n "$o" ] && [ "$o" != "?" ] && [ "$o" != none ]; then ok "owner $o"; else fail "owner: a named team"; fi
+exit "$bad"

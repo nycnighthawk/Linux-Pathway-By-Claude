@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf site disk.img baseline.sha256 drift.sh baseline.sh wipe.sh
+mkdir -p site/etc site/bin
+printf 'listen 8080\nworkers 4\n' > site/etc/app.conf
+printf 'level=info\n' > site/etc/log.conf
+printf '#!/bin/sh\necho hello\n' > site/bin/run.sh
+printf 'users: alice, bob\n' > site/etc/users.txt
+# a 2 MiB "disk" that contains a recognisable secret
+head -c 2097152 /dev/urandom > disk.img
+printf 'TOP-SECRET-CUSTOMER-DATA-0001' | dd of=disk.img bs=1 seek=1048576 conv=notrunc status=none
+echo "Created site/ (a config tree) and disk.img (a 2 MiB image that holds a secret)."

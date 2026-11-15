@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: upstream files only, no debian/ directory.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf hello-site-1.0 hello-site_* 
+mkdir hello-site-1.0
+cat > hello-site-1.0/hello-site <<'X'
+#!/bin/sh
+echo "hello from the site package"
+X
+chmod +x hello-site-1.0/hello-site
+printf '# hello-site configuration\ngreeting=hello\n' > hello-site-1.0/hello-site.conf
+printf 'MIT License (lab sample)\n' > hello-site-1.0/LICENSE

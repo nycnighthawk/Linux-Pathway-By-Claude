@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a 40-host inventory and no ring assignment.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f fleet.csv rings.csv
+{
+  echo "host,service,env,role,pair,freeze"
+  for i in $(seq -w 1 12); do echo "web$i,web,prod,node,,no"; done
+  for i in $(seq -w 1 10); do echo "api$i,api,prod,node,,no"; done
+  for i in 1 2 3 4; do echo "batch$i,batch,prod,node,,no"; done
+  for i in 1 2 3 4; do echo "cache$i,cache,prod,node,,no"; done
+  for i in 1 2 3; do echo "db${i}p,db,prod,primary,pair$i,no"; echo "db${i}r,db,prod,replica,pair$i,no"; done
+  for i in 1 2; do echo "lab$i,lab,lab,node,,no"; done
+  for i in 1 2; do echo "fw$i,appliance,prod,node,,yes"; done
+} > fleet.csv

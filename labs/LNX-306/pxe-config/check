@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f dnsmasq.conf ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+conf = [l.strip() for l in open("dnsmasq.conf") if l.strip() and not l.strip().startswith("#")]
+c = "\n".join(conf)
+def has(p): return re.search(p, c, re.M) is not None
+ok("dhcp-range set") if has(r"^dhcp-range=") else fail("dhcp-range=")
+ok("bound to the provisioning interface") if has(r"^interface=\S+") and has(r"^bind-interfaces\b") else fail("interface=eth1 and bind-interfaces")
+ok("TFTP enabled with a root") if has(r"^enable-tftp\b") and has(r"^tftp-root=\S+") else fail("enable-tftp and tftp-root=")
+ok("BIOS tag from architecture 0") if has(r"^dhcp-match=set:bios,option:client-arch,0\b") else fail("dhcp-match=set:bios,option:client-arch,0")
+efi = set(re.findall(r"^dhcp-match=set:efi64,option:client-arch,(\d+)", c, re.M))
+ok("EFI x86-64 tag from architectures 7 and 9") if {"7", "9"} <= efi else fail("dhcp-match=set:efi64,option:client-arch,7 and ...,9")
+ok("iPXE tag from option 175") if has(r"^dhcp-match=set:ipxe,175\b") else fail("dhcp-match=set:ipxe,175")
+ok("BIOS clients get undionly.kpxe") if has(r"^dhcp-boot=tag:bios,tag:!ipxe,undionly\.kpxe") else fail("dhcp-boot=tag:bios,tag:!ipxe,undionly.kpxe")
+ok("EFI clients get ipxe.efi") if has(r"^dhcp-boot=tag:efi64,tag:!ipxe,ipxe\.efi") else fail("dhcp-boot=tag:efi64,tag:!ipxe,ipxe.efi")
+ok("iPXE clients get an HTTP script") if has(r"^dhcp-boot=tag:ipxe,http://\S+") else fail("dhcp-boot=tag:ipxe,http://.../boot.ipxe")
+b = [l.strip() for l in open("boot.ipxe") if l.strip()]
+ok("boot.ipxe starts with #!ipxe") if b and b[0] == "#!ipxe" else fail("boot.ipxe: first line #!ipxe")
+ok("boot.ipxe runs dhcp") if "dhcp" in b else fail("boot.ipxe needs a dhcp line")
+k = [l for l in b if l.startswith("kernel ")]
+if k and "inst.repo=http://" in k[0] and "/snapshots/" in k[0] and re.search(r"inst\.ks=http://\S+\$\{mac\}\.cfg", k[0]) and "ip=dhcp" in k[0]: ok("kernel line uses a snapshot repo, a per-MAC Kickstart and DHCP")
+else: fail("kernel line needs inst.repo=http://.../snapshots/..., inst.ks=http://...${mac}.cfg and ip=dhcp")
+i = [l for l in b if l.startswith("initrd ")]
+ok("initrd over HTTP") if i and re.match(r"initrd http://", i[0]) else fail("initrd http://...")
+ok("ends with boot") if b and b[-1] == "boot" else fail("last line must be boot")
+d = [l.strip() for l in open("default.ipxe") if l.strip()]
+ok("default.ipxe falls through to the disk") if d and d[0] == "#!ipxe" and "exit" in d else fail("default.ipxe: #!ipxe then exit")
+sys.exit(bad)
+PY
+rc=$?
+if [ $rc -eq 0 ] && command -v dnsmasq >/dev/null; then dnsmasq --test -C dnsmasq.conf >/dev/null 2>&1 && echo "ok:   dnsmasq --test accepts the file" || { echo "FAIL: dnsmasq --test rejects dnsmasq.conf"; rc=1; }; fi
+exit $rc
