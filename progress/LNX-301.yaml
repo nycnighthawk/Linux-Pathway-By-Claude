@@ -6,7 +6,7 @@ started: '2026-11-15'
 updated: '2026-11-15'
 phases:
   synth:
-    state: in-progress
+    state: done
     units: 10
     done:
     - LNX-301-T01
@@ -17,6 +17,8 @@ phases:
     - LNX-301-T06
     - LNX-301-T07
     - LNX-301-T08
+    - LNX-301-T09
+    - LNX-301-T10
   lessons:
     state: todo
     units: 10
@@ -43,3 +45,4 @@ log:
 - '2026-11-15 synth: LNX-301-T06'
 - '2026-11-15 synth: LNX-301-T07'
 - '2026-11-15 synth: LNX-301-T08'
+- '2026-11-15 synth: LNX-301-T09, LNX-301-T10'
