@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f env.sh ] || { echo "FAIL: run setup first"; exit 1; }
+. ./env.sh
+P() { runuser -u postgres -- "$PGBIN/psql" -h "$PGLAB" -p "$1" -d postgres -Atqc "$2" 2>&1; }
+bad=0
+ok() { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+grep -q 'TODO' make-standby.sh && { fail "make-standby.sh still contains the TODO"; exit 1; }
+grep -Eq 'pg_basebackup' make-standby.sh && grep -Eq -- '(-R|--write-recovery-conf)' make-standby.sh && ok "script uses pg_basebackup -R" || fail "use pg_basebackup with -R (write the standby settings)"
+grep -Eq 'REPLICATION' make-standby.sh && ok "a role with the REPLICATION attribute" || fail "create a role WITH REPLICATION"
+grep -Eq 'pg_hba' make-standby.sh && ok "pg_hba.conf updated" || fail "allow the replication role in pg_hba.conf"
+out=$(timeout 120 ./make-standby.sh 2>&1); rc=$?
+[ $rc -eq 0 ] && ok "make-standby.sh runs" || { fail "make-standby.sh failed ($rc): $(echo "$out" | tail -3)"; exit 1; }
+sleep 3
+[ "$(P "$STANDBY_PORT" 'select pg_is_in_recovery()')" = t ] && ok "standby is in recovery (read only)" || fail "no standby answering on port $STANDBY_PORT, or it is not in recovery"
+[ "$(P "$PRIMARY_PORT" "select count(*) from pg_stat_replication where state='streaming'")" = 1 ] && ok "primary reports one streaming standby" || fail "pg_stat_replication shows no streaming standby"
+[ "$(P "$STANDBY_PORT" 'select item from orders where id=1')" = first ] && ok "existing data is on the standby" || fail "the standby does not have the initial row"
+P "$PRIMARY_PORT" "insert into orders values (2,'second')" >/dev/null
+sleep 2
+[ "$(P "$STANDBY_PORT" 'select item from orders where id=2')" = second ] && ok "a new row replicated" || fail "a row inserted on the primary did not reach the standby"
+P "$STANDBY_PORT" "insert into orders values (3,'x')" 2>&1 | grep -qi 'read-only' && ok "writes on the standby are refused" || fail "the standby accepted a write"
+# promote
+runuser -u postgres -- "$PGBIN/pg_ctl" -D "$PGLAB/standby" promote >/dev/null 2>&1; sleep 3
+[ "$(P "$STANDBY_PORT" 'select pg_is_in_recovery()')" = f ] && ok "standby promoted" || fail "promotion failed"
+P "$STANDBY_PORT" "insert into orders values (4,'after-promotion')" >/dev/null 2>&1
+[ "$(P "$STANDBY_PORT" 'select count(*) from orders')" = 3 ] && ok "promoted server accepts writes" || fail "the promoted server did not accept a write"
+for d in primary standby; do runuser -u postgres -- "$PGBIN/pg_ctl" -D "$PGLAB/$d" -m immediate stop >/dev/null 2>&1; done
+[ $bad -eq 0 ] && echo PASS || exit 1

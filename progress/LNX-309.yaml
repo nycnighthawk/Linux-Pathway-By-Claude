@@ -12,6 +12,7 @@ phases:
     - LNX-309-T01
     - LNX-309-T02
     - LNX-309-T03
+    - LNX-309-T04
   lessons:
     state: in-progress
     units: 6
@@ -19,6 +20,7 @@ phases:
     - LNX-309-T01
     - LNX-309-T02
     - LNX-309-T03
+    - LNX-309-T04
   quizzes:
     state: in-progress
     units: 6
@@ -26,6 +28,7 @@ phases:
     - LNX-309-T01
     - LNX-309-T02
     - LNX-309-T03
+    - LNX-309-T04
   labs:
     state: in-progress
     units: 6
@@ -33,6 +36,7 @@ phases:
     - LNX-309-T01
     - LNX-309-T02
     - LNX-309-T03
+    - LNX-309-T04
   checks:
     state: todo
     units: 0
@@ -52,3 +56,7 @@ log:
 - '2026-11-15 lessons: LNX-309-T03'
 - '2026-11-15 quizzes: LNX-309-T03'
 - '2026-11-15 labs: LNX-309-T03'
+- '2026-11-15 synth: LNX-309-T04'
+- '2026-11-15 lessons: LNX-309-T04'
+- '2026-11-15 quizzes: LNX-309-T04'
+- '2026-11-15 labs: LNX-309-T04'

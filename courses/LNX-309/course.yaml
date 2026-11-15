@@ -29,6 +29,13 @@ modules:
     title: keepalived + HAProxy HA
     file: lessons/LNX-309-T03.md
     minutes: 45
+- id: data-and-recovery
+  title: Data
+  lessons:
+  - topic: LNX-309-T04
+    title: PostgreSQL replication
+    file: lessons/LNX-309-T04.md
+    minutes: 45
 labs:
 - id: pcs-build
   topic: LNX-309-T01
@@ -51,6 +58,14 @@ labs:
   packages:
   - haproxy
   - keepalived
+- id: pg-replica
+  topic: LNX-309-T04
+  title: Build and promote a PostgreSQL standby
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - postgresql
 quizzes:
 - id: LNX-309-T01
   topic: LNX-309-T01
@@ -64,3 +79,7 @@ quizzes:
   topic: LNX-309-T03
   title: 'Quiz: keepalived + HAProxy HA'
   file: quizzes/LNX-309-T03.yaml
+- id: LNX-309-T04
+  topic: LNX-309-T04
+  title: 'Quiz: PostgreSQL replication'
+  file: quizzes/LNX-309-T04.yaml

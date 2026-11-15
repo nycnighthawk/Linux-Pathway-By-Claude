@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > make-standby.sh <<'X'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+. "$(dirname "$0")/env.sh"
+pg() { runuser -u postgres -- "$@"; }
+psqlp() { pg "$PGBIN/psql" -h "$PGLAB" -p "$PRIMARY_PORT" -d postgres -qc "$1"; }
+psqlp "CREATE ROLE replicator WITH REPLICATION LOGIN"
+echo "host replication replicator 127.0.0.1/32 trust" | pg tee -a "$PGLAB/primary/pg_hba.conf" >/dev/null
+psqlp "SELECT pg_reload_conf()" >/dev/null
+pg "$PGBIN/pg_basebackup" -h 127.0.0.1 -p "$PRIMARY_PORT" -U replicator -D "$PGLAB/standby" -X stream -R
+printf "port = %s\nunix_socket_directories = '%s'\n" "$STANDBY_PORT" "$PGLAB" | pg tee -a "$PGLAB/standby/postgresql.conf" >/dev/null
+pg "$PGBIN/pg_ctl" -D "$PGLAB/standby" -l "$PGLAB/standby.log" -w start >/dev/null
+X
+chmod +x make-standby.sh
