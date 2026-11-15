@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > etc/security/faillock.conf <<'C'
+# SPDX-License-Identifier: MIT
+deny = 4
+fail_interval = 900
+unlock_time = 600
+even_deny_root
+audit
+C
+cat > etc/security/pwquality.conf <<'C'
+# SPDX-License-Identifier: MIT
+minlen = 14
+minclass = 3
+retry = 3
+enforce_for_root
+C
+for f in system-auth password-auth; do
+  sed -i -e '/^auth .*pam_env.so/a auth        required      pam_faillock.so preauth' \
+         -e '/^auth .*sufficient .*pam_unix.so/a auth        required      pam_faillock.so authfail' \
+         -e '/^account .*pam_unix.so/a account     required      pam_faillock.so' etc/pam.d/$f
+done
+sed -i -e 's/^remote_logins_use_file=.*/remote_logins_use_file=password-auth/' -e 's/^reset_command=.*/reset_command=faillock --user alice --reset/' -e 's/^negative_credit_means=.*/negative_credit_means=at least that many characters of the class are required/' answers.txt

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Compare normalised answers with the smallest correct fix for each denial; no SELinux is needed.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed -e "s/^ *//;s/ *$//" -e "s/[\"']//g" -e 's/  */ /g'; }
+if [ -f denials.txt ]; then
+  n=$(grep -c 'avc:' denials.txt); [ "$n" -eq 3 ] && ok "denials.txt holds the three AVC records" || fail "denials.txt must contain exactly the 3 AVC records from audit.log (ausearch -if audit.log -m AVC -i > denials.txt)"
+  grep -q 'httpd_t' denials.txt && grep -q 'tcp_socket' denials.txt && grep -q 'user_home_t' denials.txt && ok "denials are interpreted" || fail "denials.txt looks empty or wrong; use ausearch -if audit.log -m AVC -i"
+else fail "save the denials: ausearch -if audit.log -m AVC -i > denials.txt"; fi
+case "$(get search_command)" in "ausearch -m AVC"*) ok "search command" ;; *) fail "search_command: start with ausearch -m AVC ..." ;; esac
+case "$(get db_denial_fix)" in "setsebool -P httpd_can_network_connect_db on"|"setsebool -P httpd_can_network_connect_db=on"|"setsebool -P httpd_can_network_connect_db 1") ok "database boolean" ;; *) fail "db_denial_fix: persistent boolean that lets httpd connect to a database port" ;; esac
+case "$(get label_rule_fix)" in "semanage fcontext -a -t httpd_sys_content_t /srv/web(/.*)?") ok "persistent label rule" ;; *) fail "label_rule_fix: semanage fcontext -a -t <type> '/srv/web(/.*)?' with the web content type" ;; esac
+case "$(get label_apply_command)" in "restorecon -Rv /srv/web"|"restorecon -R /srv/web"|"restorecon -RFv /srv/web") ok "restorecon" ;; *) fail "label_apply_command: apply the policy label to /srv/web recursively" ;; esac
+case "$(get port_fix)" in "semanage port -a -t http_port_t -p tcp 8081") ok "port fix" ;; *) fail "port_fix: semanage port -a -t <type> -p tcp 8081 with the http port type" ;; esac
+case "$(get single_domain_permissive)" in "semanage permissive -a httpd_t") ok "permissive for one domain" ;; *) fail "single_domain_permissive: make only httpd_t permissive" ;; esac
+case "$(get why_not_chcon)" in *relabel*|*restorecon*|*persist*|*lost*|*"not survive"*) ok "chcon is temporary" ;; *) fail "why_not_chcon: one phrase on what happens to a chcon change" ;; esac
+exit $bad

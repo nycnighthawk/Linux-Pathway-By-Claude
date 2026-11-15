@@ -1,0 +1,228 @@
+id: LNX-204
+title: Linux Security Fundamentals
+summary: 'Host hardening on Linux: PAM lockout and password quality, sudo policy, SSH and certificates, SELinux and AppArmor,
+  nftables, auditd, AIDE, OpenSCAP, TLS with openssl, and CVE triage.'
+hours: 60
+outcomes:
+- Configure PAM, faillock and password-quality policy through the supported tooling
+- Write sudo rules that grant one action rather than a program
+- Harden sshd and issue short-lived SSH certificates from a private CA
+- Diagnose SELinux denials as label, boolean, port or policy problems and apply the smallest fix
+- Write and test AppArmor profiles and a default-drop nftables host firewall
+- Design audit rules, an AIDE baseline and OpenSCAP scans and read their reports
+- Build a private TLS certificate authority and inspect servers with openssl
+- Triage CVEs and advisories by exposure rather than by score alone
+certifications:
+- cert: LFCS
+  objectives:
+  - D1
+  - D5
+- cert: LPIC1
+  objectives:
+  - '110.1'
+  - '110.2'
+  - '110.3'
+- cert: LPIC2
+  objectives:
+  - '210.2'
+  - '212.3'
+  - '212.4'
+- cert: LPLUS
+  objectives:
+  - D3
+- cert: RHCSA
+  objectives:
+  - D9
+  - D10
+- cert: CKS
+  objectives:
+  - D3
+modules:
+- id: accounts-and-access
+  title: Accounts, privilege and remote access
+  lessons:
+  - topic: LNX-204-T01
+    title: PAM, pwquality, faillock
+    file: lessons/LNX-204-T01.md
+    minutes: 50
+  - topic: LNX-204-T02
+    title: sudo policy
+    file: lessons/LNX-204-T02.md
+    minutes: 50
+  - topic: LNX-204-T03
+    title: SSH hardening, SSH certificates
+    file: lessons/LNX-204-T03.md
+    minutes: 55
+- id: confinement-network
+  title: Confinement and network exposure
+  lessons:
+  - topic: LNX-204-T04
+    title: 'SELinux: contexts, booleans, audit2why'
+    file: lessons/LNX-204-T04.md
+    minutes: 70
+  - topic: LNX-204-T05
+    title: AppArmor profiles
+    file: lessons/LNX-204-T05.md
+    minutes: 45
+  - topic: LNX-204-T06
+    title: nftables hardening
+    file: lessons/LNX-204-T06.md
+    minutes: 50
+- id: detection-and-assurance
+  title: Detection, compliance and trust
+  lessons:
+  - topic: LNX-204-T07
+    title: auditd
+    file: lessons/LNX-204-T07.md
+    minutes: 55
+  - topic: LNX-204-T08
+    title: AIDE
+    file: lessons/LNX-204-T08.md
+    minutes: 40
+  - topic: LNX-204-T09
+    title: OpenSCAP scans and remediation
+    file: lessons/LNX-204-T09.md
+    minutes: 55
+  - topic: LNX-204-T10
+    title: TLS and openssl
+    file: lessons/LNX-204-T10.md
+    minutes: 55
+  - topic: LNX-204-T11
+    title: CVE and errata triage
+    file: lessons/LNX-204-T11.md
+    minutes: 40
+labs:
+- id: pam-faillock
+  topic: LNX-204-T01
+  title: Turn a bare PAM stack into one with lockout and password quality
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - libpam-modules
+  - libpam-pwquality
+- id: sudo-policy
+  topic: LNX-204-T02
+  title: Replace a risky sudo rule with a narrow, logged one
+  env: C
+  license: MIT
+  minutes: 35
+  packages:
+  - sudo
+- id: ssh-certificates
+  topic: LNX-204-T03
+  title: Sign a user certificate and harden sshd_config around it
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - openssh-client
+  - openssh-server
+- id: selinux-denials
+  topic: LNX-204-T04
+  title: Read AVC denials and choose the least powerful fix
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - auditd
+- id: apparmor-profile
+  topic: LNX-204-T05
+  title: Tighten a generated AppArmor profile and parse it
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - apparmor
+- id: nft-host-firewall
+  topic: LNX-204-T06
+  title: Write a default-drop host firewall and validate it
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - nftables
+- id: audit-rules
+  topic: LNX-204-T07
+  title: Write audit rules and investigate a change with ausearch
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - auditd
+- id: aide-baseline
+  topic: LNX-204-T08
+  title: Build an AIDE baseline, detect a change and read the report
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - aide
+- id: openscap-scan
+  topic: LNX-204-T09
+  title: Scan, remediate and rescan against a small SCAP benchmark
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - openscap-scanner
+- id: tls-private-ca
+  topic: LNX-204-T10
+  title: Build a private CA and issue a certificate with a SAN
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - openssl
+- id: cve-triage
+  topic: LNX-204-T11
+  title: Triage advisories against an installed package list
+  env: C
+  license: MIT
+  minutes: 35
+quizzes:
+- id: LNX-204-T01
+  topic: LNX-204-T01
+  title: 'Quiz: PAM, pwquality, faillock'
+  file: quizzes/LNX-204-T01.yaml
+- id: LNX-204-T02
+  topic: LNX-204-T02
+  title: 'Quiz: sudo policy'
+  file: quizzes/LNX-204-T02.yaml
+- id: LNX-204-T03
+  topic: LNX-204-T03
+  title: 'Quiz: SSH hardening, SSH certificates'
+  file: quizzes/LNX-204-T03.yaml
+- id: LNX-204-T04
+  topic: LNX-204-T04
+  title: 'Quiz: SELinux: contexts, booleans, audit2why'
+  file: quizzes/LNX-204-T04.yaml
+- id: LNX-204-T05
+  topic: LNX-204-T05
+  title: 'Quiz: AppArmor profiles'
+  file: quizzes/LNX-204-T05.yaml
+- id: LNX-204-T06
+  topic: LNX-204-T06
+  title: 'Quiz: nftables hardening'
+  file: quizzes/LNX-204-T06.yaml
+- id: LNX-204-T07
+  topic: LNX-204-T07
+  title: 'Quiz: auditd'
+  file: quizzes/LNX-204-T07.yaml
+- id: LNX-204-T08
+  topic: LNX-204-T08
+  title: 'Quiz: AIDE'
+  file: quizzes/LNX-204-T08.yaml
+- id: LNX-204-T09
+  topic: LNX-204-T09
+  title: 'Quiz: OpenSCAP scans and remediation'
+  file: quizzes/LNX-204-T09.yaml
+- id: LNX-204-T10
+  topic: LNX-204-T10
+  title: 'Quiz: TLS and openssl'
+  file: quizzes/LNX-204-T10.yaml
+- id: LNX-204-T11
+  topic: LNX-204-T11
+  title: 'Quiz: CVE and errata triage'
+  file: quizzes/LNX-204-T11.yaml
+coverage: partial

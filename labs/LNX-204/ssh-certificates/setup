@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a CA key pair, a user key pair, a host key, and a permissive sshd_config. Nothing is signed.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf ca user hostkey sshd_config auth_principals answers.txt *.pub-cert
+mkdir -p ca user auth_principals
+ssh-keygen -q -t ed25519 -N '' -C 'lab user CA' -f ca/user_ca
+ssh-keygen -q -t ed25519 -N '' -C 'alice@lab' -f user/id_ed25519
+ssh-keygen -q -t ed25519 -N '' -C 'lab host' -f hostkey
+cat > sshd_config <<S
+# SPDX-License-Identifier: MIT
+HostKey $PWD/hostkey
+PermitRootLogin yes
+PasswordAuthentication yes
+X11Forwarding yes
+MaxAuthTries 6
+S
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nverify_effective_config_command=?\ncert_inspect_command=?\nserver_directive_trusting_the_ca=?\nhost_cert_known_hosts_marker=?\n' > answers.txt

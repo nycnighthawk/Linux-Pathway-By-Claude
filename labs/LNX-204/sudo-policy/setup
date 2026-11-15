@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a risky sudoers drop-in that you must replace, and a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf sudoers.d answers.txt
+mkdir -p sudoers.d
+cat > sudoers.d/10-webops <<'S'
+# SPDX-License-Identifier: MIT
+# Written in a hurry. Members of webops may manage the web server.
+%webops ALL=(ALL) NOPASSWD: /usr/bin/vim /etc/nginx/*, /usr/bin/systemctl *
+S
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nsafe_edit_command=?\nlist_my_rights_command=?\nsyntax_check_command=?\nwhy_wildcard_is_unsafe=?\n' > answers.txt

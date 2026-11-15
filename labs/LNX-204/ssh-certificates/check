@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the certificate with ssh-keygen -L and the server policy with sshd -T.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+cert=user/id_ed25519-cert.pub
+if [ -f "$cert" ]; then
+  info=$(ssh-keygen -L -f "$cert" 2>&1)
+  printf '%s\n' "$info" | grep -q 'user certificate' && ok "it is a user certificate" || fail "sign a user certificate (not a host certificate)"
+  want=$(ssh-keygen -l -f ca/user_ca.pub | awk '{print $2}')
+  printf '%s\n' "$info" | grep -q "Signing CA:.*$want" && ok "signed by the lab CA" || fail "the certificate must be signed with ca/user_ca"
+  printf '%s\n' "$info" | grep -q 'Key ID: "alice@lab"' && ok "key id alice@lab" || fail "use the key id alice@lab (-I)"
+  pr=$(printf '%s\n' "$info" | sed -n '/Principals:/,/Critical Options:/p' | grep -v -E 'Principals:|Critical')
+  printf '%s\n' "$pr" | grep -qw alice && printf '%s\n' "$pr" | grep -qw deploy && ok "principals alice and deploy" || fail "principals must be alice and deploy (-n alice,deploy)"
+  from=$(printf '%s\n' "$info" | sed -n 's/.*Valid: from \([^ ]*\) to \([^ ]*\).*/\1 \2/p')
+  if [ -n "$from" ]; then
+    f=$(date -d "${from% *}" +%s 2>/dev/null || echo 0); t=$(date -d "${from#* }" +%s 2>/dev/null || echo 0)
+    span=$((t-f)); [ "$span" -ge 25000 ] && [ "$span" -le 32000 ] && ok "valid for about 8 hours" || fail "validity must be 8 hours (-V +8h), got ${span}s"
+  else fail "the certificate has no validity interval (use -V +8h)"; fi
+else fail "sign user/id_ed25519.pub: ssh-keygen -s ca/user_ca -I alice@lab -n alice,deploy -V +8h user/id_ed25519.pub"; fi
+[ -f ca/user_ca.pub ] && cp ca/user_ca.pub /dev/null
+mkdir -p /run/sshd 2>/dev/null
+eff=$(sshd -T -f sshd_config 2>&1) || { fail "sshd -T rejects sshd_config: $(printf '%s' "$eff" | head -1)"; eff=""; }
+chk() { printf '%s\n' "$eff" | grep -qi "^$1 $2\$" && ok "$1 $2" || fail "sshd_config: $1 must be $2"; }
+if [ -n "$eff" ]; then
+  chk permitrootlogin no
+  chk passwordauthentication no
+  chk x11forwarding no
+  chk maxauthtries 3
+  chk authenticationmethods publickey
+  printf '%s\n' "$eff" | grep -qi "^trustedusercakeys .*user_ca.pub" && ok "TrustedUserCAKeys points at the CA public key" || fail "sshd_config: TrustedUserCAKeys must point at ca/user_ca.pub"
+  printf '%s\n' "$eff" | grep -qi "^authorizedprincipalsfile .*auth_principals/%u\|^authorizedprincipalsfile .*%u" && ok "AuthorizedPrincipalsFile uses %u" || fail "sshd_config: set AuthorizedPrincipalsFile .../auth_principals/%u"
+fi
+[ -f auth_principals/alice ] && grep -qx deploy auth_principals/alice && ok "auth_principals/alice lists deploy" || fail "create auth_principals/alice containing the line: deploy"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get verify_effective_config_command)" in "sshd -T"*) ok "sshd -T" ;; *) fail "verify_effective_config_command: the sshd test mode that prints effective values" ;; esac
+case "$(get cert_inspect_command)" in "ssh-keygen -L"*) ok "ssh-keygen -L" ;; *) fail "cert_inspect_command: how to print a certificate's principals and validity" ;; esac
+[ "$(get server_directive_trusting_the_ca)" = TrustedUserCAKeys ] && ok "TrustedUserCAKeys" || fail "server_directive_trusting_the_ca: the sshd_config directive that trusts a user CA"
+[ "$(get host_cert_known_hosts_marker)" = "@cert-authority" ] && ok "@cert-authority" || fail "host_cert_known_hosts_marker: the known_hosts marker that trusts a host CA"
+exit $bad
