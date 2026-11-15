@@ -1,7 +1,7 @@
 item: LNX-220
 label: Linux Application Development
 branch: build/LNX-220
-state: in-progress
+state: done
 started: '2026-11-15'
 updated: '2026-11-15'
 phases:
@@ -70,7 +70,7 @@ phases:
     - LNX-220-T11
     - LNX-220-T12
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -88,3 +88,6 @@ log:
   LNX-220-T08, LNX-220-T09, LNX-220-T10, LNX-220-T11, LNX-220-T12'
 - '2026-11-15 labs: LNX-220-T01, LNX-220-T02, LNX-220-T03, LNX-220-T04, LNX-220-T05, LNX-220-T06, LNX-220-T07, LNX-220-T08,
   LNX-220-T09, LNX-220-T10, LNX-220-T11, LNX-220-T12'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'
