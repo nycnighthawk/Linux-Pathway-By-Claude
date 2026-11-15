@@ -1,0 +1,62 @@
+title: 'Quiz: Break/fix drills'
+questions:
+- id: one-change
+  prompt: Why change one thing at a time while troubleshooting?
+  choices:
+  - It looks neat
+  - You can tell which change had the effect and undo it
+  - Commands are slow
+  - Logs are small
+  answer:
+  - 1
+  explain: Several simultaneous changes make cause and effect indistinguishable and rollback hard.
+- id: exit203
+  prompt: systemd reports status 203/EXEC. What is the likely cause?
+  choices:
+  - Out of memory
+  - The ExecStart path or its permissions is wrong
+  - Port in use
+  - Missing user
+  answer:
+  - 1
+  explain: 203 means the executable could not be run; check the path and execute permission.
+- id: inodes
+  prompt: df -h shows free space but writes fail with ENOSPC. What next?
+  choices:
+  - df -i
+  - Reboot
+  - Increase swap
+  - Delete /boot
+  answer:
+  - 0
+  explain: Inode exhaustion gives ENOSPC with free blocks.
+- id: deleted-open
+  prompt: Space did not return after deleting a large log. Which command finds the cause?
+  choices:
+  - lsof +L1
+  - ping
+  - mount -a
+  - top
+  answer:
+  - 0
+  explain: A deleted file held open by a process keeps its space; restart the process or truncate via /proc/PID/fd.
+- id: evidence
+  prompt: What should you do before restarting a misbehaving service?
+  choices:
+  - Nothing, restart immediately
+  - Collect journal, process and memory state
+  - Reinstall it
+  - Change its port
+  answer:
+  - 1
+  explain: A restart can clear the symptom and destroy the evidence you need for root cause.
+- id: outcome-grade
+  prompt: Why should a drill grader check the outcome rather than a specific command?
+  choices:
+  - It is easier to code
+  - Several valid fixes exist and the goal is a working, persistent service
+  - Commands are secret
+  - Graders cannot run commands
+  answer:
+  - 1
+  explain: Verify the service answers and survives restart; this accepts any correct fix.

@@ -1,0 +1,73 @@
+title: 'Quiz: kdump and crash'
+questions:
+- id: why-second
+  prompt: Why does kdump boot a second kernel?
+  choices:
+  - It is faster
+  - The failed kernel cannot be trusted to write its own memory
+  - To install updates
+  - To save power
+  answer:
+  - 1
+  explain: A panicked kernel may hold locks or have corrupt structures; a fresh kernel in reserved memory saves the old memory
+    safely.
+- id: crashkernel
+  prompt: Which parameter reserves memory for the capture kernel?
+  choices:
+  - mem=
+  - crashkernel=
+  - hugepages=
+  - nr_cpus=
+  answer:
+  - 1
+  explain: crashkernel= on the kernel command line sets aside the region; a reboot is needed to change it.
+- id: test-crash
+  prompt: How do you deliberately trigger a crash to test kdump?
+  choices:
+  - echo c > /proc/sysrq-trigger with sysrq enabled
+  - systemctl restart kdump
+  - kill -9 1 on a desktop only
+  - dmesg -c
+  answer:
+  - 0
+  explain: The sysrq c key forces a crash. Restarting the service only reloads the capture kernel.
+- id: vmcore-dmesg
+  prompt: Which file is a quick text copy of the kernel log at crash time?
+  choices:
+  - vmcore-dmesg.txt
+  - kdump.conf
+  - initramfs
+  - grub.cfg
+  answer:
+  - 0
+  explain: It is written next to the vmcore and often explains the panic on its own.
+- id: debuginfo
+  prompt: What does crash need beside the vmcore?
+  choices:
+  - The matching kernel debuginfo vmlinux
+  - A newer kernel
+  - The application source
+  - Nothing
+  answer:
+  - 0
+  explain: Symbols must match the exact kernel build or the analysis is opaque.
+- id: dump-level
+  prompt: What does makedumpfile -d 31 do?
+  choices:
+  - Compress with gzip
+  - Exclude zero, cache, user and free pages
+  - Dump only user pages
+  - Disable the dump
+  answer:
+  - 1
+  explain: Level 31 drops page types that are rarely useful, shrinking the file.
+- id: hung-vm
+  prompt: A guest is hung. Which action creates a dump?
+  choices:
+  - Inject an NMI with unknown_nmi_panic set
+  - Run top inside it
+  - Delete the vmcore
+  - Reduce its RAM
+  answer:
+  - 0
+  explain: An NMI triggers a panic in the guest and so the capture kernel; a hang gives nothing otherwise.

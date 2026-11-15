@@ -1,0 +1,77 @@
+title: 'Quiz: USE/RED methods, runbooks'
+questions:
+- id: use-order
+  prompt: In which order does the USE method suggest reading its three signals?
+  choices:
+  - Utilisation, saturation, errors
+  - Errors, saturation, utilisation
+  - Saturation, utilisation, errors
+  - Any order, they carry the same information
+  answer:
+  - 1
+  explain: 'Errors are quick to read and rarely ambiguous, then saturation (waiting work), then utilisation. They do not carry
+    the same information: a resource can be busy without a queue.'
+- id: saturation-def
+  prompt: Which reading is a saturation signal for a CPU?
+  choices:
+  - Per-core busy percentage
+  - Run queue (vmstat r) above the core count
+  - Idle percentage
+  - Number of cores
+  answer:
+  - 1
+  explain: Saturation is work that waits. A run queue longer than the cores means tasks are waiting for a CPU; busy percentage
+    is utilisation.
+- id: red-letters
+  prompt: What do the letters of RED stand for?
+  choices:
+  - Rate, errors, duration
+  - Resources, errors, disks
+  - Requests, exhaustion, delay
+  - Retries, events, downtime
+  answer:
+  - 0
+  explain: RED covers request rate, error ratio and duration (a latency distribution) for each service.
+- id: red-vs-use
+  prompt: A latency alert fires on the checkout service. What is the sensible order of methods?
+  choices:
+  - USE on every host in the fleet first
+  - RED to find the guilty service, then USE on its host
+  - Reboot the services, then RED
+  - Profile the kernel first
+  answer:
+  - 1
+  explain: RED tells you which service hurts users; USE then finds the exhausted resource on that service's host. Checking
+    every host first wastes time.
+- id: psi
+  prompt: What do the /proc/pressure files report?
+  choices:
+  - Bytes of free memory
+  - Share of time tasks were stalled on cpu, memory or io
+  - Packet loss per interface
+  - Disk errors
+  answer:
+  - 1
+  explain: Pressure stall information gives some and full stall percentages over 10, 60 and 300 seconds, the closest direct
+    saturation metric.
+- id: runbook-parts
+  prompt: Which is the best content for a runbook entry tied to an alert?
+  choices:
+  - A long history of the service
+  - Ordered checks with expected outcomes, a decision, a mitigation with rollback and an owner
+  - Only the command to restart the service
+  - A list of all dashboards
+  answer:
+  - 1
+  explain: 'A runbook is the method made concrete: ordered checks, decision points, safe actions, rollback and who owns it.
+    A bare restart command destroys evidence.'
+- id: cause-alert
+  prompt: Why is an alert on CPU utilisation above 80 percent a poor page?
+  choices:
+  - CPUs cannot exceed 80 percent
+  - It is a cause, not a symptom; a busy CPU with no queue hurts nobody
+  - It is too expensive to compute
+  - It cannot be graphed
+  answer:
+  - 1
+  explain: Page on user-visible symptoms; keep utilisation as a dashboard graph or alert on sustained saturation.
