@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a program with an out-of-bounds write and a signed overflow, selected by an argument.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src answers.txt asan.txt ubsan.txt
+mkdir -p src
+cat > src/buggy.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/* Copies n ints into a fresh buffer and returns their sum. */
+static long copy_and_sum(const int *src, int n)
+{
+    int *buf = malloc((size_t)n * sizeof *buf);
+    for (int i = 0; i <= n; i++)
+        buf[i] = i < n ? src[i] : 0;
+    long s = 0;
+    for (int i = 0; i < n; i++)
+        s += buf[i];
+    free(buf);
+    return s;
+}
+
+/* Multiplies two ints that may be large. */
+static int scale(int a, int b)
+{
+    return a * b;
+}
+
+int main(int argc, char **argv)
+{
+    const char *mode = argc > 1 ? argv[1] : "ok";
+    int v[4] = {1, 2, 3, 4};
+    if (strcmp(mode, "heap") == 0) {
+        printf("%ld\n", copy_and_sum(v, 4));
+    } else if (strcmp(mode, "ub") == 0) {
+        printf("%d\n", scale(INT_MAX, 2) > 0);
+    } else {
+        puts("ok");
+    }
+    return 0;
+}
+X
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\naddress_sanitizer_flag=?\nundefined_sanitizer_flag=?\nleak_detection_variable=?\ndebug_flag_for_line_numbers=?\nstatic_analyzer_gcc_flag=?\n' > answers.txt

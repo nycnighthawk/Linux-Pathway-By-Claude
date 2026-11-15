@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export ASAN_OPTIONS=detect_leaks=0
+cc -g -O1 -fsanitize=address,undefined -o buggy src/buggy.c
+./buggy heap > asan.txt 2>&1 || true
+./buggy ub > ubsan.txt 2>&1 || true
+python3 - <<'P'
+s = open("src/buggy.c").read()
+s = s.replace("i <= n; i++)\n        buf[i] = i < n ? src[i] : 0;", "i < n; i++)\n        buf[i] = src[i];")
+s = s.replace("    return a * b;", "    long long p = (long long)a * b;\n    return p > INT_MAX ? INT_MAX : (p < INT_MIN ? INT_MIN : (int)p);")
+open("src/buggy.c", "w").write(s)
+P
+sed -i -e 's/^address_sanitizer_flag=.*/address_sanitizer_flag=-fsanitize=address/' -e 's/^undefined_sanitizer_flag=.*/undefined_sanitizer_flag=-fsanitize=undefined/' -e 's/^leak_detection_variable=.*/leak_detection_variable=ASAN_OPTIONS/' -e 's/^debug_flag_for_line_numbers=.*/debug_flag_for_line_numbers=-g/' -e 's/^static_analyzer_gcc_flag=.*/static_analyzer_gcc_flag=-fanalyzer/' answers.txt

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: saved sanitizer reports from the original program, and a fixed program that runs clean under the sanitizers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+if [ -f asan.txt ]; then
+  grep -q 'AddressSanitizer: heap-buffer-overflow' asan.txt && grep -q 'copy_and_sum' asan.txt && ok "asan.txt shows the heap overflow in copy_and_sum" || fail "asan.txt must hold the AddressSanitizer report for './buggy heap'"
+  grep -q 'buggy.c:1[0-9]' asan.txt && ok "asan.txt has source line numbers (built with -g)" || fail "build with -g so the report names buggy.c lines"
+else fail "save the report of './buggy heap' in asan.txt"; fi
+if [ -f ubsan.txt ]; then
+  grep -q 'runtime error: signed integer overflow' ubsan.txt && ok "ubsan.txt shows the signed overflow" || fail "ubsan.txt must hold the UndefinedBehaviorSanitizer report for './buggy ub'"
+else fail "save the report of './buggy ub' in ubsan.txt"; fi
+d=$(mktemp -d)
+if cc -g -O1 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-sanitize-recover=all -o "$d/fixed" src/buggy.c 2>"$d/cc.txt"; then
+  ok "fixed source compiles with -Wall -Wextra -Werror and both sanitizers"
+  export ASAN_OPTIONS=detect_leaks=0
+  r=$("$d/fixed" heap 2>&1); rc=$?
+  [ $rc = 0 ] && [ "$r" = 10 ] && ok "heap mode prints 10 with no report" || fail "heap mode must print 10 and exit 0 under ASan (got rc=$rc: $(printf %s "$r" | head -1))"
+  r=$("$d/fixed" ub 2>&1); rc=$?
+  [ $rc = 0 ] && ! printf '%s' "$r" | grep -q 'runtime error' && ok "ub mode runs clean" || fail "ub mode must not trigger UBSan (got rc=$rc: $(printf %s "$r" | head -1))"
+  "$d/fixed" 2>&1 | grep -q '^ok$' && ok "default mode prints ok" || fail "default mode must still print ok"
+else fail "the fixed source must compile cleanly with -Wall -Wextra -Werror: $(head -2 "$d/cc.txt" | tr '\n' ' ')"; fi
+rm -rf "$d"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get address_sanitizer_flag)" = "-fsanitize=address" ] && ok "asan flag" || fail "address_sanitizer_flag: the compiler option that enables AddressSanitizer"
+[ "$(get undefined_sanitizer_flag)" = "-fsanitize=undefined" ] && ok "ubsan flag" || fail "undefined_sanitizer_flag: the compiler option for UndefinedBehaviorSanitizer"
+[ "$(get leak_detection_variable)" = ASAN_OPTIONS ] && ok "ASAN_OPTIONS" || fail "leak_detection_variable: the environment variable that carries detect_leaks=0"
+[ "$(get debug_flag_for_line_numbers)" = "-g" ] && ok "-g" || fail "debug_flag_for_line_numbers: the flag that puts line numbers in reports"
+[ "$(get static_analyzer_gcc_flag)" = "-fanalyzer" ] && ok "-fanalyzer" || fail "static_analyzer_gcc_flag: the GCC option that runs the interprocedural static analyzer"
+exit $bad

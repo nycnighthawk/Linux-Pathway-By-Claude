@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export ASAN_OPTIONS=detect_leaks=0
+cat > src/tests.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <assert.h>
+#include <string.h>
+#include "parse.h"
+int main(void)
+{
+    struct kv o[2];
+    assert(parse_kv("a=1", 3, o, 2) == 1 && strcmp(o[0].key, "a") == 0 && strcmp(o[0].val, "1") == 0);
+    assert(parse_kv("a=1;b=2", 7, o, 2) == 2 && strcmp(o[1].val, "2") == 0);
+    assert(parse_kv("a=1;b=2;", 8, o, 1) == 1);
+    assert(parse_kv("a=1;b=2;c=3", 11, o, 2) == 2);
+    assert(parse_kv("novalue", 7, o, 2) == -1);
+    assert(parse_kv("=x", 2, o, 2) == -1);
+    assert(parse_kv("toolongkey=1", 12, o, 2) == -1);
+    assert(parse_kv("a=12345678901234567890", 22, o, 2) == -1);
+    assert(parse_kv("", 0, o, 2) == 0);
+    return 0;
+}
+X
+cat > src/fuzz_parse.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <stdint.h>
+#include <stddef.h>
+#include "parse.h"
+int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
+{
+    struct kv out[4];
+    parse_kv((const char *)data, size, out, 4);
+    return 0;
+}
+X
+cc -g -O1 -fsanitize=address,undefined -fno-sanitize-recover=all -Isrc -o fz src/parse.c src/fuzz_parse.c src/driver.c
+./fz > fuzz.log 2>&1 || true
+cp current-input crash-input
+python3 - <<'P'
+s = open("src/parse.c").read()
+s = s.replace("        size_t vlen = i - vs;\n", "        size_t vlen = i - vs;\n        if (vlen >= sizeof out[n].val)\n            return -1;\n")
+open("src/parse.c", "w").write(s)
+P
+sed -i -e 's/^fuzz_entry_point=.*/fuzz_entry_point=LLVMFuzzerTestOneInput/' -e 's/^coverage_compile_flag=.*/coverage_compile_flag=--coverage/' -e 's/^coverage_report_tool=.*/coverage_report_tool=gcov/' -e 's/^libfuzzer_flag=.*/libfuzzer_flag=-fsanitize=fuzzer/' -e 's/^fuzzer_corpus_purpose=.*/fuzzer_corpus_purpose=seed inputs that reach new coverage/' answers.txt

@@ -13,6 +13,8 @@ phases:
     - LNX-220-T02
     - LNX-220-T03
     - LNX-220-T04
+    - LNX-220-T05
+    - LNX-220-T06
   lessons:
     state: todo
     units: 12
@@ -34,3 +36,4 @@ log:
 - 2026-11-15 started
 - '2026-11-15 synth: LNX-220-T01, LNX-220-T02, LNX-220-T03'
 - '2026-11-15 synth: LNX-220-T04'
+- '2026-11-15 synth: LNX-220-T05, LNX-220-T06'
