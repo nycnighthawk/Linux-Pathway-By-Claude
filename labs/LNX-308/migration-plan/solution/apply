@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > migration-plan.txt <<'TXT'
+# SPDX-License-Identifier: MIT
+guest=web1
+source_host=hv1.example.net
+dest_host=hv2.example.net
+shared_storage=no
+hosts_identical=no
+cpu_model=named-baseline
+machine_type_pinned=yes
+downtime_ms=300
+postcopy=no
+tls=yes
+firewall_ports=49152-49215/tcp on hv2 from hv1, 16514/tcp for libvirt TLS
+migrate_command=virsh migrate --live --persistent --undefinesource --copy-storage-all --parallel --compressed --tls --verbose web1 qemu+ssh://hv2.example.net/system
+verify_steps=virsh list on hv2 shows web1 running, virsh domjobinfo reported completion, ping and an open TCP session from outside survived, hv1 no longer lists it
+abort_plan=run virsh domjobabort web1 which leaves the guest running on hv1, then delete the partial images on hv2 and retry
+TXT

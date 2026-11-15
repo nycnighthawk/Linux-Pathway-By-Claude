@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: skeleton configuration files for a build container.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f bld.nspawn limits.conf incus-profile.yaml
+cat > bld.nspawn <<'TXT'
+# SPDX-License-Identifier: MIT
+# /etc/systemd/nspawn/bld.nspawn: settings for the container bld
+[Exec]
+# TODO: boot the container's own init and use a user namespace
+
+[Network]
+# TODO: a virtual Ethernet pair
+
+[Files]
+# TODO: mount /srv/src from the host read-only at /src
+TXT
+cat > limits.conf <<'TXT'
+# SPDX-License-Identifier: MIT
+# /etc/systemd/system/systemd-nspawn@bld.service.d/limits.conf
+[Service]
+# TODO: memory ceiling 1G, at most 512 tasks, delegate cgroups to the container
+TXT
+cat > incus-profile.yaml <<'TXT'
+# SPDX-License-Identifier: MIT
+# Incus profile for the same workload
+description: build container
+config: {}
+devices: {}
+TXT

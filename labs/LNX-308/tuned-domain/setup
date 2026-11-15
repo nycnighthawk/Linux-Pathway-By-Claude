@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Starting state: an untuned database guest and a description of the host it will run on.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f db1.xml host.txt answers.txt
+cat > host.txt <<'TXT'
+# SPDX-License-Identifier: GPL-2.0-only
+# Host description for the tuning exercise
+numa_nodes=2
+node0_cpus=0-7
+node1_cpus=8-15
+housekeeping_cpus=0-1
+isolated_cpus=2-7
+hugepage_size_kib=2048
+TXT
+cat > db1.xml <<'XML'
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<domain type='kvm'>
+  <name>db1</name>
+  <memory unit='GiB'>8</memory>
+  <vcpu>4</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-q35-9.2'>hvm</type>
+  </os>
+  <cpu mode='host-model'/>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/db1.qcow2'/>
+      <target dev='sda' bus='sata'/>
+    </disk>
+    <interface type='network'>
+      <source network='default'/>
+      <model type='e1000'/>
+    </interface>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>
+XML
+printf '# SPDX-License-Identifier: GPL-2.0-only\n# Fill in the ?\nhugepages_needed=?\n' > answers.txt

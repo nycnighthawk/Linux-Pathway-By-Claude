@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty cluster design sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f cluster-plan.txt
+printf '# SPDX-License-Identifier: MIT\n# Fill in each ? (see README.md)\nplatform=?\nnodes=?\nqdevice=?\nvotes=?\nquorum_needed=?\nfailures_tolerated=?\ncluster_network=?\nseparate_storage_network=?\nshared_storage=?\nfencing=?\nha_enabled=?\nmaintenance_rule=?\n' > cluster-plan.txt

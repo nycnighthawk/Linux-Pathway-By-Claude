@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > cluster-plan.txt <<'TXT'
+# SPDX-License-Identifier: MIT
+platform=proxmox-ve
+nodes=3
+qdevice=no
+votes=3
+quorum_needed=2
+failures_tolerated=1
+cluster_network=dedicated 1 Gbit link plus a second link on another switch
+separate_storage_network=yes
+shared_storage=yes
+fencing=watchdog
+ha_enabled=yes
+maintenance_rule=take one node down at a time and check pvecm status before the next
+TXT

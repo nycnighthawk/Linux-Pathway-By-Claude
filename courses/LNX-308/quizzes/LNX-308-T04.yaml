@@ -1,0 +1,67 @@
+title: 'Quiz: virtio, hugepages, CPU pinning (functional)'
+questions:
+- id: virtio
+  prompt: Why is virtio-net faster than an emulated e1000?
+  choices:
+  - It uses a faster physical card
+  - The guest driver knows it is virtual and exchanges batches through shared rings, avoiding many VM exits
+  - It disables the firewall
+  - It bypasses the host entirely
+  answer:
+  - 1
+  explain: 'A) wrong: both are virtual. B) correct: emulated registers trap on each access. C) wrong: unrelated.
+    D) wrong: vhost still uses host paths.'
+- id: pages
+  prompt: How many 2 MiB huge pages does a 6 GiB guest need?
+  choices:
+  - '1536'
+  - '3072'
+  - '6144'
+  - '12288'
+  answer:
+  - 1
+  explain: 'A) wrong: 6 GiB is 6144 MiB, so 3072 pages. B) correct: 6144 MiB divided by 2 MiB. C) wrong: that counts
+    MiB, not pages. D) wrong: double the correct value.'
+- id: balloon
+  prompt: Why remove the memory balloon from a guest backed by huge pages?
+  choices:
+  - Balloons are insecure
+  - A balloon cannot reclaim huge pages, so it is useless and complicates sizing
+  - It breaks virtio-net
+  - It slows the host disk
+  answer:
+  - 1
+  explain: 'A) wrong: not the reason. B) correct: reserved pages are fixed. C) wrong: unrelated. D) wrong: unrelated.'
+- id: emulator
+  prompt: Where should emulatorpin and iothreadpin point?
+  choices:
+  - The same cores as the vCPUs
+  - Housekeeping cores outside the pinned vCPU set
+  - Every core
+  - Nowhere, they are unnecessary
+  answer:
+  - 1
+  explain: 'A) wrong: they would compete and stall devices. B) correct: keeps device emulation from starving the
+    vCPUs. C) wrong: defeats pinning. D) wrong: unpinned they may land on vCPU cores.'
+- id: numa
+  prompt: What does <numatune><memory mode='strict' nodeset='0'/></numatune> do?
+  choices:
+  - Pins vCPUs
+  - Allocates guest memory only from NUMA node 0, failing rather than using another node
+  - Enables huge pages
+  - Limits guest memory size
+  answer:
+  - 1
+  explain: 'A) wrong: that is cputune. B) correct: strict forbids fallback. C) wrong: that is memoryBacking. D)
+    wrong: size is set by memory.'
+- id: verify
+  prompt: Which tool shows where a guest's memory actually sits?
+  choices:
+  - numastat -p <qemu pid>
+  - lsblk
+  - ip link
+  - virsh list
+  answer:
+  - 0
+  explain: 'A) correct: it reports per-node memory for a process. B) wrong: lists block devices. C) wrong: lists
+    interfaces. D) wrong: lists guests only.'

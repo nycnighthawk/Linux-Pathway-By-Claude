@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Consistency grading of a cluster design: the quorum arithmetic must hold and HA must come with fencing and storage.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f cluster-plan.txt ] || { echo "FAIL: cluster-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" cluster-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+isint() { printf '%s' "$1" | grep -Eq '^[0-9]+$'; }
+case "$(get platform)" in proxmox-ve|ovirt|openstack|cloudstack|kubevirt|incus|pacemaker) ok "platform $(get platform)" ;; *) fail "platform: proxmox-ve, ovirt, openstack, cloudstack, kubevirt, incus or pacemaker" ;; esac
+n=$(get nodes); q=$(get qdevice); v=$(get votes); qn=$(get quorum_needed); ft=$(get failures_tolerated)
+if isint "$n" && [ "$n" -ge 2 ]; then ok "nodes=$n"; else fail "nodes: an integer of 2 or more"; n=0; fi
+case "$q" in yes|no) ok "qdevice=$q" ;; *) fail "qdevice: yes or no (an external vote)" ;; esac
+if [ "$n" -gt 0 ]; then
+  exp=$n; [ "$q" = yes ] && exp=$((n+1))
+  [ "$v" = "$exp" ] && ok "votes=$v (nodes plus the qdevice vote when present)" || fail "votes: expected $exp (one per node, plus one for a qdevice)"
+  need=$((exp/2+1))
+  [ "$qn" = "$need" ] && ok "quorum_needed=$need (strict majority)" || fail "quorum_needed: expected $need, a strict majority of $exp votes"
+  tol=$((exp-need))
+  [ "$ft" = "$tol" ] && ok "failures_tolerated=$tol" || fail "failures_tolerated: expected $tol (votes minus quorum)"
+  if [ "$n" = 2 ] && [ "$q" != yes ]; then fail "a two-node cluster needs a qdevice or witness, or one failure stops it"; fi
+fi
+for k in separate_storage_network shared_storage ha_enabled; do case "$(get $k)" in yes|no) ok "$k=$(get $k)" ;; *) fail "$k: yes or no" ;; esac; done
+cn=$(get cluster_network); [ -n "$cn" ] && [ "$cn" != "?" ] && [ "$(printf '%s' "$cn" | wc -w)" -ge 3 ] && ok "cluster network described" || fail "cluster_network: at least three words (a dedicated link, its speed, a second link)"
+fe=$(get fencing); case "$fe" in watchdog|ipmi|power-switch|storage-lease|none) ok "fencing=$fe" ;; *) fail "fencing: watchdog, ipmi, power-switch, storage-lease or none" ;; esac
+if [ "$(get ha_enabled)" = yes ]; then
+  [ "$fe" != none ] && ok "HA has a fencing method" || fail "ha_enabled=yes needs a fencing method other than none"
+  [ "$(get shared_storage)" = yes ] && ok "HA has storage the survivors can open" || fail "ha_enabled=yes needs shared_storage=yes (or replicated storage described as yes)"
+  [ "$n" -ge 3 ] || [ "$q" = yes ] && ok "HA has a majority that survives one failure" || fail "HA needs three voters"
+fi
+mr=$(get maintenance_rule); [ "$(printf '%s' "$mr" | wc -w)" -ge 5 ] && [ "$mr" != "?" ] && ok "maintenance rule written" || fail "maintenance_rule: at least five words (for example how many nodes you take down at once and what you check between them)"
+exit "$bad"

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Check vm.json against the Firecracker configuration schema in outline, and the nested-virtualisation answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f vm.json ] && [ -f nested.txt ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import json, re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+try: c = json.load(open("vm.json"))
+except Exception as e:
+    print("FAIL: vm.json is not valid JSON: %s" % e); sys.exit(1)
+b = c.get("boot-source", {})
+if b.get("kernel_image_path"): ok("kernel image set")
+else: fail("boot-source.kernel_image_path is required")
+args = b.get("boot_args", "")
+if "console=ttyS0" in args.split(): ok("serial console on ttyS0")
+else: fail("boot_args needs console=ttyS0")
+if "panic=1" in args.split() and "reboot=k" in args.split(): ok("boot_args reboot=k panic=1 so a crashed guest exits instead of hanging")
+else: fail("boot_args needs reboot=k and panic=1")
+dr = c.get("drives", [])
+roots = [d for d in dr if d.get("is_root_device") is True]
+if len(roots) == 1 and roots[0].get("path_on_host", "").endswith(".ext4") and roots[0].get("drive_id") == "rootfs": ok("exactly one root drive named rootfs")
+else: fail("exactly one drive with drive_id 'rootfs' and is_root_device true is needed")
+if len(roots) == 1 and roots[0].get("is_read_only") is False: ok("root drive is writable")
+else: fail("the root drive must have is_read_only false for this guest")
+if len([d for d in dr if d.get("drive_id") == "rootfs"]) == len(dr): ok("drive ids are unique")
+else: fail("remove drives you do not need; the guest has one disk")
+m = c.get("machine-config", {})
+if m.get("vcpu_count") == 2: ok("2 vCPUs")
+else: fail("machine-config.vcpu_count must be 2")
+if m.get("mem_size_mib") == 256: ok("256 MiB")
+else: fail("machine-config.mem_size_mib must be 256")
+if m.get("smt") is False: ok("SMT off")
+else: fail("machine-config.smt must be false so guest threads are not sibling hyperthreads")
+nics = c.get("network-interfaces", [])
+if len(nics) == 1 and nics[0].get("iface_id") == "eth0" and nics[0].get("host_dev_name") == "tap0": ok("eth0 on host tap0")
+else: fail("one network interface: iface_id eth0, host_dev_name tap0")
+if len(nics) == 1 and re.fullmatch(r"([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}", nics[0].get("guest_mac", "")) and int(nics[0]["guest_mac"][:2], 16) & 1 == 0:
+    ok("guest_mac is a valid unicast address")
+else: fail("guest_mac must be a valid unicast MAC such as 06:00:AC:10:00:02")
+a = dict(l.strip().split("=", 1) for l in open("nested.txt") if "=" in l and not l.startswith("#"))
+if a.get("intel_param_file") == "/sys/module/kvm_intel/parameters/nested": ok("Intel parameter file")
+else: fail("intel_param_file: the sysfs file that reads Y or 1 when nesting is on")
+if a.get("cpu_flag_intel") == "vmx" and a.get("cpu_flag_amd") == "svm": ok("vmx and svm flags")
+else: fail("cpu_flag_intel and cpu_flag_amd: the /proc/cpuinfo flags (vmx, svm)")
+if a.get("device_node") == "/dev/kvm": ok("/dev/kvm")
+else: fail("device_node: the character device a VMM opens")
+if a.get("libvirt_cpu_mode") in ("host-passthrough", "host-model"): ok("libvirt cpu mode passes the flag")
+else: fail("libvirt_cpu_mode: host-passthrough or host-model")
+if len(a.get("why_named_model_fails", "").split()) >= 5 and a.get("why_named_model_fails") != "?": ok("explanation written")
+else: fail("why_named_model_fails: at least five words on why a named CPU model leaves out the flag")
+sys.exit(bad)
+PY

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Starting state: three skeleton files to complete.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f lab-net.xml trunk-iface.xml macvtap-iface.xml
+cat > lab-net.xml <<'XML'
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<network>
+  <name>labnet</name>
+  <!-- TODO: NAT forwarding, bridge virbr10, 192.168.150.0/24 with DHCP and one reservation -->
+</network>
+XML
+cat > trunk-iface.xml <<'XML'
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- TODO: guest interface on host bridge br0, access VLAN 20, virtio -->
+<interface type='bridge'>
+</interface>
+XML
+cat > macvtap-iface.xml <<'XML'
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<!-- TODO: guest interface attached directly to eth0 through macvtap in bridge mode, virtio -->
+<interface type='direct'>
+</interface>
+XML

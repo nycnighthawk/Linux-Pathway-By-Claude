@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > bld.nspawn <<'TXT'
+# SPDX-License-Identifier: MIT
+[Exec]
+Boot=yes
+PrivateUsers=pick
+
+[Network]
+VirtualEthernet=yes
+
+[Files]
+BindReadOnly=/srv/src:/src
+TXT
+cat > limits.conf <<'TXT'
+# SPDX-License-Identifier: MIT
+[Service]
+MemoryMax=1G
+TasksMax=512
+Delegate=yes
+TXT
+cat > incus-profile.yaml <<'TXT'
+# SPDX-License-Identifier: MIT
+description: build container
+config:
+  limits.memory: 1GiB
+  limits.cpu: "2"
+devices:
+  src:
+    type: disk
+    source: /srv/src
+    path: /src
+    readonly: "true"
+TXT

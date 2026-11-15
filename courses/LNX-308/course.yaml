@@ -1,0 +1,162 @@
+id: LNX-308
+title: Virtualization with KVM & libvirt
+summary: 'How Linux runs guests: the KVM, QEMU and libvirt stack, qcow2 templates and snapshots, bridges, macvtap and VLANs,
+  virtio, huge pages and CPU pinning, live migration, system containers, nested virtualisation and microVMs, and cluster managers
+  such as Proxmox VE and oVirt.'
+hours: 40
+coverage: full
+outcomes:
+- Build and manage KVM guests with libvirt, virsh and virt-install and read the domain XML
+- Create templates, overlays and snapshots and customise images offline
+- Connect guests with NAT, bridges, VLANs and macvtap and diagnose the path
+- Apply virtio, huge pages, NUMA and CPU pinning and verify the effect
+- Plan and run a live migration and judge CPU and storage compatibility
+- Run system containers with systemd-nspawn, LXC and Incus and choose between containers and VMs
+- Enable nested virtualisation and configure a Firecracker microVM
+- Explain quorum, fencing and shared storage in Proxmox VE and oVirt clusters
+certifications:
+- cert: LPIC3-305
+  objectives: []
+- cert: LPLUS
+  objectives: []
+modules:
+- id: hypervisor-basics
+  title: The KVM stack and its images
+  lessons:
+  - topic: LNX-308-T01
+    title: KVM/QEMU, libvirt, virsh, virt-install
+    file: lessons/LNX-308-T01.md
+    minutes: 55
+  - topic: LNX-308-T02
+    title: Templates, snapshots, virt-customize
+    file: lessons/LNX-308-T02.md
+    minutes: 50
+- id: network-and-performance
+  title: Networking and performance
+  lessons:
+  - topic: LNX-308-T03
+    title: 'VM networking: bridges, macvtap, VLANs'
+    file: lessons/LNX-308-T03.md
+    minutes: 55
+  - topic: LNX-308-T04
+    title: virtio, hugepages, CPU pinning (functional)
+    file: lessons/LNX-308-T04.md
+    minutes: 45
+- id: moving-and-lightweight
+  title: Migration, containers and microVMs
+  lessons:
+  - topic: LNX-308-T05
+    title: Live migration between hypervisors
+    file: lessons/LNX-308-T05.md
+    minutes: 55
+  - topic: LNX-308-T06
+    title: systemd-nspawn, LXC/Incus
+    file: lessons/LNX-308-T06.md
+    minutes: 40
+  - topic: LNX-308-T07
+    title: Nested virtualization, Firecracker microVMs
+    file: lessons/LNX-308-T07.md
+    minutes: 40
+- id: clusters
+  title: Cluster managers
+  lessons:
+  - topic: LNX-308-T08
+    title: Proxmox/oVirt clusters
+    file: lessons/LNX-308-T08.md
+    minutes: 30
+labs:
+- id: domain-xml
+  topic: LNX-308-T01
+  title: Repair a draft libvirt domain definition
+  env: V
+  license: GPL-2.0-only
+  kind: kvm
+  minutes: 40
+  packages:
+  - libvirt-clients
+  - libxml2-utils
+- id: qcow2-overlay
+  topic: LNX-308-T02
+  title: Build guests from one template with qcow2 overlays
+  env: V
+  license: GPL-2.0-only
+  kind: qemu
+  minutes: 35
+- id: libvirt-networks
+  topic: LNX-308-T03
+  title: Write a NAT network, a VLAN-tagged bridge port and a macvtap interface
+  env: V
+  license: GPL-2.0-only
+  kind: kvm
+  minutes: 40
+  packages:
+  - libvirt-clients
+  - libxml2-utils
+- id: tuned-domain
+  topic: LNX-308-T04
+  title: Tune a domain with virtio, huge pages and pinning
+  env: V
+  license: GPL-2.0-only
+  kind: kvm
+  minutes: 40
+  packages:
+  - libvirt-clients
+  - libxml2-utils
+- id: migration-plan
+  topic: LNX-308-T05
+  title: Plan a live migration and write the command
+  env: S
+  license: MIT
+  minutes: 45
+- id: nspawn-config
+  topic: LNX-308-T06
+  title: Configure an nspawn container with limits and an Incus profile
+  env: V
+  license: MIT
+  minutes: 35
+- id: microvm-config
+  topic: LNX-308-T07
+  title: Write a Firecracker VM config and the nested-virtualisation checks
+  env: V
+  license: GPL-2.0-only
+  kind: kvm
+  minutes: 35
+- id: cluster-plan
+  topic: LNX-308-T08
+  title: 'Size a cluster: quorum, fencing and storage'
+  env: S
+  license: MIT
+  minutes: 30
+quizzes:
+- id: LNX-308-T01
+  topic: LNX-308-T01
+  title: 'Quiz: KVM/QEMU, libvirt, virsh, virt-install'
+  file: quizzes/LNX-308-T01.yaml
+- id: LNX-308-T02
+  topic: LNX-308-T02
+  title: 'Quiz: Templates, snapshots, virt-customize'
+  file: quizzes/LNX-308-T02.yaml
+- id: LNX-308-T03
+  topic: LNX-308-T03
+  title: 'Quiz: VM networking: bridges, macvtap, VLANs'
+  file: quizzes/LNX-308-T03.yaml
+- id: LNX-308-T04
+  topic: LNX-308-T04
+  title: 'Quiz: virtio, hugepages, CPU pinning (functional)'
+  file: quizzes/LNX-308-T04.yaml
+- id: LNX-308-T05
+  topic: LNX-308-T05
+  title: 'Quiz: Live migration between hypervisors'
+  file: quizzes/LNX-308-T05.yaml
+- id: LNX-308-T06
+  topic: LNX-308-T06
+  title: 'Quiz: systemd-nspawn, LXC/Incus'
+  file: quizzes/LNX-308-T06.yaml
+- id: LNX-308-T07
+  topic: LNX-308-T07
+  title: 'Quiz: Nested virtualization, Firecracker microVMs'
+  file: quizzes/LNX-308-T07.yaml
+- id: LNX-308-T08
+  topic: LNX-308-T08
+  title: 'Quiz: Proxmox/oVirt clusters'
+  file: quizzes/LNX-308-T08.yaml

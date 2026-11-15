@@ -1,0 +1,77 @@
+item: LNX-308
+label: Virtualization with KVM & libvirt
+branch: build/LNX-308
+state: done
+started: '2026-11-15'
+updated: '2026-11-15'
+phases:
+  synth:
+    state: done
+    units: 8
+    done:
+    - LNX-308-T01
+    - LNX-308-T02
+    - LNX-308-T03
+    - LNX-308-T04
+    - LNX-308-T05
+    - LNX-308-T06
+    - LNX-308-T07
+    - LNX-308-T08
+  lessons:
+    state: done
+    units: 8
+    done:
+    - LNX-308-T01
+    - LNX-308-T02
+    - LNX-308-T03
+    - LNX-308-T04
+    - LNX-308-T05
+    - LNX-308-T06
+    - LNX-308-T07
+    - LNX-308-T08
+  quizzes:
+    state: done
+    units: 8
+    done:
+    - LNX-308-T01
+    - LNX-308-T02
+    - LNX-308-T03
+    - LNX-308-T04
+    - LNX-308-T05
+    - LNX-308-T06
+    - LNX-308-T07
+    - LNX-308-T08
+  labs:
+    state: done
+    units: 8
+    done:
+    - LNX-308-T01
+    - LNX-308-T02
+    - LNX-308-T03
+    - LNX-308-T04
+    - LNX-308-T05
+    - LNX-308-T06
+    - LNX-308-T07
+    - LNX-308-T08
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-15 started
+- '2026-11-15 synth: LNX-308-T01'
+- '2026-11-15 synth: LNX-308-T02'
+- '2026-11-15 synth: LNX-308-T03'
+- '2026-11-15 synth: LNX-308-T04'
+- '2026-11-15 synth: LNX-308-T05'
+- '2026-11-15 synth: LNX-308-T06'
+- '2026-11-15 synth: LNX-308-T07, LNX-308-T08'
+- '2026-11-15 labs: LNX-308-T01, LNX-308-T02, LNX-308-T03, LNX-308-T04, LNX-308-T05, LNX-308-T06, LNX-308-T07, LNX-308-T08'
+- '2026-11-15 lessons: LNX-308-T01, LNX-308-T02, LNX-308-T03, LNX-308-T04, LNX-308-T05, LNX-308-T06, LNX-308-T07,
+  LNX-308-T08'
+- '2026-11-15 quizzes: LNX-308-T01, LNX-308-T02, LNX-308-T03, LNX-308-T04, LNX-308-T05, LNX-308-T06, LNX-308-T07,
+  LNX-308-T08'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'

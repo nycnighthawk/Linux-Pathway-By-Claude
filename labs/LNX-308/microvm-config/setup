@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Starting state: a faulty Firecracker configuration and an unanswered nested-virtualisation sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f vm.json nested.txt
+cat > vm.json <<'JSON'
+{
+  "boot-source": {
+    "kernel_image_path": "/srv/fc/vmlinux",
+    "boot_args": "ro"
+  },
+  "drives": [
+    {
+      "drive_id": "data",
+      "path_on_host": "/srv/fc/rootfs.ext4",
+      "is_root_device": false,
+      "is_read_only": false
+    }
+  ],
+  "machine-config": {
+    "vcpu_count": 1,
+    "mem_size_mib": 64
+  },
+  "network-interfaces": []
+}
+JSON
+printf '# SPDX-License-Identifier: GPL-2.0-only\n# Fill in the ?\nintel_param_file=?\ncpu_flag_intel=?\ncpu_flag_amd=?\ndevice_node=?\nlibvirt_cpu_mode=?\nwhy_named_model_fails=?\n' > nested.txt
