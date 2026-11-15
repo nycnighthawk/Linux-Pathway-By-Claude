@@ -59,6 +59,10 @@ modules:
     title: Leapp and release upgrades
     file: lessons/LNX-306-T08.md
     minutes: 45
+  - topic: LNX-306-T09
+    title: Drift detection, secure wipe
+    file: lessons/LNX-306-T09.md
+    minutes: 45
 labs:
 - id: unattended-install
   topic: LNX-306-T01
@@ -114,6 +118,12 @@ labs:
   env: V
   license: MIT
   minutes: 35
+- id: drift-wipe
+  topic: LNX-306-T09
+  title: Detect drift and wipe an image safely
+  env: V
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-306-T01
   topic: LNX-306-T01
@@ -147,3 +157,7 @@ quizzes:
   topic: LNX-306-T08
   title: 'Quiz: Leapp and release upgrades'
   file: quizzes/LNX-306-T08.yaml
+- id: LNX-306-T09
+  topic: LNX-306-T09
+  title: 'Quiz: Drift detection, secure wipe'
+  file: quizzes/LNX-306-T09.yaml
