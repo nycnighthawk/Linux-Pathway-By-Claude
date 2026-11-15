@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a playbook skeleton with a handler, a template stub and the variables to render.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf ansible.cfg inventory site.yml vars.yml templates out answers.txt
+mkdir -p templates inventory
+cat > ansible.cfg <<'CFG'
+# SPDX-License-Identifier: MIT
+[defaults]
+inventory = inventory/hosts
+host_key_checking = False
+deprecation_warnings = False
+interpreter_python = auto_silent
+CFG
+printf '# SPDX-License-Identifier: MIT\nlocalhost ansible_connection=local\n' > inventory/hosts
+cat > vars.yml <<'VARS'
+# SPDX-License-Identifier: MIT
+app_name: shop
+app_port: 8080
+upstreams:
+  - {host: 10.0.0.11, port: 9000, weight: 3}
+  - {host: 10.0.0.12, port: 9000, weight: 1}
+admins:
+  - alice
+  - bob
+VARS
+cat > site.yml <<'PLAY'
+# SPDX-License-Identifier: MIT
+- name: Render an application configuration
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars.yml
+  vars:
+    lab_out: "{{ playbook_dir }}/out"
+  tasks:
+    # TODO 1: create {{ lab_out }}/conf.d and {{ lab_out }}/users (ansible.builtin.file, state: directory)
+    # TODO 2: with one looping task, create {{ lab_out }}/users/<name> for each name in admins; the file holds the name and a newline
+    # TODO 3: render templates/app.conf.j2 to {{ lab_out }}/conf.d/app.conf and notify the handler
+    # TODO 4: only when app_port is below 1024, create {{ lab_out }}/conf.d/privileged.flag (empty file content)
+    - name: Placeholder so the play parses
+      ansible.builtin.debug:
+        msg: replace me
+  handlers:
+    - name: Reload app
+      ansible.builtin.shell: echo reloaded >> "{{ lab_out }}/reload.log"
+      changed_when: true
+PLAY
+printf '# SPDX-License-Identifier: MIT\n{# TODO: write the template, see README.md #}\n' > templates/app.conf.j2
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nhandler_runs=?\nloop_variable=?\nmodule_that_renders_templates=?\nkeyword_that_triggers_handler=?\n' > answers.txt

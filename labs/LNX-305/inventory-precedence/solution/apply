@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+printf '# SPDX-License-Identifier: MIT\nhttp_port: 8081\n' > inventory/host_vars/web02.yml
+python3 - <<'PY'
+p = "inventory/hosts.yml"
+s = open(p).read()
+s = s.replace("    edge:\n      hosts:", "    edge:\n      vars:\n        ansible_group_priority: 10\n      hosts:")
+open(p, "w").write(s)
+PY
+printf '# SPDX-License-Identifier: MIT\nenv_name: production\nhttp_port: 8443\nntp_servers:\n  - ntp1.example.org\n  - ntp2.example.org\n' > inventory/group_vars/prod.yml
+sed -i -e 's/^inspect_command=.*/inspect_command=ansible-inventory --host/' -e 's/^highest_level=.*/highest_level=extra vars/' -e 's/^group_priority_variable=.*/group_priority_variable=ansible_group_priority/' -e 's/^dict_merge_filter=.*/dict_merge_filter=combine/' -e 's/^lowest_level=.*/lowest_level=role defaults/' answers.txt

@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run the learner's playbook several times and judge the files, the handler count and the recap.
+set -u
+export LC_ALL=C.UTF-8 ANSIBLE_NOCOLOR=1
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f site.yml ] || { echo "FAIL: site.yml is missing; run setup"; exit 1; }
+run() { ansible-playbook site.yml "$@" 2>&1; }
+changed() { sed -n 's/^localhost .*changed=\([0-9]*\).*/\1/p' | tail -1; }
+expected() { # app.conf as it must look for the variables in vars.yml (plus overrides in $1 as JSON)
+    python3 - "${1:-}" <<'PY'
+import sys, json, yaml
+v = yaml.safe_load(open("vars.yml"))
+if sys.argv[1]:
+    v.update(json.loads(sys.argv[1]))
+print("# Managed by Ansible")
+print("upstream %s {" % v["app_name"])
+for u in v["upstreams"]:
+    print("    server %s:%s weight=%s;" % (u["host"], u["port"], u["weight"]))
+print("}")
+print("listen %s;" % v["app_port"])
+PY
+}
+norm() { sed -e 's/[[:space:]]*$//' | grep -v '^$'; }
+rm -rf out
+out=$(run --check)
+if [ -e out/conf.d/app.conf ]; then fail "check mode must not create files (a task wrote to out/ in --check)"; else ok "check mode wrote nothing"; fi
+printf '%s\n' "$out" | grep -q 'failed=0' && ok "--check run did not fail" || fail "the play fails in --check mode"
+rm -rf out
+out=$(run); first=$(printf '%s\n' "$out" | changed)
+printf '%s\n' "$out" | grep -q 'failed=0' && ok "first run succeeds" || { fail "first run failed"; printf '%s\n' "$out" | tail -15; }
+for n in alice bob; do
+    [ "$(cat out/users/$n 2>/dev/null)" = "$n" ] && ok "users/$n holds its name" || fail "out/users/$n must contain $n and a newline"
+done
+if [ -f out/conf.d/app.conf ]; then
+    if diff <(norm < out/conf.d/app.conf) <(expected | norm) >/dev/null; then ok "app.conf renders the upstream list"; else fail "app.conf differs from the expected text (diff below)"; diff <(norm < out/conf.d/app.conf) <(expected | norm) | head -10; fi
+else fail "out/conf.d/app.conf was not created"; fi
+[ ! -e out/conf.d/privileged.flag ] && ok "no privileged flag for port 8080" || fail "privileged.flag must exist only when app_port is below 1024"
+[ "$(wc -l < out/reload.log 2>/dev/null || echo 0)" = 1 ] && ok "handler ran once on the first run" || fail "the handler must run exactly once on the first run (reload.log has $(wc -l < out/reload.log 2>/dev/null || echo 0) lines)"
+out=$(run); second=$(printf '%s\n' "$out" | changed)
+[ "$second" = 0 ] && ok "second run reports changed=0" || fail "second run must report changed=0 (got ${second:-none})"
+[ "$(wc -l < out/reload.log 2>/dev/null || echo 0)" = 1 ] && ok "no handler run when nothing changed" || fail "the handler must not run again when nothing changed"
+extra='{"upstreams":[{"host":"10.0.0.13","port":9100,"weight":2}],"app_port":80}'
+run -e "$extra" >/dev/null
+if diff <(norm < out/conf.d/app.conf) <(expected "$extra" | norm) >/dev/null; then ok "template follows changed variables"; else fail "after changing variables app.conf is wrong"; fi
+[ -e out/conf.d/privileged.flag ] && ok "privileged flag created for port 80" || fail "privileged.flag must be created when app_port is 80"
+[ "$(wc -l < out/reload.log 2>/dev/null || echo 0)" = 2 ] && ok "handler ran again after a real change" || fail "the handler must run once more after the configuration changed"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get handler_runs)" in "end of play"|"end of the play"|"after the tasks") ok "handler timing" ;; *) fail "handler_runs: when do notified handlers run by default (end of play)" ;; esac
+[ "$(get loop_variable)" = item ] && ok "loop variable" || fail "loop_variable: the default name of the current element inside a loop"
+[ "$(get module_that_renders_templates)" = ansible.builtin.template ] && ok "template module" || fail "module_that_renders_templates: the fully qualified name of the module that renders a Jinja2 file"
+[ "$(get keyword_that_triggers_handler)" = notify ] && ok "notify" || fail "keyword_that_triggers_handler: the task keyword that queues a handler"
+exit $bad
