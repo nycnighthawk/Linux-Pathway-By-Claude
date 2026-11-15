@@ -1,0 +1,57 @@
+title: 'Quiz: gdb, core dumps, valgrind'
+questions:
+- id: batch
+  prompt: Which command prints a backtrace of a crashing program without an interactive session?
+  choices:
+  - gdb -batch -ex run -ex bt ./prog
+  - gdb ./prog bt
+  - valgrind --bt ./prog
+  - ldd ./prog
+  answer:
+  - 0
+  explain: -batch runs the listed commands and exits. Without -ex the word bt is treated as a program argument, valgrind has
+    no --bt mode, and ldd lists libraries only.
+- id: core
+  prompt: A core file is useless in gdb. Which is the most likely reason?
+  choices:
+  - Core files only work with gcc -O3
+  - The executable used is not the exact build that crashed, so addresses and symbols do not match
+  - Core files must be compressed first
+  - gdb needs root to read them
+  answer:
+  - 1
+  explain: A core holds memory, but symbolisation needs the matching binary, libraries and debug files, matched by build ID.
+    Optimisation level, compression and privileges are not the usual cause.
+- id: coredumpctl
+  prompt: On a systemd host, which tool lists and opens stored crash dumps?
+  choices:
+  - journalctl --core
+  - ulimit -c
+  - coredumpctl
+  - readelf --cores
+  answer:
+  - 2
+  explain: coredumpctl queries systemd-coredump and can start gdb on a dump. journalctl has no core mode, ulimit -c only sets
+    a size limit and readelf does not manage dumps.
+- id: vg
+  prompt: Which valgrind finding means memory that was allocated and never freed and is no longer reachable?
+  choices:
+  - still reachable
+  - invalid read
+  - conditional jump on uninitialised value
+  - definitely lost
+  answer:
+  - 3
+  explain: Definitely lost blocks have no pointer left. Still reachable blocks are held at exit by a pointer, invalid read
+    is an access error and the conditional jump message is about uninitialised data.
+- id: hang
+  prompt: A daemon stops responding. Which command shows where every thread is blocked?
+  choices:
+  - gdb -p PID, then thread apply all bt
+  - gdb -p PID, then info locals
+  - valgrind -p PID
+  - gcore PID and delete it
+  answer:
+  - 0
+  explain: thread apply all bt prints each thread's stack, the first step on a hang. info locals shows variables of one frame
+    only, valgrind cannot attach to a running process, and gcore alone creates a dump but reads nothing.

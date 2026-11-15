@@ -1,0 +1,58 @@
+title: 'Quiz: Shared libraries, sonames, pkg-config'
+questions:
+- id: names
+  prompt: Which name does a program record in its DT_NEEDED entry?
+  choices:
+  - The real file name libfoo.so.1.4.2
+  - The linker name libfoo.so
+  - The package name
+  - The soname, for example libfoo.so.1
+  answer:
+  - 3
+  explain: The linker reads the soname from the library and stores it, so any compatible file with that soname can satisfy
+    the program. The real name changes with every release and the linker name exists only for -lfoo at build time. Package
+    names mean nothing to the loader.
+- id: abi
+  prompt: Which change to a library requires a new soname?
+  choices:
+  - Changing the type of an argument of an exported function
+  - Adding a new exported function
+  - Fixing a bug inside a function body
+  - Adding a new .pc file
+  answer:
+  - 0
+  explain: A changed signature breaks binaries already built. Adding a function and fixing internals keep the interface compatible,
+    and a pkg-config file is build metadata.
+- id: order
+  prompt: What is the dynamic loader's search order?
+  choices:
+  - Default directories first, then everything else
+  - DT_RPATH if there is no DT_RUNPATH, LD_LIBRARY_PATH, DT_RUNPATH, the ld.so.cache, then the default directories
+  - Only LD_LIBRARY_PATH
+  - The cache first, then RUNPATH
+  answer:
+  - 1
+  explain: This is the order documented in ld.so(8). Defaults come last, not first, the environment variable is one of several
+    sources, and the cache comes after both path entries.
+- id: hide
+  prompt: What does -fvisibility=hidden achieve when building a library?
+  choices:
+  - It strips debug information
+  - It hides the library from ldconfig
+  - Only functions explicitly marked as default visibility are exported
+  - It changes the soname
+  answer:
+  - 2
+  explain: Hiding by default shrinks the dynamic symbol table to the real interface and keeps internals private. Debug information
+    is controlled by -g and strip, ldconfig looks at files, not symbols, and the soname is set by -Wl,-soname.
+- id: pc
+  prompt: Which command prints the compile and link options for a library described by a .pc file?
+  choices:
+  - ldconfig -p name
+  - ldd name
+  - nm -D name
+  - pkg-config --cflags --libs name
+  answer:
+  - 3
+  explain: pkg-config reads the .pc file and prints include and library flags. ldconfig -p lists the cache, ldd lists the
+    needed libraries of an executable, and nm -D lists dynamic symbols.

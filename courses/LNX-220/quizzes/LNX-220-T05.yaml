@@ -1,0 +1,57 @@
+title: 'Quiz: Sanitizers and static analysis'
+questions:
+- id: asan
+  prompt: What does AddressSanitizer report with an allocation stack and an access stack?
+  choices:
+  - Data races between threads
+  - Memory errors such as heap buffer overflow and use after free
+  - Signed integer overflow
+  - Uninitialised stack reads only
+  answer:
+  - 1
+  explain: ASan checks addresses against shadow memory. Data races belong to ThreadSanitizer, integer overflow to UBSan and
+    uninitialised reads to MemorySanitizer.
+- id: combine
+  prompt: Which combination can be built in one binary?
+  choices:
+  - -fsanitize=address,thread
+  - -fsanitize=thread,memory
+  - -fsanitize=address,undefined
+  - -fsanitize=memory,address
+  answer:
+  - 2
+  explain: ASan and UBSan are designed to coexist. TSan, MSan and ASan each need their own runtime and shadow layout and cannot
+    be combined.
+- id: leak
+  prompt: LeakSanitizer fails to start in a container. What is the usual cause and workaround?
+  choices:
+  - The kernel lacks shadow memory, so rebuild with -O3
+  - libc is static, so install glibc
+  - The program has no main
+  - ptrace is blocked, so set ASAN_OPTIONS=detect_leaks=0 or allow SYS_PTRACE
+  answer:
+  - 3
+  explain: LSan stops the process and inspects it with ptrace. Disabling leak detection or allowing the capability fixes it.
+    Optimisation level and static libc are unrelated, and the program obviously has a main.
+- id: ubsan
+  prompt: Why use -fno-sanitize-recover=all in tests?
+  choices:
+  - So the first undefined-behaviour finding stops the program with a failing exit status
+  - To disable ASan
+  - To make the binary smaller
+  - To speed up the compile step
+  answer:
+  - 0
+  explain: By default UBSan prints a line and continues, which a test runner may miss. The option makes it abort. It does
+    not disable ASan, shrink the binary or speed the compile.
+- id: static
+  prompt: What is the relationship between static analysers and sanitizers?
+  choices:
+  - Sanitizers make static analysis unnecessary
+  - Static tools cover paths no test executed but may give false positives; sanitizers see only executed paths but are precise
+  - Static analysers run the program under test
+  - They find exactly the same bugs
+  answer:
+  - 1
+  explain: The two are complementary. Sanitizers are exact for the paths that run, static analysis reasons about paths that
+    do not run and can be wrong. Analysers do not execute code, and the tools find different defect sets.

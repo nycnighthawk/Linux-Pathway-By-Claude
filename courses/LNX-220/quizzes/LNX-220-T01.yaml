@@ -1,0 +1,62 @@
+title: 'Quiz: gcc, clang, binutils, linking, ELF'
+questions:
+- id: stage
+  prompt: Which driver option stops after assembling and leaves an object file, without linking?
+  choices:
+  - -E
+  - -c
+  - -S
+  - -shared
+  answer:
+  - 1
+  explain: -c produces the .o file. -E stops after preprocessing and -S after generating assembly text, so neither leaves
+    an object. -shared still links, producing a shared object.
+- id: order
+  prompt: A link fails with an undefined reference to sqrt when the command is `gcc -lm main.c` but works as `gcc main.c -lm`.
+    What is the cause?
+  choices:
+  - The math library cannot be used with gcc
+  - Library flags must always come first so the loader can read them
+  - The linker pulls members from a library only for symbols that are undefined at that point, so a library named before the
+    object that needs it contributes nothing
+  - The compiler stage dropped the call to sqrt
+  answer:
+  - 2
+  explain: Symbol resolution is left to right. Putting -lm after main.c means sqrt is already undefined when the library is
+    scanned. The library is usable, the order of flags is not a loader matter, and the compiler kept the call, which is why
+    an undefined symbol exists at all.
+- id: relro
+  prompt: Which linker options give full RELRO?
+  choices:
+  - -Wl,-z,relro alone
+  - -fPIE alone
+  - -Wl,--as-needed
+  - -Wl,-z,relro together with -Wl,-z,now
+  answer:
+  - 3
+  explain: Full RELRO needs eager binding (now) so the table can be made read-only before main runs. relro alone gives partial
+    protection with a writable PLT table. -fPIE affects address randomisation, not the table. --as-needed only drops unused
+    DT_NEEDED entries.
+- id: sections
+  prompt: Which ELF structure does the kernel use at exec time to decide what to map into memory?
+  choices:
+  - The program headers (segments)
+  - The section headers
+  - The symbol table
+  - The .comment section
+  answer:
+  - 0
+  explain: execve maps PT_LOAD segments described by program headers. Section headers are for the linker and tools and may
+    be stripped without affecting execution. The symbol table and comment note are not used for mapping.
+- id: glibc
+  prompt: A binary built on a new distribution fails on an older one with a message that a GLIBC_2.xx version is not found.
+    Which command reveals what the binary needs?
+  choices:
+  - gcc -v app
+  - objdump -T app | grep GLIBC_
+  - strip app
+  - ar t app
+  answer:
+  - 1
+  explain: objdump -T lists dynamic symbols with their version tags, and the highest GLIBC version sets the minimum system.
+    gcc -v describes the compiler, strip removes symbols and would hide information, ar works on archives, not executables.

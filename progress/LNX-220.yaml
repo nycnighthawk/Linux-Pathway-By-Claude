@@ -22,17 +22,53 @@ phases:
     - LNX-220-T11
     - LNX-220-T12
   lessons:
-    state: todo
+    state: done
     units: 12
-    done: []
+    done:
+    - LNX-220-T01
+    - LNX-220-T02
+    - LNX-220-T03
+    - LNX-220-T04
+    - LNX-220-T05
+    - LNX-220-T06
+    - LNX-220-T07
+    - LNX-220-T08
+    - LNX-220-T09
+    - LNX-220-T10
+    - LNX-220-T11
+    - LNX-220-T12
   quizzes:
-    state: todo
+    state: done
     units: 12
-    done: []
+    done:
+    - LNX-220-T01
+    - LNX-220-T02
+    - LNX-220-T03
+    - LNX-220-T04
+    - LNX-220-T05
+    - LNX-220-T06
+    - LNX-220-T07
+    - LNX-220-T08
+    - LNX-220-T09
+    - LNX-220-T10
+    - LNX-220-T11
+    - LNX-220-T12
   labs:
-    state: todo
+    state: done
     units: 12
-    done: []
+    done:
+    - LNX-220-T01
+    - LNX-220-T02
+    - LNX-220-T03
+    - LNX-220-T04
+    - LNX-220-T05
+    - LNX-220-T06
+    - LNX-220-T07
+    - LNX-220-T08
+    - LNX-220-T09
+    - LNX-220-T10
+    - LNX-220-T11
+    - LNX-220-T12
   checks:
     state: todo
     units: 0
@@ -46,3 +82,9 @@ log:
 - '2026-11-15 synth: LNX-220-T07, LNX-220-T08'
 - '2026-11-15 synth: LNX-220-T09, LNX-220-T10'
 - '2026-11-15 synth: LNX-220-T11, LNX-220-T12'
+- '2026-11-15 lessons: LNX-220-T01, LNX-220-T02, LNX-220-T03, LNX-220-T04, LNX-220-T05, LNX-220-T06, LNX-220-T07,
+  LNX-220-T08, LNX-220-T09, LNX-220-T10, LNX-220-T11, LNX-220-T12'
+- '2026-11-15 quizzes: LNX-220-T01, LNX-220-T02, LNX-220-T03, LNX-220-T04, LNX-220-T05, LNX-220-T06, LNX-220-T07,
+  LNX-220-T08, LNX-220-T09, LNX-220-T10, LNX-220-T11, LNX-220-T12'
+- '2026-11-15 labs: LNX-220-T01, LNX-220-T02, LNX-220-T03, LNX-220-T04, LNX-220-T05, LNX-220-T06, LNX-220-T07, LNX-220-T08,
+  LNX-220-T09, LNX-220-T10, LNX-220-T11, LNX-220-T12'

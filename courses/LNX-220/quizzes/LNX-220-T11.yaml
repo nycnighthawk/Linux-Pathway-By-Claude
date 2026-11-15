@@ -1,0 +1,57 @@
+title: 'Quiz: Profiling with perf and flame graphs (functional)'
+questions:
+- id: record
+  prompt: Which command samples a program and records call graphs?
+  choices:
+  - perf stat ./prog
+  - perf list
+  - perf top --version
+  - perf record -g ./prog
+  answer:
+  - 3
+  explain: perf record writes samples with stacks to perf.data. perf stat prints counts, perf list shows events, and the last
+    is a version query.
+- id: fp
+  prompt: Why do flame graphs of release binaries often look flat?
+  choices:
+  - The binary omits frame pointers, so the sampler cannot walk the stack
+  - perf cannot read ELF files
+  - The graph needs -O0
+  - Release builds use no functions
+  answer:
+  - 0
+  explain: Without frame pointers or other unwind data the stacks are truncated. Using --call-graph dwarf or frame pointers
+    fixes it. perf reads ELF, -O0 is the wrong thing to profile, and functions still exist.
+- id: width
+  prompt: In a flame graph, what does the width of a box show?
+  choices:
+  - Elapsed time in order
+  - The share of samples that include that frame
+  - The memory used
+  - The number of calls
+  answer:
+  - 1
+  explain: Boxes are widest where more samples contain the frame. The x axis is not a timeline, and width says nothing about
+    memory or call counts.
+- id: ipc
+  prompt: perf stat reports instructions per cycle of 0.3. What does that suggest?
+  choices:
+  - The program is perfectly efficient
+  - The program is running in a container
+  - The CPU is often stalled, for example waiting on memory
+  - Frame pointers are missing
+  answer:
+  - 2
+  explain: A low IPC means few instructions retire per cycle, typically from cache misses or dependencies. It is not efficiency,
+    and neither containers nor frame pointers produce it.
+- id: noperf
+  prompt: Which tool gives repeatable instruction counts where perf_event_open is blocked?
+  choices:
+  - perf top
+  - strace -c
+  - ldd
+  - valgrind --tool=callgrind
+  answer:
+  - 3
+  explain: callgrind simulates execution and needs no kernel privileges. perf top needs the blocked interface, strace -c counts
+    syscalls only, and ldd lists libraries.

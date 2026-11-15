@@ -1,0 +1,58 @@
+title: 'Quiz: make, CMake, Meson'
+questions:
+- id: deps
+  prompt: How does a Makefile learn which headers each object includes?
+  choices:
+  - 'make scans the C sources itself for #include lines'
+  - Prerequisites are discovered from file timestamps alone
+  - The compiler writes dependency files with -MMD -MP and the Makefile includes them
+  - The .PHONY declaration lists them
+  answer:
+  - 2
+  explain: gcc and clang can emit .d files as a by-product of compiling, and -include makes them part of the graph. make has
+    no C parser. Timestamps compare known prerequisites but cannot find unknown ones, and .PHONY only marks targets that are
+    not files.
+- id: auto
+  prompt: In a recipe, what does $@ stand for?
+  choices:
+  - The first prerequisite
+  - All prerequisites
+  - The stem matched by %
+  - The name of the target being built
+  answer:
+  - 3
+  explain: $@ is the target. $< is the first prerequisite, $^ is all prerequisites, and $* is the matched stem.
+- id: stage
+  prompt: How do you install a CMake project into a staging directory without changing the compiled-in prefix?
+  choices:
+  - DESTDIR=$PWD/stage cmake --install build
+  - cmake --install build --prefix $PWD/stage and nothing else matters
+  - Edit CMakeCache.txt so that the prefix is the staging path
+  - Run make clean first
+  answer:
+  - 0
+  explain: DESTDIR redirects where files land and leaves the configured prefix intact, which is what packaging needs. Using
+    --prefix (or editing the cache) changes the prefix itself and can change paths compiled into the program. make clean does
+    not stage anything.
+- id: meson
+  prompt: Which Meson workflow is correct?
+  choices:
+  - meson build then make
+  - meson setup build, meson compile -C build, meson test -C build
+  - cmake -S . -B build, then meson install
+  - ./configure && make
+  answer:
+  - 1
+  explain: Meson configures with setup, builds with compile (which drives Ninja) and tests with test. 'meson build' is the
+    old pre-setup spelling and does not use make. Mixing cmake into the flow and the Autotools sequence are different tools.
+- id: relink
+  prompt: A program is relinked on every make run although nothing changed. What is the likeliest cause?
+  choices:
+  - The compiler is too old
+  - Parallel builds are enabled
+  - A phony or never-created file is listed as a prerequisite of the program
+  - The sources contain tabs
+  answer:
+  - 2
+  explain: make treats a prerequisite that does not exist as newer than the target, so the target is always out of date. Compiler
+    age and tabs in sources are unrelated, and -j changes order, not whether a target is considered stale.
