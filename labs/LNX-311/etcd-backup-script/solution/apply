@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > etcd-backup.sh <<'S'
+#!/usr/bin/env bash
+set -euo pipefail
+umask 077
+dir="${BACKUP_DIR:-./backups}"
+out="$dir/etcd-$(date +%F).db"
+pki=/etc/kubernetes/pki/etcd
+etcdctl --endpoints=https://127.0.0.1:2379 --cacert=$pki/ca.crt --cert=$pki/server.crt --key=$pki/server.key snapshot save "$out"
+etcdutl snapshot status "$out" -w table
+chmod 600 "$out"
+find "$dir" -name 'etcd-*.db' -mtime +7 -delete
+S
+chmod +x etcd-backup.sh

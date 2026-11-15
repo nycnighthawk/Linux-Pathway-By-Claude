@@ -42,6 +42,10 @@ modules:
     title: Cluster upgrades, drain and cordon
     file: lessons/LNX-311-T03.md
     minutes: 50
+  - topic: LNX-311-T04
+    title: etcd backup and restore
+    file: lessons/LNX-311-T04.md
+    minutes: 55
 labs:
 - id: static-pod-repair
   topic: LNX-311-T01
@@ -61,6 +65,12 @@ labs:
   env: C
   license: MIT
   minutes: 30
+- id: etcd-backup-script
+  topic: LNX-311-T04
+  title: Write and test a safe etcd backup script
+  env: V
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-311-T01
   topic: LNX-311-T01
@@ -74,3 +84,7 @@ quizzes:
   topic: LNX-311-T03
   title: 'Quiz: Cluster upgrades, drain and cordon'
   file: quizzes/LNX-311-T03.yaml
+- id: LNX-311-T04
+  topic: LNX-311-T04
+  title: 'Quiz: etcd backup and restore'
+  file: quizzes/LNX-311-T04.yaml
