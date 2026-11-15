@@ -1,7 +1,7 @@
 item: LNX-304
 label: Software Packages at Scale
 branch: build/LNX-304
-state: in-progress
+state: done
 started: '2026-11-15'
 updated: '2026-11-15'
 phases:
@@ -62,7 +62,7 @@ phases:
     - LNX-304-T09
     - LNX-304-T10
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -108,3 +108,6 @@ log:
 - '2026-11-15 lessons: LNX-304-T10'
 - '2026-11-15 quizzes: LNX-304-T10'
 - '2026-11-15 labs: LNX-304-T10'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'

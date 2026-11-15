@@ -66,7 +66,7 @@ questions:
   - 1
   explain: 'A) wrong: size is not the issue. B) correct: inputs must be pinned and checksummed before the build. C) wrong: syntax allows it. D) wrong:
     %files is unrelated.'
-- id: rpmV
+- id: rpm-v
   prompt: What does rpm -V package report?
   choices:
   - Files whose digest, mode, owner or size differ from the package database
