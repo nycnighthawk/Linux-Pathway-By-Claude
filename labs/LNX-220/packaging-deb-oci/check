@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: a well-formed .deb built from stage/, and an OCI image layout whose digests and sizes are consistent.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+deb=pkg/hello_1.0_all.deb
+if [ -f "$deb" ] && command -v dpkg-deb >/dev/null; then
+  f() { dpkg-deb -f "$deb" "$1" 2>/dev/null; }
+  [ "$(f Package)" = hello ] && [ "$(f Version)" = 1.0 ] && [ "$(f Architecture)" = all ] && ok "control: Package hello, Version 1.0, Architecture all" || fail "control needs Package: hello, Version: 1.0, Architecture: all"
+  [ -n "$(f Maintainer)" ] && [ -n "$(f Description)" ] && ok "control has Maintainer and Description" || fail "control needs Maintainer and Description"
+  case "$(f Depends)" in *coreutils*) ok "Depends mentions coreutils" ;; *) fail "add Depends: coreutils (the script uses echo from sh; keep it a real, named dependency)" ;; esac
+  listing=$(dpkg-deb -c "$deb" 2>/dev/null)
+  printf '%s\n' "$listing" | grep -E '^-rwxr-xr-x root/root .* \./usr/bin/hello$' >/dev/null && ok "usr/bin/hello is 0755 and owned by root/root" || fail "usr/bin/hello must be 0755 root/root (use dpkg-deb --root-owner-group)"
+  printf '%s\n' "$listing" | grep -q '\./usr/share/doc/hello/README' && ok "README is packaged" || fail "usr/share/doc/hello/README must be in the package"
+  printf '%s\n' "$listing" | grep -q 'DEBIAN' && fail "control files must not appear in the data archive" || ok "no DEBIAN directory in the payload"
+else fail "build $deb from stage/ (see README); dpkg-deb is needed"; fi
+if [ -d oci ]; then
+  python3 - <<'PY'
+import hashlib, json, os, sys, tarfile
+ok = lambda m: print("ok:   " + m)
+bad = False
+def fail(m):
+    global bad
+    bad = True
+    print("FAIL: " + m)
+def chk(c, a, b):
+    ok(a) if c else fail(b)
+def blob(d):
+    return os.path.join("oci", "blobs", "sha256", d.split(":", 1)[1])
+def digest(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return "sha256:" + h.hexdigest()
+try:
+    lay = json.load(open("oci/oci-layout"))
+    chk(lay.get("imageLayoutVersion") == "1.0.0", "oci-layout declares version 1.0.0", "oci/oci-layout needs {\"imageLayoutVersion\":\"1.0.0\"}")
+    idx = json.load(open("oci/index.json"))
+    m = idx["manifests"][0]
+    chk(m["mediaType"] == "application/vnd.oci.image.manifest.v1+json", "index points at an OCI image manifest", "index.json manifest mediaType must be application/vnd.oci.image.manifest.v1+json")
+    mp = blob(m["digest"])
+    chk(digest(mp) == m["digest"] and os.path.getsize(mp) == m["size"], "manifest digest and size match the blob", "manifest blob digest or size does not match index.json")
+    man = json.load(open(mp))
+    cp = blob(man["config"]["digest"])
+    chk(digest(cp) == man["config"]["digest"] and os.path.getsize(cp) == man["config"]["size"], "config digest and size match", "config blob digest or size does not match the manifest")
+    cfg = json.load(open(cp))
+    chk(cfg.get("architecture") and cfg.get("os") == "linux", "config names architecture and os linux", "config needs architecture and os=linux")
+    chk(cfg["config"].get("Entrypoint") == ["/app/hello"], "entrypoint is /app/hello", "config.Entrypoint must be [\"/app/hello\"]")
+    layers = man["layers"]
+    chk(len(layers) == 1, "one layer", "expected exactly one layer")
+    lp = blob(layers[0]["digest"])
+    chk(digest(lp) == layers[0]["digest"] and os.path.getsize(lp) == layers[0]["size"], "layer digest and size match the blob", "layer blob digest or size does not match the manifest")
+    mt = layers[0]["mediaType"]
+    chk(mt in ("application/vnd.oci.image.layer.v1.tar", "application/vnd.oci.image.layer.v1.tar+gzip"), "layer media type is an OCI layer type", "layer mediaType is not an OCI layer type")
+    import gzip
+    raw = gzip.open(lp, "rb").read() if mt.endswith("gzip") else open(lp, "rb").read()
+    diff_id = "sha256:" + hashlib.sha256(raw).hexdigest()
+    chk(cfg["rootfs"]["diff_ids"] == [diff_id], "config rootfs.diff_ids holds the digest of the uncompressed layer", "rootfs.diff_ids must be the sha256 of the UNCOMPRESSED layer tar (differs from the compressed blob digest when gzip is used)")
+    import io
+    t = tarfile.open(fileobj=io.BytesIO(raw))
+    names = [x.name.lstrip("./") for x in t.getmembers()]
+    chk("app/hello" in names, "layer contains app/hello", "layer must contain app/hello")
+    mem = [x for x in t.getmembers() if x.name.lstrip("./") == "app/hello"]
+    chk(mem and mem[0].uid == 0 and mem[0].gid == 0 and mem[0].mode & 0o111, "app/hello is root-owned and executable", "app/hello must be uid 0, gid 0 and executable (tar --owner=0 --group=0 --numeric-owner)")
+except (OSError, KeyError, ValueError, IndexError) as e:
+    fail("OCI layout is incomplete or malformed: %r" % (e,))
+sys.exit(1 if bad else 0)
+PY
+  [ $? = 0 ] || bad=1
+else fail "create the OCI image layout in oci/ (see README)"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get deb_build_command)" in "dpkg-deb --build"*|"dpkg-deb -b"*|"dpkg-buildpackage"*|"dpkg-deb --root-owner-group --build"*) ok "deb command" ;; *) fail "deb_build_command: the command that turns a prepared tree into a .deb" ;; esac
+case "$(get rpm_build_command)" in rpmbuild*) ok "rpmbuild" ;; *) fail "rpm_build_command: the command that builds RPMs from a spec file (rpmbuild -ba name.spec)" ;; esac
+case "$(get flatpak_build_command)" in flatpak-builder*|"flatpak build"*) ok "flatpak build" ;; *) fail "flatpak_build_command: the tool that builds a Flatpak from a manifest" ;; esac
+[ "$(get oci_media_type_for_manifest)" = "application/vnd.oci.image.manifest.v1+json" ] && ok "manifest media type" || fail "oci_media_type_for_manifest: the full media type string of an OCI image manifest"
+case "$(get layer_identity_field)" in diff_ids|rootfs.diff_ids) ok "diff_ids" ;; *) fail "layer_identity_field: the config field that lists the digests of uncompressed layers" ;; esac
+exit $bad

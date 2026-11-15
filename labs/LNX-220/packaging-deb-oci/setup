@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a staged install tree for a tiny tool; the learner packages it as a .deb and as an OCI image layout.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf stage rootfs pkg oci answers.txt
+mkdir -p stage/usr/bin stage/usr/share/doc/hello rootfs/app
+cat > stage/usr/bin/hello <<'X'
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+echo "hello from the package"
+X
+chmod 0755 stage/usr/bin/hello
+printf 'hello 1.0: a tiny example\n' > stage/usr/share/doc/hello/README
+cp stage/usr/bin/hello rootfs/app/hello
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\ndeb_build_command=?\nrpm_build_command=?\nflatpak_build_command=?\noci_media_type_for_manifest=?\nlayer_identity_field=?\n' > answers.txt

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: a private session bus is started, the learner's service file must activate the server, and the greeting must come
+# from the XDG config file.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -x server ] && ok "server is built" || fail "build the server: cc -o server src/server.c \$(pkg-config --cflags --libs gio-2.0)"
+svc=share/dbus-1/services/org.example.Lab.service
+if [ -f "$svc" ]; then
+  grep -q '^\[D-BUS Service\]' "$svc" && grep -q '^Name=org.example.Lab$' "$svc" && ok "service file names org.example.Lab" || fail "$svc needs [D-BUS Service] and Name=org.example.Lab"
+  ex=$(grep '^Exec=' "$svc" | head -1 | cut -d= -f2-)
+  [ -x "${ex%% *}" ] && ok "Exec points at an executable" || fail "Exec= must be the absolute path of the built server (got: ${ex:-nothing})"
+else fail "write $svc"; fi
+cfg=xdg/config/lab/greeting
+[ -f "$cfg" ] && [ "$(tr -d '\n' < "$cfg")" = Howdy ] && ok "greeting file holds Howdy under XDG_CONFIG_HOME" || fail "write the word Howdy to $cfg (the server reads \$XDG_CONFIG_HOME/lab/greeting)"
+if [ -x server ] && [ -f "$svc" ] && command -v dbus-run-session >/dev/null && command -v busctl >/dev/null; then
+  export XDG_CONFIG_HOME="$PWD/xdg/config" XDG_DATA_DIRS="$PWD/share:/usr/local/share:/usr/share"
+  out=$(timeout 30 dbus-run-session -- bash -c '
+    busctl --user --timeout=15 call org.example.Lab /org/example/Lab org.example.Lab Echo s there 2>&1
+    busctl --user get-property org.example.Lab /org/example/Lab org.example.Lab Greeting 2>&1
+    busctl --user introspect org.example.Lab /org/example/Lab 2>&1 | grep -c "Echo"' 2>/dev/null)
+  printf '%s\n' "$out" | grep -q '^s "Howdy, there"$' && ok "bus activation started the server and Echo replied: Howdy, there" || fail "Echo(there) must return \"Howdy, there\" through bus activation (got: $(printf '%s' "$out" | head -1))"
+  printf '%s\n' "$out" | grep -q '^s "Howdy"$' && ok "Greeting property is Howdy" || fail "the Greeting property must read Howdy"
+else fail "cannot run the bus test (server, service file, dbus-run-session and busctl are needed)"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get service_file_directory)" in */dbus-1/services|dbus-1/services) ok "services directory" ;; *) fail "service_file_directory: the directory (below a data dir) that holds session bus service files, for example share/dbus-1/services" ;; esac
+[ "$(get config_home_variable)" = XDG_CONFIG_HOME ] && ok "XDG_CONFIG_HOME" || fail "config_home_variable: the variable that relocates per-user configuration"
+case "$(get bus_call_tool)" in busctl|gdbus|dbus-send) ok "call tool" ;; *) fail "bus_call_tool: a command-line tool that calls a D-Bus method (busctl, gdbus or dbus-send)" ;; esac
+[ "$(get activation_key)" = Name ] && ok "Name" || fail "activation_key: the key in the service file that says which bus name triggers the start"
+[ "$(get search_path_variable)" = XDG_DATA_DIRS ] && ok "XDG_DATA_DIRS" || fail "search_path_variable: the variable listing the data directories the bus searches for service files"
+exit $bad

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p stage/DEBIAN pkg
+cat > stage/DEBIAN/control <<'X'
+Package: hello
+Version: 1.0
+Architecture: all
+Maintainer: Lab Author <lab@example.org>
+Depends: coreutils
+Description: tiny example tool
+ Prints one line. Built in the packaging lab.
+X
+dpkg-deb --root-owner-group --build stage pkg/hello_1.0_all.deb >/dev/null
+rm -rf stage/DEBIAN
+mkdir -p oci/blobs/sha256
+tar --sort=name --owner=0 --group=0 --numeric-owner --mtime='UTC 2024-01-01' -C rootfs -cf layer.tar .
+diff_id=$(sha256sum layer.tar | cut -d' ' -f1)
+gzip -n -c layer.tar > layer.tar.gz
+lh=$(sha256sum layer.tar.gz | cut -d' ' -f1)
+ls=$(stat -c %s layer.tar.gz)
+mv layer.tar.gz oci/blobs/sha256/$lh
+rm layer.tar
+cat > cfg.json <<X
+{"architecture":"amd64","os":"linux","config":{"Entrypoint":["/app/hello"]},"rootfs":{"type":"layers","diff_ids":["sha256:$diff_id"]}}
+X
+ch=$(sha256sum cfg.json | cut -d' ' -f1); cs=$(stat -c %s cfg.json); mv cfg.json oci/blobs/sha256/$ch
+cat > man.json <<X
+{"schemaVersion":2,"mediaType":"application/vnd.oci.image.manifest.v1+json","config":{"mediaType":"application/vnd.oci.image.config.v1+json","digest":"sha256:$ch","size":$cs},"layers":[{"mediaType":"application/vnd.oci.image.layer.v1.tar+gzip","digest":"sha256:$lh","size":$ls}]}
+X
+mh=$(sha256sum man.json | cut -d' ' -f1); ms=$(stat -c %s man.json); mv man.json oci/blobs/sha256/$mh
+printf '{"imageLayoutVersion":"1.0.0"}' > oci/oci-layout
+printf '{"schemaVersion":2,"manifests":[{"mediaType":"application/vnd.oci.image.manifest.v1+json","digest":"sha256:%s","size":%s}]}' "$mh" "$ms" > oci/index.json
+sed -i -e 's/^deb_build_command=.*/deb_build_command=dpkg-deb --root-owner-group --build stage pkg\/hello_1.0_all.deb/' -e 's/^rpm_build_command=.*/rpm_build_command=rpmbuild -ba hello.spec/' -e 's/^flatpak_build_command=.*/flatpak_build_command=flatpak-builder build-dir manifest.yml/' -e 's|^oci_media_type_for_manifest=.*|oci_media_type_for_manifest=application/vnd.oci.image.manifest.v1+json|' -e 's/^layer_identity_field=.*/layer_identity_field=diff_ids/' answers.txt

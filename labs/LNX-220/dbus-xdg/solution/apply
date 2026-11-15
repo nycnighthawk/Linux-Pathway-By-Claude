@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cc -o server src/server.c $(pkg-config --cflags --libs gio-2.0)
+mkdir -p share/dbus-1/services xdg/config/lab
+printf '[D-BUS Service]\nName=org.example.Lab\nExec=%s/server\n' "$PWD" > share/dbus-1/services/org.example.Lab.service
+printf 'Howdy\n' > xdg/config/lab/greeting
+sed -i -e 's|^service_file_directory=.*|service_file_directory=share/dbus-1/services|' -e 's/^config_home_variable=.*/config_home_variable=XDG_CONFIG_HOME/' -e 's/^bus_call_tool=.*/bus_call_tool=busctl/' -e 's/^activation_key=.*/activation_key=Name/' -e 's/^search_path_variable=.*/search_path_variable=XDG_DATA_DIRS/' answers.txt
