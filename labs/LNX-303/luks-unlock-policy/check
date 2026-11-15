@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the unlock policy files; no disk or TPM is touched.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f inventory.txt ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import json, os, re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+inv = dict(l.strip().split("=", 1) for l in open("inventory.txt") if "=" in l)
+try:
+    p = json.load(open("policy.json"))
+except Exception as e:
+    fail("policy.json is missing or not valid JSON (%s)" % e); print(); sys.exit(1)
+if p.get("t") == 2: ok("threshold t=2: any two of three policies release the key")
+else: fail("policy.json needs t=2 so that one Tang outage and a TPM mismatch are each survivable")
+pins = p.get("pins", {})
+urls = sorted(x.get("url", "").rstrip("/") for x in pins.get("tang", []))
+want = sorted(inv["tang_servers"].split(","))
+if urls == want: ok("both Tang servers are listed")
+else: fail("pins.tang must list exactly the two servers in inventory.txt")
+tp = pins.get("tpm2")
+if tp is None: fail("pins.tpm2 is missing")
+else:
+    ids = str(tp.get("pcr_ids", "")).replace(" ", "")
+    if ids == "7": ok("TPM bound to PCR 7 only (Secure Boot authority, survives updates)")
+    else: fail("pcr_ids must be 7 only: PCRs 0, 2 and 4 change with every firmware or bootloader update (found %r)" % ids)
+s = open("bind.sh").read() if os.path.exists("bind.sh") else ""
+if re.search(r"clevis\s+luks\s+bind\s+-d\s+" + re.escape(inv["device"]) + r"\s+sss\b", s): ok("bind.sh binds the right device with the sss pin")
+else: fail("bind.sh needs: clevis luks bind -d <device from inventory> sss ...")
+if "policy.json" in s or "pcr_ids" in s: ok("bind.sh uses the policy")
+else: fail("bind.sh must pass the policy (for example $(cat policy.json))")
+c = [l.split() for l in open("crypttab") if l.strip() and not l.startswith("#")] if os.path.exists("crypttab") else []
+if len(c) == 1 and len(c[0]) >= 4:
+    name, dev, key, opts = c[0][0], c[0][1], c[0][2], c[0][3].split(",")
+    if name == inv["mapper"] and dev == "UUID=" + inv["device"].rsplit("/", 1)[1]: ok("crypttab names the mapper and the volume by UUID")
+    else: fail("crypttab: mapper must be %s and the device UUID=..." % inv["mapper"])
+    if "luks" in opts: ok("crypttab option luks")
+    else: fail("crypttab needs the luks option")
+    if "_netdev" in opts: ok("_netdev: the volume waits for the network (Tang)")
+    else: fail("crypttab needs _netdev because Tang needs the network")
+else:
+    fail("crypttab must hold exactly one entry: name device keyfile options")
+r = dict(l.strip().split("=", 1) for l in open("recovery.txt") if "=" in l) if os.path.exists("recovery.txt") else {}
+if r.get("recovery_slot") == "passphrase": ok("a passphrase slot is kept for recovery")
+else: fail("recovery.txt: recovery_slot=passphrase")
+if r.get("passphrase_stored") in ("vault", "safe", "escrow"): ok("the recovery passphrase is stored off the machine")
+else: fail("recovery.txt: passphrase_stored=vault (or safe, escrow)")
+if r.get("header_backup") in ("offline", "vault"): ok("the LUKS header backup is kept off the machine")
+else: fail("recovery.txt: header_backup=offline (or vault)")
+sys.exit(bad)
+PY

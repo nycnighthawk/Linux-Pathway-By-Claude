@@ -28,6 +28,10 @@ modules:
     title: 'X.509 PKI: CA, CRL, OCSP'
     file: lessons/LNX-303-T01.md
     minutes: 45
+  - topic: LNX-303-T02
+    title: LUKS2, Clevis/Tang, TPM2 (swtpm)
+    file: lessons/LNX-303-T02.md
+    minutes: 45
 labs:
 - id: pki-two-tier
   topic: LNX-303-T01
@@ -37,8 +41,18 @@ labs:
   minutes: 40
   packages:
   - openssl
+- id: luks-unlock-policy
+  topic: LNX-303-T02
+  title: Write the unlock policy for an unattended encrypted server
+  env: V
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-303-T01
   topic: LNX-303-T01
   title: 'Quiz: X.509 PKI: CA, CRL, OCSP'
   file: quizzes/LNX-303-T01.yaml
+- id: LNX-303-T02
+  topic: LNX-303-T02
+  title: 'Quiz: LUKS2, Clevis/Tang, TPM2 (swtpm)'
+  file: quizzes/LNX-303-T02.yaml
