@@ -9,7 +9,13 @@ fail() { echo "FAIL: $*"; bad=1; }
 ok() { echo "ok:   $*"; }
 f=host.nft
 [ -f "$f" ] || { echo "FAIL: host.nft missing"; exit 1; }
-if out=$(nft -c -f "$f" 2>&1); then ok "nft -c accepts the ruleset"; else fail "nft -c -f host.nft: $(printf '%s' "$out" | head -1)"; fi
+out=$(nft -c -f "$f" 2>&1); rc=$?
+# without privilege the netlink cache cannot be built: retry through sudo, then a private user and network namespace
+if [ $rc -ne 0 ] && printf '%s' "$out" | grep -q 'Operation not permitted'; then
+  out=$(sudo -n nft -c -f "$f" 2>&1); rc=$?
+  if [ $rc -ne 0 ] && printf '%s' "$out" | grep -q -E 'Operation not permitted|password|sudo:'; then out=$(unshare -Urn nft -c -f "$f" 2>&1); rc=$?; fi
+fi
+if [ $rc -eq 0 ]; then ok "nft -c accepts the ruleset"; else fail "nft -c -f host.nft: $(printf '%s' "$out" | head -1)"; fi
 b=$(sed -e 's/#.*//' "$f")
 has() { printf '%s\n' "$b" | tr '\n' ' ' | grep -q -E "$1"; }
 has 'table inet [a-z]+' && ok "dual-stack inet table" || fail "use 'table inet filter' so IPv4 and IPv6 share the policy"
