@@ -1,0 +1,27 @@
+title: 'Quiz: service mesh'
+questions:
+- id: identity
+  prompt: What does a mesh certificate identity normally derive from?
+  choices: [The Pod's Kubernetes service account, The Pod IP, The node name, The image tag]
+  answer: [0]
+  explain: 'A) correct. B) wrong: addresses change. C) wrong. D) wrong.'
+- id: ambient
+  prompt: Which are true of Istio ambient mode? (select two)
+  choices: [A per-node ztunnel handles L4 mTLS and authorisation, Waypoint proxies are added only where L7 features are needed, Every Pod gets a sidecar, It needs no CNI redirection]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: permissive
+  prompt: Why start with permissive mTLS?
+  choices: [It accepts plain and encrypted traffic during migration, It is more secure, It disables policy, It is required by SPIFFE]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: expiry
+  prompt: What happens when the mesh intermediate CA certificate expires?
+  choices: [New mTLS connections fail across the mesh, Nothing, Only L7 policy stops, DNS stops]
+  answer: [0]
+  explain: 'A) correct: it is the most disruptive operation to miss. B) wrong. C) wrong. D) wrong.'
+- id: layers
+  prompt: Why keep NetworkPolicy under a mesh?
+  choices: [An independent layer with a different failure mode, A mesh cannot encrypt, Policy is faster, It is mandatory]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

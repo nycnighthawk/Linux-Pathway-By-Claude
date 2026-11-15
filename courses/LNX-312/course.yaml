@@ -69,6 +69,10 @@ modules:
     title: CoreDNS and service discovery
     file: lessons/LNX-312-T08.md
     minutes: 50
+  - topic: LNX-312-T09
+    title: 'Service mesh: Istio ambient / Linkerd, mTLS'
+    file: lessons/LNX-312-T09.md
+    minutes: 40
 labs:
 - id: netns-bridge-nat
   topic: LNX-312-T01
@@ -127,6 +131,12 @@ labs:
   env: C
   license: MIT
   minutes: 25
+- id: mesh-mtls-policy
+  topic: LNX-312-T09
+  title: Strict mTLS and an identity-based rule
+  env: C
+  license: MIT
+  minutes: 20
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -160,3 +170,7 @@ quizzes:
   topic: LNX-312-T08
   title: 'Quiz: CoreDNS and service discovery'
   file: quizzes/LNX-312-T08.yaml
+- id: LNX-312-T09
+  topic: LNX-312-T09
+  title: 'Quiz: Service mesh: Istio ambient / Linkerd, mTLS'
+  file: quizzes/LNX-312-T09.yaml
