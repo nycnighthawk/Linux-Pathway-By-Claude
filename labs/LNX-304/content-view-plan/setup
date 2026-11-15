@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty plan for a 200-host fleet at two sites.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f content-plan.txt
+cat > content-plan.txt <<'X'
+# SPDX-License-Identifier: MIT
+# Content plan for 200 Enterprise Linux hosts at two sites. Replace each ? (see README.md)
+environments=?
+base_views=?
+composite_views=?
+errata_filter=?
+promotion_approval=?
+publish_and_promote=?
+canary_percent=?
+retention_versions=?
+emergency_path=?
+capsules=?
+registration=?
+backup_test_months=?
+owner=?
+X

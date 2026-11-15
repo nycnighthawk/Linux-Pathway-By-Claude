@@ -47,6 +47,10 @@ modules:
     title: Dated snapshots
     file: lessons/LNX-304-T05.md
     minutes: 45
+  - topic: LNX-304-T06
+    title: Katello content views
+    file: lessons/LNX-304-T06.md
+    minutes: 45
 labs:
 - id: rpm-spec
   topic: LNX-304-T01
@@ -95,6 +99,12 @@ labs:
   packages:
   - rpm
   - createrepo-c
+- id: content-view-plan
+  topic: LNX-304-T06
+  title: Plan content views and environments
+  env: S
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-304-T01
   topic: LNX-304-T01
@@ -116,3 +126,7 @@ quizzes:
   topic: LNX-304-T05
   title: 'Quiz: Dated snapshots'
   file: quizzes/LNX-304-T05.yaml
+- id: LNX-304-T06
+  topic: LNX-304-T06
+  title: 'Quiz: Katello content views'
+  file: quizzes/LNX-304-T06.yaml
