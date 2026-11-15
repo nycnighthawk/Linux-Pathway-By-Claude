@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import re, sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def blocks(text):
+    out, i = {}, 0
+    for m in re.finditer(r'^(\S[^{\n]*?)\s*\{\s*$', text, re.M):
+        start = m.end(); depth = 1; j = start
+        while depth and j < len(text):
+            depth += (text[j] == '{') - (text[j] == '}'); j += 1
+        out[m.group(1).strip()] = [l.strip() for l in text[start:j-1].splitlines() if l.strip() and not l.strip().startswith('#')]
+    return out
+try:
+    b = blocks(open("Corefile").read())
+    main = b.get(".:53", [])
+    has = lambda lines, pat: any(re.match(pat, l) for l in lines)
+    for name, pat in [("errors", r"errors$"), ("health", r"health\b"), ("ready", r"ready\b"), ("prometheus :9153", r"prometheus :9153$"),
+                      ("forward to node resolv.conf", r"forward \. /etc/resolv\.conf$"), ("cache 30", r"cache 30$"), ("loop", r"loop$"), ("reload", r"reload$")]:
+        chk(has(main, pat), "main block has " + name)
+    k = [l for l in main if l.startswith("kubernetes")]
+    chk(bool(k) and "cluster.local" in k[0] and "in-addr.arpa" in k[0] and "ip6.arpa" in k[0], "kubernetes plugin serves cluster.local and reverse zones")
+    km = re.search(r"kubernetes cluster\.local[^{\n]*\{([^}]*)\}", open("Corefile").read())
+    inner = km.group(1) if km else ""
+    chk("pods insecure" in inner and "fallthrough in-addr.arpa ip6.arpa" in inner, "kubernetes block has pods insecure and fallthrough")
+    corp = b.get("corp.example.com:53", [])
+    chk(has(corp, r"forward \. 10\.1\.1\.53 10\.1\.1\.54$"), "corp.example.com forwards to both corporate resolvers")
+    chk(has(corp, r"cache 30$") and has(corp, r"errors$"), "corp block has cache and errors")
+    a = yaml.safe_load(open("answers.yaml"))
+    chk(a.get("ndots5") == 4, "ndots5 costs 4 queries")
+    chk(a.get("fqdn") == 1, "fully qualified name costs 1 query")
+    chk(a.get("ndots2") == 1, "ndots 2 costs 1 query (two dots reach the threshold)")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY

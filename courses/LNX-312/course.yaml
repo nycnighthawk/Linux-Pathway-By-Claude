@@ -65,6 +65,10 @@ modules:
     title: NetworkPolicy and L7 CiliumNetworkPolicy
     file: lessons/LNX-312-T07.md
     minutes: 60
+  - topic: LNX-312-T08
+    title: CoreDNS and service discovery
+    file: lessons/LNX-312-T08.md
+    minutes: 50
 labs:
 - id: netns-bridge-nat
   topic: LNX-312-T01
@@ -117,6 +121,12 @@ labs:
   env: C
   license: MIT
   minutes: 35
+- id: corefile-ndots
+  topic: LNX-312-T08
+  title: A Corefile and the ndots arithmetic
+  env: C
+  license: MIT
+  minutes: 25
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -146,3 +156,7 @@ quizzes:
   topic: LNX-312-T07
   title: 'Quiz: NetworkPolicy and L7 CiliumNetworkPolicy'
   file: quizzes/LNX-312-T07.yaml
+- id: LNX-312-T08
+  topic: LNX-312-T08
+  title: 'Quiz: CoreDNS and service discovery'
+  file: quizzes/LNX-312-T08.yaml

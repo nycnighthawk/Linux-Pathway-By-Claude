@@ -1,0 +1,27 @@
+title: 'Quiz: CoreDNS'
+questions:
+- id: headless
+  prompt: What does a DNS query for a headless Service return?
+  choices: [The addresses of the ready Pods, A ClusterIP, Always NXDOMAIN, The node address]
+  answer: [0]
+  explain: 'A) correct. B) wrong: headless means no cluster IP. C) wrong. D) wrong.'
+- id: ndots
+  prompt: A Pod has ndots 5 and three search suffixes. How many queries does a successful lookup of api.example.com send (ignoring AAAA)?
+  choices: [1, 2, 4, 6]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: three failed suffix tries then the absolute name. D) wrong.'
+- id: dns-policy
+  prompt: What does dnsPolicy Default give a Pod?
+  choices: [The node resolver configuration, The cluster DNS, No DNS, A random resolver]
+  answer: [0]
+  explain: 'A) correct; the cluster default is ClusterFirst. B) wrong. C) wrong. D) wrong.'
+- id: race
+  prompt: Which measures reduce the UDP conntrack race delay? (select two)
+  choices: [A node-local DNS cache using TCP upstream, Socket-level translation in an eBPF datapath, Raising ndots, Disabling readiness probes]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: timeout
+  prompt: A lookup times out rather than returning not-found. What does that point to?
+  choices: [The path to the DNS Service, not its data, A missing record, A wrong search list, A typo in the name]
+  answer: [0]
+  explain: 'A) correct. B) wrong: that gives NXDOMAIN. C) wrong. D) wrong.'
