@@ -74,6 +74,7 @@ labs:
   minutes: 40
   packages:
   - libvirt-clients
+  - libxml2-utils
 - id: qcow2-overlay
   topic: LNX-308-T02
   title: Build guests from one template with qcow2 overlays
@@ -90,6 +91,7 @@ labs:
   minutes: 40
   packages:
   - libvirt-clients
+  - libxml2-utils
 - id: tuned-domain
   topic: LNX-308-T04
   title: Tune a domain with virtio, huge pages and pinning
@@ -99,6 +101,7 @@ labs:
   minutes: 40
   packages:
   - libvirt-clients
+  - libxml2-utils
 - id: migration-plan
   topic: LNX-308-T05
   title: Plan a live migration and write the command

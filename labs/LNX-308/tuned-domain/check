@@ -83,7 +83,7 @@ else: fail("answers.txt hugepages_needed: how many 2 MiB pages does an 8 GiB gue
 sys.exit(bad)
 PY
 rc=$?
-if command -v virt-xml-validate >/dev/null 2>&1; then
+if command -v virt-xml-validate >/dev/null 2>&1 && command -v xmllint >/dev/null 2>&1; then
   if virt-xml-validate db1.xml domain >/dev/null 2>&1; then echo "ok:   passes the libvirt domain schema"; else echo "FAIL: virt-xml-validate rejects db1.xml"; rc=1; fi
 fi
 exit "$rc"

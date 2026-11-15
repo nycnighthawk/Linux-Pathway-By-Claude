@@ -65,7 +65,7 @@ else: fail("add a <console type='pty'/> so 'virsh console web1' works")
 sys.exit(bad)
 PY
 rc=$?
-if command -v virt-xml-validate >/dev/null 2>&1; then
+if command -v virt-xml-validate >/dev/null 2>&1 && command -v xmllint >/dev/null 2>&1; then
   if virt-xml-validate web1.xml domain >/dev/null 2>&1; then echo "ok:   passes the libvirt domain schema"; else echo "FAIL: virt-xml-validate rejects web1.xml"; rc=1; fi
 else echo "note: virt-xml-validate not installed, schema check skipped"; fi
 exit "$rc"

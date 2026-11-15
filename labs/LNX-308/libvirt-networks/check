@@ -65,7 +65,7 @@ if v is not None:
 sys.exit(bad)
 PY
 rc=$?
-if command -v virt-xml-validate >/dev/null 2>&1; then
+if command -v virt-xml-validate >/dev/null 2>&1 && command -v xmllint >/dev/null 2>&1; then
   if virt-xml-validate lab-net.xml network >/dev/null 2>&1; then echo "ok:   lab-net.xml passes the libvirt network schema"; else echo "FAIL: virt-xml-validate rejects lab-net.xml"; rc=1; fi
 else echo "note: virt-xml-validate not installed, schema check skipped"; fi
 exit "$rc"
