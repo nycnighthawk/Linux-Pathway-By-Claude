@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: the estate's facts and a policy file containing only allow_all.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f inventory.yaml policy.yaml
+cat > inventory.yaml <<'EOT'
+# SPDX-License-Identifier: MIT
+users:
+  admin: [admins]
+  alice: [dba]
+  bob: [web]
+  carol: [contractors]
+hostgroups:
+  dbservers: [db1.lab.test, db2.lab.test]
+  webservers: [web1.lab.test, web2.lab.test]
+servers:
+  ipa1.lab.test: {site: a, roles: [ca, dns]}
+  ipa2.lab.test: {site: a, roles: [ca, dns]}
+  ipa3.lab.test: {site: b, roles: [dns]}
+EOT
+cat > policy.yaml <<'EOT'
+# SPDX-License-Identifier: MIT
+# hbac_rules: name, enabled, groups, users, usercat, hostgroups, hosts, hostcat, services, svccat
+# sudo_cmdgroups: {group-name: [exact command lines]}
+# sudo_rules: name, enabled, groups, users, usercat, hostgroups, hosts, hostcat, cmdgroups, commands, cmdcat
+# topology: {domain: [[server, server], ...], ca: [[server, server], ...], ca_renewal_master: server}
+hbac_rules:
+  - {name: allow_all, enabled: true, usercat: all, hostcat: all, svccat: all}
+sudo_cmdgroups: {}
+sudo_rules: []
+topology:
+  domain: []
+  ca: []
+  ca_renewal_master: ""
+EOT
