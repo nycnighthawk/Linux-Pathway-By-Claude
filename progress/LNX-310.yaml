@@ -1,7 +1,7 @@
 item: LNX-310
 label: Containers in Depth
 branch: build/LNX-310
-state: in-progress
+state: done
 started: '2026-11-15'
 updated: '2026-11-15'
 phases:
@@ -66,7 +66,7 @@ phases:
     - LNX-310-T10
     - LNX-310-T11
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -90,3 +90,6 @@ log:
   LNX-310-T08, LNX-310-T09, LNX-310-T10, LNX-310-T11'
 - '2026-11-15 labs: LNX-310-T01, LNX-310-T02, LNX-310-T03, LNX-310-T04, LNX-310-T05, LNX-310-T06, LNX-310-T07, LNX-310-T08,
   LNX-310-T09, LNX-310-T10, LNX-310-T11'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'
