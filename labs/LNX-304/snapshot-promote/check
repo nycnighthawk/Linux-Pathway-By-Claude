@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -d source ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok()   { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+prim() { local f; f=$(ls "$1"/repodata/*primary.xml* 2>/dev/null | head -1); [ -n "$f" ] && (zcat -f "$f" 2>/dev/null || zstdcat "$f" 2>/dev/null || xzcat "$f" 2>/dev/null); }
+a=snapshots/2026-11-01; b=snapshots/2026-11-08
+[ -d $a/repodata ] && [ -d $b/repodata ] && ok "both snapshots exist with metadata" || { fail "create $a and $b (cp -al source ...)"; exit 1; }
+prim $a | grep -q 'ver="1.0"' && ! prim $a | grep -q 'ver="1.1"' && ok "2026-11-01 holds only 1.0" || fail "2026-11-01 must hold site-a 1.0 only (take it before adding 1.1)"
+prim $b | grep -q 'ver="1.1"' && ok "2026-11-08 holds 1.1" || fail "2026-11-08 must hold 1.1 (createrepo_c --update source first)"
+l=$(stat -c %h $a/site-a-1.0-1.noarch.rpm 2>/dev/null || echo 1)
+[ "$l" -ge 2 ] && ok "unchanged package is hard-linked between snapshots" || fail "use cp -al so unchanged files are shared"
+for s in $a $b; do
+  perm=$(stat -c %A $s/site-a-1.0-1.noarch.rpm); case "$perm" in ??-??-??-*) ok "$s is read-only" ;; *) fail "make $s read-only (chmod -R a-w)" ;; esac
+done
+[ -L channels/prod ] && [ -L channels/dev ] && ok "channels are symlinks" || fail "channels/prod and channels/dev must be symlinks"
+[ "$(readlink -f channels/prod 2>/dev/null)" = "$(readlink -f $a)" ] && ok "prod points at 2026-11-01" || fail "prod must end on 2026-11-01"
+[ "$(readlink -f channels/dev 2>/dev/null)" = "$(readlink -f $b)" ] && ok "dev points at 2026-11-08" || fail "dev must point at 2026-11-08"
+prim channels/prod | grep -q 'ver="1.1"' && fail "prod can see 1.1" || ok "prod does not see 1.1"
+[ "$(grep -c . promotions.log 2>/dev/null)" -ge 3 ] && ok "promotions.log records the pointer changes" || fail "log at least three pointer changes in promotions.log (dev, prod promote, prod rollback)"
+exit $bad
