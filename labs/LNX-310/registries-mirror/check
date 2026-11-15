@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse registries.conf as TOML, inspect copy.sh and compare the answers with index.json.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f index.json ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import json, re, sys
+try:
+    import tomllib
+except ImportError:
+    print("FAIL: Python 3.11 or later is required for tomllib"); sys.exit(1)
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+try:
+    c = tomllib.load(open("registries.conf", "rb"))
+except Exception as e:
+    print("FAIL: registries.conf is not valid TOML (%s)" % e); sys.exit(1)
+(ok("search list") if c.get("unqualified-search-registries") == ["registry.example.com"] else fail("unqualified-search-registries must be [\"registry.example.com\"] only"))
+(ok("short-name-mode enforcing") if c.get("short-name-mode") == "enforcing" else fail("short-name-mode must be \"enforcing\""))
+regs = c.get("registry", [])
+hub = next((r for r in regs if r.get("prefix") == "docker.io"), None)
+if hub is None:
+    fail("[[registry]] with prefix = \"docker.io\" is missing")
+else:
+    (ok("docker.io location") if hub.get("location") == "docker.io" else fail("docker.io registry: location = \"docker.io\""))
+    mir = [m for m in hub.get("mirror", []) if m.get("location") == "mirror.internal:5000/dockerhub"]
+    (ok("mirror declared") if mir else fail("[[registry.mirror]] location = \"mirror.internal:5000/dockerhub\" is missing"))
+    if mir:
+        (ok("digest-only mirror") if mir[0].get("pull-from-mirror") == "digest-only" else fail("the mirror needs pull-from-mirror = \"digest-only\""))
+        (ok("mirror uses TLS") if not mir[0].get("insecure") else fail("do not mark the mirror insecure"))
+bl = next((r for r in regs if r.get("location") == "registry.badvendor.example"), None)
+(ok("blocked registry") if bl and bl.get("blocked") is True else fail("[[registry]] location = \"registry.badvendor.example\" with blocked = true is missing"))
+s = open("copy.sh").read()
+body = "\n".join(l for l in s.splitlines() if not l.strip().startswith("#"))
+(ok("skopeo copy with --all") if re.search(r"skopeo\s+copy\b", body) and "--all" in body else fail("copy.sh: skopeo copy --all ..."))
+(ok("--preserve-digests") if "--preserve-digests" in body else fail("copy.sh: add --preserve-digests"))
+(ok("source and destination") if "docker://docker.io/library/alpine:3.21" in body and "docker://mirror.internal:5000/base/alpine:3.21" in body else fail("copy.sh: copy docker://docker.io/library/alpine:3.21 to docker://mirror.internal:5000/base/alpine:3.21"))
+(ok("TLS verification on") if not re.search(r"tls-verify(=|\s+)false", body) else fail("copy.sh: do not disable TLS verification"))
+(ok("no daemon pull") if not re.search(r"docker\s+(pull|push|tag)", body) else fail("copy.sh: use skopeo, not docker pull/tag/push"))
+idx = json.load(open("index.json"))["manifests"]
+ans = {}
+for l in open("answers.txt"):
+    if "=" in l and not l.startswith("#"):
+        k, v = l.split("=", 1); ans[k.strip()] = v.strip()
+(ok("platform_count") if ans.get("platform_count") == str(len(idx)) else fail("platform_count: the number of entries in index.json manifests"))
+arm = next(m["digest"] for m in idx if m["platform"]["architecture"] == "arm64")
+(ok("arm64_digest") if ans.get("arm64_digest") == arm else fail("arm64_digest: the digest of the linux/arm64 entry"))
+(ok("copy_needs_all") if ans.get("copy_needs_all") == "yes" else fail("copy_needs_all: without --all only the host platform is copied; answer yes or no"))
+sys.exit(bad)
+PY

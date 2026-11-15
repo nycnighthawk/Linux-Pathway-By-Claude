@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a recorded multi-arch index and empty configuration to write.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f index.json registries.conf copy.sh answers.txt
+cat > index.json <<'EOT'
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.index.v1+json",
+  "manifests": [
+    {"mediaType": "application/vnd.oci.image.manifest.v1+json", "digest": "sha256:1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809", "size": 528, "platform": {"architecture": "amd64", "os": "linux"}},
+    {"mediaType": "application/vnd.oci.image.manifest.v1+json", "digest": "sha256:9f8e7d6c5b4a39281706f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a0", "size": 528, "platform": {"architecture": "arm64", "os": "linux", "variant": "v8"}},
+    {"mediaType": "application/vnd.oci.image.manifest.v1+json", "digest": "sha256:00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff", "size": 528, "platform": {"architecture": "s390x", "os": "linux"}}
+  ]
+}
+EOT
+printf '# SPDX-License-Identifier: MIT\n# TODO: write the registries.conf (v2) described in README.md\n' > registries.conf
+printf '#!/usr/bin/env bash\n# SPDX-License-Identifier: MIT\n# TODO: the skopeo copy command\n' > copy.sh
+printf '# SPDX-License-Identifier: MIT\nplatform_count=?\narm64_digest=?\ncopy_needs_all=?\n' > answers.txt
