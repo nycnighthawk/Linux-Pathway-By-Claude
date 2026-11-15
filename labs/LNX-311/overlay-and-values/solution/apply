@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > overlays/prod/kustomization.yaml <<'Y'
+resources: [../../base]
+namespace: shop
+images:
+- {name: web, newTag: "1.4.2"}
+replicas:
+- {name: web, count: 3}
+configMapGenerator:
+- name: web-config
+  literals: [LOG_LEVEL=warn]
+patches:
+- target: {kind: Deployment, name: web}
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: 512Mi
+Y
+cat > values-prod.yaml <<'Y'
+replicaCount: 3
+image:
+  tag: "1.4.2"
+ingress:
+  host: shop.example.com
+Y

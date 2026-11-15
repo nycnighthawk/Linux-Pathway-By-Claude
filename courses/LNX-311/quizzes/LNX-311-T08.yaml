@@ -1,0 +1,27 @@
+title: 'Quiz: Helm and Kustomize'
+questions:
+- id: history
+  prompt: Where does Helm 3 store the history of a release?
+  choices: [In a Tiller pod, In Secrets in the release namespace, In etcd directly under /helm, In the chart repository]
+  answer: [1]
+  explain: 'A) wrong: Tiller was removed in Helm 3. B) correct: one Secret per revision. C) wrong: it uses ordinary API objects. D) wrong: repositories hold charts, not releases.'
+- id: crds
+  prompt: A chart upgrade changes a CRD schema in crds/. What does Helm do with the stored CRD?
+  choices: [Upgrades it, Leaves it unchanged, Deletes and recreates it, Refuses the upgrade]
+  answer: [1]
+  explain: 'A) wrong: by design it does not. B) correct: crds/ is installed once only. C) wrong: deleting a CRD would delete its objects. D) wrong: it proceeds.'
+- id: hash
+  prompt: Why does configMapGenerator append a hash to the ConfigMap name?
+  choices: [To hide the name, A data change creates a new name and so triggers a rollout of pods that reference it, To compress the data, To satisfy RBAC]
+  answer: [1]
+  explain: 'A) wrong: not obfuscation. B) correct: references are rewritten and pods roll. C) wrong: no compression. D) wrong: unrelated.'
+- id: render
+  prompt: Which are safe review habits for a third-party chart? (select two)
+  choices: [Read helm show values, Render with helm template and read the manifests, Install first and read the output later, Use --set for every value to avoid files]
+  answer: [0, 1]
+  explain: 'A) correct: the values are the API. B) correct: shows RBAC and privileges. C) wrong: risky. D) wrong: loses reviewability.'
+- id: tools
+  prompt: You need a one-line change to a third-party chart's Deployment. Reasonable approach?
+  choices: [Fork the chart, Render with Helm and patch with Kustomize or use a post-renderer, Edit the live object with kubectl edit, Delete the chart]
+  answer: [1]
+  explain: 'A) wrong: heavy and drifting. B) correct: keeps the upstream chart intact. C) wrong: Helm will revert it. D) wrong: not an answer.'
