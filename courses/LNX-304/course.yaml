@@ -66,6 +66,10 @@ modules:
     title: Image Builder
     file: lessons/LNX-304-T09.md
     minutes: 45
+  - topic: LNX-304-T10
+    title: Multi-week fleet rollouts
+    file: lessons/LNX-304-T10.md
+    minutes: 45
 labs:
 - id: rpm-spec
   topic: LNX-304-T01
@@ -138,6 +142,12 @@ labs:
   env: V
   license: MIT
   minutes: 30
+- id: rollout-plan
+  topic: LNX-304-T10
+  title: Plan a 600-host rollout
+  env: O
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-304-T01
   topic: LNX-304-T01
@@ -175,3 +185,7 @@ quizzes:
   topic: LNX-304-T09
   title: 'Quiz: Image Builder'
   file: quizzes/LNX-304-T09.yaml
+- id: LNX-304-T10
+  topic: LNX-304-T10
+  title: 'Quiz: Multi-week fleet rollouts'
+  file: quizzes/LNX-304-T10.yaml

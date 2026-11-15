@@ -1,0 +1,62 @@
+title: 'Quiz: Multi-week fleet rollouts'
+questions:
+- id: stops
+  prompt: When should stop conditions for a campaign be written?
+  choices:
+  - After the first failure
+  - Before the first wave, with named people who may call and lift them
+  - Never; use judgement on the day
+  - Only for the last wave
+  answer:
+  - 1
+  explain: 'A) wrong: under pressure they are argued away. B) correct: they protect the business when the schedule pushes. C) wrong: no agreed trigger. D) wrong: all waves need them.'
+- id: wave1
+  prompt: What should wave 1 contain?
+  choices:
+  - The easiest hosts
+  - A few representative production hosts, one of each major class
+  - The most critical hosts
+  - Only lab hosts
+  answer:
+  - 1
+  explain: 'A) wrong: it teaches nothing. B) correct: it exposes the problems later waves would meet. C) wrong: too risky for a first step. D) wrong: that is wave 0.'
+- id: growth
+  prompt: Why stop doubling the wave size at some point?
+  choices:
+  - Doubling is forbidden
+  - The recovery capacity of people and systems, not only the risk, limits how much can fail at once
+  - Machines get slower
+  - Gates are optional later
+  answer:
+  - 1
+  explain: 'A) wrong: no such rule. B) correct: on-call and recovery systems must cope with a failed wave. C) wrong: unrelated. D) wrong: gates apply throughout.'
+- id: ponr
+  prompt: What is a point of no return?
+  choices:
+  - The end of the soak
+  - A step that cannot be undone, which needs separate approval and a recorded time
+  - The first wave
+  - A failed host
+  answer:
+  - 1
+  explain: 'A) wrong: it is a time, not a step. B) correct: for example retiring an old key. C) wrong: unrelated. D) wrong: unrelated.'
+- id: tail
+  prompt: How should the last 5 to 10 percent of hosts be handled?
+  choices:
+  - Ignore them
+  - An exceptions register with owner, reason, controls, review date and a decision deadline
+  - Upgrade them all on the last night
+  - Remove them from inventory
+  answer:
+  - 1
+  explain: 'A) wrong: they become the weak point. B) correct: a standing process beats heroics. C) wrong: riskiest approach. D) wrong: hides the problem.'
+- id: inventory
+  prompt: What is the first number to report about the inventory?
+  choices:
+  - Total CPU cores
+  - The count of hosts with no owner
+  - Disk usage
+  - The number of racks
+  answer:
+  - 1
+  explain: 'A) wrong: irrelevant. B) correct: unowned hosts cannot be scheduled or tested. C) wrong: irrelevant. D) wrong: irrelevant.'

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f rollout-plan.txt
+cat > rollout-plan.txt <<'X'
+# SPDX-License-Identifier: MIT
+# Rollout plan for 600 hosts. Replace each ? (see README.md)
+fleet_total=?
+wave_sizes=?
+exceptions_expected=?
+soak_days_wave1=?
+stop_failed_hosts_per_wave=?
+stop_on=?
+pause_owner=?
+lift_owner=?
+rollback=?
+rollback_window_days=?
+point_of_no_return=?
+notice_days=?
+owner_missing_target=?
+tail_process=?
+review=?
+X
