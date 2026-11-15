@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+src="$(cd "$(dirname "$0")" && pwd)"
+[ -f bmc.pid ] && kill "$(cat bmc.pid)" 2>/dev/null || true
+rm -f bmc.port state.json bmc-pxe-once.sh
+pw="lab-$(od -An -N6 -tx1 /dev/urandom | tr -d ' \n')"
+nohup python3 "$src/mockbmc.py" admin "$pw" >mockbmc.log 2>&1 &
+echo $! > bmc.pid
+for _ in $(seq 1 50); do [ -s bmc.port ] && break; sleep 0.1; done
+[ -s bmc.port ] || { echo "mock BMC did not start"; cat mockbmc.log; exit 1; }
+printf 'BMC_URL=http://127.0.0.1:%s\nBMC_USER=admin\nBMC_PASSWORD=%s\n' "$(cat bmc.port)" "$pw" > bmc.env
+chmod 600 bmc.env
+echo "Mock BMC running (stops itself after 10 minutes). Settings are in bmc.env."

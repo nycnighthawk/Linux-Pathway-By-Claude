@@ -48,6 +48,13 @@ modules:
     title: Foreman/MAAS bare metal
     file: lessons/LNX-306-T06.md
     minutes: 45
+- id: lifecycle
+  title: Out-of-band management and lifecycle
+  lessons:
+  - topic: LNX-306-T07
+    title: Simulated Redfish/IPMI
+    file: lessons/LNX-306-T07.md
+    minutes: 45
 labs:
 - id: unattended-install
   topic: LNX-306-T01
@@ -91,6 +98,12 @@ labs:
   env: S
   license: MIT
   minutes: 30
+- id: redfish-sim
+  topic: LNX-306-T07
+  title: Drive a Redfish BMC with curl
+  env: V
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-306-T01
   topic: LNX-306-T01
@@ -116,3 +129,7 @@ quizzes:
   topic: LNX-306-T06
   title: 'Quiz: Foreman/MAAS bare metal'
   file: quizzes/LNX-306-T06.yaml
+- id: LNX-306-T07
+  topic: LNX-306-T07
+  title: 'Quiz: Simulated Redfish/IPMI'
+  file: quizzes/LNX-306-T07.yaml

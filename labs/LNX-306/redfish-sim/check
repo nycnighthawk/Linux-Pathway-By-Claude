@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f bmc.env ] || { echo "FAIL: run setup first"; exit 1; }
+. ./bmc.env
+bad=0
+ok() { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+curl -s -o /dev/null --max-time 3 "$BMC_URL/redfish/v1/" || { echo "FAIL: mock BMC is not running; run setup again"; exit 1; }
+[ -x bmc-pxe-once.sh ] && ok "bmc-pxe-once.sh exists and is executable" || { fail "create an executable bmc-pxe-once.sh"; exit 1; }
+grep -q 'curl' bmc-pxe-once.sh && ok "script uses curl" || fail "script must use curl"
+if grep -q "$BMC_PASSWORD" bmc-pxe-once.sh; then fail "do not paste the password into the script; read it from bmc.env"; else ok "password is not hard-coded"; fi
+grep -Eq 'bmc\.env|BMC_PASSWORD' bmc-pxe-once.sh && ok "script reads its settings from bmc.env" || fail "script should source bmc.env and use BMC_URL, BMC_USER, BMC_PASSWORD"
+# unauthenticated access must be refused (sanity check of the lab itself)
+code=$(curl -s -o /dev/null -w '%{http_code}' "$BMC_URL/redfish/v1/Systems")
+[ "$code" = 401 ] && ok "the BMC refuses anonymous access" || fail "unexpected anonymous response $code"
+# run the student's script
+out=$(timeout 30 ./bmc-pxe-once.sh 2>&1); rc=$?
+[ $rc -eq 0 ] && ok "script exits 0" || { fail "script exited $rc"; echo "$out" | tail -5; }
+python3 - <<'PY'
+import json
+s = json.load(open("state.json"))
+b = s["Boot"]; bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+ok("boot target is Pxe") if b["BootSourceOverrideTarget"] == "Pxe" else fail("BootSourceOverrideTarget should be Pxe, is %s" % b["BootSourceOverrideTarget"])
+ok("override is Once") if b["BootSourceOverrideEnabled"] == "Once" else fail("BootSourceOverrideEnabled should be Once (not Continuous), is %s" % b["BootSourceOverrideEnabled"])
+r = s["resets"]
+ok("a restart was requested") if r else fail("the script never posted a reset")
+ok("a forced power-off was not used") if "ForceOff" not in r else fail("do not use ForceOff; restart the machine instead")
+ok("the machine ends powered on") if s["PowerState"] == "On" else fail("the machine ended %s; it should be On" % s["PowerState"])
+raise SystemExit(bad)
+PY
+[ $? -eq 0 ] || bad=1
+if [ $bad -eq 0 ]; then echo "PASS"; else exit 1; fi

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > bmc-pxe-once.sh <<'SH'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Set a one-time PXE boot on a Redfish BMC and restart the machine.
+set -eu
+. "$(dirname "$0")/bmc.env"
+sys="$BMC_URL/redfish/v1/Systems/1"
+auth=(-u "$BMC_USER:$BMC_PASSWORD" -H 'Content-Type: application/json')
+power=$(curl -sf "${auth[@]}" "$sys" | python3 -c 'import json,sys; print(json.load(sys.stdin)["PowerState"])')
+echo "power state before: $power"
+curl -sf "${auth[@]}" -X PATCH -d '{"Boot":{"BootSourceOverrideTarget":"Pxe","BootSourceOverrideEnabled":"Once"}}' "$sys" >/dev/null
+if [ "$power" = On ]; then rt=ForceRestart; else rt=On; fi
+curl -sf "${auth[@]}" -X POST -d "{\"ResetType\":\"$rt\"}" "$sys/Actions/ComputerSystem.Reset" >/dev/null
+echo "requested $rt"
+SH
+chmod +x bmc-pxe-once.sh
