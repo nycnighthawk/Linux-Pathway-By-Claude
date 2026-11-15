@@ -25,6 +25,10 @@ modules:
     title: Kickstart, preseed, autoinstall
     file: lessons/LNX-306-T01.md
     minutes: 45
+  - topic: LNX-306-T02
+    title: PXE/iPXE/HTTP boot
+    file: lessons/LNX-306-T02.md
+    minutes: 45
 labs:
 - id: unattended-install
   topic: LNX-306-T01
@@ -34,8 +38,20 @@ labs:
   minutes: 40
   packages:
   - python3-yaml
+- id: pxe-config
+  topic: LNX-306-T02
+  title: Configure network boot
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - dnsmasq-base
 quizzes:
 - id: LNX-306-T01
   topic: LNX-306-T01
   title: 'Quiz: Kickstart, preseed, autoinstall'
   file: quizzes/LNX-306-T01.yaml
+- id: LNX-306-T02
+  topic: LNX-306-T02
+  title: 'Quiz: PXE/iPXE/HTTP boot'
+  file: quizzes/LNX-306-T02.yaml
