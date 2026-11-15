@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > group_vars/all.yml <<'Y'
+# SPDX-License-Identifier: MIT
+hostsfile_path: "{{ playbook_dir }}/out/hosts"
+hostsfile_entries:
+  - ip: 10.0.0.5
+    names: [db.example.org, db]
+  - ip: 10.0.0.6
+    names: [cache.example.org]
+  - ip: 10.0.0.9
+    state: absent
+Y
+cat > site.yml <<'Y'
+# SPDX-License-Identifier: MIT
+- name: Manage the hosts-style file with the hostsfile role
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - hostsfile
+Y
+sed -i -e 's/^variable_prefix=.*/variable_prefix=the role name/' -e 's/^internal_variable_prefix=.*/internal_variable_prefix=__/' -e 's/^rhel_package=.*/rhel_package=rhel-system-roles/' -e 's/^rhel_collection_fqcn_prefix=.*/rhel_collection_fqcn_prefix=redhat.rhel_system_roles/' -e 's#^doc_directory=.*#doc_directory=/usr/share/doc/rhel-system-roles#' answers.txt

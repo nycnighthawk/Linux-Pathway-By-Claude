@@ -1,0 +1,80 @@
+title: 'Quiz: Playbooks, handlers, loops, Jinja2'
+questions:
+- id: handler-timing
+  prompt: When does a notified handler run by default?
+  choices:
+  - At the start of the next play
+  - Only when the play is run with --tags handlers
+  - At the end of the play section, once per host, only if a notifying task changed
+  - Immediately after the task that notified it
+  answer:
+  - 2
+  explain: 'Handlers are queued and run after the tasks section, once per host however often they were notified. Running immediately
+    needs meta: flush_handlers.'
+- id: handler-trap
+  prompt: A task changes a config file and notifies a restart handler, then a later task fails on that host. After you fix
+    the error and rerun, the service is not restarted. Why?
+  choices:
+  - Handlers only run in check mode
+  - The rerun reports the config task as ok, so the handler is never queued again
+  - Ansible caches the earlier handler result for 24 hours
+  - The failed host is removed from the inventory
+  answer:
+  - 1
+  explain: The first run applied the change but never ran the handler for the failed host. The rerun finds nothing to change,
+    so nothing notifies the handler. Flush handlers after the change or use force_handlers.
+- id: loop-var
+  prompt: What is the default name of the current element inside a loop, and how do you rename it?
+  choices:
+  - item; it cannot be renamed
+  - item; loop_control with loop_var
+  - i; set_fact
+  - element; loop_control with name
+  answer:
+  - 1
+  explain: 'The default is item and loop_control: {loop_var: other} renames it, which matters when a loop contains an included
+    file that also loops.'
+- id: when-bare
+  prompt: Which condition is written correctly for ansible-core 2.19?
+  choices:
+  - 'when: "{{ enabled }}"'
+  - 'when: {{ enabled }}'
+  - 'when: ''enabled'''
+  - 'when: enabled | bool'
+  answer:
+  - 3
+  explain: when takes a bare expression and must evaluate to a boolean. Braces are wrong, and a quoted constant is a non-boolean
+    string. Piping to bool makes the intent explicit.
+- id: template-module
+  prompt: Where does the template module render the Jinja2 file?
+  choices:
+  - On the control node, then it copies the result
+  - In the controller database
+  - In a container on the managed node
+  - On the managed node
+  answer:
+  - 0
+  explain: Templates are rendered on the control node and the result is copied. Lookups run there too, so a path in a lookup
+    refers to the control node.
+- id: yaml-quote
+  prompt: Why must a YAML value that begins with {{ be quoted?
+  choices:
+  - Quotes make the value a string, which Jinja requires
+  - Otherwise Jinja2 refuses to render it
+  - Otherwise YAML reads the opening brace as a mapping
+  - Ansible only accepts quoted values
+  answer:
+  - 2
+  explain: An unquoted leading brace starts a YAML flow mapping and gives a syntax error before Jinja sees anything. Jinja
+    itself has no such rule, and unquoted values are normal elsewhere.
+- id: serial
+  prompt: What does serial do in a play?
+  choices:
+  - Splits the host list into batches so a change rolls through a few hosts at a time
+  - Forces tasks to run one after another on a single host
+  - Runs the play twice
+  - Orders the tasks alphabetically
+  answer:
+  - 0
+  explain: serial limits the batch size for rolling updates, and max_fail_percentage can stop the roll if too many hosts fail.
+    It does not change task order within a host.

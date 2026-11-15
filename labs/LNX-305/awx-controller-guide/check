@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of the report: every key present and each value of the right kind.
+# The values come from the controller you ran, so this script checks shape, not truth.
+set -u
+export LC_ALL=C.UTF-8
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f report.txt ] || { echo "FAIL: report.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+nonempty() { v=$(get "$1"); [ -n "$v" ] && [ "$v" != "?" ]; }
+case "$(get controller_flavour)" in awx|aap|controller|none) ok "controller_flavour" ;; *) fail "controller_flavour must be awx, aap, controller or none (which product you ran)" ;; esac
+nonempty organization && ok "organization" || fail "organization: the name of the organization that owns your objects, or none"
+v=$(get inventory_hosts); { [ "$v" = none ] || printf '%s' "$v" | grep -Eq '^[0-9]+$'; } && ok "inventory_hosts" || fail "inventory_hosts must be the number of hosts in your inventory, or none"
+case "$(get credential_type)" in Machine|"Source Control"|Vault|Network|"Container Registry"|Custom|none) ok "credential_type" ;; *) fail "credential_type must be the type of the credential your job template uses: Machine, Source Control, Vault, Network, Container Registry, Custom or none" ;; esac
+case "$(get project_scm)" in git|manual|none) ok "project_scm" ;; *) fail "project_scm must be git, manual or none" ;; esac
+nonempty job_template && ok "job_template" || fail "job_template: the name of the template you launched, or none"
+nonempty execution_environment && ok "execution_environment" || fail "execution_environment: the image your job ran in (its name and tag), or none"
+case "$(get job_status)" in successful|failed|none) ok "job_status" ;; *) fail "job_status must be successful, failed or none" ;; esac
+case "$(get role_granted)" in Admin|Execute|Use|Read|Update|none) ok "role_granted" ;; *) fail "role_granted must be the role you gave a team on the template: Admin, Execute, Use, Read, Update or none" ;; esac
+case "$(get check_mode_run)" in yes|no|none) ok "check_mode_run" ;; *) fail "check_mode_run must be yes, no or none (did you launch one job with check mode on)" ;; esac
+exit $bad

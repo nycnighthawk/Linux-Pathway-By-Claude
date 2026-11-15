@@ -136,7 +136,7 @@ topics:
   LNX-305-T03: {course: LNX-305, title: "Roles, collections, execution environments", depth: 3, env: C}
   LNX-305-T04: {course: LNX-305, title: "Vault", depth: 3, env: C}
   LNX-305-T05: {course: LNX-305, title: "RHEL System Roles", depth: 3, env: V}
-  LNX-305-T06: {course: LNX-305, title: "ansible-lint and Molecule", depth: 4, env: C}
+  LNX-305-T06: {course: LNX-305, title: "ansible-lint and Molecule", depth: 4, env: C, query: ["ansible", "lint", "molecule", "idempotence", "playbook", "testing", "role"]}
   LNX-305-T07: {course: LNX-305, title: "Idempotence, check mode", depth: 3, env: V}
   LNX-305-T08: {course: LNX-305, title: "AWX / automation controller", depth: 2, env: S}
   LNX-305-T09: {course: LNX-305, title: "Managing Windows hosts", depth: 2, env: S}

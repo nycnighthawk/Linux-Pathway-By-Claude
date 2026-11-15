@@ -1,0 +1,65 @@
+title: 'Quiz: Managing Windows hosts'
+questions:
+- id: modules
+  prompt: Why does the copy module not work on a Windows target?
+  choices:
+  - Windows forbids file copies
+  - It needs a licence
+  - Core modules are Python, and Windows hosts have no Python for Ansible; use win_copy
+  - It works but is slow
+  answer:
+  - 2
+  explain: Windows targets run PowerShell modules from collections such as ansible.windows, named with a win_ prefix.
+- id: libs
+  prompt: Which Python library does the psrp connection plugin need on the control node?
+  choices:
+  - paramiko
+  - pexpect
+  - pywinrm
+  - pypsrp
+  answer:
+  - 3
+  explain: psrp uses pypsrp. The winrm plugin uses pywinrm.
+- id: ssh-support
+  prompt: From which ansible-core release is SSH to Windows officially supported?
+  choices:
+  - '2.0'
+  - '2.18'
+  - '2.8'
+  - '2.4'
+  answer:
+  - 1
+  explain: The SSH connection plugin has worked with Windows since 2.8, but official support is documented from 2.18. Set
+    ansible_shell_type to powershell or cmd.
+- id: doublehop
+  prompt: What is the double-hop problem?
+  choices:
+  - SSH needs two ports
+  - Kerberos tickets last two hops
+  - A play runs twice
+  - A task on a Windows host cannot use the connecting user's credentials to reach a second host
+  answer:
+  - 3
+  explain: Delegated credentials are not forwarded by default. Use become with explicit credentials or constrained delegation,
+    and avoid CredSSP unless you accept its exposure.
+- id: cert-ignore
+  prompt: 'What does ansible_psrp_cert_validation: ignore (or the winrm equivalent) risk?'
+  choices:
+  - Slower connections
+  - A man-in-the-middle can impersonate the host and capture credentials
+  - Nothing important
+  - Disabled facts
+  answer:
+  - 1
+  explain: Without certificate validation the control node trusts any server. Use a certificate issued by your CA and keep
+    validation on.
+- id: kerberos
+  prompt: Which of these breaks Kerberos authentication from a controller?
+  choices:
+  - Using handlers
+  - Using a loop
+  - Using YAML
+  - Clock skew of more than a few minutes, missing krb5 configuration or DNS problems
+  answer:
+  - 3
+  explain: Kerberos depends on time, realm configuration and DNS. Put the configuration in the execution environment image.

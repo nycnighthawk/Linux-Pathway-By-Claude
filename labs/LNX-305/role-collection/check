@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Check the layout, build and install the collection, then run the playbook and break an argument on purpose.
+set -u
+export LC_ALL=C.UTF-8 ANSIBLE_NOCOLOR=1
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f site.yml ] || { echo "FAIL: site.yml is missing; run setup"; exit 1; }
+src=src/acme_tools
+[ -f $src/galaxy.yml ] && python3 - <<'PY' && ok "galaxy.yml names acme.tools 1.0.0" || fail "$src/galaxy.yml needs namespace acme, name tools, version 1.0.0, authors, readme, description and license"
+import sys, yaml
+g = yaml.safe_load(open("src/acme_tools/galaxy.yml"))
+need = ("namespace", "name", "version", "authors", "readme", "description")
+sys.exit(0 if all(g.get(k) for k in need) and (g["namespace"], g["name"], str(g["version"])) == ("acme", "tools", "1.0.0") and (g.get("license") or g.get("license_file")) else 1)
+PY
+r=$src/roles/banner
+for f in tasks/main.yml defaults/main.yml templates meta/argument_specs.yml; do
+    [ -e $r/$f ] && ok "role has $f" || fail "role banner needs $r/$f"
+done
+if [ -f $r/defaults/main.yml ]; then
+    python3 - <<'PY' && ok "every default starts with banner_" || fail "every variable in defaults/main.yml must start with the role name prefix banner_"
+import sys, yaml
+d = yaml.safe_load(open("src/acme_tools/roles/banner/defaults/main.yml")) or {}
+sys.exit(0 if d and all(k.startswith("banner_") for k in d) else 1)
+PY
+fi
+if [ -f $r/meta/argument_specs.yml ]; then
+    python3 - <<'PY' && ok "argument_specs declares banner_dest (required) and banner_repeat (int)" || fail "argument_specs.yml must declare banner_dest as a required str and banner_repeat as an int"
+import sys, yaml
+s = yaml.safe_load(open("src/acme_tools/roles/banner/meta/argument_specs.yml"))
+o = s["argument_specs"]["main"]["options"]
+sys.exit(0 if o["banner_dest"].get("required") and o["banner_repeat"]["type"] == "int" else 1)
+PY
+fi
+rm -rf dist collections
+if ansible-galaxy collection build $src --output-path dist >/dev/null 2>&1 && [ -f dist/acme-tools-1.0.0.tar.gz ]; then ok "collection builds to dist/acme-tools-1.0.0.tar.gz"; else fail "ansible-galaxy collection build must produce dist/acme-tools-1.0.0.tar.gz"; fi
+if ansible-galaxy collection install dist/acme-tools-1.0.0.tar.gz -p collections >/dev/null 2>&1 && [ -d collections/ansible_collections/acme/tools/roles/banner ]; then ok "collection installs under collections/ansible_collections/acme/tools"; else fail "install the tarball with -p collections"; fi
+rm -rf out
+out=$(ansible-playbook site.yml 2>&1); rc=$?
+[ $rc = 0 ] && ok "playbook runs with the role by its FQCN" || { fail "playbook failed"; printf '%s\n' "$out" | tail -8; }
+[ "$(cat out/banner.txt 2>/dev/null)" = "$(printf 'Authorised use only\n# end of banner')" ] && ok "banner.txt: one line of text and the end marker" || fail "out/banner.txt must be the text line followed by the line '# end of banner'"
+second=$(ansible-playbook site.yml 2>&1 | sed -n 's/^localhost .*changed=\([0-9]*\).*/\1/p' | tail -1)
+[ "$second" = 0 ] && ok "second run changed=0" || fail "second run must report changed=0 (got ${second:-none})"
+ansible-playbook site.yml -e banner_repeat=3 >/dev/null 2>&1
+[ "$(grep -c '^Authorised use only$' out/banner.txt 2>/dev/null)" = 3 ] && ok "banner_repeat=3 repeats the line" || fail "banner_repeat must repeat the text line that many times"
+bout=$(ansible-playbook site.yml -e banner_repeat=often 2>&1); brc=$?
+{ [ $brc != 0 ] && printf '%s' "$bout" | grep -q banner_repeat; } && ok "a bad banner_repeat is rejected by the argument spec" || fail "a non-integer banner_repeat must fail validation and the message must name banner_repeat"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get build_command)" in "ansible-galaxy collection build") ok build ;; *) fail "build_command: the command that packs a collection into a tarball" ;; esac
+case "$(get install_command)" in "ansible-galaxy collection install") ok install ;; *) fail "install_command: the command that installs a collection tarball or a requirements file" ;; esac
+case "$(get defaults_vs_vars)" in defaults) ok "defaults" ;; *) fail "defaults_vs_vars: which role directory holds the values users are meant to override (defaults)" ;; esac
+[ "$(get spec_file)" = meta/argument_specs.yml ] && ok "spec file" || fail "spec_file: the path of the role's input declaration inside the role"
+exit $bad

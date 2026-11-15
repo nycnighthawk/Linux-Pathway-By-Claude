@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's/^controller_flavour=.*/controller_flavour=awx/' -e 's/^organization=.*/organization=Default/' -e 's/^inventory_hosts=.*/inventory_hosts=3/' -e 's/^credential_type=.*/credential_type=Machine/' -e 's/^project_scm=.*/project_scm=git/' -e 's/^job_template=.*/job_template=Patch Linux/' -e 's#^execution_environment=.*#execution_environment=quay.io/ansible/awx-ee:latest#' -e 's/^job_status=.*/job_status=successful/' -e 's/^role_granted=.*/role_granted=Execute/' -e 's/^check_mode_run=.*/check_mode_run=yes/' report.txt

@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a vendored role that follows the Linux System Roles conventions, a hosts-style file to manage and no playbook.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf ansible.cfg inventory roles group_vars site.yml out answers.txt .roles.sha
+mkdir -p inventory out group_vars roles/hostsfile/{tasks,defaults,vars,meta}
+cat > ansible.cfg <<'CFG'
+# SPDX-License-Identifier: MIT
+[defaults]
+inventory = inventory/hosts
+roles_path = roles
+host_key_checking = False
+deprecation_warnings = False
+interpreter_python = auto_silent
+CFG
+printf '# SPDX-License-Identifier: MIT\nlocalhost ansible_connection=local\n' > inventory/hosts
+printf '127.0.0.1 localhost\n10.0.0.9 old.example.org\n' > out/hosts
+cat > roles/hostsfile/defaults/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+# Public interface of the role. Every name starts with the role name.
+hostsfile_path: /etc/hosts
+hostsfile_entries: []
+Y
+cat > roles/hostsfile/vars/default.yml <<'Y'
+# SPDX-License-Identifier: MIT
+# Internal values: two leading underscores mark them as not part of the interface.
+__hostsfile_mode: "0644"
+Y
+cat > roles/hostsfile/meta/argument_specs.yml <<'Y'
+# SPDX-License-Identifier: MIT
+argument_specs:
+  main:
+    short_description: Manage entries in a hosts-style file
+    options:
+      hostsfile_path:
+        type: path
+        default: /etc/hosts
+        description: The file to manage.
+      hostsfile_entries:
+        type: list
+        elements: dict
+        default: []
+        description: One dictionary per address.
+        options:
+          ip:
+            type: str
+            required: true
+            description: The address.
+          names:
+            type: list
+            elements: str
+            description: Host names for the address; required unless state is absent.
+          state:
+            type: str
+            choices: [present, absent]
+            default: present
+            description: Whether the line exists.
+Y
+cat > roles/hostsfile/tasks/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+- name: Collect the minimal facts the role needs
+  ansible.builtin.setup:
+    gather_subset: min
+  when: ansible_facts['os_family'] is not defined
+
+- name: Load platform variables from the first matching file
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', __hostsfile_lookup) }}"
+  vars:
+    __hostsfile_lookup:
+      files:
+        - "{{ ansible_facts['os_family'] }}.yml"
+        - default.yml
+      paths:
+        - "{{ role_path }}/vars"
+
+- name: Manage one line per entry
+  ansible.builtin.lineinfile:
+    path: "{{ hostsfile_path }}"
+    regexp: '^{{ item.ip | regex_escape }}\s'
+    line: "{{ item.ip }} {{ item.names | default([]) | join(' ') }}"
+    state: "{{ item.state | default('present') }}"
+    create: true
+    mode: "{{ __hostsfile_mode }}"
+  loop: "{{ hostsfile_entries }}"
+  loop_control:
+    label: "{{ item.ip }}"
+Y
+find roles -type f | sort | xargs sha256sum > .roles.sha
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nvariable_prefix=?\ninternal_variable_prefix=?\nrhel_package=?\nrhel_collection_fqcn_prefix=?\ndoc_directory=?\n' > answers.txt

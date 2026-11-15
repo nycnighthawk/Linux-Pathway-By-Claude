@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the merged variables by asking ansible-inventory, the same way an operator would.
+set -u
+export LC_ALL=C.UTF-8
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -d inventory ] || { echo "FAIL: inventory/ is missing; run setup"; exit 1; }
+val() { # host var -> JSON value of the merged variable, or MISSING
+    ansible-inventory -i inventory --host "$1" 2>/dev/null | python3 -c '
+import json, sys
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    print("ERROR"); sys.exit()
+v = d.get(sys.argv[1], "MISSING")
+print(json.dumps(v))' "$2"
+}
+[ "$(val web01 http_port)" = 8080 ] && ok "web01 listens on 8080 (the web group beats its parent prod)" || fail "web01 http_port should be 8080 (now $(val web01 http_port))"
+[ "$(val web02 http_port)" = 8081 ] && ok "web02 http_port is 8081 (a host variable beats every group)" || fail "web02 must use 8081: add inventory/host_vars/web02.yml (now $(val web02 http_port))"
+[ "$(val db01 http_port)" = 8443 ] && ok "db01 inherits 8443 from prod" || fail "db01 http_port should stay 8443 (now $(val db01 http_port))"
+for h in web01 web02; do
+    [ "$(val $h log_level)" = '"debug"' ] && ok "$h log_level is debug (edge wins over rack_a)" || fail "$h log_level must be debug: give the edge group a higher ansible_group_priority in inventory/hosts.yml (now $(val $h log_level))"
+done
+[ "$(val db01 log_level)" = '"info"' ] && ok "db01 keeps the default log level" || fail "db01 log_level should still be info (now $(val db01 log_level))"
+[ "$(val web01 ntp_servers)" = '["ntp1.example.org", "ntp2.example.org"]' ] && ok "prod replaces the NTP list" || fail "prod must set ntp_servers to ntp1.example.org and ntp2.example.org, in that order (now $(val web01 ntp_servers))"
+[ "$(val web01 env_name)" = '"production"' ] && ok "env_name comes from prod" || fail "env_name should be production on web01"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get inspect_command)" in "ansible-inventory --host"|"ansible-inventory --host HOST"|"ansible-inventory --host <host>") ok "inspect command" ;; *) fail "inspect_command: the command that prints the merged variables of one host (ansible-inventory --host)" ;; esac
+case "$(get highest_level)" in "extra vars"|extra_vars|"-e") ok "highest level" ;; *) fail "highest_level: which source beats every other (extra vars, from -e)" ;; esac
+[ "$(get group_priority_variable)" = ansible_group_priority ] && ok "priority variable" || fail "group_priority_variable: the group variable that settles ties between groups at the same depth"
+[ "$(get dict_merge_filter)" = combine ] && ok "combine" || fail "dict_merge_filter: the filter that merges two dictionaries explicitly"
+case "$(get lowest_level)" in "role defaults"|role_defaults) ok "lowest level" ;; *) fail "lowest_level: which variable source has the lowest precedence (role defaults)" ;; esac
+exit $bad

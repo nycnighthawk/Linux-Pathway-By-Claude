@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a small inventory with group_vars that disagree, and a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf inventory ansible.cfg answers.txt
+mkdir -p inventory/group_vars inventory/host_vars
+cat > ansible.cfg <<'CFG'
+# SPDX-License-Identifier: MIT
+[defaults]
+inventory = inventory
+host_key_checking = False
+deprecation_warnings = False
+CFG
+cat > inventory/hosts.yml <<'INV'
+# SPDX-License-Identifier: MIT
+all:
+  children:
+    prod:
+      children:
+        web:
+          hosts:
+            web01:
+            web02:
+        db:
+          hosts:
+            db01:
+    rack_a:
+      hosts:
+        web01:
+        web02:
+    edge:
+      hosts:
+        web01:
+        web02:
+INV
+printf '# SPDX-License-Identifier: MIT\nhttp_port: 80\nlog_level: info\nenv_name: dev\nntp_servers:\n  - pool.example.org\n' > inventory/group_vars/all.yml
+printf '# SPDX-License-Identifier: MIT\nenv_name: production\nhttp_port: 8443\n' > inventory/group_vars/prod.yml
+printf '# SPDX-License-Identifier: MIT\nhttp_port: 8080\n' > inventory/group_vars/web.yml
+printf '# SPDX-License-Identifier: MIT\nlog_level: warn\n' > inventory/group_vars/rack_a.yml
+printf '# SPDX-License-Identifier: MIT\nlog_level: debug\n' > inventory/group_vars/edge.yml
+cat > answers.txt <<'ANS'
+# SPDX-License-Identifier: MIT
+# TODO: fill in each ?
+inspect_command=?
+highest_level=?
+group_priority_variable=?
+dict_merge_filter=?
+lowest_level=?
+ANS

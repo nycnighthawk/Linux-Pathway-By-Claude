@@ -1,0 +1,90 @@
+item: LNX-305
+label: Configuration Management with Ansible
+branch: build/LNX-305
+state: done
+started: '2026-11-15'
+updated: '2026-11-15'
+phases:
+  synth:
+    state: done
+    units: 9
+    done:
+    - LNX-305-T01
+    - LNX-305-T02
+    - LNX-305-T03
+    - LNX-305-T04
+    - LNX-305-T05
+    - LNX-305-T06
+    - LNX-305-T07
+    - LNX-305-T08
+    - LNX-305-T09
+  lessons:
+    state: done
+    units: 9
+    done:
+    - LNX-305-T01
+    - LNX-305-T02
+    - LNX-305-T03
+    - LNX-305-T04
+    - LNX-305-T05
+    - LNX-305-T06
+    - LNX-305-T07
+    - LNX-305-T08
+    - LNX-305-T09
+  quizzes:
+    state: done
+    units: 9
+    done:
+    - LNX-305-T01
+    - LNX-305-T02
+    - LNX-305-T03
+    - LNX-305-T04
+    - LNX-305-T05
+    - LNX-305-T06
+    - LNX-305-T07
+    - LNX-305-T08
+    - LNX-305-T09
+  labs:
+    state: done
+    units: 9
+    done:
+    - LNX-305-T01
+    - LNX-305-T02
+    - LNX-305-T03
+    - LNX-305-T04
+    - LNX-305-T05
+    - LNX-305-T06
+    - LNX-305-T07
+    - LNX-305-T08
+    - LNX-305-T09
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-15 started
+- '2026-11-15 synth: LNX-305-T01'
+- '2026-11-15 synth: LNX-305-T02'
+- '2026-11-15 synth: LNX-305-T03'
+- '2026-11-15 synth: LNX-305-T04'
+- '2026-11-15 synth: LNX-305-T05'
+- '2026-11-15 synth: LNX-305-T06'
+- '2026-11-15 synth: LNX-305-T07'
+- '2026-11-15 synth: LNX-305-T08'
+- '2026-11-15 synth: LNX-305-T09'
+- '2026-11-15 labs: LNX-305-T01'
+- '2026-11-15 labs: LNX-305-T02'
+- '2026-11-15 labs: LNX-305-T03'
+- '2026-11-15 labs: LNX-305-T04'
+- '2026-11-15 labs: LNX-305-T05'
+- '2026-11-15 labs: LNX-305-T06'
+- '2026-11-15 labs: LNX-305-T07'
+- '2026-11-15 labs: LNX-305-T08, LNX-305-T09'
+- '2026-11-15 lessons: LNX-305-T01, LNX-305-T02, LNX-305-T03, LNX-305-T04, LNX-305-T05, LNX-305-T06, LNX-305-T07,
+  LNX-305-T08, LNX-305-T09'
+- '2026-11-15 quizzes: LNX-305-T01, LNX-305-T02, LNX-305-T03, LNX-305-T04, LNX-305-T05, LNX-305-T06, LNX-305-T07,
+  LNX-305-T08, LNX-305-T09'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'

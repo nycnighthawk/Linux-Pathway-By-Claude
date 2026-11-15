@@ -1,0 +1,80 @@
+title: 'Quiz: Inventories, variable precedence'
+questions:
+- id: host-vs-group
+  prompt: A variable is set in group_vars for the host's group and in host_vars for the host. Which value does the host get?
+  choices:
+  - The host value, because host variables outrank group variables
+  - The group value, because groups are loaded last
+  - Whichever file sorts first alphabetically
+  - Ansible stops with a conflict error
+  answer:
+  - 0
+  explain: 'Host variables beat group variables. The group-last idea is backwards, file names only matter for groups of the
+    same depth, and Ansible never raises a conflict for this: it simply applies the ranking.'
+- id: extra-vars
+  prompt: Which source overrides every other variable source?
+  choices:
+  - Extra vars given with -e
+  - Inventory host_vars
+  - Role vars
+  - set_fact
+  answer:
+  - 0
+  explain: Extra vars are the last thing a human typed and sit at the top of the ranking. set_fact and role vars are high
+    but below it, and host_vars are well below.
+- id: role-defaults
+  prompt: Where do role defaults sit in the precedence ranking?
+  choices:
+  - Equal to role vars
+  - Lowest of the variable sources, built to be overridden
+  - Just below extra vars
+  - Above play vars
+  answer:
+  - 1
+  explain: Defaults are the weakest source so any inventory, play or command-line value can replace them. Role vars are the
+    high-precedence sibling, which is why tunables do not belong there.
+- id: same-depth
+  prompt: A host belongs to two sibling groups that both set log_level and neither sets a priority. What decides the winner?
+  choices:
+  - The alphabetical order of the group names, the last one wins
+  - The group listed first in the inventory file
+  - The group with more hosts
+  - A random choice at each run
+  answer:
+  - 0
+  explain: Groups of the same depth merge in alphabetical order and the later name wins, which is fragile when a group is
+    renamed. File order, size and randomness play no part.
+- id: group-priority
+  prompt: Which variable changes the merge order of groups at the same depth, and where must it be set?
+  choices:
+  - ansible_group_priority, in a group_vars file
+  - group_weight, in ansible.cfg
+  - ansible_order, in host_vars
+  - ansible_group_priority, in the inventory source, not in a group_vars file
+  answer:
+  - 3
+  explain: ansible_group_priority is read from the inventory source. In a group_vars file it is ignored because the file is
+    read after the merge order is fixed. The other names do not exist.
+- id: inspect
+  prompt: Which command prints the merged variables that one host will receive?
+  choices:
+  - ansible-config dump web01
+  - ansible-galaxy inventory web01
+  - ansible-playbook --list-hosts web01
+  - ansible-inventory --host web01
+  answer:
+  - 3
+  explain: ansible-inventory --host shows the merged result for a single host. --list-hosts only names hosts, ansible-config
+    shows settings, and ansible-galaxy has no inventory command.
+- id: dict-merge
+  prompt: 'A group sets app: {port: 80, tls: false} and a more specific group sets app: {tls: true}. With default settings,
+    what does the host see?'
+  choices:
+  - '{port: 80, tls: false}'
+  - '{port: 80, tls: true}'
+  - '{tls: true}'
+  - An error about duplicate keys
+  answer:
+  - 2
+  explain: Dictionaries are replaced as a whole by default, so the port key is lost. Use the combine filter to merge explicitly.
+    A merged result would need hash_behavior=merge, which is discouraged.

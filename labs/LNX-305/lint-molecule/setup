@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a role that works once but breaks lint rules and idempotence, a lint profile and a molecule.yml.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf .ansible-lint roles out answers.txt
+r=roles/webcfg
+mkdir -p $r/tasks $r/defaults $r/templates $r/meta $r/molecule/default
+cat > .ansible-lint <<'Y'
+# SPDX-License-Identifier: MIT
+profile: safety
+exclude_paths:
+  - .venv/
+  - out/
+Y
+cat > $r/defaults/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+webcfg_dir: /tmp/webcfg-lab
+port: 8080
+workers: 2
+Y
+cat > $r/templates/web.conf.j2 <<'Y'
+{# SPDX-License-Identifier: MIT #}
+port={{ webcfg_port }}
+workers={{ webcfg_workers }}
+Y
+cat > $r/meta/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+galaxy_info:
+  author: Lab Author
+  role_name: webcfg
+  namespace: acme
+  description: Render a small web configuration
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms: []
+dependencies: []
+Y
+cat > $r/tasks/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+- file:
+    path: "{{ webcfg_dir }}"
+    state: directory
+- name: render the configuration
+  template:
+    src: web.conf.j2
+    dest: "{{ webcfg_dir }}/web.conf"
+    backup: yes
+- name: Stamp the first run
+  command: touch {{ webcfg_dir }}/.stamp
+- name: Append to the run log
+  shell: echo configured >> {{ webcfg_dir }}/run.log
+Y
+cat > $r/molecule/default/molecule.yml <<'Y'
+# SPDX-License-Identifier: MIT
+driver:
+  name: default
+  options:
+    managed: false
+platforms:
+  - name: instance
+    groups: [lab]
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "${MOLECULE_PROJECT_DIRECTORY}/.."
+  inventory:
+    host_vars:
+      instance:
+        ansible_connection: local
+verifier:
+  name: ansible
+scenario:
+  test_sequence:
+    - syntax
+    - converge
+    - idempotence
+    - verify
+Y
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nlint_profile_order=?\nsecond_run_step_name=?\nignore_file_name=?\nlint_autofix_option=?\n' > answers.txt

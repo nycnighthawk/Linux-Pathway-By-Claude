@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Lint the role, run the molecule scenario, then corrupt the result to prove that verify.yml can fail.
+set -u
+export LC_ALL=C.UTF-8 ANSIBLE_NOCOLOR=1 NO_COLOR=1
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -d roles/webcfg ] || { echo "FAIL: roles/webcfg is missing; run setup"; exit 1; }
+# tools: use the ones on PATH, else a virtual environment next to the lab
+if command -v molecule >/dev/null 2>&1 && command -v ansible-lint >/dev/null 2>&1; then
+    LINT=ansible-lint; MOL=molecule
+else
+    if [ ! -x .venv/bin/molecule ] || [ ! -x .venv/bin/ansible-lint ]; then
+        python3 -m venv .venv >/dev/null 2>&1 && .venv/bin/pip install -q molecule ansible-lint >/dev/null 2>&1
+    fi
+    export PATH="$PWD/.venv/bin:$PATH"
+    LINT=ansible-lint; MOL=molecule
+fi
+command -v "$MOL" >/dev/null 2>&1 || { echo "FAIL: molecule is not available (pip install molecule ansible-lint)"; exit 1; }
+if lout=$($LINT --offline roles/webcfg 2>&1); then ok "ansible-lint passes the safety profile"; else fail "ansible-lint reports problems:"; printf '%s\n' "$lout" | grep -E '^[a-z-]+(\[[a-z-]+\])?:|^[a-z][a-z0-9-]*\[' | head -12; fi
+cd roles/webcfg
+for f in molecule/default/converge.yml molecule/default/verify.yml; do
+    [ -f $f ] && ok "$f exists" || fail "write $f"
+done
+[ -f molecule/default/converge.yml ] && [ -f molecule/default/verify.yml ] || exit 1
+export MOLECULE_NO_LOG=false
+rm -rf "$LAB_DIR/out"
+if mout=$($MOL test 2>&1); then ok "molecule test: syntax, converge, idempotence and verify pass"; else fail "molecule test fails"; printf '%s\n' "$mout" | grep -E 'ERROR|CRITICAL|failed=|Idempotence|changed=' | head -10; fi
+# test the test: damage the converged state, verify must now fail, converge repairs it
+conf=$(grep -h 'webcfg_dir' molecule/default/converge.yml | head -1 | sed 's/.*webcfg_dir: *//' | tr -d "\"'")
+$MOL converge >/dev/null 2>&1
+target=$(find "$LAB_DIR" /tmp/webcfg-lab -name web.conf -path '*webcfg*' 2>/dev/null | head -1)
+[ -z "$target" ] && target=$(find "$LAB_DIR" -name web.conf 2>/dev/null | head -1)
+if [ -n "$target" ]; then
+    cp "$target" "$target.keep"; printf 'port=1\nworkers=99\n' > "$target"
+    if $MOL verify >/dev/null 2>&1; then fail "verify.yml still passes when web.conf is wrong: assert on the file content"; else ok "verify.yml fails when the configuration is damaged"; fi
+    mv "$target.keep" "$target"
+else fail "could not find the rendered web.conf (use a webcfg_dir inside the lab directory or /tmp/webcfg-lab)"; fi
+cd "$LAB_DIR"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get lint_profile_order)" = "min,basic,moderate,safety,shared,production" ] && ok "profile order" || fail "lint_profile_order: the six profiles from weakest to strongest, comma separated without spaces"
+[ "$(get second_run_step_name)" = idempotence ] && ok "idempotence step" || fail "second_run_step_name: the molecule step that runs converge again and fails on changes"
+[ "$(get ignore_file_name)" = .ansible-lint-ignore ] && ok "ignore file" || fail "ignore_file_name: the file that records accepted violations as visible warnings"
+[ "$(get lint_autofix_option)" = --fix ] && ok "--fix" || fail "lint_autofix_option: the ansible-lint option that rewrites what it can fix"
+exit $bad

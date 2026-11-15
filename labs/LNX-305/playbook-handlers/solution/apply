@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > site.yml <<'PLAY'
+# SPDX-License-Identifier: MIT
+- name: Render an application configuration
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars.yml
+  vars:
+    lab_out: "{{ playbook_dir }}/out"
+  tasks:
+    - name: Create the output directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - "{{ lab_out }}/conf.d"
+        - "{{ lab_out }}/users"
+    - name: Create one file per administrator
+      ansible.builtin.copy:
+        content: "{{ item }}\n"
+        dest: "{{ lab_out }}/users/{{ item }}"
+        mode: "0644"
+      loop: "{{ admins }}"
+    - name: Render the application configuration
+      ansible.builtin.template:
+        src: app.conf.j2
+        dest: "{{ lab_out }}/conf.d/app.conf"
+        mode: "0644"
+      notify: Reload app
+    - name: Mark privileged ports
+      ansible.builtin.copy:
+        content: ""
+        dest: "{{ lab_out }}/conf.d/privileged.flag"
+        mode: "0644"
+      when: app_port | int < 1024
+  handlers:
+    - name: Reload app
+      ansible.builtin.shell: echo reloaded >> "{{ lab_out }}/reload.log"
+      changed_when: true
+PLAY
+cat > templates/app.conf.j2 <<'TPL'
+{# SPDX-License-Identifier: MIT #}
+# Managed by Ansible
+upstream {{ app_name }} {
+{% for u in upstreams %}
+    server {{ u.host }}:{{ u.port }} weight={{ u.weight }};
+{% endfor %}
+}
+listen {{ app_port }};
+TPL
+sed -i -e 's/^handler_runs=.*/handler_runs=end of play/' -e 's/^loop_variable=.*/loop_variable=item/' -e 's/^module_that_renders_templates=.*/module_that_renders_templates=ansible.builtin.template/' -e 's/^keyword_that_triggers_handler=.*/keyword_that_triggers_handler=notify/' answers.txt

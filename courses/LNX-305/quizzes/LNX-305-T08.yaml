@@ -1,0 +1,65 @@
+title: 'Quiz: AWX / automation controller'
+questions:
+- id: awx-vs-controller
+  prompt: How do AWX and the automation controller relate?
+  choices:
+  - They are unrelated products
+  - AWX is the open source upstream project; the controller is the supported component of Ansible Automation Platform
+  - The controller is the older name of Galaxy
+  - AWX is the Windows version
+  answer:
+  - 1
+  explain: AWX is the community upstream and the controller is the supported downstream. At the time of writing, upstream
+    releases were paused for a refactoring (to verify the current state).
+- id: execute-role
+  prompt: What can a team with only the Execute role on a job template do?
+  choices:
+  - Launch the template but not read the stored credential secret
+  - Edit the project
+  - Delete the inventory
+  - Read all credentials
+  answer:
+  - 0
+  explain: Execute lets people run a vetted template. Credentials are stored encrypted and are not readable after entry.
+- id: ee-role
+  prompt: What is the role of an execution environment in a job?
+  choices:
+  - It stores the inventory
+  - It is the web UI theme
+  - It schedules the job
+  - It is the container image the job runs in, carrying ansible-core and collections
+  answer:
+  - 3
+  explain: The controller starts the job with ansible-runner inside a container from the EE image. If a collection is missing
+    from it, the job fails with module not found.
+- id: receptor
+  prompt: What does Receptor provide?
+  choices:
+  - A Git client
+  - A vault password prompt
+  - A mesh network that carries work and results between control, execution and hop nodes
+  - A playbook linter
+  answer:
+  - 2
+  explain: Receptor lets the control plane reach execution nodes behind other networks and streams job events back.
+- id: workflow
+  prompt: What is a workflow job template?
+  choices:
+  - A graph of job templates, inventory syncs and approvals linked by success, failure and always edges
+  - A survey
+  - A scheduled backup
+  - A playbook with many plays
+  answer:
+  - 0
+  explain: Workflows chain several jobs with branching on the outcome, including approval nodes where a person must confirm.
+- id: alternative
+  prompt: Which is a valid reason not to run a controller?
+  choices:
+  - A small team that can run ansible-playbook from CI runners with short-lived credentials
+  - Controllers forbid Git
+  - Controllers need Windows
+  - Controllers cannot run playbooks
+  answer:
+  - 0
+  explain: A controller adds a stateful service to operate. If you have no need for shared RBAC, scheduling or audit, CI is
+    enough.
