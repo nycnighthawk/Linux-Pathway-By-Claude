@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > policy.yaml <<'EOT'
+# SPDX-License-Identifier: MIT
+hbac_rules:
+  - {name: allow_all, enabled: false, usercat: all, hostcat: all, svccat: all}
+  - {name: dba-ssh, groups: [dba], hostgroups: [dbservers], services: [sshd]}
+  - {name: web-ssh, groups: [web], hostgroups: [webservers], services: [sshd]}
+  - {name: admins-all, groups: [admins], hostcat: all, svccat: all}
+sudo_cmdgroups:
+  pgctl: ["/usr/bin/systemctl restart postgresql"]
+  nginxctl: ["/usr/bin/systemctl restart nginx"]
+sudo_rules:
+  - {name: dba-pg, groups: [dba], hostgroups: [dbservers], cmdgroups: [pgctl]}
+  - {name: web-nginx, groups: [web], hostgroups: [webservers], cmdgroups: [nginxctl]}
+  - {name: admins-any, groups: [admins], hostcat: all, cmdcat: all}
+topology:
+  domain:
+    - [ipa1.lab.test, ipa2.lab.test]
+    - [ipa2.lab.test, ipa3.lab.test]
+    - [ipa1.lab.test, ipa3.lab.test]
+  ca:
+    - [ipa1.lab.test, ipa2.lab.test]
+  ca_renewal_master: ipa1.lab.test
+EOT

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural and consistency grading of a join plan. Judgement is for the reviewer.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f join-plan.txt ] || { echo "FAIL: join-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" join-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+words() { [ "$(printf '%s' "$1" | wc -w)" -ge "$2" ] && [ "$1" != "?" ]; }
+case "$(get join_account)" in delegated-ou) ok "delegated join account" ;; domain-admin|quota) fail "join_account: domain-admin and quota joins are what the AD team will refuse; use delegated-ou" ;; *) fail "join_account: delegated-ou, domain-admin or quota" ;; esac
+case "$(get join_method)" in online|prestaged-otp|offline) ok "join method" ;; *) fail "join_method: online, prestaged-otp or offline" ;; esac
+get computer_ou | grep -Eq '^OU=[^,]+(,OU=[^,]+)*(,DC=[^,]+)+$' && ok "computer OU is a DN" || fail "computer_ou: a distinguished name such as OU=Linux,OU=Servers,DC=corp,DC=example,DC=com"
+im=$(get id_mapping)
+case "$im" in algorithmic|posix-attributes) ok "id mapping chosen" ;; *) fail "id_mapping: algorithmic or posix-attributes" ;; esac
+words "$(get id_mapping_reason)" 8 && ok "mapping reason given" || fail "id_mapping_reason: a sentence of at least eight words"
+au=$(get audit_missing_uidnumber)
+case "$au" in yes|no) ok "audit answered" ;; *) fail "audit_missing_uidnumber: yes or no" ;; esac
+if [ "$im" = posix-attributes ] && [ "$au" != yes ]; then fail "posix-attributes hides every user without uidNumber: audit_missing_uidnumber must be yes"; fi
+gm=$(get gpo_mode); pd=$(get pilot_done)
+case "$gm" in disabled|permissive|enforcing) ok "gpo mode" ;; *) fail "gpo_mode: disabled, permissive or enforcing" ;; esac
+case "$pd" in yes|no) ok "pilot answered" ;; *) fail "pilot_done: yes or no" ;; esac
+if [ "$gm" = enforcing ] && [ "$pd" != yes ]; then fail "enforcing GPO mode before a permissive pilot locks users out; run the pilot or choose permissive"; fi
+case "$(get access_control)" in realm-permit|simple-allow-groups|gpo) ok "access control present" ;; none) fail "access_control: 'none' lets every domain user log in" ;; *) fail "access_control: realm-permit, simple-allow-groups, gpo or none" ;; esac
+p=$(get ports | tr ',' ' ')
+miss=""; for n in 53 88 464 389 3268 445; do printf ' %s ' $p | grep -q " $n " || miss="$miss $n"; done
+[ -z "$miss" ] && ok "ports complete" || fail "ports: still missing$miss"
+case "$(get dns_updates)" in dyndns|static) ok "dns updates" ;; *) fail "dns_updates: dyndns or static" ;; esac
+v=$(get verify)
+miss=""; for c in "klist -ke" "getent passwd" "sssctl domain-status" "realm list"; do printf '%s' "$v" | grep -q -- "$c" || miss="$miss [$c]"; done
+[ -z "$miss" ] && ok "verification covers keytab, identity, SSSD and realm" || fail "verify: add$miss"
+words "$(get rollback)" 8 && ok "rollback described" || fail "rollback: at least eight words (for example realm leave, and who deletes the object)"
+exit "$bad"

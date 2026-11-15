@@ -1,0 +1,79 @@
+title: 'Quiz: Smart-card login'
+questions:
+- id: stack
+  prompt: Which component brokers access to the card reader?
+  choices:
+  - pcscd, the PC/SC daemon
+  - chronyd
+  - firewalld
+  - auditd
+  answer:
+  - 0
+  explain: 'A (correct): Applications talk to the reader through it. B (wrong): Time sync. C (wrong): A firewall.
+    D (wrong): Auditing.'
+- id: pkcs11
+  prompt: What does PKCS#11 give applications?
+  choices:
+  - A uniform API for using keys on tokens without extracting them
+  - A password hashing scheme
+  - A DNS extension
+  - A replacement for TLS
+  answer:
+  - 0
+  explain: 'A (correct): OpenSC and vendor modules implement it, so SSSD and ssh use the same interface. B (wrong):
+    Not its role. C (wrong): Unrelated. D (wrong): It is key access, not a transport.'
+- id: mapping
+  prompt: Why does an issuer match matter in a certificate mapping rule?
+  choices:
+  - Without it, a certificate from another CA with the same subject might map to the account
+  - It makes the card faster
+  - It encrypts the PIN
+  - It changes the shell
+  answer:
+  - 0
+  explain: 'A (correct): The issuer pins the rule to the intended CA. B (wrong): No performance effect. C (wrong):
+    No. D (wrong): No.'
+- id: required
+  prompt: What risk comes with 'authselect select sssd with-smartcard-required' fleet-wide?
+  choices:
+  - A failed reader or missing driver locks everybody out; use canary hosts and a tested break-glass path
+  - Passwords become stronger
+  - Nothing, it only logs
+  - It disables Kerberos
+  answer:
+  - 0
+  explain: 'A (correct): Requiring a card removes the password fallback. B (wrong): They are no longer accepted
+    for login. C (wrong): It enforces. D (wrong): It does not.'
+- id: verification
+  prompt: What does certificate_verification = no_verification do?
+  choices:
+  - Disables certificate validation, which removes the security benefit
+  - Speeds OCSP up
+  - Enables PKINIT
+  - Requires two cards
+  answer:
+  - 0
+  explain: 'A (correct): Anyone with any certificate could be accepted by the chain check. B (wrong): It skips all
+    checks. C (wrong): Unrelated. D (wrong): Unrelated.'
+- id: pkinit
+  prompt: How does PKINIT help after a card login?
+  choices:
+  - The card proof is exchanged for a Kerberos TGT, so later ssh and web access need no further PIN
+  - It stores the PIN in the cache
+  - It replaces DNS
+  - It disables lock-on-removal
+  answer:
+  - 0
+  explain: 'A (correct): The ticket carries single sign-on for the session. B (wrong): It does not. C (wrong): No.
+    D (wrong): No.'
+- id: ad-mapping
+  prompt: What must the AD team provide for certificate mapping against AD?
+  choices:
+  - altSecurityIdentities values (issuer and serial, or another strong mapping) on each user
+  - A new forest
+  - Nothing; names are guessed
+  - A larger RID pool
+  answer:
+  - 0
+  explain: 'A (correct): Windows strong certificate mapping requires explicit bindings. B (wrong): Not needed. C
+    (wrong): Name guessing is what strong mapping removed. D (wrong): Unrelated.'

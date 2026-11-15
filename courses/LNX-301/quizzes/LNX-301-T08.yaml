@@ -1,0 +1,83 @@
+title: 'Quiz: ID mapping, sssctl troubleshooting'
+questions:
+- id: same-algo
+  prompt: Why do two SSSD hosts with the same ID mapping settings give a user the same UID?
+  choices:
+  - They share a database
+  - The UID is computed from the user's SID with a shared algorithm and range settings
+  - They both read /etc/passwd
+  - UIDs are random but happen to match
+  answer:
+  - 1
+  explain: 'A (wrong): SSSD hosts keep local caches. B (correct): No coordinator is needed because the input and
+    the parameters are identical. C (wrong): Directory users are not in /etc/passwd. D (wrong): They would not match.'
+- id: slice-math
+  prompt: With ldap_idmap_range_min = 200000 and ldap_idmap_range_size = 200000, which UID does RID 1105 get in
+    slice 3 (counting from 0)?
+  choices:
+  - '201105'
+  - '801105'
+  - '3001105'
+  - '600000'
+  answer:
+  - 1
+  explain: 'A (wrong): That is slice 0. B (correct): 200000 + 3 x 200000 = 800000, plus the RID 1105. C (wrong):
+    The slice size is 200000, not 1,000,000. D (wrong): This forgets the RID.'
+- id: rid-too-big
+  prompt: What happens to a user whose RID is larger than the slice size?
+  choices:
+  - It is mapped into the next slice automatically
+  - It cannot be mapped; the log notes it, and a larger ldap_idmap_range_size is needed (which renumbers existing
+    users)
+  - It is mapped to UID 0
+  - SSSD crashes
+  answer:
+  - 1
+  explain: 'A (wrong): Slices are fixed windows. B (correct): The RID falls outside its slice. C (wrong): SSSD never
+    maps to root. D (wrong): It logs and skips the entry.'
+- id: first-command
+  prompt: Logins are slow. Which sssctl command shows whether SSSD is online and which servers it is using?
+  choices:
+  - sssctl domain-status
+  - sssctl cert-show
+  - sssctl logs-remove
+  - sssctl config-check
+  answer:
+  - 0
+  explain: 'A (correct): It reports online/offline state and active and discovered servers. B (wrong): Evaluates
+    certificates. C (wrong): Deletes logs. D (wrong): Validates the file only.'
+- id: debug-level
+  prompt: What is a sensible SSSD debug level to start with for an authentication problem?
+  choices:
+  - '0'
+  - '2'
+  - '6'
+  - '9'
+  answer:
+  - 2
+  explain: 'A (wrong): Almost nothing is logged. B (wrong): Serious failures only; this is the default. C (correct):
+    Detailed enough to follow authentication without the volume of the highest levels. D (wrong): Very large logs
+    with sensitive data; use sparingly.'
+- id: cache-flush
+  prompt: How do you make SSSD refresh one user without deleting the cache databases?
+  choices:
+  - sss_cache -u user (or sssctl cache-expire), which marks entries stale
+  - sssctl cache-remove
+  - rm /var/lib/sss/db/*
+  - systemctl reboot
+  answer:
+  - 0
+  explain: 'A (correct): The entry is refreshed on the next request and cached credentials remain. B (wrong): This
+    stops SSSD and deletes the cache, removing offline credentials too. C (wrong): Manual deletion without stopping
+    SSSD risks corruption. D (wrong): Not needed.'
+- id: mode-switch
+  prompt: What is the consequence of switching a large estate from algorithmic mapping to explicit POSIX attributes?
+  choices:
+  - None, because both use the same numbers
+  - Every user's UID may change, so file ownership no longer matches
+  - Only new users are affected
+  - Kerberos keys are regenerated
+  answer:
+  - 1
+  explain: 'A (wrong): The numbers will differ. B (correct): Numbers come from a different source, so existing owners
+    become wrong. C (wrong): Existing users are re-evaluated too. D (wrong): Keys are unrelated.'

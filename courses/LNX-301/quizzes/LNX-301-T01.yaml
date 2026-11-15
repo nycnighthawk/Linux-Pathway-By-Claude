@@ -1,0 +1,94 @@
+title: 'Quiz: LDAP servers and clients'
+questions:
+- id: acl-order
+  prompt: 'Two slapd access rules both match a request: ''to * by * read'' is listed first and ''to attrs=userPassword
+    by self write by * none'' second. What happens to a read of userPassword by an ordinary user?'
+  choices:
+  - It is denied, because the more specific rule wins wherever it sits
+  - It is allowed, because the first matching 'to' clause is the one that applies
+  - It is allowed only if the user binds over TLS
+  - slaptest refuses the file as ambiguous
+  answer:
+  - 1
+  explain: 'A (wrong): slapd does not rank rules by specificity; position decides. B (correct): Rules are evaluated
+    in order and the first rule whose ''to'' part matches is used, so the broad rule exposes the hash. C (wrong):
+    TLS changes the security strength factor, not which rule matches. D (wrong): Overlapping rules are legal and
+    slaptest accepts them; that is why the mistake is silent.'
+- id: starttls-vs-ldaps
+  prompt: Which statement about protecting an LDAP bind is correct?
+  choices:
+  - StartTLS upgrades an existing connection on port 389; ldaps:// wraps the connection in TLS from the first byte,
+    normally on port 636
+  - ldaps:// is the standardised method and StartTLS is a vendor extension
+  - A simple bind is safe on a trusted LAN because the password is hashed in transit
+  - TLS is only needed for the administrator account
+  answer:
+  - 0
+  explain: 'A (correct): These are the two mechanisms, and both need a server certificate matching the name used.
+    B (wrong): StartTLS is the standardised extended operation (RFC 2830, now part of RFC 4513); ldaps:// is the
+    unstandardised but universal one. C (wrong): A simple bind sends the password in clear unless the channel is
+    protected. D (wrong): Every simple bind carries a secret, so every bind needs the protected channel.'
+- id: ldapsearch-flags
+  prompt: You want ldapsearch to insist on StartTLS and stop if the upgrade fails. Which option?
+  choices:
+  - -x
+  - -Z
+  - -ZZ
+  - -LLL
+  answer:
+  - 2
+  explain: 'A (wrong): Selects simple authentication instead of SASL; it says nothing about TLS. B (wrong): A single
+    -Z attempts StartTLS but carries on in clear text if it fails. C (correct): Doubling the flag makes StartTLS
+    mandatory: the command aborts if the upgrade fails. D (wrong): Only reduces the LDIF decoration of the output.'
+- id: tls-reqcert
+  prompt: A client has TLS_REQCERT never in ldap.conf because a certificate once failed in testing. What is the
+    practical effect?
+  choices:
+  - Nothing changes; certificates are still verified against the CA file
+  - Any certificate is accepted, so an active attacker can impersonate the server and read binds
+  - The client falls back to anonymous binds
+  - Only expired certificates are accepted
+  answer:
+  - 1
+  explain: 'A (wrong): never disables verification of the server certificate. B (correct): The channel is encrypted
+    but the peer is not authenticated, which defeats the purpose of TLS for credentials. C (wrong): Binding mode
+    is not affected by this option. D (wrong): never skips the checks altogether, not just the expiry check.'
+- id: group-schema
+  prompt: A directory exported from Active Directory stores group members as member DNs, but Linux clients show
+    only the primary group. Why?
+  choices:
+  - The client expects RFC 2307 memberUid names, while the data uses member DNs (rfc2307bis style); set the group
+    schema or member attribute accordingly
+  - TLS is misconfigured
+  - The index on uid is missing
+  - ldapsearch needs -ZZ
+  answer:
+  - 0
+  explain: 'A (correct): The two group models store membership differently and the client must be told which one
+    it is reading. B (wrong): A TLS fault would break every lookup, not just supplementary groups. C (wrong): A
+    missing index slows searches; it does not hide values. D (wrong): Transport options do not change the attribute
+    that holds membership.'
+- id: backup
+  prompt: Which backup method works for OpenLDAP without needing the server to be reachable on the network?
+  choices:
+  - Copying the mdb directory while slapd is writing
+  - slapcat to LDIF, restored later with slapadd
+  - ldapsearch with a root bind, once a year
+  - Backing up /etc/ldap/ldap.conf
+  answer:
+  - 1
+  explain: 'A (wrong): A live copy of a database in use can be inconsistent. B (correct): These offline tools read
+    and write the database directly, which gives a portable text dump. C (wrong): It needs the network and a running
+    server, and it misses operational data. D (wrong): That is the client configuration, not the directory.'
+- id: syncrepl
+  prompt: In a multi-provider OpenLDAP pair, why do operators usually send writes to one node at a time?
+  choices:
+  - Replication only works in one direction
+  - Conflicting concurrent writes are resolved by timestamp, so a loser can be silently overwritten
+  - The second node has no schema
+  - slapd allows only one TCP connection
+  answer:
+  - 1
+  explain: 'A (wrong): Syncrepl supports multi-provider operation. B (correct): Last-writer-wins on change sequence
+    numbers can discard a concurrent update, which is why a single active writer avoids surprises. C (wrong): Schema
+    replicates like any other data. D (wrong): There is no such limit.'

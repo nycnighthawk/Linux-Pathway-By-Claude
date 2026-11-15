@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run prejoin.sh against simulated hosts and compare its verdicts.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -x prejoin.sh ] && [ -d stubbin ] || { echo "FAIL: run setup first and keep prejoin.sh executable"; exit 1; }
+run() { # description, expected exit (0 or nz), expected-lines regex list (| separated), env...
+  local desc=$1 want=$2 pats=$3; shift 3
+  local out rc
+  out=$(env PATH="$PWD/stubbin:$PATH" "$@" timeout 20 ./prejoin.sh lab.test 2>&1); rc=$?
+  local good=1
+  if [ "$want" = 0 ]; then [ $rc -eq 0 ] || good=0; else [ $rc -ne 0 ] || good=0; fi
+  IFS=$'\n' read -d '' -ra P < <(printf '%s' "$pats" | sed 's/@@/\n/g') || true
+  for p in "${P[@]}"; do printf '%s\n' "$out" | grep -Eq "$p" || good=0; done
+  if [ $good = 1 ]; then ok "$desc"; else fail "$desc (exit $rc, output: $(printf '%s' "$out" | tr '\n' '/' | cut -c1-200))"; fi
+}
+run "healthy host passes"            0 '^OK fqdn@@^OK srv@@^OK skew@@^OK ports' STUB_FQDN=app01.lab.test
+run "uppercase domain suffix is fine" 0 '^OK fqdn' STUB_FQDN=APP01.LAB.TEST
+run "clock 400 s fast fails skew"    1 '^FAIL skew@@^OK fqdn@@^OK srv@@^OK ports' STUB_SKEW=400
+run "clock 400 s slow fails skew"    1 '^FAIL skew' STUB_SKEW=-400
+run "clock 30 s slow still passes"   0 '^OK skew' STUB_SKEW=-30
+run "no SRV record"                  1 '^FAIL srv@@^SKIP ports' STUB_SRV=no
+run "short host name"                1 '^FAIL fqdn' STUB_FQDN=app01
+run "wrong domain suffix"            1 '^FAIL fqdn' STUB_FQDN=app01.other.example
+run "long first label"              1 '^FAIL fqdn' STUB_FQDN=averyveryverylonghostname.lab.test
+run "localhost is refused"           1 '^FAIL fqdn' STUB_FQDN=localhost.lab.test
+run "port 88 closed names the port"  1 '^FAIL ports.*88' "STUB_CLOSED=88"
+run "two closed ports are both named" 1 '^FAIL ports.*(88.*464|464.*88)' "STUB_CLOSED=88 464"
+exit "$bad"

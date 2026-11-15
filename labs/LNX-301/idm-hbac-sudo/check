@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Evaluate policy.yaml against a decision table with the same semantics as ipa hbactest and sudo rule matching.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f inventory.yaml ] && [ -f policy.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml, itertools
+inv = yaml.safe_load(open("inventory.yaml"))
+pol = yaml.safe_load(open("policy.yaml")) or {}
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+L = lambda v: list(v) if isinstance(v, (list, tuple)) else ([] if v in (None, "") else [v])
+def host_groups(h): return {g for g, hs in inv["hostgroups"].items() if h in hs}
+def match(rule, user, host):
+    ug = set(inv["users"].get(user, []))
+    if rule.get("usercat") != "all" and user not in L(rule.get("users")) and not (ug & set(L(rule.get("groups")))): return False
+    if rule.get("hostcat") != "all" and host not in L(rule.get("hosts")) and not (host_groups(host) & set(L(rule.get("hostgroups")))): return False
+    return True
+def enabled(r): return r.get("enabled", True) is not False
+def hbac(user, host, svc):
+    for r in L(pol.get("hbac_rules")):
+        if isinstance(r, dict) and enabled(r) and match(r, user, host) and (r.get("svccat") == "all" or svc in L(r.get("services"))): return True
+    return False
+def sudo(user, host, cmd):
+    cg = pol.get("sudo_cmdgroups") or {}
+    for r in L(pol.get("sudo_rules")):
+        if not (isinstance(r, dict) and enabled(r) and match(r, user, host)): continue
+        if r.get("cmdcat") == "all": return True
+        cmds = set(L(r.get("commands")))
+        for g in L(r.get("cmdgroups")): cmds |= set(L(cg.get(g)))
+        if cmd in cmds: return True
+    return False
+H = [
+ ("alice", "db1.lab.test", "sshd", True), ("alice", "web1.lab.test", "sshd", False), ("alice", "db2.lab.test", "login", False),
+ ("bob", "web2.lab.test", "sshd", True), ("bob", "db1.lab.test", "sshd", False), ("bob", "web1.lab.test", "su", False),
+ ("admin", "db1.lab.test", "sshd", True), ("admin", "web2.lab.test", "login", True), ("admin", "ipa1.lab.test", "sshd", True),
+ ("carol", "web1.lab.test", "sshd", False), ("carol", "db1.lab.test", "sshd", False), ("carol", "ipa2.lab.test", "login", False)]
+for u, h, s, want in H:
+    got = hbac(u, h, s)
+    (ok if got == want else fail)("hbac %s -> %s via %s: %s" % (u, h, s, "allow" if want else "deny") + ("" if got == want else " (policy says %s)" % ("allow" if got else "deny")))
+PGR, NGR = "/usr/bin/systemctl restart postgresql", "/usr/bin/systemctl restart nginx"
+S = [
+ ("alice", "db1.lab.test", PGR, True), ("alice", "db2.lab.test", "/usr/bin/vi /etc/passwd", False), ("alice", "web1.lab.test", PGR, False),
+ ("bob", "web1.lab.test", NGR, True), ("bob", "web1.lab.test", PGR, False), ("bob", "db1.lab.test", NGR, False),
+ ("admin", "db1.lab.test", "/usr/bin/vi /etc/passwd", True), ("carol", "web1.lab.test", NGR, False), ("carol", "db1.lab.test", PGR, False)]
+for u, h, c, want in S:
+    got = sudo(u, h, c)
+    (ok if got == want else fail)("sudo %s on %s runs %s: %s" % (u, h, c.split()[-1] if c.startswith("/usr/bin/systemctl") else "vi", "allow" if want else "deny") + ("" if got == want else " (policy says %s)" % ("allow" if got else "deny")))
+for r in L(pol.get("hbac_rules")):
+    if isinstance(r, dict) and r.get("name") == "allow_all" and enabled(r): fail("allow_all is still enabled")
+# topology
+top = pol.get("topology") or {}
+servers = set(inv["servers"]); cas = {s for s, v in inv["servers"].items() if "ca" in v["roles"]}
+def graph(segs):
+    adj = {}
+    for a, b in [tuple(x) for x in L(segs) if isinstance(x, (list, tuple)) and len(x) == 2]:
+        adj.setdefault(a, set()).add(b); adj.setdefault(b, set()).add(a)
+    return adj
+d = graph(top.get("domain"))
+unknown = set(d) - servers
+if unknown: fail("domain topology names unknown servers: %s" % ", ".join(sorted(unknown)))
+if all(len(d.get(s, ())) >= 2 for s in servers): ok("every server has at least two domain segments")
+else: fail("every server needs at least two segments in the domain suffix: " + ", ".join("%s has %d" % (s, len(d.get(s, ()))) for s in sorted(servers)))
+if all(len(d.get(s, ())) <= 4 for s in servers): ok("no server has more than four segments")
+else: fail("no server may have more than four segments")
+def connected(adj, nodes):
+    nodes = set(nodes)
+    if not nodes: return False
+    seen, todo = set(), [next(iter(nodes))]
+    while todo:
+        n = todo.pop()
+        if n in seen: continue
+        seen.add(n); todo += list(adj.get(n, ()))
+    return nodes <= seen
+(ok if connected(d, servers) else fail)("domain topology is connected" if connected(d, servers) else "domain topology must connect all servers")
+c = graph(top.get("ca"))
+(ok if set(c) <= cas and connected(c, cas) else fail)("ca topology links only CA servers and is connected" if set(c) <= cas and connected(c, cas) else "ca suffix segments must join CA servers only (%s) and connect them" % ", ".join(sorted(cas)))
+m = top.get("ca_renewal_master")
+(ok if m in cas else fail)("ca_renewal_master is a CA server" if m in cas else "ca_renewal_master must be one of the CA servers (%s)" % ", ".join(sorted(cas)))
+sys.exit(bad)
+PY

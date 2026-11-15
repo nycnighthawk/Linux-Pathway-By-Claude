@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f trust-design.txt
+printf '# SPDX-License-Identifier: MIT\ntrust_direction=?\ndirection_reason=?\nrange_type=?\nrange_reason=?\ntrust_controllers=?\nagents_per_remote_site=?\ndns=?\nports=?\nad_groups_in_policy=?\nexternal_group=?\nenctypes=?\nverify=?\n' > trust-design.txt

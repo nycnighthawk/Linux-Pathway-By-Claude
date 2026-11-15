@@ -1,0 +1,83 @@
+title: 'Quiz: FreeIPA/IdM: replicas, HBAC, sudo rules'
+questions:
+- id: allow-all
+  prompt: A new IdM server has an HBAC rule 'allow_all'. What does leaving it enabled mean?
+  choices:
+  - Nothing, because specific rules always override it
+  - Every user may use every service on every host, so your restrictive rules restrict nothing
+  - Only administrators can log in
+  - Replication is paused
+  answer:
+  - 1
+  explain: 'A (wrong): HBAC has no precedence: access is granted if any enabled rule matches. B (correct): The union
+    of rules is evaluated, so a universal rule makes the others irrelevant. C (wrong): The rule applies to all users.
+    D (wrong): Replication is unrelated.'
+- id: hbactest
+  prompt: A user authenticates but ssh closes the connection. Which command shows which rules matched?
+  choices:
+  - ipa hbactest --user=U --host=H --service=sshd
+  - ipa user-show U
+  - kinit U
+  - ipa-backup
+  answer:
+  - 0
+  explain: 'A (correct): It evaluates the rules and prints matched and unmatched rules. B (wrong): It shows attributes
+    but evaluates no policy. C (wrong): It proves authentication, not access. D (wrong): It creates an archive.'
+- id: replica-topology
+  prompt: Why add a replication segment between ipa1 and ipa3 when ipa1-ipa2 and ipa2-ipa3 exist?
+  choices:
+  - To make ipa3 a client
+  - So that losing ipa2 does not split the topology and leave ipa1 and ipa3 unable to exchange changes
+  - To speed up Kerberos
+  - To change the realm name
+  answer:
+  - 1
+  explain: 'A (wrong): Servers are not clients of each other in replication. B (correct): Each server should have
+    at least two connections to avoid a single point of failure. C (wrong): Kerberos is separate. D (wrong): Realm
+    names cannot be changed.'
+- id: ca-renewal
+  prompt: What is the 'CA renewal master'?
+  choices:
+  - The server that handles automatic renewal of the IdM CA's own subsystem certificates; only one has the role
+  - The administrator who renews user passwords
+  - The DNS primary zone owner
+  - The first client enrolled
+  answer:
+  - 0
+  explain: 'A (correct): If it is lost, renewals stop until another CA server is promoted. B (wrong): It is a server
+    role. C (wrong): DNS has separate roles. D (wrong): Clients hold no such role.'
+- id: sudo-sss
+  prompt: On an IdM client, sudo ignores the central rules. Which configuration pair is needed?
+  choices:
+  - '''sudoers: files sss'' in nsswitch.conf and ''sudo'' in the SSSD services list'
+  - An /etc/sudoers entry per rule
+  - pam_sss in the auth stack only
+  - ssh_config GSSAPIAuthentication
+  answer:
+  - 0
+  explain: 'A (correct): SSSD''s sudo responder serves the rules; sudo must be told to ask it. B (wrong): That is
+    the file-based approach the central rules replace. C (wrong): PAM handles authentication, not sudo rule lookup.
+    D (wrong): This concerns SSH.'
+- id: dead-server
+  prompt: A dead replica must be removed. Which is the correct way?
+  choices:
+  - Delete only the host entry
+  - ipa server-del, which cleans topology data and records
+  - Reinstall the realm
+  - Edit dse.ldif by hand
+  answer:
+  - 1
+  explain: 'A (wrong): The topology and DNS records would keep ghosts. B (correct): This is the supported removal
+    and keeps replication metadata consistent. C (wrong): Far too destructive. D (wrong): Hand edits risk corrupting
+    the directory.'
+- id: backup-vs-replica
+  prompt: After losing one server in a healthy multi-replica topology, what is the better recovery source?
+  choices:
+  - An old ipa-backup archive
+  - Another replica, by installing a new replica
+  - The client SSSD cache
+  - A dump of /etc
+  answer:
+  - 1
+  explain: 'A (wrong): Restoring old data can reintroduce deleted users. B (correct): Replicas hold current data
+    and bring the topology back. C (wrong): Caches are not authoritative. D (wrong): The directory is not in /etc.'

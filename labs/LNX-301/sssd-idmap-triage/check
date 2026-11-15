@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the case answers and the sssd-fix.conf snippet.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f cases.txt ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get case_a_cause)" = different-idmap-backends ] && ok "case A cause" || fail "case_a_cause: app1 maps SIDs algorithmically, app2 allocates from a tdb; look at both idmap settings"
+[ "$(get case_b_cause)" = missing-posix-attributes ] && ok "case B cause" || fail "case_b_cause: SSSD reads numbers from the directory and the directory returned no uidNumber"
+[ "$(get case_c_cause)" = stale-cache ] && ok "case C cause" || fail "case_c_cause: the server is online; what bounds how old an identity may be?"
+cmd=$(get case_c_first_command)
+printf '%s' "$cmd" | grep -Eq '^(sudo )?sss_cache( |$).*(-u +carol|-E|-g +linux-admins|-U|-G)' && ok "case C command" || fail "case_c_first_command: sss_cache -u carol@corp.example.com (or -E to mark everything stale)"
+[ "$(get case_d_uid)" = 801105 ] && ok "case D uid" || fail "case_d_uid: range_min + slice * range_size + RID (slice 3 starts at 200000 + 3 * 200000)"
+[ "$(get case_d_rid_250001)" = unmapped ] && ok "case D large RID" || fail "case_d_rid_250001: a RID at or above the slice size does not fit (mapped or unmapped)"
+get case_e_first_command | grep -q 'sssctl domain-status' && ok "case E command" || fail "case_e_first_command: the command that lists which servers SSSD is using and whether it is online"
+[ "$(get debug_level_for_auth)" = 6 ] && ok "debug level 6" || fail "debug_level_for_auth: a number between 0 and 9; the lesson names the usual starting point"
+python3 - <<'PY'
+import configparser, sys
+bad = 0
+cp = configparser.ConfigParser(interpolation=None, strict=False)
+try: cp.read("sssd-fix.conf")
+except Exception as e:
+    print("FAIL: sssd-fix.conf does not parse: %s" % e); sys.exit(1)
+s = "domain/corp.example.com"
+if not cp.has_section(s):
+    print("FAIL: sssd-fix.conf needs a [domain/corp.example.com] section"); sys.exit(1)
+g = lambda k: cp.get(s, k, fallback="").strip().lower()
+def chk(c, good, why):
+    global bad
+    if c: print("ok:   " + good)
+    else: print("FAIL: " + why); bad = 1
+chk(g("ldap_id_mapping") in ("false", "no", "0"), "ldap_id_mapping off", "ldap_id_mapping = False")
+chk(g("min_id") == "10000", "min_id", "min_id = 10000")
+chk(g("max_id") == "2000000", "max_id", "max_id = 2000000")
+sys.exit(bad)
+PY
+[ $? -eq 0 ] || bad=1
+exit "$bad"
