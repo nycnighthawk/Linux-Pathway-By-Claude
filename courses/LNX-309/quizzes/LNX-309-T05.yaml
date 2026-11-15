@@ -1,0 +1,62 @@
+title: 'Quiz: DR drills'
+questions:
+- id: rpo
+  prompt: What does the recovery point objective describe?
+  choices:
+  - The longest tolerable window of lost data, measured backwards from the disaster
+  - The longest tolerable time to restore service
+  - The number of servers at the recovery site
+  - The size of the backup
+  answer:
+  - 0
+  explain: 'A) correct: it sets how fresh the copy must be. B) wrong: that is the RTO. C) wrong: unrelated. D) wrong: unrelated.'
+- id: untested
+  prompt: Why is a backup that was never restored a risk?
+  choices:
+  - It may be incomplete, undecryptable or stale, and you only find out during the disaster
+  - Backups cannot be restored
+  - It uses too much disk
+  - It is illegal
+  answer:
+  - 0
+  explain: 'A) correct: restores are the only proof. B) wrong: they can be. C) wrong: irrelevant. D) wrong: irrelevant.'
+- id: tabletop
+  prompt: What does a tabletop exercise test?
+  choices:
+  - Roles, decisions, contacts and order of steps, by walking through a scenario without touching systems
+  - Hardware failure rates
+  - Disk throughput
+  - TLS versions
+  answer:
+  - 0
+  explain: 'A) correct: cheap and finds gaps in people and process. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+- id: failback
+  prompt: Why is failback often harder than failover?
+  choices:
+  - Roles have swapped and data has diverged, so the original site must be resynchronised before it becomes authoritative again
+  - Failback needs no planning
+  - The recovery site is always switched off
+  - DNS cannot be changed back
+  answer:
+  - 0
+  explain: 'A) correct: plan and rehearse it. B) wrong: it needs planning. C) wrong: not necessarily. D) wrong: it can be changed.'
+- id: immutable
+  prompt: Which backup property best resists ransomware?
+  choices:
+  - An offline or immutable copy that administrator credentials on the primary cannot delete or encrypt
+  - A backup on the same server
+  - A backup with a long file name
+  - A weekly email
+  answer:
+  - 0
+  explain: 'A) correct: the attacker must not reach the last good copy. B) wrong: lost with the server. C) wrong: irrelevant. D) wrong: irrelevant.'
+- id: report
+  prompt: What belongs in a drill report?
+  choices:
+  - Scenario, timeline, measured RTO and RPO against targets, defects found, owners and dates for fixes
+  - Only the word "success"
+  - Only the list of attendees
+  - The password list
+  answer:
+  - 0
+  explain: 'A) correct: it is the evidence and the improvement plan. B) wrong: no evidence. C) wrong: no result. D) wrong: never store passwords there.'

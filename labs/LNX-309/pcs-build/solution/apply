@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > build-cluster.sh <<'X'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+pcs host auth node1 node2 -u hacluster
+pcs cluster setup webcluster node1 node2
+pcs cluster start --all
+pcs cluster enable --all
+pcs stonith create fence_lab fence_virsh ip=192.168.122.1 username=fence \
+    identity_file=/root/.ssh/fence_key pcmk_host_map="node1:vm-node1;node2:vm-node2" op monitor interval=60s
+pcs resource create vip ocf:heartbeat:IPaddr2 ip=192.168.122.50 cidr_netmask=24 op monitor interval=30s
+pcs resource create site ocf:heartbeat:apache configfile=/etc/httpd/conf/httpd.conf \
+    statusurl="http://localhost/server-status" op monitor interval=1min
+pcs constraint colocation add site with vip INFINITY
+pcs constraint order vip then site
+pcs constraint location site prefers node2=50
+X
+chmod +x build-cluster.sh

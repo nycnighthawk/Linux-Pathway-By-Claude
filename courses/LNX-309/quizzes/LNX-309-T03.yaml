@@ -1,0 +1,62 @@
+title: 'Quiz: keepalived and HAProxy'
+questions:
+- id: vrrp
+  prompt: How does VRRP decide which node holds the virtual address?
+  choices:
+  - The node with the highest priority among those advertising becomes master; backups take over when advertisements stop
+  - The node with the lowest uptime
+  - A coin toss at every packet
+  - The node with the most memory
+  answer:
+  - 0
+  explain: 'A) correct: priority election with timeout. B) wrong: not a rule. C) wrong: not random. D) wrong: not considered.'
+- id: nonlocal
+  prompt: Why set net.ipv4.ip_nonlocal_bind=1 on the load balancers?
+  choices:
+  - So HAProxy on the standby can start although it does not currently hold the virtual address
+  - To speed up TCP
+  - To enable IPv6
+  - To disable the firewall
+  answer:
+  - 0
+  explain: 'A) correct: binding an address the host lacks would otherwise fail. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+- id: fall
+  prompt: In "check inter 2s fall 3 rise 2", what happens after three consecutive failed checks?
+  choices:
+  - The server is marked down and receives no new requests
+  - HAProxy restarts
+  - The address moves
+  - Nothing, the setting is only advice
+  answer:
+  - 0
+  explain: 'A) correct: fall counts failures to mark down, rise counts successes to mark up. B) wrong: no restart. C) wrong: that is keepalived. D) wrong: it is enforced.'
+- id: splitbrain
+  prompt: Both load balancers show the virtual address. What is the most likely cause?
+  choices:
+  - Advertisements are not reaching the peer (filtered multicast or firewall), so each assumes the other is dead
+  - HAProxy is too fast
+  - The back ends are healthy
+  - DNS is slow
+  answer:
+  - 0
+  explain: 'A) correct: VRRP has no quorum, so lost advertisements produce two masters. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+- id: cloud
+  prompt: Why is keepalived often unsuitable in a public cloud?
+  choices:
+  - The virtual network usually blocks VRRP multicast and does not honour gratuitous ARP, so addresses are moved with the provider API or a managed balancer
+  - Clouds forbid HAProxy
+  - Clouds have no IP addresses
+  - Keepalived cannot run on Linux
+  answer:
+  - 0
+  explain: 'A) correct: use the provider mechanisms. B) wrong: allowed. C) wrong: they have. D) wrong: it is Linux software.'
+- id: pick
+  prompt: A stateful database needs shared storage and strict start order. Which front-end design fits best?
+  choices:
+  - A Pacemaker cluster with fencing
+  - keepalived alone
+  - DNS round robin
+  - No failover
+  answer:
+  - 0
+  explain: 'A) correct: it provides quorum, fencing and ordering. B) wrong: two masters could corrupt state. C) wrong: no health awareness. D) wrong: not an answer.'

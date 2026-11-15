@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf prod offsite scratch backup.sh restore-drill.sh drill-report.json
+mkdir -p prod
+python3 - <<'PY'
+import sqlite3
+c = sqlite3.connect("prod/app.db")
+c.execute("create table orders(id integer primary key, item text, ts text)")
+c.executemany("insert into orders(item, ts) values (?, datetime('now'))", [("item-%d" % i,) for i in range(1, 101)])
+c.commit()
+PY
+echo "RTO_TARGET_SECONDS=60" > targets.env
+echo "RPO_TARGET_ROWS=50"   >> targets.env
+cat > backup.sh <<'X'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Back up prod/ into offsite/. See README.md for the requirements.
+set -eu
+# TODO
+X
+cat > restore-drill.sh <<'X'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Restore the newest backup from offsite/ into scratch/, verify it and write drill-report.json.
+set -eu
+# TODO
+X
+chmod +x backup.sh restore-drill.sh
+echo "Created prod/app.db (100 orders), targets.env, backup.sh and restore-drill.sh stubs."

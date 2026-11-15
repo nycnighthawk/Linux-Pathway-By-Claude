@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+mk() { # file priority src peer
+cat > "$1" <<X
+# SPDX-License-Identifier: GPL-2.0-only
+global_defs {
+    enable_script_security
+    script_user root
+}
+vrrp_script chk_haproxy {
+    script "/usr/bin/pidof haproxy"
+    interval 2
+    fall 2
+    rise 2
+}
+vrrp_instance VI_WEB {
+    state BACKUP
+    interface eth0
+    virtual_router_id 51
+    priority $2
+    advert_int 1
+    unicast_src_ip $3
+    unicast_peer {
+        $4
+    }
+    virtual_ipaddress {
+        192.168.10.100/24 dev eth0
+    }
+    track_script {
+        chk_haproxy
+    }
+}
+X
+}
+mk keepalived-a.conf 150 192.168.10.11 192.168.10.12
+mk keepalived-b.conf 100 192.168.10.12 192.168.10.11
+cat > haproxy.cfg <<'X'
+# SPDX-License-Identifier: GPL-2.0-only
+global
+    log stdout format raw local0
+defaults
+    mode http
+    timeout connect 5s
+    timeout client 30s
+    timeout server 30s
+    option forwardfor
+frontend web
+    bind 192.168.10.100:80
+    default_backend app
+backend app
+    balance leastconn
+    option httpchk GET /healthz
+    http-check expect status 200
+    server app1 192.168.10.21:8080 check inter 2s fall 3 rise 2
+    server app2 192.168.10.22:8080 check inter 2s fall 3 rise 2
+X

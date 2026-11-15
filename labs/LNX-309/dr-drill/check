@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f targets.env ] || { echo "FAIL: run setup first"; exit 1; }
+. ./targets.env
+bad=0
+ok() { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+grep -q TODO backup.sh && { fail "backup.sh still has the TODO"; exit 1; }
+grep -q TODO restore-drill.sh && { fail "restore-drill.sh still has the TODO"; exit 1; }
+rows() { python3 -c "import sqlite3,sys; print(sqlite3.connect(sys.argv[1]).execute('select count(*) from orders').fetchone()[0])" "$1"; }
+# 1. backup
+./backup.sh >/dev/null 2>&1 && ok "backup.sh runs" || { fail "backup.sh failed"; exit 1; }
+n=$(ls offsite/*.tar.gz 2>/dev/null | wc -l)
+[ "$n" -ge 1 ] && ok "a .tar.gz backup is in offsite/" || fail "backup.sh must write offsite/<name>.tar.gz"
+ls offsite/*.sha256 >/dev/null 2>&1 && ok "a checksum file is stored with it" || fail "write a .sha256 file next to the backup"
+# a hot database must be copied consistently: the archive has to contain a readable copy
+t=$(mktemp -d); tar -xzf "$(ls -t offsite/*.tar.gz | head -1)" -C "$t" 2>/dev/null
+f=$(find "$t" -name app.db | head -1)
+if [ -n "$f" ] && [ "$(rows "$f" 2>/dev/null)" = 100 ]; then ok "the backup contains app.db with 100 rows"; else fail "the backup must contain a readable app.db with the 100 existing rows"; fi
+rm -rf "$t"
+# 2. production keeps changing after the backup
+python3 - <<'PY'
+import sqlite3
+c = sqlite3.connect("prod/app.db")
+c.executemany("insert into orders(item, ts) values (?, datetime('now'))", [("late-%d" % i,) for i in range(1, 31)])
+c.commit()
+PY
+# 3. drill
+rm -rf scratch drill-report.json
+./restore-drill.sh >/dev/null 2>&1; rc=$?
+[ $rc -eq 0 ] && ok "restore-drill.sh succeeds on a good backup" || fail "restore-drill.sh exited $rc on a good backup"
+[ -f scratch/app.db ] && [ "$(rows scratch/app.db 2>/dev/null)" = 100 ] && ok "scratch/app.db restored with 100 rows" || fail "restore into scratch/app.db (100 rows expected)"
+if [ -f drill-report.json ]; then
+python3 - <<'PY'
+import json, os
+bad = 0
+r = json.load(open("drill-report.json"))
+t = dict(l.strip().split("=") for l in open("targets.env") if "=" in l)
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+ok("checksum verified") if r.get("checksum_ok") is True else fail('"checksum_ok": true')
+ok("rows restored 100") if r.get("rows_restored") == 100 else fail('"rows_restored": 100')
+ok("rows lost 30 (changes after the backup)") if r.get("rows_lost") == 30 else fail('"rows_lost": 30 (rows in prod but not in the restore)')
+ok("rto measured") if isinstance(r.get("rto_seconds"), (int, float)) and r["rto_seconds"] >= 0 else fail('"rto_seconds": number')
+ok("rto_met correct") if r.get("rto_met") == (r.get("rto_seconds", 1e9) <= int(t["RTO_TARGET_SECONDS"])) else fail('"rto_met": rto_seconds <= RTO_TARGET_SECONDS')
+ok("rpo_met correct (30 lost <= 50)") if r.get("rpo_met") is True else fail('"rpo_met": rows_lost <= RPO_TARGET_ROWS')
+ok("status pass") if r.get("status") == "pass" else fail('"status": "pass" when checksum, rto and rpo are all fine')
+raise SystemExit(bad)
+PY
+[ $? -eq 0 ] || bad=1
+else fail "restore-drill.sh must write drill-report.json"; fi
+# 4. a damaged backup must be detected
+b=$(ls -t offsite/*.tar.gz | head -1); cp "$b" "$b.good"; printf 'garbage' >> "$b"
+rm -rf scratch drill-report.json
+./restore-drill.sh >/dev/null 2>&1; rc=$?
+[ $rc -ne 0 ] && ok "a corrupted backup makes the drill fail" || fail "restore-drill.sh must exit non-zero when the checksum does not match"
+[ -f drill-report.json ] && python3 -c "import json; r=json.load(open('drill-report.json')); raise SystemExit(0 if r.get('status')=='fail' and r.get('checksum_ok') is False else 1)" && ok "report says fail" || fail 'report must say "status": "fail" and "checksum_ok": false'
+mv "$b.good" "$b"
+[ $bad -eq 0 ] && echo PASS || exit 1

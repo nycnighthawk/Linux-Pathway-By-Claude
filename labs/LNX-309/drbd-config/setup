@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f wwwdata.res drbd-pcs.sh
+cat > wwwdata.res <<'X'
+# SPDX-License-Identifier: GPL-2.0-only
+# DRBD resource for an ACTIVE/PASSIVE pair: node1 (192.168.122.11) and node2 (192.168.122.12).
+# Backing devices: /dev/vg0/data on each node. See README.md for the requirements.
+resource "wwwdata" {
+}
+X
+cat > drbd-pcs.sh <<'X'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Pacemaker side: a promotable DRBD clone, an xfs file system on /dev/drbd1 mounted at /srv/www.
+set -eu
+# TODO: queue changes in a file (pcs cluster cib drbd_cfg, pcs -f drbd_cfg ...) and push them at the end
+X
+chmod +x drbd-pcs.sh

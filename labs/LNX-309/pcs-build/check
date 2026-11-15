@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Static review of build-cluster.sh: nothing is executed, so no cluster is needed.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f build-cluster.sh ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+body=$(sed -e ':a' -e '/\\$/N; s/\\\n//; ta' build-cluster.sh | sed 's/^[[:space:]]*#.*$//' | tr -s ' ')
+has() { printf '%s\n' "$body" | grep -Eq -- "$1"; }
+has '^[[:space:]]*(sudo )?pcs host auth .*node1.*node2|^[[:space:]]*(sudo )?pcs host auth .*node2.*node1' && ok "nodes authenticated" || fail "pcs host auth node1 node2"
+has 'pcs cluster setup [A-Za-z0-9_-]+ node1 node2' && ok "cluster created from node1 and node2" || fail "pcs cluster setup <name> node1 node2"
+has 'pcs cluster start --all' && ok "cluster started" || fail "pcs cluster start --all"
+has 'pcs cluster enable --all' && ok "cluster enabled at boot" || fail "pcs cluster enable --all"
+if has 'stonith-enabled=false|fencing-enabled=false'; then fail "never disable fencing"; else ok "fencing is not disabled"; fi
+if has '[[:space:]]--force'; then fail "do not use --force"; else ok "no --force"; fi
+has 'pcs stonith create [A-Za-z0-9_-]+ fence_virsh' && ok "fence_virsh device created" || fail "pcs stonith create <name> fence_virsh ..."
+has 'pcmk_host_map="?node1:vm-node1;node2:vm-node2"?' && ok "pcmk_host_map covers both nodes" || fail 'pcmk_host_map="node1:vm-node1;node2:vm-node2"'
+has 'ip=192\.168\.122\.1([^0-9]|$)' && ok "fence device points at the hypervisor" || fail "ip=192.168.122.1 for the fence device"
+has 'pcs resource create [A-Za-z0-9_-]+ ocf:heartbeat:IPaddr2 .*ip=192\.168\.122\.50' && ok "virtual IP resource" || fail "ocf:heartbeat:IPaddr2 with ip=192.168.122.50"
+has 'cidr_netmask=24' && ok "netmask 24" || fail "cidr_netmask=24"
+has 'pcs resource create [A-Za-z0-9_-]+ ocf:heartbeat:apache .*op monitor interval=[0-9]+(s|min)?' && ok "Apache resource with a monitor" || fail "ocf:heartbeat:apache with op monitor interval=..."
+vip=$(printf '%s\n' "$body" | sed -nE 's/.*pcs resource create ([A-Za-z0-9_-]+) ocf:heartbeat:IPaddr2.*/\1/p' | head -1)
+web=$(printf '%s\n' "$body" | sed -nE 's/.*pcs resource create ([A-Za-z0-9_-]+) ocf:heartbeat:apache.*/\1/p' | head -1)
+if [ -n "$vip" ] && [ -n "$web" ]; then
+  has "pcs constraint colocation add $web with $vip INFINITY" && ok "web server colocated with the address" || fail "pcs constraint colocation add $web with $vip INFINITY"
+  has "pcs constraint order $vip then $web" && ok "address starts before the web server" || fail "pcs constraint order $vip then $web"
+  has "pcs constraint location $web prefers node2=[0-9]+" && ok "node2 preferred with a finite score" || fail "pcs constraint location $web prefers node2=<score below INFINITY>"
+  has "prefers node2=(INFINITY|[0-9]{4,})" && fail "a preference must be a gentle score, not INFINITY"
+else fail "create both resources before the constraints"; fi
+[ $bad -eq 0 ] && echo PASS || exit 1

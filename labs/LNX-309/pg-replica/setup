@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starts a throw-away PostgreSQL primary on port 55432 (as the postgres user, in /tmp/pglab).
+set -eu
+cd "${LAB_DIR:-.}"
+bin=$(ls -d /usr/lib/postgresql/*/bin | sort -V | tail -1)
+[ -x "$bin/initdb" ] || { echo "PostgreSQL server packages are required"; exit 1; }
+base=/tmp/pglab
+if [ -f "$base/primary/postmaster.pid" ]; then runuser -u postgres -- "$bin/pg_ctl" -D "$base/primary" -m immediate stop >/dev/null 2>&1 || true; fi
+if [ -f "$base/standby/postmaster.pid" ]; then runuser -u postgres -- "$bin/pg_ctl" -D "$base/standby" -m immediate stop >/dev/null 2>&1 || true; fi
+rm -rf "$base" make-standby.sh
+mkdir -p "$base"; chown postgres: "$base"; chmod 755 "$base"
+runuser -u postgres -- "$bin/initdb" -D "$base/primary" -A trust >/dev/null
+cat >> "$base/primary/postgresql.conf" <<X
+port = 55432
+listen_addresses = '127.0.0.1'
+unix_socket_directories = '$base'
+wal_level = replica
+max_wal_senders = 5
+hot_standby = on
+X
+runuser -u postgres -- "$bin/pg_ctl" -D "$base/primary" -l "$base/primary.log" -w start >/dev/null
+runuser -u postgres -- "$bin/psql" -h "$base" -p 55432 -d postgres -qc "CREATE TABLE orders(id int primary key, item text); INSERT INTO orders VALUES (1,'first');"
+cat > env.sh <<X
+# SPDX-License-Identifier: MIT
+export PGBIN=$bin
+export PGLAB=$base
+export PRIMARY_PORT=55432
+export STANDBY_PORT=55433
+X
+cat > make-standby.sh <<'X'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Build a streaming-replication standby of the primary. Everything runs as the postgres user:
+#   runuser -u postgres -- "$PGBIN/psql" -h "$PGLAB" -p "$PRIMARY_PORT" -d postgres -c '...'
+set -eu
+. "$(dirname "$0")/env.sh"
+# TODO: replication role, pg_hba entry, reload, pg_basebackup -R into $PGLAB/standby, standby settings, start
+X
+chmod +x make-standby.sh
+echo "Primary running on 127.0.0.1:55432 (data in $base/primary). Edit make-standby.sh."

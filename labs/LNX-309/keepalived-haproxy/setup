@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f keepalived-a.conf keepalived-b.conf haproxy.cfg
+for n in a b; do
+cat > keepalived-$n.conf <<'X'
+# SPDX-License-Identifier: GPL-2.0-only
+# keepalived for load balancer "LB" (see README.md). LB-A is 192.168.10.11, LB-B is 192.168.10.12.
+X
+done
+cat > haproxy.cfg <<'X'
+# SPDX-License-Identifier: GPL-2.0-only
+# HAProxy for the pair. Back ends: 192.168.10.21:8080 and 192.168.10.22:8080 (see README.md).
+global
+    log stdout format raw local0
+X
