@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mk() { # file podSubnet serviceSubnet
+cat > "$1" <<J
+# SPDX-License-Identifier: MIT
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  disableDefaultCNI: true
+  podSubnet: $2
+  serviceSubnet: $3
+J
+}
+mk kind-a.yaml 10.1.0.0/16 10.96.0.0/12
+mk kind-b.yaml 10.2.0.0/16 10.97.0.0/12
+vals() { # file name id
+cat > "$1" <<J
+# SPDX-License-Identifier: MIT
+cluster:
+  name: $2
+  id: $3
+routingMode: tunnel
+clustermesh:
+  useAPIServer: true
+  apiserver:
+    service:
+      type: NodePort
+J
+}
+vals values-a.yaml mesh-a 1
+vals values-b.yaml mesh-b 2
+cat > rebel-base.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: v1
+kind: Service
+metadata:
+  name: rebel-base
+  namespace: default
+  annotations:
+    service.cilium.io/global: "true"
+    service.cilium.io/affinity: "local"
+spec:
+  selector: {name: rebel-base}
+  ports: [{port: 80}]
+J

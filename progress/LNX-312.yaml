@@ -19,6 +19,7 @@ phases:
     - LNX-312-T08
     - LNX-312-T09
     - LNX-312-T10
+    - LNX-312-T11
   lessons:
     state: in-progress
     units: 13
@@ -33,6 +34,7 @@ phases:
     - LNX-312-T08
     - LNX-312-T09
     - LNX-312-T10
+    - LNX-312-T11
   quizzes:
     state: in-progress
     units: 13
@@ -47,6 +49,7 @@ phases:
     - LNX-312-T08
     - LNX-312-T09
     - LNX-312-T10
+    - LNX-312-T11
   labs:
     state: in-progress
     units: 13
@@ -61,6 +64,7 @@ phases:
     - LNX-312-T08
     - LNX-312-T09
     - LNX-312-T10
+    - LNX-312-T11
   checks:
     state: todo
     units: 0
@@ -107,3 +111,7 @@ log:
 - '2026-11-15 lessons: LNX-312-T10'
 - '2026-11-15 quizzes: LNX-312-T10'
 - '2026-11-15 labs: LNX-312-T10'
+- '2026-11-15 synth: LNX-312-T11'
+- '2026-11-15 lessons: LNX-312-T11'
+- '2026-11-15 quizzes: LNX-312-T11'
+- '2026-11-15 labs: LNX-312-T11'

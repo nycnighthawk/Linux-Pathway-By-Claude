@@ -80,6 +80,10 @@ modules:
     title: MetalLB and BGP with FRR
     file: lessons/LNX-312-T10.md
     minutes: 55
+  - topic: LNX-312-T11
+    title: Cilium ClusterMesh across two kind clusters
+    file: lessons/LNX-312-T11.md
+    minutes: 45
 labs:
 - id: netns-bridge-nat
   topic: LNX-312-T01
@@ -150,6 +154,12 @@ labs:
   env: C
   license: MIT
   minutes: 30
+- id: clustermesh-config
+  topic: LNX-312-T11
+  title: Configuration for a two-cluster kind mesh
+  env: C
+  license: MIT
+  minutes: 25
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -191,3 +201,7 @@ quizzes:
   topic: LNX-312-T10
   title: 'Quiz: MetalLB and BGP with FRR'
   file: quizzes/LNX-312-T10.yaml
+- id: LNX-312-T11
+  topic: LNX-312-T11
+  title: 'Quiz: Cilium ClusterMesh across two kind clusters'
+  file: quizzes/LNX-312-T11.yaml
