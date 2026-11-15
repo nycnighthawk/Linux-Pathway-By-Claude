@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty fake cgroup tree, recorded namespace links and capability status, stubs to fill in.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf cgroot ns_host.txt ns_container.txt status.txt limits.sh answers.txt
+mkdir -p cgroot
+echo "cpuset cpu io memory hugetlb pids rdma misc" > cgroot/cgroup.controllers
+: > cgroot/cgroup.subtree_control
+cat > ns_host.txt <<'EOT'
+cgroup:[4026531835]
+ipc:[4026531839]
+mnt:[4026531841]
+net:[4026531992]
+pid:[4026531836]
+time:[4026531834]
+user:[4026531837]
+uts:[4026531838]
+EOT
+cat > ns_container.txt <<'EOT'
+cgroup:[4026532611]
+ipc:[4026532609]
+mnt:[4026532607]
+net:[4026532612]
+pid:[4026532610]
+time:[4026531834]
+user:[4026531837]
+uts:[4026532608]
+EOT
+cat > status.txt <<'EOT'
+Name:	app
+CapInh:	0000000000000000
+CapPrm:	00000000a80425fb
+CapEff:	00000000a80425fb
+CapBnd:	00000000a80425fb
+CapAmb:	0000000000000000
+NoNewPrivs:	1
+Seccomp:	2
+uid_map:	         0     100000      65536
+EOT
+printf '#!/usr/bin/env bash\n# SPDX-License-Identifier: MIT\n# TODO: write the cgroup setup; use $CGROOT as the mount point\n' > limits.sh
+printf '# SPDX-License-Identifier: MIT\nshared_namespaces=?\nhas_sys_admin=?\nhas_net_bind_service=?\nhost_uid_of_container_root=?\n' > answers.txt
