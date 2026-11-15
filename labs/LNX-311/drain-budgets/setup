@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > apps.yaml <<'Y'
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: web}
+spec:
+  replicas: 3
+  selector: {matchLabels: {app: web}}
+  template:
+    metadata: {labels: {app: web}}
+    spec:
+      containers: [{name: web, image: nginx:1.27}]
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: {name: web}
+spec:
+  minAvailable: 3
+  selector: {matchLabels: {app: web}}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: db}
+spec:
+  replicas: 3
+  serviceName: db
+  selector: {matchLabels: {app: db}}
+  template:
+    metadata: {labels: {app: db}}
+    spec:
+      containers: [{name: db, image: postgres:16}]
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: {name: db}
+spec:
+  maxUnavailable: 2
+  selector: {matchLabels: {app: db}}
+Y
+cat > runbook.txt <<'R'
+kubectl uncordon
+kubeadm upgrade apply
+etcd snapshot
+upgrade kubelet and kubectl packages
+kubeadm upgrade plan
+upgrade kubeadm package
+kubectl drain
+restart kubelet
+R

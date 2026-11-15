@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f apps.yaml ] && [ -f runbook.txt ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+docs = [d for d in yaml.safe_load_all(open("apps.yaml")) if d]
+by = {(d["kind"], d["metadata"]["name"]): d for d in docs}
+web = by[("PodDisruptionBudget", "web")]["spec"]
+mu, ma = web.get("maxUnavailable"), web.get("minAvailable")
+if (mu is not None and 1 <= mu <= 1) or (ma is not None and ma == 2): ok("web budget leaves room for one disruption and keeps two replicas")
+else: fail("web budget: use maxUnavailable: 1 or minAvailable: 2")
+db = by[("PodDisruptionBudget", "db")]["spec"]
+if db.get("maxUnavailable") == 1 or db.get("minAvailable") == 2: ok("db budget keeps quorum")
+else: fail("db budget must allow exactly one unavailable member")
+t = by[("Deployment", "web")]["spec"]["template"]["spec"].get("topologySpreadConstraints") or []
+if any(c.get("topologyKey") == "kubernetes.io/hostname" and c.get("maxSkew") == 1 and c.get("whenUnsatisfiable") == "DoNotSchedule" for c in t): ok("web replicas spread over nodes")
+else: fail("add a topologySpreadConstraints entry (hostname, maxSkew 1, DoNotSchedule) to the web pod template")
+want = ["etcd snapshot", "upgrade kubeadm package", "kubeadm upgrade plan", "kubeadm upgrade apply", "kubectl drain",
+        "upgrade kubelet and kubectl packages", "restart kubelet", "kubectl uncordon"]
+got = [l.strip() for l in open("runbook.txt") if l.strip()]
+if got == want: ok("runbook order is safe")
+else: fail("runbook order wrong; expected: " + " > ".join(want))
+sys.exit(bad)
+PY

@@ -1,0 +1,27 @@
+title: 'Quiz: Upgrades, drain and cordon'
+questions:
+- id: skew
+  prompt: Which kubelet version is NOT allowed against an API server at minor version 1.35?
+  choices: ['1.35', '1.34', '1.36', '1.32']
+  answer: [2]
+  explain: 'A) allowed: same version. B) allowed: older. C) correct: a kubelet must never be newer than the API server. D) allowed in current releases, within three minors (verify for your version).'
+- id: hang
+  prompt: kubectl drain hangs. A PDB shows minAvailable 3 on a 3-replica deployment. What is the best fix?
+  choices: [Use --disable-eviction, Change the budget to maxUnavailable 1 or add replicas, Delete the node object, Restart the kubelet]
+  answer: [1]
+  explain: 'A) wrong: it bypasses the owner''s protection. B) correct: leave room for one voluntary disruption. C) wrong: it orphans pods without a safe move. D) wrong: the budget, not the kubelet, blocks.'
+- id: rollback
+  prompt: What is the supported rollback after a bad control-plane upgrade?
+  choices: [kubeadm downgrade, Restore the pre-upgrade etcd snapshot onto control-plane nodes at the old version, Delete the kube-system namespace, Uncordon all nodes]
+  answer: [1]
+  explain: 'A) wrong: there is no supported control-plane downgrade. B) correct: snapshot plus old binaries. C) wrong: destructive. D) wrong: unrelated.'
+- id: cordon
+  prompt: What does kubectl cordon do?
+  choices: [Evicts all pods, Stops new pods from being scheduled while existing pods keep running, Deletes the node, Upgrades the kubelet]
+  answer: [1]
+  explain: 'A) wrong: that is drain. B) correct: it marks the node unschedulable. C) wrong: it keeps the object. D) wrong: it changes no software.'
+- id: drain-flags
+  prompt: Which are normal flags when draining a worker? (select two)
+  choices: [--ignore-daemonsets, --delete-emptydir-data, --force-delete-etcd, --skip-quorum]
+  answer: [0, 1]
+  explain: 'A) correct: DaemonSet pods would return at once. B) correct: acknowledges loss of emptyDir data. C) not a flag. D) not a flag.'
