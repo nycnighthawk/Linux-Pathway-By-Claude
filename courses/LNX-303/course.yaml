@@ -62,6 +62,10 @@ modules:
     title: Compliance as code
     file: lessons/LNX-303-T08.md
     minutes: 45
+  - topic: LNX-303-T09
+    title: OpenBao/Vault, sops
+    file: lessons/LNX-303-T09.md
+    minutes: 45
 labs:
 - id: pki-two-tier
   topic: LNX-303-T01
@@ -115,6 +119,14 @@ labs:
   env: V
   license: MIT
   minutes: 35
+- id: vault-policy-sops
+  topic: LNX-303-T09
+  title: Write a least-privilege secrets policy and encrypt a secrets file
+  env: C
+  license: MIT
+  minutes: 35
+  packages:
+  - age
 quizzes:
 - id: LNX-303-T01
   topic: LNX-303-T01
@@ -148,3 +160,7 @@ quizzes:
   topic: LNX-303-T08
   title: 'Quiz: Compliance as code'
   file: quizzes/LNX-303-T08.yaml
+- id: LNX-303-T09
+  topic: LNX-303-T09
+  title: 'Quiz: OpenBao/Vault, sops'
+  file: quizzes/LNX-303-T09.yaml
