@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's/^connection_plugin=.*/connection_plugin=psrp/' -e 's/^transport=.*/transport=negotiate/' -e 's/^port=.*/port=5986/' -e 's/^cert_validation=.*/cert_validation=validate/' -e 's/^win_ping_result=.*/win_ping_result=pong/' -e 's/^windows_edition=.*/windows_edition=Windows Server 2022/' -e 's/^feature_changed_first_run=.*/feature_changed_first_run=yes/' -e 's/^feature_changed_second_run=.*/feature_changed_second_run=no/' -e 's/^become_method=.*/become_method=runas/' report.txt

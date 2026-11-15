@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of the report: every key present and each value of the right kind.
+set -u
+export LC_ALL=C.UTF-8
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f report.txt ] || { echo "FAIL: report.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get connection_plugin)" in winrm|psrp|ssh|none) ok "connection_plugin" ;; *) fail "connection_plugin must be winrm, psrp, ssh or none (the ansible_connection value you used)" ;; esac
+case "$(get transport)" in kerberos|ntlm|certificate|credssp|basic|negotiate|publickey|none) ok "transport" ;; *) fail "transport must be kerberos, ntlm, certificate, credssp, basic, negotiate, publickey or none (how you authenticated)" ;; esac
+case "$(get port)" in 5985|5986|22|none) ok "port" ;; *) fail "port must be 5985, 5986, 22 or none" ;; esac
+case "$(get cert_validation)" in validate|ignore|none) ok "cert_validation" ;; *) fail "cert_validation must be validate, ignore or none (the server certificate setting you used)" ;; esac
+case "$(get win_ping_result)" in pong|failed|none) ok "win_ping_result" ;; *) fail "win_ping_result must be pong, failed or none (the result of ansible.windows.win_ping)" ;; esac
+v=$(get windows_edition); [ -n "$v" ] && [ "$v" != "?" ] && ok "windows_edition" || fail "windows_edition: the OS caption from the facts, for example Windows Server 2022, or none"
+case "$(get feature_changed_first_run)" in yes|no|none) ok "feature_changed_first_run" ;; *) fail "feature_changed_first_run must be yes, no or none (did win_feature report changed when you first installed a feature)" ;; esac
+case "$(get feature_changed_second_run)" in yes|no|none) ok "feature_changed_second_run" ;; *) fail "feature_changed_second_run must be yes, no or none (the same task, second run)" ;; esac
+case "$(get become_method)" in runas|none) ok "become_method" ;; *) fail "become_method must be runas or none (the method you used to escalate, if any)" ;; esac
+exit $bad
