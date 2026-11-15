@@ -40,6 +40,10 @@ modules:
     title: DR drills
     file: lessons/LNX-309-T05.md
     minutes: 45
+  - topic: LNX-309-T06
+    title: Real power fencing
+    file: lessons/LNX-309-T06.md
+    minutes: 45
 labs:
 - id: pcs-build
   topic: LNX-309-T01
@@ -76,6 +80,12 @@ labs:
   env: V
   license: MIT
   minutes: 40
+- id: power-fencing-plan
+  topic: LNX-309-T06
+  title: Review a power fencing design
+  env: H
+  license: GPL-2.0-only
+  minutes: 30
 quizzes:
 - id: LNX-309-T01
   topic: LNX-309-T01
@@ -97,3 +107,7 @@ quizzes:
   topic: LNX-309-T05
   title: 'Quiz: DR drills'
   file: quizzes/LNX-309-T05.yaml
+- id: LNX-309-T06
+  topic: LNX-309-T06
+  title: 'Quiz: Real power fencing'
+  file: quizzes/LNX-309-T06.yaml

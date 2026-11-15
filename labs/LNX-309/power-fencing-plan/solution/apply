@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's/^primary_device=.*/primary_device=bmc/' -e 's/^primary_shares_power_with_node=.*/primary_shares_power_with_node=yes/' \
+  -e 's/^second_device=.*/second_device=switched_pdu/' -e 's/^second_device_independent_feed=.*/second_device_independent_feed=yes/' \
+  -e 's/^management_network=.*/management_network=separate_from_cluster_link/' -e 's/^ssh_login_device_in_production=.*/ssh_login_device_in_production=never/' \
+  -e 's/^level1=.*/level1=bmc/' -e 's/^level2=.*/level2=switched_pdu/' -e 's/^dual_psu_outlets_same_level=.*/dual_psu_outlets_same_level=yes/' \
+  -e 's/^two_node_delay_on=.*/two_node_delay_on=node_to_sacrifice/' -e 's/^test_device_command=.*/test_device_command=pcs stonith fence/' \
+  -e 's/^test_real_failure=.*/test_real_failure=cut_cluster_link_or_block_corosync/' -e 's/^bad_test=.*/bad_test=local_interface_down_only/' \
+  -e 's/^credentials_rotation_in_runbook=.*/credentials_rotation_in_runbook=yes/' -e 's/^monitor_fence_device=.*/monitor_fence_device=yes/' \
+  -e 's/^retest_interval_months=.*/retest_interval_months=3/' -e 's/^sbd_stonith_watchdog_timeout_seconds=.*/sbd_stonith_watchdog_timeout_seconds=60/' \
+  -e 's/^sbd_watchdog_timeout_seconds=.*/sbd_watchdog_timeout_seconds=30/' fencing-plan.txt

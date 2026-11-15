@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f fencing-plan.txt
+cat > fencing-plan.txt <<'X'
+# SPDX-License-Identifier: GPL-2.0-only
+# Fencing design for a two-node cluster: node1 and node2, each with an onboard BMC that
+# shares the server's power feed, plus one switched PDU on a separate feed. Replace each ? (see README.md)
+primary_device=?
+primary_shares_power_with_node=?
+second_device=?
+second_device_independent_feed=?
+management_network=?
+ssh_login_device_in_production=?
+level1=?
+level2=?
+dual_psu_outlets_same_level=?
+two_node_delay_on=?
+test_device_command=?
+test_real_failure=?
+bad_test=?
+credentials_rotation_in_runbook=?
+monitor_fence_device=?
+retest_interval_months=?
+sbd_stonith_watchdog_timeout_seconds=?
+sbd_watchdog_timeout_seconds=?
+X
+echo "Created fencing-plan.txt"

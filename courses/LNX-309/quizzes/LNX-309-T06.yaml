@@ -1,0 +1,72 @@
+title: 'Quiz: Real power fencing'
+questions:
+- id: shared-power
+  prompt: Why is an onboard management controller that shares the server's power feed risky as the only fence device?
+  choices:
+  - A power failure takes out both the node and the device that should fence it, so the cluster cannot recover
+  - Controllers cannot cut power
+  - It only works on Tuesdays
+  - It needs a licence
+  answer:
+  - 0
+  explain: 'A) correct: independence rule 2. B) wrong: they can. C) wrong: nonsense. D) wrong: unrelated.'
+- id: ssh-device
+  prompt: Why is an agent that logs into the target node and shuts it down unsuitable in production?
+  choices:
+  - Fencing is needed exactly when the node is unresponsive, so a device that relies on the node working fails when it is needed
+  - SSH is too fast
+  - It cannot reboot
+  - It breaks quorum
+  answer:
+  - 0
+  explain: 'A) correct: rule 3. B) wrong: speed is irrelevant. C) wrong: unrelated. D) wrong: unrelated.'
+- id: levels
+  prompt: In a fencing topology, what happens when a device in level 1 fails?
+  choices:
+  - Processing of that level stops and Pacemaker tries level 2, until a level passes or all have been tried
+  - The cluster is deleted
+  - Level 2 runs in parallel with level 1 from the start
+  - The node is declared fenced
+  answer:
+  - 0
+  explain: 'A) correct: ascending order, 1 to 9. B) wrong: no. C) wrong: levels are sequential. D) wrong: only a passed level counts.'
+- id: dual-psu
+  prompt: A server has two power supplies on two PDU outlets. How should its two outlet devices be placed?
+  choices:
+  - In the same level, because both must switch off for the node to be off
+  - In different levels, so one switching off is enough
+  - Only one outlet is needed
+  - Outside the topology
+  answer:
+  - 0
+  explain: 'A) correct: all devices in a level must succeed. B) wrong: the node would keep running on the other supply. C) wrong: same reason. D) wrong: unrelated.'
+- id: delay
+  prompt: In a two-node cluster the link between nodes fails and both are healthy. What prevents mutual fencing?
+  choices:
+  - A delay (pcmk_delay_base) on the device that fences the node you prefer to lose, so the other node acts first
+  - Disabling fencing
+  - A larger disk
+  - Rebooting both nodes
+  answer:
+  - 0
+  explain: 'A) correct: the delayed side loses the race. B) wrong: unsafe. C) wrong: unrelated. D) wrong: causes an outage.'
+- id: sbd-timeouts
+  prompt: In watchdog-only SBD, how must stonith-watchdog-timeout relate to SBD_WATCHDOG_TIMEOUT?
+  choices:
+  - It must be larger (the guide doubles it), so the survivor waits until the target has reset itself
+  - It must be zero
+  - It must be smaller
+  - They are unrelated
+  answer:
+  - 0
+  explain: 'A) correct: otherwise the resource could start while the old node still runs. B) wrong: no. C) wrong: no. D) wrong: they are linked.'
+- id: test
+  prompt: Which is a valid test that fencing works in a real failure?
+  choices:
+  - Pull the cluster network cable or drop corosync traffic with the firewall and watch the survivor fence the node
+  - Bring the local interface down only
+  - Read the configuration once
+  - Restart pcsd
+  answer:
+  - 0
+  explain: 'A) correct: it resembles a real fault. B) wrong: the documentation advises against it. C) wrong: a belief, not a test. D) wrong: does not trigger fencing.'

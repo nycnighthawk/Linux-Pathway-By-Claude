@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f fencing-plan.txt ] || { echo "FAIL: fencing-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" fencing-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+eq() { [ "$(get "$1")" = "$2" ] && ok "$1=$2" || fail "$1 must be $2"; }
+eq primary_device bmc
+eq primary_shares_power_with_node yes
+eq second_device switched_pdu
+eq second_device_independent_feed yes
+eq management_network separate_from_cluster_link
+eq ssh_login_device_in_production never
+eq level1 bmc
+eq level2 switched_pdu
+eq dual_psu_outlets_same_level yes
+eq two_node_delay_on node_to_sacrifice
+eq test_device_command "pcs stonith fence"
+eq test_real_failure cut_cluster_link_or_block_corosync
+eq bad_test local_interface_down_only
+eq credentials_rotation_in_runbook yes
+eq monitor_fence_device yes
+r=$(get retest_interval_months); if printf '%s' "$r" | grep -Eq '^[0-9]+$' && [ "$r" -ge 1 ] && [ "$r" -le 6 ]; then ok "retest every $r months"; else fail "retest_interval_months: an integer from 1 to 6"; fi
+w=$(get sbd_watchdog_timeout_seconds); s=$(get sbd_stonith_watchdog_timeout_seconds)
+if printf '%s%s' "$w" "$s" | grep -Eq '^[0-9]+$' && printf '%s' "$w" | grep -Eq '^[0-9]+$' && printf '%s' "$s" | grep -Eq '^[0-9]+$'; then
+  [ "$w" -ge 30 ] && ok "watchdog timeout $w is not below the 30 s qdevice sync timeout" || fail "sbd_watchdog_timeout_seconds must be at least 30 (the default qdevice sync timeout)"
+  [ "$s" -ge $((2 * w)) ] && ok "stonith-watchdog-timeout $s is at least double the watchdog timeout" || fail "sbd_stonith_watchdog_timeout_seconds must be at least twice the watchdog timeout"
+else fail "the two SBD timeouts must be integers"; fi
+exit "$bad"
