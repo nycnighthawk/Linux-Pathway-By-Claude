@@ -89,6 +89,8 @@ jobs:
       matrix: ${{ fromJson(needs.plan.outputs.w) }}
     name: W ${{ matrix.course }}/${{ matrix.lab }}
     steps:
+      - name: Allow long paths (raw/ holds deep documentation trees)
+        run: git config --system core.longpaths true
       - uses: actions/checkout@v6
         with: {lfs: false}
       - uses: actions/setup-python@v6
