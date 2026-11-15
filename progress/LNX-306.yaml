@@ -11,24 +11,28 @@ phases:
     done:
     - LNX-306-T01
     - LNX-306-T02
+    - LNX-306-T03
   lessons:
     state: in-progress
     units: 11
     done:
     - LNX-306-T01
     - LNX-306-T02
+    - LNX-306-T03
   quizzes:
     state: in-progress
     units: 11
     done:
     - LNX-306-T01
     - LNX-306-T02
+    - LNX-306-T03
   labs:
     state: in-progress
     units: 11
     done:
     - LNX-306-T01
     - LNX-306-T02
+    - LNX-306-T03
   checks:
     state: todo
     units: 0
@@ -44,3 +48,7 @@ log:
 - '2026-11-15 lessons: LNX-306-T02'
 - '2026-11-15 quizzes: LNX-306-T02'
 - '2026-11-15 labs: LNX-306-T02'
+- '2026-11-15 synth: LNX-306-T03'
+- '2026-11-15 lessons: LNX-306-T03'
+- '2026-11-15 quizzes: LNX-306-T03'
+- '2026-11-15 labs: LNX-306-T03'
