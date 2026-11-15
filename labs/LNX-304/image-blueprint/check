@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f site-base.toml ] || { echo "FAIL: run setup first"; exit 1; }
+exec python3 - <<'PY'
+import re, sys, tomllib
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+def load(p):
+    try: return tomllib.load(open(p, "rb"))
+    except Exception as e:
+        fail("%s is not valid TOML: %s" % (p, e)); return {}
+b = load("site-base.toml"); s = load("site-snapshot.toml")
+ok("site-base.toml: name") if b.get("name") == "site-base" else fail('name = "site-base"')
+ok("version %s" % b["version"]) if re.fullmatch(r"\d+\.\d+\.\d+", str(b.get("version", ""))) else fail("version must look like 1.2.0")
+ok("distro set") if b.get("distro") else fail("set distro")
+pk = {p.get("name") for p in b.get("packages", [])}
+ok("packages chrony and tmux") if {"chrony", "tmux"} <= pk else fail("packages must include chrony and tmux")
+c = b.get("customizations", {})
+users = [u for u in c.get("user", []) if u.get("name") == "ops"]
+if users and str(users[0].get("key", "")).startswith("ssh-ed25519 ") and "password" not in users[0]: ok("user ops with a public key and no password")
+else: fail("user ops needs key = \"ssh-ed25519 ...\" and no password")
+en = set(c.get("services", {}).get("enabled", []))
+ok("chronyd and sshd enabled") if {"chronyd", "sshd"} <= en else fail("enable chronyd and sshd")
+ok("firewall allows ssh") if "ssh" in c.get("firewall", {}).get("services", {}).get("enabled", []) else fail("enable the ssh firewall service")
+ok("audit=1 kernel argument") if "audit=1" in str(c.get("kernel", {}).get("append", "")).split() else fail("kernel append must contain audit=1")
+fs = [f for f in c.get("filesystem", []) if f.get("mountpoint") == "/var"]
+def size(v):
+    if isinstance(v, int): return v
+    m = re.fullmatch(r"(\d+)\s*(GiB|GB|MiB|MB)?", str(v))
+    if not m: return 0
+    mult = {"GiB": 1 << 30, "GB": 10**9, "MiB": 1 << 20, "MB": 10**6, None: 1}[m.group(2)]
+    return int(m.group(1)) * mult
+ok("/var minsize >= 5 GiB") if fs and size(fs[0].get("minsize")) >= 5 * (1 << 30) else fail("add [[customizations.filesystem]] mountpoint = \"/var\" with minsize of at least 5 GiB")
+if s.get("name") and s.get("type") == "yum-baseurl" and "/snapshots/" in s.get("url", "") and re.search(r"\d{4}-\d{2}-\d{2}", s.get("url", "")): ok("source points at a dated snapshot")
+else: fail("site-snapshot.toml: name, type = \"yum-baseurl\" and a url containing /snapshots/ and a date")
+ok("signatures and TLS are checked") if s.get("check_gpg") is True and s.get("check_ssl") is True else fail("check_gpg = true and check_ssl = true")
+ok("source is not the system source") if s.get("system") is False else fail("system = false")
+txt = open("site-base.toml").read() + open("site-snapshot.toml").read()
+fail("no passwords, tokens or private keys in these files") if re.search(r"(?i)(password|token|PRIVATE KEY)", txt) else ok("no secrets in the files")
+sys.exit(bad)
+PY

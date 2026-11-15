@@ -62,6 +62,10 @@ modules:
     title: bootc / image mode, rpm-ostree
     file: lessons/LNX-304-T08.md
     minutes: 45
+  - topic: LNX-304-T09
+    title: Image Builder
+    file: lessons/LNX-304-T09.md
+    minutes: 45
 labs:
 - id: rpm-spec
   topic: LNX-304-T01
@@ -128,6 +132,12 @@ labs:
   env: V
   license: MIT
   minutes: 30
+- id: image-blueprint
+  topic: LNX-304-T09
+  title: Write an Image Builder blueprint
+  env: V
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-304-T01
   topic: LNX-304-T01
@@ -161,3 +171,7 @@ quizzes:
   topic: LNX-304-T08
   title: 'Quiz: bootc / image mode, rpm-ostree'
   file: quizzes/LNX-304-T08.yaml
+- id: LNX-304-T09
+  topic: LNX-304-T09
+  title: 'Quiz: Image Builder'
+  file: quizzes/LNX-304-T09.yaml
