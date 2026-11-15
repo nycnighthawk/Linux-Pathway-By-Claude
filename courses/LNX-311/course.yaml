@@ -57,6 +57,10 @@ modules:
     title: 'Storage: PV/PVC, StorageClass, CSI'
     file: lessons/LNX-311-T06.md
     minutes: 50
+  - topic: LNX-311-T07
+    title: RBAC, ServiceAccounts, certificates
+    file: lessons/LNX-311-T07.md
+    minutes: 50
 labs:
 - id: static-pod-repair
   topic: LNX-311-T01
@@ -94,6 +98,12 @@ labs:
   env: C
   license: MIT
   minutes: 30
+- id: rbac-least-privilege
+  topic: LNX-311-T07
+  title: Replace cluster-admin with least-privilege roles
+  env: C
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-311-T01
   topic: LNX-311-T01
@@ -119,3 +129,7 @@ quizzes:
   topic: LNX-311-T06
   title: 'Quiz: Storage: PV/PVC, StorageClass, CSI'
   file: quizzes/LNX-311-T06.yaml
+- id: LNX-311-T07
+  topic: LNX-311-T07
+  title: 'Quiz: RBAC, ServiceAccounts, certificates'
+  file: quizzes/LNX-311-T07.yaml

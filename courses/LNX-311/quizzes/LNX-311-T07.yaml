@@ -1,0 +1,27 @@
+title: 'Quiz: RBAC, ServiceAccounts, certificates'
+questions:
+- id: additive
+  prompt: A subject has a broad ClusterRoleBinding and a narrow RoleBinding. What is the effective access?
+  choices: [The narrow one wins, The union of both, The broad one is cancelled by the namespace binding, Access is denied because of the conflict]
+  answer: [1]
+  explain: 'A) wrong: RBAC has no precedence. B) correct: it is purely additive. C) wrong: no deny rules exist. D) wrong: no conflict resolution.'
+- id: secrets-list
+  prompt: A role grants only list on secrets. What does it allow?
+  choices: [Seeing secret names only, Reading secret contents, Nothing, Deleting secrets]
+  answer: [1]
+  explain: 'A) wrong: list returns full objects. B) correct: list and watch disclose data. C) wrong: it grants access. D) wrong: delete is a separate verb.'
+- id: cert-revoke
+  prompt: Why are client certificates a weak choice for human users?
+  choices: [They cannot carry group names, They cannot be revoked before they expire, They need OIDC, They are not supported by kubectl]
+  answer: [1]
+  explain: 'A) wrong: the O field carries groups. B) correct: the API server has no revocation list. C) wrong: unrelated. D) wrong: kubectl supports them.'
+- id: sa
+  prompt: Best practice for a pod that never calls the Kubernetes API?
+  choices: [Use the default ServiceAccount with edit rights, Set automountServiceAccountToken false, Mount a Secret token manually, Bind it to cluster-admin]
+  answer: [1]
+  explain: 'A) wrong: over-privileged. B) correct: no credential is exposed. C) wrong: long-lived token. D) wrong: worst case.'
+- id: expiry
+  prompt: Which commands help with kubeadm certificate expiry? (select two)
+  choices: [kubeadm certs check-expiration, kubeadm certs renew all, kubeadm token create, kubectl certificate revoke]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct, followed by a restart of control-plane pods. C) wrong: node join tokens. D) wrong: no such command.'

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > rbac.yaml <<'Y'
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: ci, namespace: shop}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: {name: ci-admin}
+subjects: [{kind: ServiceAccount, name: ci, namespace: shop}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: cluster-admin}
+Y

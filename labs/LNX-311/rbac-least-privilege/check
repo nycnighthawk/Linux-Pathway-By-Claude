@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f rbac.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+docs = [d for d in yaml.safe_load_all(open("rbac.yaml")) if d]
+roles = {(d["kind"], d["metadata"].get("namespace"), d["metadata"]["name"]): d for d in docs if d["kind"] in ("Role", "ClusterRole")}
+binds = [d for d in docs if d["kind"] in ("RoleBinding", "ClusterRoleBinding")]
+def rules_for(b):
+    ref = b["roleRef"]
+    ns = b["metadata"].get("namespace") if ref["kind"] == "Role" else None
+    r = roles.get((ref["kind"], ns, ref["name"]))
+    if r: return r.get("rules", [])
+    if ref["name"] == "cluster-admin": return [{"apiGroups": ["*"], "resources": ["*"], "verbs": ["*"]}]
+    return []
+def subj_match(s, user, groups):
+    if s["kind"] == "ServiceAccount": return user == "system:serviceaccount:%s:%s" % (s["namespace"], s["name"])
+    if s["kind"] == "Group": return s["name"] in groups
+    return s["kind"] == "User" and s["name"] == user
+def can(user, groups, verb, group, res, ns):
+    for b in binds:
+        if b["kind"] == "RoleBinding" and b["metadata"].get("namespace") != ns: continue
+        if not any(subj_match(s, user, groups) for s in b.get("subjects", [])): continue
+        for r in rules_for(b):
+            if (verb in r.get("verbs", []) or "*" in r.get("verbs", [])) and (group in r.get("apiGroups", []) or "*" in r.get("apiGroups", [])) and (res in r.get("resources", []) or "*" in r.get("resources", [])): return True
+    return False
+ci = "system:serviceaccount:shop:ci"
+tests = [
+ (ci, [], "patch", "apps", "deployments", "shop", True),
+ (ci, [], "get", "", "pods", "shop", True),
+ (ci, [], "get", "", "secrets", "shop", False),
+ (ci, [], "delete", "apps", "deployments", "shop", False),
+ (ci, [], "patch", "apps", "deployments", "prod", False),
+ (ci, [], "list", "", "nodes", None, False),
+ ("dev", ["team-a-dev"], "list", "", "pods", "shop", True),
+ ("dev", ["team-a-dev"], "watch", "", "services", "shop", True),
+ ("dev", ["team-a-dev"], "delete", "", "pods", "shop", False),
+ ("dev", ["team-a-dev"], "get", "", "secrets", "shop", False),
+ ("dev", ["team-a-dev"], "list", "", "pods", "prod", False),
+]
+for u, g, v, ag, r, ns, want in tests:
+    got = can(u, g, v, ag, r, ns)
+    label = "%s %s %s/%s in %s" % (u.split(":")[-1], v, ag or "core", r, ns)
+    if got == want: ok("%s -> %s" % (label, "allowed" if got else "denied"))
+    else: fail("%s should be %s" % (label, "allowed" if want else "denied"))
+for r in roles.values():
+    for rule in r.get("rules", []):
+        if "*" in rule.get("verbs", []) or "*" in rule.get("resources", []): fail("no wildcards in role %s" % r["metadata"]["name"])
+sys.exit(bad)
+PY
