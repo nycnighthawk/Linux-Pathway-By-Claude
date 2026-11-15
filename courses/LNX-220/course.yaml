@@ -1,0 +1,254 @@
+id: LNX-220
+title: Linux Application Development
+summary: 'Building, debugging, testing, packaging and profiling native Linux software: gcc and clang, ELF and shared libraries,
+  gdb, sanitizers and fuzzing, Rust, Go and Python toolchains, systemd and D-Bus integration, RPM, DEB, Flatpak and OCI packaging,
+  perf, and GUI programs under Xvfb.'
+hours: 60
+coverage: full
+outcomes:
+- Build, link and harden C programs and read the ELF files they produce
+- Write Makefile, CMake and Meson builds that track dependencies and stage installs
+- Create and consume versioned shared libraries and pkg-config metadata
+- Debug crashes, hangs and memory errors with gdb, core dumps, valgrind and sanitizers
+- Test code with unit tests, coverage and fuzzing, and turn crashes into regression tests
+- Compare the C, Rust, Go and Python toolchains and their linkage
+- Write services that use systemd readiness, socket activation, the journal, D-Bus and XDG directories
+- Package applications as RPM, DEB, Flatpak and OCI images and profile them with perf and callgrind
+certifications:
+- cert: EX188
+  objectives:
+  - D1
+modules:
+- id: compile-and-link
+  title: The native toolchain
+  lessons:
+  - topic: LNX-220-T01
+    title: gcc, clang, binutils, linking, ELF
+    file: lessons/LNX-220-T01.md
+    minutes: 55
+  - topic: LNX-220-T02
+    title: make, CMake, Meson
+    file: lessons/LNX-220-T02.md
+    minutes: 55
+  - topic: LNX-220-T03
+    title: Shared libraries, sonames, pkg-config
+    file: lessons/LNX-220-T03.md
+    minutes: 55
+- id: find-defects
+  title: Finding and preventing defects
+  lessons:
+  - topic: LNX-220-T04
+    title: gdb, core dumps, valgrind
+    file: lessons/LNX-220-T04.md
+    minutes: 70
+  - topic: LNX-220-T05
+    title: Sanitizers and static analysis
+    file: lessons/LNX-220-T05.md
+    minutes: 55
+  - topic: LNX-220-T06
+    title: Unit tests, coverage, fuzzing (libFuzzer/AFL++)
+    file: lessons/LNX-220-T06.md
+    minutes: 55
+- id: languages-and-system
+  title: Toolchains and system integration
+  lessons:
+  - topic: LNX-220-T07
+    title: C, Rust, Go and Python toolchains
+    file: lessons/LNX-220-T07.md
+    minutes: 55
+  - topic: LNX-220-T08
+    title: 'systemd integration: sd_notify, socket activation, journald'
+    file: lessons/LNX-220-T08.md
+    minutes: 55
+  - topic: LNX-220-T09
+    title: D-Bus services, XDG conventions
+    file: lessons/LNX-220-T09.md
+    minutes: 40
+- id: ship-and-measure
+  title: Shipping, measuring and GUI
+  lessons:
+  - topic: LNX-220-T10
+    title: 'Packaging apps: RPM, DEB, Flatpak, OCI'
+    file: lessons/LNX-220-T10.md
+    minutes: 55
+  - topic: LNX-220-T11
+    title: Profiling with perf and flame graphs (functional)
+    file: lessons/LNX-220-T11.md
+    minutes: 55
+  - topic: LNX-220-T12
+    title: GUI apps (GTK/Qt) under Xvfb
+    file: lessons/LNX-220-T12.md
+    minutes: 30
+labs:
+- id: elf-build
+  topic: LNX-220-T01
+  title: Compile, archive, link and harden a program, then split its debug data
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - gcc
+  - binutils
+- id: build-systems
+  topic: LNX-220-T02
+  title: Write a Makefile with header dependencies and the same project in CMake
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - gcc
+  - make
+  - cmake
+- id: shared-lib-pkgconfig
+  topic: LNX-220-T03
+  title: Build a versioned shared library with hidden internals and a pkg-config file
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - gcc
+  - binutils
+  - pkg-config
+- id: gdb-valgrind
+  topic: LNX-220-T04
+  title: Capture a crash with gdb, keep a core file and clean the program with valgrind
+  env: C
+  license: MIT
+  minutes: 50
+  packages:
+  - gcc
+  - gdb
+  - valgrind
+  - binutils
+- id: sanitizers
+  topic: LNX-220-T05
+  title: Catch a heap overflow and an integer overflow with sanitizers and fix both
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - gcc
+- id: test-fuzz
+  topic: LNX-220-T06
+  title: Write unit tests with coverage and a fuzz harness that finds a parser bug
+  env: C
+  license: MIT
+  minutes: 50
+  packages:
+  - gcc
+- id: toolchains
+  topic: LNX-220-T07
+  title: Build one program with C, Rust and Go toolchains and compare their linkage
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - gcc
+  - libc6-dev
+  - rustc
+  - golang-go
+  - python3
+  - binutils
+  - python3-venv
+- id: sd-notify-activation
+  topic: LNX-220-T08
+  title: Write a daemon that uses socket activation, sd_notify and journal priorities
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - python3
+- id: dbus-xdg
+  topic: LNX-220-T09
+  title: Build a D-Bus service, activate it by name and configure it through XDG directories
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - gcc
+  - pkg-config
+  - libglib2.0-dev
+  - dbus
+  - systemd
+- id: packaging-deb-oci
+  topic: LNX-220-T10
+  title: Package a tool as a .deb and as a hand-built OCI image layout
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - dpkg
+  - python3
+  - tar
+  - gzip
+- id: profile-hotspot
+  topic: LNX-220-T11
+  title: Find a hot spot with callgrind, optimise it and prove the gain
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - gcc
+  - valgrind
+  - perl
+- id: xvfb-gui
+  topic: LNX-220-T12
+  title: Show a window on a virtual display and verify it from a screenshot
+  env: C
+  license: MIT
+  minutes: 35
+  packages:
+  - gcc
+  - libx11-dev
+  - xvfb
+  - xauth
+  - imagemagick
+quizzes:
+- id: LNX-220-T01
+  topic: LNX-220-T01
+  title: 'Quiz: gcc, clang, binutils, linking, ELF'
+  file: quizzes/LNX-220-T01.yaml
+- id: LNX-220-T02
+  topic: LNX-220-T02
+  title: 'Quiz: make, CMake, Meson'
+  file: quizzes/LNX-220-T02.yaml
+- id: LNX-220-T03
+  topic: LNX-220-T03
+  title: 'Quiz: Shared libraries, sonames, pkg-config'
+  file: quizzes/LNX-220-T03.yaml
+- id: LNX-220-T04
+  topic: LNX-220-T04
+  title: 'Quiz: gdb, core dumps, valgrind'
+  file: quizzes/LNX-220-T04.yaml
+- id: LNX-220-T05
+  topic: LNX-220-T05
+  title: 'Quiz: Sanitizers and static analysis'
+  file: quizzes/LNX-220-T05.yaml
+- id: LNX-220-T06
+  topic: LNX-220-T06
+  title: 'Quiz: Unit tests, coverage, fuzzing (libFuzzer/AFL++)'
+  file: quizzes/LNX-220-T06.yaml
+- id: LNX-220-T07
+  topic: LNX-220-T07
+  title: 'Quiz: C, Rust, Go and Python toolchains'
+  file: quizzes/LNX-220-T07.yaml
+- id: LNX-220-T08
+  topic: LNX-220-T08
+  title: 'Quiz: systemd integration: sd_notify, socket activation, journald'
+  file: quizzes/LNX-220-T08.yaml
+- id: LNX-220-T09
+  topic: LNX-220-T09
+  title: 'Quiz: D-Bus services, XDG conventions'
+  file: quizzes/LNX-220-T09.yaml
+- id: LNX-220-T10
+  topic: LNX-220-T10
+  title: 'Quiz: Packaging apps: RPM, DEB, Flatpak, OCI'
+  file: quizzes/LNX-220-T10.yaml
+- id: LNX-220-T11
+  topic: LNX-220-T11
+  title: 'Quiz: Profiling with perf and flame graphs (functional)'
+  file: quizzes/LNX-220-T11.yaml
+- id: LNX-220-T12
+  topic: LNX-220-T12
+  title: 'Quiz: GUI apps (GTK/Qt) under Xvfb'
+  file: quizzes/LNX-220-T12.yaml

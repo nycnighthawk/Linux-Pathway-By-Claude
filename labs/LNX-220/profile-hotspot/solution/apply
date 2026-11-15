@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cc -g -O1 -o dups src/dups.c
+valgrind --tool=callgrind --callgrind-out-file=callgrind.out ./dups >/dev/null 2>&1
+callgrind_annotate callgrind.out > profile.txt
+python3 - <<'P'
+s = open("src/dups.c").read()
+a = s.index("/* Number of index pairs")
+b = s.index("int main")
+new = '''static int cmp(const void *a, const void *b)
+{
+    int x = *(const int *)a, y = *(const int *)b;
+    return (x > y) - (x < y);
+}
+
+/* Number of index pairs i < j with v[i] == v[j]: sort a copy, then add c*(c-1)/2 per run of c equal values. */
+__attribute__((noinline)) static long count_dups(const int *v, int n)
+{
+    int *w = malloc((size_t)n * sizeof *w);
+    for (int i = 0; i < n; i++)
+        w[i] = v[i];
+    qsort(w, (size_t)n, sizeof *w, cmp);
+    long d = 0;
+    for (int i = 0; i < n;) {
+        int j = i;
+        while (j < n && w[j] == w[i])
+            j++;
+        d += (long)(j - i) * (j - i - 1) / 2;
+        i = j;
+    }
+    free(w);
+    return d;
+}
+
+'''
+open("src/dups.c", "w").write(s[:a] + new + s[b:])
+P
+sed -i -e 's/^hot_function=.*/hot_function=count_dups/' -e 's/^profiler_tool=.*/profiler_tool=callgrind/' -e 's/^report_tool=.*/report_tool=callgrind_annotate/' -e 's/^perf_record_command=.*/perf_record_command=perf record -g .\/dups/' -e 's/^flame_graph_input_format=.*/flame_graph_input_format=folded stacks/' answers.txt

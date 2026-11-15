@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: unit tests with at least 90% line coverage, a harness that finds the bug, a saved reproducer, and the fix.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+export ASAN_OPTIONS=detect_leaks=0
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+d=$(mktemp -d)
+trap 'rm -rf "$d"' EXIT
+# 1. unit tests and coverage
+if [ -f src/tests.c ]; then
+  mkdir "$d/cov" && cp src/parse.c src/parse.h src/tests.c "$d/cov/"
+  if ( cd "$d/cov" && cc -O0 --coverage -o t parse.c tests.c 2>/dev/null && ./t >/dev/null 2>&1 ); then
+    ok "src/tests.c builds and passes"
+    pct=$(cd "$d/cov" && gcov -n t-parse.gcda 2>/dev/null | awk '/File .parse.c./{f=1;next} f&&/Lines executed/{sub(/Lines executed:/,"");sub(/%.*/,"");print;exit}')
+    [ -n "$pct" ] && awk -v p="$pct" 'BEGIN{exit !(p+0>=90)}' && ok "line coverage of parse.c is $pct%" || fail "line coverage of parse.c is ${pct:-unknown}% (need 90%): cover the error returns and the max limit"
+  else fail "src/tests.c must compile with parse.c and exit 0 (use assert)"; fi
+else fail "write src/tests.c with assert()-based tests for parse_kv"; fi
+# 2. harness, run against the pristine parser
+if [ -f src/fuzz_parse.c ] && grep -q LLVMFuzzerTestOneInput src/fuzz_parse.c; then
+  if cc -g -O1 -fsanitize=address,undefined -fno-sanitize-recover=all -Isrc -o "$d/fz_orig" .pristine/parse.c src/fuzz_parse.c src/driver.c 2>"$d/e.txt"; then
+    ( cd "$d" && "$d/fz_orig" >/dev/null 2>&1 ); rc=$?
+    [ $rc != 0 ] && ok "the harness finds the bug in the original parser" || fail "the harness does not find the bug: call parse_kv with a kv array from the fuzz input and run it under ASan"
+  else fail "harness does not compile: $(head -2 "$d/e.txt" | tr '\n' ' ')"; fi
+else fail "write src/fuzz_parse.c defining int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)"; fi
+# 3. saved reproducer
+if [ -s crash-input ] && [ -x "$d/fz_orig" ]; then
+  "$d/fz_orig" crash-input >/dev/null 2>&1 && fail "crash-input does not crash the original parser" || ok "crash-input reproduces the crash"
+else fail "copy the reproducer: cp current-input crash-input (after the fuzz run that crashed)"; fi
+# 4. the fix
+if cc -g -O1 -fsanitize=address,undefined -fno-sanitize-recover=all -Isrc -o "$d/fz_fix" src/parse.c src/fuzz_parse.c src/driver.c 2>/dev/null; then
+  if cmp -s src/parse.c .pristine/parse.c; then fail "src/parse.c is unchanged: fix the bound check on the value length"
+  else
+    ( cd "$d" && "$d/fz_fix" "$OLDPWD/crash-input" >/dev/null 2>&1 ) && ok "fixed parser survives the reproducer" || fail "fixed parser still crashes on crash-input"
+    ( cd "$d" && "$d/fz_fix" >/dev/null 2>&1 ) && ok "fixed parser survives 200000 generated inputs" || fail "fixed parser still crashes on generated inputs"
+  fi
+else fail "fixed source plus harness do not compile"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get fuzz_entry_point)" = LLVMFuzzerTestOneInput ] && ok "entry point" || fail "fuzz_entry_point: the function name libFuzzer and AFL++ call for each input"
+[ "$(get coverage_compile_flag)" = "--coverage" ] && ok "--coverage" || fail "coverage_compile_flag: the gcc flag that instruments for gcov (--coverage)"
+[ "$(get coverage_report_tool)" = gcov ] && ok "gcov" || fail "coverage_report_tool: the tool that turns .gcda/.gcno files into line counts"
+[ "$(get libfuzzer_flag)" = "-fsanitize=fuzzer" ] && ok "-fsanitize=fuzzer" || fail "libfuzzer_flag: the clang option that links libFuzzer"
+case "$(get fuzzer_corpus_purpose)" in seed*|*seed*|*interesting*|*coverage*) ok "corpus purpose" ;; *) fail "fuzzer_corpus_purpose: one phrase (for example: seed inputs that reach new coverage)" ;; esac
+exit $bad

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p obj
+cc -O2 -g -fPIE -c src/main.c -o obj/main.o
+cc -O2 -g -fPIE -c src/util.c -o obj/util.o
+ar rcs libutil.a obj/util.o
+cc -pie -Wl,-z,relro,-z,now -o app obj/main.o libutil.a
+objcopy --only-keep-debug app app.debug
+strip --strip-all app
+objcopy --add-gnu-debuglink=app.debug app
+sed -i -e 's/^stop_after_compiling_flag=.*/stop_after_compiling_flag=-c/' -e 's/^static_archive_tool=.*/static_archive_tool=ar/' -e 's/^symbol_listing_tool=.*/symbol_listing_tool=nm/' -e 's/^full_relro_linker_flag=.*/full_relro_linker_flag=-z now/' -e 's/^debug_link_tool=.*/debug_link_tool=objcopy/' answers.txt

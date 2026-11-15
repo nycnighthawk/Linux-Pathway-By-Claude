@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an Xlib program that opens a display and creates a window, but never shows it.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src answers.txt app shot.png
+mkdir -p src
+cat > src/app.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <X11/Xlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(void)
+{
+    Display *dpy = XOpenDisplay(NULL);
+    if (!dpy) {
+        fprintf(stderr, "no display: is DISPLAY set and an X server running?\n");
+        return 1;
+    }
+    int screen = DefaultScreen(dpy);
+    /* The window is 200x100 at (0,0) with a black background and is not yet mapped. */
+    Window w = XCreateSimpleWindow(dpy, RootWindow(dpy, screen), 0, 0, 200, 100, 0,
+                                   BlackPixel(dpy, screen), BlackPixel(dpy, screen));
+    XStoreName(dpy, w, "labwin");
+    /* TODO 1: make the background pure red (0xff0000)
+     * TODO 2: map the window and flush the connection
+     * TODO 3: stay alive for 4 seconds so a screenshot can be taken */
+    (void)w;
+    XCloseDisplay(dpy);
+    return 0;
+}
+X
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nvirtual_display_tool=?\ndisplay_variable=?\nscreenshot_tool=?\ngtk_backend_variable=?\nqt_headless_platform=?\n' > answers.txt

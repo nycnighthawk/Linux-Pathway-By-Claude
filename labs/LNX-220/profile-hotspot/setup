@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a program with one quadratic hot spot among several cheap functions.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src answers.txt profile.txt callgrind.out
+mkdir -p src
+cat > src/dups.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <stdio.h>
+#include <stdlib.h>
+
+#define N 4000
+
+static unsigned lcg(unsigned *s)
+{
+    *s = *s * 1664525u + 1013904223u;
+    return *s >> 8;
+}
+
+__attribute__((noinline)) static void fill(int *v, int n)
+{
+    unsigned s = 12345;
+    for (int i = 0; i < n; i++)
+        v[i] = (int)(lcg(&s) % 1000);
+}
+
+__attribute__((noinline)) static long checksum(const int *v, int n)
+{
+    long c = 0;
+    for (int i = 0; i < n; i++)
+        c = c * 31 + v[i];
+    return c;
+}
+
+/* Number of index pairs i < j with v[i] == v[j]. */
+__attribute__((noinline)) static long count_dups(const int *v, int n)
+{
+    long d = 0;
+    for (int i = 0; i < n; i++)
+        for (int j = i + 1; j < n; j++)
+            if (v[i] == v[j])
+                d++;
+    return d;
+}
+
+int main(void)
+{
+    int *v = malloc(N * sizeof *v);
+    fill(v, N);
+    printf("checksum=%ld\n", checksum(v, N));
+    printf("duplicate pairs=%ld\n", count_dups(v, N));
+    free(v);
+    return 0;
+}
+X
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nhot_function=?\nprofiler_tool=?\nreport_tool=?\nperf_record_command=?\nflame_graph_input_format=?\n' > answers.txt

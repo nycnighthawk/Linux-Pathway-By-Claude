@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: a debug build, a real backtrace, a core file, and a fixed program that valgrind finds clean.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+# the original program is rebuilt by the grader so the backtrace evidence can be compared with reality
+orig=$(mktemp -d)
+if [ -f src/crash.c.orig ]; then cp src/crash.c.orig "$orig/crash.c"; else cp src/crash.c "$orig/crash.c"; fi
+[ -x crash ] && readelf -S crash 2>/dev/null | grep -q '\.debug_info' && ok "crash is built with -g" || fail "build ./crash from the ORIGINAL source with -g -O0 (cc -g -O0 -o crash src/crash.c); keep a copy as src/crash.c.orig first"
+if [ -f bt.txt ]; then
+  grep -q '^#0 .*show' bt.txt && grep -q 'crash.c:3[0-9]' bt.txt && ok "bt.txt has a backtrace whose frame #0 is show() in crash.c" || fail "bt.txt: frame #0 must be in show() with a crash.c line number (gdb -batch -ex run -ex bt ./crash)"
+  grep -q '^#1 .*main' bt.txt && ok "bt.txt shows main as frame #1" || fail "bt.txt must include frame #1 in main"
+else fail "save the batch backtrace in bt.txt"; fi
+if [ -f core.crash ]; then
+  readelf -h core.crash 2>/dev/null | grep -q 'Type:.*CORE' && ok "core.crash is an ELF core file" || fail "core.crash is not a core file (gdb gcore or ulimit -c)"
+else fail "create core.crash (gdb -batch -ex run -ex 'generate-core-file core.crash' ./crash)"; fi
+if [ -f bt-core.txt ]; then
+  grep -q '^#0 .*show' bt-core.txt && ok "bt-core.txt: backtrace read back from the core file" || fail "bt-core.txt must come from gdb -batch -ex bt ./crash core.crash"
+else fail "save the backtrace read from the core in bt-core.txt"; fi
+[ -f src/crash.c.orig ] && ! cmp -s src/crash.c src/crash.c.orig && ok "src/crash.c was changed" || fail "fix src/crash.c (keep the original as src/crash.c.orig)"
+if cc -g -O0 -o "$orig/fixed" src/crash.c 2>/dev/null; then
+  out=$("$orig/fixed" 2>&1); rc=$?
+  [ $rc = 0 ] && ok "fixed program exits 0" || fail "the fixed program still fails (exit $rc)"
+  printf '%s\n' "$out" | grep -q '^2=bob$' && ok "still prints 2=bob" || fail "the fix must keep printing 2=bob"
+  if command -v valgrind >/dev/null; then
+    valgrind -q --error-exitcode=9 --leak-check=full --errors-for-leak-kinds=definite "$orig/fixed" >/dev/null 2>"$orig/vg.txt" && ok "valgrind reports no errors and no definite leaks" || { fail "valgrind still reports problems: $(head -3 "$orig/vg.txt" | tr '\n' ' ')"; }
+  else fail "valgrind is not installed"; fi
+else fail "src/crash.c does not compile"; fi
+rm -rf "$orig"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get crashing_function)" = show ] && ok "show" || fail "crashing_function: the function that dereferences the null pointer"
+[ "$(get signal_name)" = SIGSEGV ] && ok "SIGSEGV" || fail "signal_name: the signal gdb reports"
+case "$(get batch_flag)" in -batch|--batch) ok "-batch" ;; *) fail "batch_flag: the gdb option that runs commands non-interactively and exits (-batch)" ;; esac
+case "$(get core_creation_command)" in gcore|generate-core-file*) ok "core command" ;; *) fail "core_creation_command: the gdb command that writes a core file (generate-core-file or gcore)" ;; esac
+case "$(get leak_check_option)" in --leak-check=full) ok "--leak-check=full" ;; *) fail "leak_check_option: the valgrind option that lists each leaked block (--leak-check=full)" ;; esac
+exit $bad

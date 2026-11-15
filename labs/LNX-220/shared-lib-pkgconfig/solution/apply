@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+L=stage/usr/lib
+mkdir -p $L/pkgconfig stage/usr/include
+cc -fPIC -fvisibility=hidden -shared -Wl,-soname,libvec.so.1 -o $L/libvec.so.1.2.0 lib/vec.c
+ln -sf libvec.so.1.2.0 $L/libvec.so.1
+ln -sf libvec.so.1 $L/libvec.so
+cp lib/vec.h stage/usr/include/
+cat > $L/pkgconfig/vec.pc <<X
+prefix=$PWD/stage/usr
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: vec
+Description: Tiny vector library
+Version: 1.2.0
+Libs: -L\${libdir} -lvec
+Cflags: -I\${includedir}
+X
+sed -i -e 's/^visibility_flag=.*/visibility_flag=-fvisibility=hidden/' -e 's/^soname_linker_option=.*/soname_linker_option=-Wl,-soname,libvec.so.1/' -e 's/^pkgconfig_cflags_option=.*/pkgconfig_cflags_option=--cflags/' -e 's/^symbol_dump_command=.*/symbol_dump_command=nm -D libvec.so/' -e 's/^pkgconfig_search_variable=.*/pkgconfig_search_variable=PKG_CONFIG_PATH/' answers.txt

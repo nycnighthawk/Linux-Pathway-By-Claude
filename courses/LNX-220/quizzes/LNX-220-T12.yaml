@@ -1,0 +1,57 @@
+title: 'Quiz: GUI apps (GTK/Qt) under Xvfb'
+questions:
+- id: xvfb
+  prompt: What does Xvfb do?
+  choices:
+  - Runs an X server that renders into memory with no screen
+  - Starts a Wayland compositor
+  - Draws windows on a USB display
+  - Emulates a GPU driver for the kernel
+  answer:
+  - 0
+  explain: Xvfb implements the X protocol with a virtual framebuffer. It is not a Wayland compositor, does not drive hardware
+    and is not a kernel driver.
+- id: display
+  prompt: A GUI test aborts with a message that it cannot open the display. What is missing?
+  choices:
+  - A larger terminal window
+  - A reachable X server named by DISPLAY, which xvfb-run provides
+  - The -g compiler flag
+  - A second CPU core
+  answer:
+  - 1
+  explain: Clients locate their server through DISPLAY. xvfb-run starts one and sets it. Terminal size, debug flags and cores
+    are unrelated.
+- id: qt
+  prompt: Which setting lets a Qt test render with no display server at all?
+  choices:
+  - GDK_BACKEND=wayland
+  - DISPLAY=:0
+  - QT_QPA_PLATFORM=offscreen
+  - LIBGL_ALWAYS_SOFTWARE=0
+  answer:
+  - 2
+  explain: The offscreen platform plugin draws to memory. GDK_BACKEND is for GTK, DISPLAY=:0 still needs a server and the
+    GL variable only picks a renderer.
+- id: wayland
+  prompt: Why does a screenshot script that works under X fail on a Wayland session?
+  choices:
+  - Wayland has no pixels
+  - Screenshots require root under X
+  - The script is using the wrong shell
+  - Clients cannot read other clients' buffers; capture needs a portal or compositor tool
+  answer:
+  - 3
+  explain: Wayland isolates clients, so root-window capture does not exist. Portals and compositor tools provide controlled
+    capture. The other statements are not true.
+- id: bus
+  prompt: Why do many GTK tests run as xvfb-run -a dbus-run-session -- command?
+  choices:
+  - The toolkit expects a session bus as well as a display
+  - dbus-run-session starts the X server
+  - xvfb-run needs D-Bus to compile
+  - -a disables the bus
+  answer:
+  - 0
+  explain: GTK uses the session bus for settings and accessibility, so tests supply one. dbus-run-session does not start X,
+    xvfb-run does not compile, and -a means pick a free display number.

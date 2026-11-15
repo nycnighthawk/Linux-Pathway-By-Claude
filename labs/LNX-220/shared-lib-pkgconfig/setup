@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: library source with an internal helper that leaks, a consumer program, a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf lib consumer answers.txt stage
+mkdir -p lib consumer
+cat > lib/vec.h <<'X'
+/* SPDX-License-Identifier: MIT */
+#ifndef VEC_H
+#define VEC_H
+#define VEC_API __attribute__((visibility("default")))
+VEC_API long vec_dot(const int *a, const int *b, int n);
+#endif
+X
+cat > lib/vec.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include "vec.h"
+long helper_mul(int a, int b) { return (long)a * b; }       /* internal: must not be exported */
+long vec_dot(const int *a, const int *b, int n)
+{
+    long s = 0;
+    for (int i = 0; i < n; i++)
+        s += helper_mul(a[i], b[i]);
+    return s;
+}
+X
+cat > consumer/main.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <stdio.h>
+#include <vec.h>
+int main(void)
+{
+    int a[] = {1, 2, 3}, b[] = {4, 5, 6};
+    printf("%ld\n", vec_dot(a, b, 3));
+    return 0;
+}
+X
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nvisibility_flag=?\nsoname_linker_option=?\npkgconfig_cflags_option=?\nsymbol_dump_command=?\npkgconfig_search_variable=?\n' > answers.txt

@@ -1,0 +1,56 @@
+title: 'Quiz: systemd integration: sd_notify, socket activation, journald'
+questions:
+- id: ready
+  prompt: A service has Type=notify. What must it do to be considered started?
+  choices:
+  - Send READY=1 to the socket named in NOTIFY_SOCKET
+  - Write its pid to a pid file
+  - Fork into the background
+  - Exit with status 0
+  answer:
+  - 0
+  explain: Type=notify makes the manager wait for the readiness datagram. Pid files and forking belong to old-style daemons,
+    and exiting would end a simple service.
+- id: fd
+  prompt: With socket activation, which descriptor number is the first one passed?
+  choices:
+  - '0'
+  - '3'
+  - '1'
+  - '2'
+  answer:
+  - 1
+  explain: Descriptors 0, 1 and 2 are standard input, output and error. Passed sockets start at 3, counted by LISTEN_FDS.
+- id: pid
+  prompt: Why should a service compare LISTEN_PID with its own pid?
+  choices:
+  - To find the notify socket
+  - To set the priority of log lines
+  - The variables may have been inherited by a process they were not meant for
+  - To check the unit's Type=
+  answer:
+  - 2
+  explain: LISTEN_PID names the intended recipient so children and re-executed programs do not misuse the descriptors. It
+    plays no role in the notify socket, log priority or unit type.
+- id: log
+  prompt: How can a program set journal priorities when it only writes to stderr?
+  choices:
+  - Use fprintf with a flag
+  - Run journalctl -p
+  - Name the file with a .log suffix
+  - Prefix each line with <3>, <6> and so on
+  answer:
+  - 3
+  explain: The sd-daemon prefix convention maps to syslog levels. journalctl -p filters when reading and file suffixes mean
+    nothing to the journal.
+- id: accept
+  prompt: What does Accept=no mean in a .socket unit?
+  choices:
+  - The service receives the listening socket and accepts connections itself
+  - Connections are rejected
+  - One service instance starts per connection
+  - The socket is not created
+  answer:
+  - 0
+  explain: Accept=no hands over the listening socket. Accept=yes would start an instance per connection, and the socket is
+    created either way.

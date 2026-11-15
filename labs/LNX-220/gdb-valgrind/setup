@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a program that crashes on a null pointer and leaks memory, and a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src answers.txt crash bt.txt bt-core.txt core.crash
+mkdir -p src
+cat > src/crash.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct rec { int id; char name[16]; };
+
+static struct rec *table[3];
+
+static struct rec *make(int id, const char *name)
+{
+    struct rec *r = malloc(sizeof *r);
+    r->id = id;
+    strncpy(r->name, name, sizeof r->name - 1);
+    r->name[sizeof r->name - 1] = '\0';
+    return r;
+}
+
+static struct rec *find(int id)
+{
+    for (int i = 0; i < 3; i++)
+        if (table[i] && table[i]->id == id)
+            return table[i];
+    return NULL;
+}
+
+static void show(int id)
+{
+    struct rec *r = find(id);
+    printf("%d=%s\n", r->id, r->name);
+}
+
+int main(void)
+{
+    table[0] = make(1, "ann");
+    table[1] = make(2, "bob");
+    char *scratch = malloc(32);
+    strcpy(scratch, "unused");
+    show(2);
+    show(9);
+    for (int i = 0; i < 3; i++)
+        free(table[i]);
+    return 0;
+}
+X
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\ncrashing_function=?\nsignal_name=?\nbatch_flag=?\ncore_creation_command=?\nleak_check_option=?\n' > answers.txt

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the linkage of each build: dynamic C, static C, static Rust, static Go, and an isolated Python environment.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+interp() { readelf -lW "$1" 2>/dev/null | grep -c 'INTERP'; }
+needed() { readelf -dW "$1" 2>/dev/null | grep -c 'NEEDED'; }
+run() { "$1" 2>&1; }
+if [ -x bin/c-dynamic ]; then
+  [ "$(run bin/c-dynamic)" = "hello from c" ] && [ "$(interp bin/c-dynamic)" -ge 1 ] && [ "$(needed bin/c-dynamic)" -ge 1 ] && ok "bin/c-dynamic is dynamically linked (interpreter and NEEDED entries)" || fail "bin/c-dynamic must run and be dynamically linked"
+else fail "build bin/c-dynamic: cc -O2 -o bin/c-dynamic src/hello.c"; fi
+if [ -x bin/c-static ]; then
+  [ "$(run bin/c-static)" = "hello from c" ] && [ "$(interp bin/c-static)" = 0 ] && [ "$(needed bin/c-static)" = 0 ] && ok "bin/c-static has no interpreter and no NEEDED entries" || fail "bin/c-static must be fully static (cc -static)"
+else fail "build bin/c-static: cc -O2 -static -o bin/c-static src/hello.c"; fi
+if command -v rustc >/dev/null; then
+  if [ -x bin/rust-static ]; then
+    [ "$(run bin/rust-static)" = "hello from rust" ] && [ "$(interp bin/rust-static)" = 0 ] && [ "$(needed bin/rust-static)" = 0 ] && ok "bin/rust-static is statically linked" || fail "bin/rust-static must run with no interpreter (rustc -C target-feature=+crt-static)"
+  else fail "build bin/rust-static: rustc -O -C target-feature=+crt-static -o bin/rust-static src/hello.rs"; fi
+else fail "rustc is not installed"; fi
+if command -v go >/dev/null; then
+  if [ -x bin/go-static ]; then
+    [ "$(run bin/go-static)" = "hello from go" ] && [ "$(interp bin/go-static)" = 0 ] && [ "$(needed bin/go-static)" = 0 ] && ok "bin/go-static is statically linked" || fail "bin/go-static must run with no interpreter (CGO_ENABLED=0 go build)"
+  else fail "build bin/go-static: (cd src/go && CGO_ENABLED=0 go build -o ../../bin/go-static .)"; fi
+else fail "go is not installed"; fi
+if [ -x venv/bin/python ]; then
+  [ "$("$PWD/venv/bin/python" -c 'import sys; print(sys.prefix != sys.base_prefix)')" = True ] && grep -q '^include-system-site-packages = false' venv/pyvenv.cfg && ok "venv is an isolated virtual environment" || fail "venv must be created with python3 -m venv (no system site packages)"
+  [ "$("$PWD/venv/bin/python" src/hello.py)" = "hello from python" ] && ok "script runs with the venv interpreter" || fail "venv/bin/python src/hello.py must print hello from python"
+else fail "create the environment: python3 -m venv --without-pip venv"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get static_c_flag)" = "-static" ] && ok "-static" || fail "static_c_flag: the cc option that links statically"
+case "$(get rust_static_codegen_option)" in "-C target-feature=+crt-static"|"target-feature=+crt-static"|"-Ctarget-feature=+crt-static") ok "crt-static" ;; *) fail "rust_static_codegen_option: the rustc option that links the C runtime statically" ;; esac
+[ "$(get go_cgo_variable)" = "CGO_ENABLED=0" ] && ok "CGO_ENABLED=0" || fail "go_cgo_variable: the variable assignment that makes go build avoid the C toolchain (CGO_ENABLED=0)"
+case "$(get venv_command)" in "python3 -m venv"*|"python -m venv"*) ok "venv command" ;; *) fail "venv_command: the command that creates a virtual environment" ;; esac
+case "$(get linkage_inspection_tool)" in readelf|ldd|file) ok "inspection tool" ;; *) fail "linkage_inspection_tool: a tool that shows whether a binary is dynamic (readelf, ldd or file)" ;; esac
+exit $bad

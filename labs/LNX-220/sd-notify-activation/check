@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade by acting as the service manager: pass a socket and a notify socket, then watch the daemon's behaviour.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+if [ -f daemon.py ]; then
+  python3 - "$PWD/daemon.py" <<'PY'
+import os, signal, socket, sys, tempfile, time, select
+daemon = sys.argv[1]
+def say(ok, msg):
+    print(("ok:   " if ok else "FAIL: ") + msg)
+    return ok
+good = True
+tmp = tempfile.mkdtemp()
+def launch(listen_pid_wrong):
+    nsock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    npath = os.path.join(tmp, "notify%d" % listen_pid_wrong)
+    nsock.bind(npath)
+    lsock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    lpath = os.path.join(tmp, "listen%d.sock" % listen_pid_wrong)
+    lsock.bind(lpath)
+    lsock.listen(4)
+    r, w = os.pipe()
+    pid = os.fork()
+    if pid == 0:
+        os.dup2(lsock.fileno(), 3)
+        os.dup2(w, 2)
+        for fd in range(4, 64):
+            try: os.close(fd)
+            except OSError: pass
+        env = dict(os.environ, NOTIFY_SOCKET=npath, LISTEN_FDS="1",
+                   LISTEN_PID=str(1 if listen_pid_wrong else os.getpid()))
+        os.execve(sys.executable, [sys.executable, daemon], env)
+    os.close(w)
+    return pid, nsock, lpath, r
+def drain(nsock, wait):
+    msgs = []
+    end = time.time() + wait
+    while time.time() < end:
+        rr, _, _ = select.select([nsock], [], [], 0.2)
+        if rr:
+            msgs.append(nsock.recv(4096).decode().strip())
+            if "READY=1" in msgs[-1] and wait > 1:
+                break
+    return msgs
+# case 1: correct environment
+pid, nsock, lpath, errfd = launch(False)
+msgs = drain(nsock, 6)
+text = "\n".join(msgs)
+good &= say("READY=1" in text, "the daemon sends READY=1 on NOTIFY_SOCKET" if "READY=1" in text else "no READY=1 arrived on the notify socket (got %r)" % msgs)
+good &= say("STATUS=" in text and text.index("STATUS=") < text.index("READY=1") if "READY=1" in text and "STATUS=" in text else False, "STATUS= is sent before READY=1")
+if "READY=1" in text:
+    try:
+        c = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM); c.settimeout(3)
+        c.connect(lpath); c.sendall(b"ping\n"); a = c.recv(64); c.close()
+        good &= say(a == b"pong\n", "answers ping with pong on the inherited socket" if a == b"pong\n" else "wrong reply %r" % a)
+        c = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM); c.settimeout(3)
+        c.connect(lpath); c.sendall(b"hello\n"); a = c.recv(64); c.close()
+        good &= say(a == b"?\n", "answers anything else with ?" if a == b"?\n" else "wrong reply %r to a non-ping line" % a)
+    except OSError as e:
+        good &= say(False, "connection to the passed socket failed: %s" % e)
+    os.kill(pid, signal.SIGTERM)
+    more = drain(nsock, 3)
+    good &= say(any("STOPPING=1" in m for m in more), "sends STOPPING=1 on SIGTERM" if any("STOPPING=1" in m for m in more) else "no STOPPING=1 after SIGTERM")
+else:
+    os.kill(pid, signal.SIGKILL)
+try:
+    _, st = os.waitpid(pid, 0)
+    good &= say(os.WIFEXITED(st) and os.WEXITSTATUS(st) == 0, "exits 0 after SIGTERM" if os.WIFEXITED(st) and os.WEXITSTATUS(st) == 0 else "did not exit 0 (status %r)" % st)
+except ChildProcessError:
+    pass
+err = os.read(errfd, 65536).decode(errors="replace")
+good &= say(any(l.startswith("<6>") for l in err.splitlines()), "logs an informational line with the <6> prefix" if any(l.startswith("<6>") for l in err.splitlines()) else "stderr has no line starting with <6>")
+# case 2: LISTEN_PID names someone else
+pid, nsock, lpath, errfd = launch(True)
+msgs = drain(nsock, 2)
+try:
+    for _ in range(30):
+        p, st = os.waitpid(pid, os.WNOHANG)
+        if p: break
+        time.sleep(0.1)
+    else:
+        os.kill(pid, signal.SIGKILL); os.waitpid(pid, 0); st = None
+except ChildProcessError:
+    st = None
+good &= say(not any("READY=1" in m for m in msgs) and st is not None and os.WIFEXITED(st) and os.WEXITSTATUS(st) == 3, "refuses a foreign LISTEN_PID: exit 3 and no READY=1" if st is not None else "must exit 3 when LISTEN_PID is not its own pid")
+err = os.read(errfd, 65536).decode(errors="replace")
+good &= say(any(l.startswith("<3>") for l in err.splitlines()), "logs the refusal with the <3> prefix" if any(l.startswith("<3>") for l in err.splitlines()) else "stderr has no line starting with <3> for the refusal")
+sys.exit(0 if good else 1)
+PY
+  [ $? = 0 ] || bad=1
+else fail "write daemon.py (see PROTOCOL.txt)"; fi
+key() { grep -E "^$2[[:space:]]*=" "$1" 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+if [ -f lab.service ]; then
+  [ "$(key lab.service Type)" = notify ] && ok "lab.service: Type=notify" || fail "lab.service needs Type=notify"
+  case "$(key lab.service NotifyAccess)" in main|all) ok "lab.service: NotifyAccess set" ;; *) fail "lab.service needs NotifyAccess=main" ;; esac
+  key lab.service ExecStart | grep -q 'daemon.py' && ok "lab.service: ExecStart runs daemon.py" || fail "lab.service ExecStart must run daemon.py"
+  grep -q '^\[Service\]' lab.service && grep -q '^\[Unit\]' lab.service || fail "lab.service needs [Unit] and [Service] sections"
+else fail "write lab.service"; fi
+if [ -f lab.socket ]; then
+  key lab.socket ListenStream | grep -q . && ok "lab.socket: ListenStream set" || fail "lab.socket needs ListenStream="
+  grep -q '^\[Socket\]' lab.socket && grep -q '^\[Install\]' lab.socket && ok "lab.socket: [Socket] and [Install] present" || fail "lab.socket needs [Socket] and [Install]"
+  [ "$(key lab.socket Accept)" != yes ] && ok "lab.socket: one shared listening socket (Accept=no)" || fail "use Accept=no so the daemon receives the listening socket"
+else fail "write lab.socket"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get ready_message)" = "READY=1" ] && ok "READY=1" || fail "ready_message: the line a daemon sends to say start-up is finished"
+[ "$(get first_passed_descriptor)" = 3 ] && ok "fd 3" || fail "first_passed_descriptor: number of the first descriptor passed by socket activation"
+[ "$(get notify_socket_variable)" = NOTIFY_SOCKET ] && ok "NOTIFY_SOCKET" || fail "notify_socket_variable: the variable naming the readiness socket"
+[ "$(get service_type_for_readiness)" = notify ] && ok "Type=notify" || fail "service_type_for_readiness: the Type= value that waits for READY=1"
+[ "$(get journal_priority_for_info)" = "<6>" ] && ok "<6>" || fail "journal_priority_for_info: the stderr prefix for informational messages"
+exit $bad

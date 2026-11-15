@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: the source of a GDBus service that reads its greeting from the XDG config directory.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src share xdg answers.txt server
+mkdir -p src
+cat > src/server.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <gio/gio.h>
+#include <stdio.h>
+#include <string.h>
+
+static const char *xml =
+    "<node><interface name='org.example.Lab'>"
+    "<method name='Echo'><arg type='s' name='text' direction='in'/><arg type='s' name='reply' direction='out'/></method>"
+    "<property name='Greeting' type='s' access='read'/>"
+    "</interface></node>";
+
+static char greeting[128] = "Hello";
+
+static void load_greeting(void)
+{
+    gchar *path = g_build_filename(g_get_user_config_dir(), "lab", "greeting", NULL);
+    gchar *text = NULL;
+    if (g_file_get_contents(path, &text, NULL, NULL)) {
+        g_strstrip(text);
+        g_strlcpy(greeting, text, sizeof greeting);
+        g_free(text);
+    }
+    g_free(path);
+}
+
+static void on_call(GDBusConnection *c, const gchar *sender, const gchar *path, const gchar *iface,
+                    const gchar *method, GVariant *params, GDBusMethodInvocation *inv, gpointer data)
+{
+    (void)c; (void)sender; (void)path; (void)iface; (void)data;
+    if (strcmp(method, "Echo") == 0) {
+        const gchar *text;
+        g_variant_get(params, "(&s)", &text);
+        gchar *reply = g_strdup_printf("%s, %s", greeting, text);
+        g_dbus_method_invocation_return_value(inv, g_variant_new("(s)", reply));
+        g_free(reply);
+    }
+}
+
+static GVariant *on_get(GDBusConnection *c, const gchar *s, const gchar *p, const gchar *i, const gchar *prop,
+                        GError **e, gpointer d)
+{
+    (void)c; (void)s; (void)p; (void)i; (void)prop; (void)e; (void)d;
+    return g_variant_new_string(greeting);
+}
+
+static const GDBusInterfaceVTable vtable = { on_call, on_get, NULL, { 0 } };
+static GDBusNodeInfo *info;
+
+static void on_bus(GDBusConnection *c, const gchar *name, gpointer data)
+{
+    (void)name; (void)data;
+    g_dbus_connection_register_object(c, "/org/example/Lab", info->interfaces[0], &vtable, NULL, NULL, NULL);
+}
+
+int main(void)
+{
+    load_greeting();
+    info = g_dbus_node_info_new_for_xml(xml, NULL);
+    g_bus_own_name(G_BUS_TYPE_SESSION, "org.example.Lab", G_BUS_NAME_OWNER_FLAGS_NONE, on_bus, NULL, NULL, NULL, NULL);
+    g_main_loop_run(g_main_loop_new(NULL, FALSE));
+    return 0;
+}
+X
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nservice_file_directory=?\nconfig_home_variable=?\nbus_call_tool=?\nactivation_key=?\nsearch_path_variable=?\n' > answers.txt

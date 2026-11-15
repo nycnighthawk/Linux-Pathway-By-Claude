@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: a saved callgrind report that names the hot function, and an optimised program that gives the same output with
+# at least five times fewer executed instructions.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+d=$(mktemp -d); trap 'rm -rf "$d"' EXIT
+if [ -f profile.txt ]; then
+  first=$(grep -E '^ *[0-9,]+ \([0-9.]+%\)  [^ ]+:[a-z_]+ ' profile.txt | grep -v 'PROGRAM TOTALS' | head -1)
+  printf '%s\n' "$first" | grep -q count_dups && ok "profile.txt ranks count_dups first" || fail "profile.txt must be callgrind_annotate output in which count_dups has the highest cost (first function line: ${first:-none})"
+else fail "save the report: callgrind_annotate callgrind.out > profile.txt"; fi
+if ! command -v valgrind >/dev/null; then fail "valgrind is not installed"; exit 1; fi
+cc -g -O1 -o "$d/orig" src/dups.c 2>"$d/cc.txt" || { fail "src/dups.c does not compile"; exit 1; }
+out=$("$d/orig")
+# reference output and cost come from the original algorithm kept in the grader
+cat > "$d/ref.c" <<'X'
+#include <stdio.h>
+#include <stdlib.h>
+#define N 4000
+static unsigned lcg(unsigned *s){ *s = *s * 1664525u + 1013904223u; return *s >> 8; }
+int main(void){ int *v = malloc(N*sizeof *v); unsigned s = 12345; long c = 0, d = 0;
+ for (int i=0;i<N;i++) v[i]=(int)(lcg(&s)%1000);
+ for (int i=0;i<N;i++) c = c*31+v[i];
+ for (int i=0;i<N;i++) for (int j=i+1;j<N;j++) if (v[i]==v[j]) d++;
+ printf("checksum=%ld\nduplicate pairs=%ld\n", c, d); return 0; }
+X
+cc -O1 -o "$d/ref" "$d/ref.c"; ref=$("$d/ref")
+[ "$out" = "$ref" ] && ok "program output is unchanged" || fail "output changed: $out (expected: $ref)"
+ir() { valgrind --tool=callgrind --callgrind-out-file="$d/cg.$2" "$1" >/dev/null 2>"$d/vg.$2"; grep -E 'Collected' "$d/vg.$2" | grep -oE '[0-9]+$' ; }
+a=$(ir "$d/ref" ref); b=$(ir "$d/orig" new)
+if [ -n "$a" ] && [ -n "$b" ]; then
+  [ $((b * 5)) -le "$a" ] && ok "executed instructions fell from $a to $b (at least 5x)" || fail "optimise count_dups: $b instructions is not 5x below the original $a"
+else fail "could not measure instructions with callgrind"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get hot_function)" = count_dups ] && ok "count_dups" || fail "hot_function: the function that dominates the profile"
+case "$(get profiler_tool)" in callgrind|"valgrind --tool=callgrind"|perf|gprof) ok "profiler" ;; *) fail "profiler_tool: a profiler you used (callgrind, perf or gprof)" ;; esac
+[ "$(get report_tool)" = callgrind_annotate ] && ok "callgrind_annotate" || fail "report_tool: the tool that turns callgrind.out into text"
+case "$(get perf_record_command)" in "perf record"*) ok "perf record" ;; *) fail "perf_record_command: the perf command that samples a run (perf record -g ./prog)" ;; esac
+case "$(get flame_graph_input_format)" in *folded*|*collapsed*) ok "folded stacks" ;; *) fail "flame_graph_input_format: the text format flamegraph.pl reads (folded stacks)" ;; esac
+exit $bad

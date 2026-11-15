@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: soname links, exported symbols, the .pc file, and a consumer built through pkg-config.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+L=stage/usr/lib
+real=$L/libvec.so.1.2.0
+[ -f "$real" ] || { fail "install the library as $real (see README)"; }
+if [ -f "$real" ]; then
+  [ "$(readlink $L/libvec.so.1 2>/dev/null)" = libvec.so.1.2.0 ] && ok "libvec.so.1 -> libvec.so.1.2.0" || fail "symlink libvec.so.1 -> libvec.so.1.2.0"
+  [ "$(readlink $L/libvec.so 2>/dev/null)" = libvec.so.1 ] && ok "libvec.so -> libvec.so.1" || fail "symlink libvec.so -> libvec.so.1"
+  readelf -d "$real" | grep -q 'SONAME.*libvec.so.1\]' && ok "SONAME libvec.so.1" || fail "link with -Wl,-soname,libvec.so.1"
+  syms=$(nm -D --defined-only "$real" | awk '{print $3}' | grep -v '^_' | sort | tr '\n' ' ')
+  [ "$syms" = "vec_dot " ] && ok "only vec_dot is exported" || fail "exported symbols are: $syms (hide helper_mul with -fvisibility=hidden)"
+fi
+pc=stage/usr/lib/pkgconfig/vec.pc
+if [ -f "$pc" ]; then
+  export PKG_CONFIG_PATH="$PWD/stage/usr/lib/pkgconfig" PKG_CONFIG_SYSROOT_DIR=
+  [ "$(pkg-config --modversion vec 2>/dev/null)" = 1.2.0 ] && ok "pkg-config reports version 1.2.0" || fail "vec.pc must declare Version: 1.2.0"
+  pkg-config --cflags vec 2>/dev/null | grep -q 'stage/usr/include\|/usr/include' && ok "cflags carry the include path" || fail "vec.pc needs Cflags: -I\${includedir}"
+  pkg-config --libs vec 2>/dev/null | grep -q -- '-lvec' && ok "libs carry -lvec" || fail "vec.pc needs Libs: -L\${libdir} -lvec"
+  if cc -o consumer/app consumer/main.c $(pkg-config --cflags --libs vec) -Wl,-rpath,"$PWD/$L" 2>/dev/null; then
+    [ "$(consumer/app)" = 32 ] && ok "consumer built through pkg-config prints 32" || fail "consumer output is wrong"
+  else fail "building consumer/main.c with pkg-config flags failed (prefix=/usr and a DESTDIR install: set prefix in the .pc to the staged path for this check)"; fi
+else fail "install a pkg-config file at $pc"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get visibility_flag)" = "-fvisibility=hidden" ] && ok "visibility" || fail "visibility_flag: the compiler flag that hides symbols unless marked (-fvisibility=hidden)"
+case "$(get soname_linker_option)" in "-Wl,-soname,libvec.so.1"|"-soname libvec.so.1"|"-Wl,-soname=libvec.so.1") ok "soname option" ;; *) fail "soname_linker_option: the exact option that sets the soname to libvec.so.1" ;; esac
+[ "$(get pkgconfig_cflags_option)" = "--cflags" ] && ok "--cflags" || fail "pkgconfig_cflags_option: the pkg-config option that prints compile flags"
+case "$(get symbol_dump_command)" in "nm -D"*|"readelf --dyn-syms"*|"readelf -Ws"*) ok "dynamic symbols" ;; *) fail "symbol_dump_command: a command that lists a library's dynamic symbols (nm -D file)" ;; esac
+[ "$(get pkgconfig_search_variable)" = PKG_CONFIG_PATH ] && ok "PKG_CONFIG_PATH" || fail "pkgconfig_search_variable: the variable that adds .pc search directories"
+exit $bad

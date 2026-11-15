@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > daemon.py <<'X'
+# SPDX-License-Identifier: MIT
+import os
+import signal
+import socket
+import sys
+
+
+def notify(text):
+    path = os.environ.get("NOTIFY_SOCKET")
+    if not path:
+        return
+    if path.startswith("@"):
+        path = "\0" + path[1:]
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    try:
+        s.sendto(text.encode(), path)
+    finally:
+        s.close()
+
+
+def log(level, text):
+    sys.stderr.write("<%d>%s\n" % (level, text))
+    sys.stderr.flush()
+
+
+def main():
+    if os.environ.get("LISTEN_PID") != str(os.getpid()) or os.environ.get("LISTEN_FDS") != "1":
+        log(3, "no usable socket from the service manager")
+        return 3
+    srv = socket.socket(fileno=3)
+    stop = []
+    signal.signal(signal.SIGTERM, lambda *a: stop.append(1))
+    log(6, "listening on inherited socket")
+    notify("STATUS=waiting")
+    notify("READY=1")
+    srv.settimeout(0.2)
+    while not stop:
+        try:
+            conn, _ = srv.accept()
+        except socket.timeout:
+            continue
+        with conn:
+            line = conn.makefile().readline().strip()
+            conn.sendall(b"pong\n" if line == "ping" else b"?\n")
+    notify("STOPPING=1")
+    return 0
+
+
+sys.exit(main())
+X
+cat > lab.socket <<'X'
+[Unit]
+Description=Lab daemon socket
+
+[Socket]
+ListenStream=/run/lab.sock
+Accept=no
+
+[Install]
+WantedBy=sockets.target
+X
+cat > lab.service <<X
+[Unit]
+Description=Lab daemon
+Requires=lab.socket
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/usr/bin/python3 $PWD/daemon.py
+X
+sed -i -e 's/^ready_message=.*/ready_message=READY=1/' -e 's/^first_passed_descriptor=.*/first_passed_descriptor=3/' -e 's/^notify_socket_variable=.*/notify_socket_variable=NOTIFY_SOCKET/' -e 's/^service_type_for_readiness=.*/service_type_for_readiness=notify/' -e 's/^journal_priority_for_info=.*/journal_priority_for_info=<6>/' answers.txt
