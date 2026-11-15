@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty continuous-assurance plan for a 300-host fleet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f drift-plan.txt
+cat > drift-plan.txt <<'EOF'
+# SPDX-License-Identifier: MIT
+# Continuous-assurance plan for 300 Enterprise Linux hosts. Replace each ? (see README.md)
+scan_frequency_days=?
+enforcement=?
+max_host_age_days=?
+agent_silence_alert_hours=?
+exception_max_days=?
+exception_review=?
+baseline_owner=?
+baseline_review_months=?
+evidence_retention_months=?
+metrics=?
+lifecycle_calendar=?
+independent_check=?
+EOF

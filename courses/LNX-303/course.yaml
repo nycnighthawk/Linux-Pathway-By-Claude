@@ -4,7 +4,6 @@ summary: 'Security engineering beyond the basics: running a private PKI, disk en
   Boot and signed modules, kernel integrity with IMA/EVM and lockdown, runtime detection with Falco and auditd, network intrusion
   detection, vulnerability and SBOM scanning, compliance as code, secrets management, forensics and long-term drift control.'
 hours: 60
-coverage: partial
 outcomes:
 - Build a two-tier certificate authority, publish revocation data and predict client behaviour
 - Bind disk encryption to a TPM or a Tang server and plan recovery
@@ -69,6 +68,10 @@ modules:
   - topic: LNX-303-T09
     title: OpenBao/Vault, sops
     file: lessons/LNX-303-T09.md
+    minutes: 45
+  - topic: LNX-303-T11
+    title: Long-term compliance drift
+    file: lessons/LNX-303-T11.md
     minutes: 45
 labs:
 - id: pki-two-tier
@@ -137,6 +140,12 @@ labs:
   env: V
   license: MIT
   minutes: 45
+- id: drift-plan
+  topic: LNX-303-T11
+  title: Plan continuous assurance for a fleet
+  env: O
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-303-T01
   topic: LNX-303-T01
@@ -178,3 +187,7 @@ quizzes:
   topic: LNX-303-T10
   title: 'Quiz: Linux forensics basics'
   file: quizzes/LNX-303-T10.yaml
+- id: LNX-303-T11
+  topic: LNX-303-T11
+  title: 'Quiz: Long-term compliance drift'
+  file: quizzes/LNX-303-T11.yaml
