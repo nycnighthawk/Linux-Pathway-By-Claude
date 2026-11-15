@@ -58,6 +58,10 @@ modules:
     title: OVAL, Trivy, SBOMs
     file: lessons/LNX-303-T07.md
     minutes: 45
+  - topic: LNX-303-T08
+    title: Compliance as code
+    file: lessons/LNX-303-T08.md
+    minutes: 45
 labs:
 - id: pki-two-tier
   topic: LNX-303-T01
@@ -105,6 +109,12 @@ labs:
   env: C
   license: MIT
   minutes: 40
+- id: tailor-profile
+  topic: LNX-303-T08
+  title: Tailor a compliance profile with an exception register
+  env: V
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-303-T01
   topic: LNX-303-T01
@@ -134,3 +144,7 @@ quizzes:
   topic: LNX-303-T07
   title: 'Quiz: OVAL, Trivy, SBOMs'
   file: quizzes/LNX-303-T07.yaml
+- id: LNX-303-T08
+  topic: LNX-303-T08
+  title: 'Quiz: Compliance as code'
+  file: quizzes/LNX-303-T08.yaml

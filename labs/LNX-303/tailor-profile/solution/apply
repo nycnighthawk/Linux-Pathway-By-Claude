@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > site.profile <<'EOF'
+documentation_complete: true
+title: Site baseline based on CIS Level 1 Server
+description: CIS Level 1 Server with three site deviations, see exceptions.csv
+extends: cis_server_l1
+selections:
+  # reason: print servers need mDNS discovery, owner print-team
+  - '!service_avahi_disabled'
+  # reason: 15 minute shell timeout required by site policy
+  - var_accounts_tmout=900
+  # reason: SSH idle timeout required by site policy
+  - sshd_set_idle_timeout
+EOF
+cat > exceptions.csv <<'EOF'
+rule,reason,owner,expires
+service_avahi_disabled,print servers need mDNS discovery,print-team,2027-06-30
+EOF
