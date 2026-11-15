@@ -54,6 +54,10 @@ modules:
     title: eBPF datapath, kube-proxy replacement, Hubble
     file: lessons/LNX-312-T05.md
     minutes: 50
+  - topic: LNX-312-T06
+    title: Ingress and Gateway API
+    file: lessons/LNX-312-T06.md
+    minutes: 50
 labs:
 - id: netns-bridge-nat
   topic: LNX-312-T01
@@ -94,6 +98,12 @@ labs:
   env: C
   license: MIT
   minutes: 25
+- id: gateway-canary
+  topic: LNX-312-T06
+  title: A Gateway and a canary HTTPRoute
+  env: C
+  license: MIT
+  minutes: 25
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -115,3 +125,7 @@ quizzes:
   topic: LNX-312-T05
   title: 'Quiz: eBPF datapath, kube-proxy replacement, Hubble'
   file: quizzes/LNX-312-T05.yaml
+- id: LNX-312-T06
+  topic: LNX-312-T06
+  title: 'Quiz: Ingress and Gateway API'
+  file: quizzes/LNX-312-T06.yaml

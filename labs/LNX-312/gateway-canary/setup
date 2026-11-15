@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > gateway.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: edge
+  namespace: infra
+spec:
+  gatewayClassName: lab
+  listeners: []
+J
+cat > route.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: shop
+  namespace: shop
+spec:
+  rules: []
+J

@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > gateway.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: edge
+  namespace: infra
+spec:
+  gatewayClassName: lab
+  listeners:
+    - name: https
+      port: 443
+      protocol: HTTPS
+      hostname: "*.example.test"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: edge-cert
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              edge-access: "true"
+J
+cat > route.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: shop
+  namespace: shop
+spec:
+  parentRefs:
+    - name: edge
+      namespace: infra
+  hostnames: ["shop.example.test"]
+  rules:
+    - matches:
+        - headers:
+            - name: x-canary
+              value: always
+      backendRefs:
+        - name: shop-v2
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: shop-v1
+          port: 80
+          weight: 90
+        - name: shop-v2
+          port: 80
+          weight: 10
+J

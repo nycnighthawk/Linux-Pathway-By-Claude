@@ -1,0 +1,27 @@
+title: 'Quiz: Ingress and Gateway API'
+questions:
+- id: no-controller
+  prompt: You create an Ingress in a cluster with no controller installed. What happens?
+  choices: [Nothing is routed, the object is only a declaration, kube-proxy serves it, The API server proxies it, A default controller starts]
+  answer: [0]
+  explain: 'A) correct. B) wrong: kube-proxy knows only Services. C) wrong. D) wrong: no default controller ships.'
+- id: roles
+  prompt: Which object does an application team normally own in the Gateway API?
+  choices: [GatewayClass, Gateway, HTTPRoute, The controller Deployment]
+  answer: [2]
+  explain: 'A) wrong: infrastructure provider. B) wrong: cluster operator. C) correct. D) wrong.'
+- id: refgrant
+  prompt: When is a ReferenceGrant needed?
+  choices: [A route or Gateway references a Secret or Service in another namespace, Every HTTPRoute, Only with TCP, Only on cloud clusters]
+  answer: [0]
+  explain: 'A) correct: the target namespace must consent. B) wrong. C) wrong. D) wrong.'
+- id: weights
+  prompt: How does the Gateway API express a 90/10 canary split?
+  choices: [Weights on backendRefs in a rule, A controller annotation, Two Gateways, A CronJob]
+  answer: [0]
+  explain: 'A) correct and portable. B) wrong: that was the Ingress way. C) wrong. D) wrong.'
+- id: status
+  prompt: Where do you first look when an HTTPRoute is not live? (select two)
+  choices: [The route status per parent reference, The Gateway listener allowedRoutes, etcd keys directly, The node kernel log]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
