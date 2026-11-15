@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > quadlet/web.container <<'EOT'
+# SPDX-License-Identifier: MIT
+[Unit]
+Description=Static site
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=docker.io/library/nginx:1.27
+PublishPort=127.0.0.1:8080:80
+Volume=site.volume:/usr/share/nginx/html:ro,Z
+ReadOnly=true
+NoNewPrivileges=true
+DropCapability=ALL
+AddCapability=NET_BIND_SERVICE
+HealthCmd=curl -fs http://localhost/ || exit 1
+Notify=healthy
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
+EOT
+printf '# SPDX-License-Identifier: MIT\n[Volume]\n' > quadlet/site.volume
+cat > quadlet/app.pod <<'EOT'
+# SPDX-License-Identifier: MIT
+[Pod]
+PodName=app
+PublishPort=127.0.0.1:6379:6379
+EOT
+cat > quadlet/api.container <<'EOT'
+# SPDX-License-Identifier: MIT
+[Container]
+Image=docker.io/library/redis:7.4
+Pod=app.pod
+
+[Install]
+WantedBy=default.target
+EOT

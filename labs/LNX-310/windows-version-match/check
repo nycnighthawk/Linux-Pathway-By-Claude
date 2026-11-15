@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# Compute the expected decision table from the rules and compare it with plan.json; lint the Dockerfile.
+import json, os, re, sys
+from pathlib import Path
+
+os.chdir(os.environ.get("LAB_DIR", "."))
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+if not Path("pairs.json").is_file():
+    print("FAIL: run setup first"); sys.exit(1)
+REL = {"ws2016": 2016, "ws2019": 2019, "ws2022": 2022, "ws2025": 2025}
+def rule(host, image):
+    if host == "win11-24h2":
+        return "process" if image in ("ws2025", "ws2022") else "hyperv"
+    h, i = REL[host], REL[image]
+    return "impossible" if i > h else ("process" if i == h else "hyperv")
+try:
+    plan = json.loads(Path("plan.json").read_text(encoding="utf-8"))
+except Exception:
+    print("FAIL: plan.json is not valid JSON"); sys.exit(1)
+for p in json.loads(Path("pairs.json").read_text(encoding="utf-8")):
+    key = "%s|%s" % (p["host"], p["image"])
+    want = rule(p["host"], p["image"])
+    if plan.get(key) == want:
+        ok("%s -> %s" % (key, want))
+    else:
+        fail("%s: expected one of process, hyperv, impossible (found %r)" % (key, plan.get(key)))
+txt = Path("Dockerfile").read_text(encoding="utf-8")
+lines = [l.strip() for l in txt.splitlines() if l.strip() and not l.strip().startswith("#")]
+frm = [l for l in lines if l.upper().startswith("FROM ")]
+(ok("explicit servercore tag") if frm and frm[0].split()[1] == "mcr.microsoft.com/windows/servercore:ltsc2022" else fail("FROM mcr.microsoft.com/windows/servercore:ltsc2022 (no latest)"))
+(ok("PowerShell shell") if any(re.match(r'SHELL\s+\["powershell"', l, re.I) for l in lines) else fail('add SHELL ["powershell", "-Command", "$ErrorActionPreference = \'Stop\';"]'))
+users = [l.split(None, 1)[1].strip() for l in lines if l.upper().startswith("USER ")]
+(ok("USER ContainerUser") if users and users[-1] == "ContainerUser" else fail("the last USER must be ContainerUser"))
+ep = [l for l in lines if l.upper().startswith("ENTRYPOINT")]
+(ok("exec form ENTRYPOINT") if ep and all(re.match(r"ENTRYPOINT\s+\[", l, re.I) for l in ep) else fail("ENTRYPOINT must use the JSON exec form"))
+ans = {}
+for l in Path("answers.txt").read_text(encoding="utf-8").splitlines():
+    if "=" in l and not l.startswith("#"):
+        k, v = l.split("=", 1); ans[k.strip()] = v.strip()
+(ok("Kubernetes supports process isolation") if ans.get("k8s_isolation") == "process" else fail("k8s_isolation: process or hyperv"))
+(ok("no latest tag") if ans.get("latest_tag") == "no" else fail("latest_tag: yes or no"))
+sys.exit(bad)

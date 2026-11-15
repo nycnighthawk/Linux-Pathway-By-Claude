@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+vulnerable=busybox@1.36.1,libxml2@2.9.14
+sign_target=digest
+EOT
+cat > vex.json <<'EOT'
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://example.com/vex/app-1",
+  "author": "Platform Security",
+  "timestamp": "2026-11-15T09:00:00Z",
+  "version": 1,
+  "statements": [
+    {"vulnerability": {"name": "CVE-2026-1111"},
+     "products": [{"@id": "pkg:deb/debian/openssl@3.0.11-1~deb12u1"}],
+     "status": "fixed"},
+    {"vulnerability": {"name": "CVE-2026-4444"},
+     "products": [{"@id": "pkg:deb/debian/libxml2@2.9.14-1"}],
+     "status": "not_affected",
+     "justification": "vulnerable_code_not_in_execute_path",
+     "impact_statement": "libxml2 is used only for XML-RPC and the HTML parser is never invoked."}
+  ]
+}
+EOT
+cat > verify.sh <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cosign verify \
+  registry.example/app@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef \
+  --certificate-identity-regexp '^https://github.com/example/app/.github/workflows/release.yml@refs/tags/v' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+EOT

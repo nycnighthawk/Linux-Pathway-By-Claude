@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run limits.sh against the fake tree and compare the answers with the recorded files.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f status.txt ] && [ -f answers.txt ] && [ -f limits.sh ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+bytes() { awk -v v="$1" 'BEGIN{n=v+0; u=substr(v,length(v),1); if(u=="K")n*=1024; else if(u=="M")n*=1048576; else if(u=="G")n*=1073741824; printf "%d", n}'; }
+# the script is run twice against a fresh copy of the tree: it must be idempotent
+rm -rf run && mkdir run && cp -a cgroot/. run/ && rm -rf run/demo
+(CGROOT="$PWD/run" bash limits.sh >/dev/null 2>&1 && CGROOT="$PWD/run" bash limits.sh >/dev/null 2>&1) && ok "limits.sh runs twice without error" || fail "limits.sh must run successfully twice (set -e and mkdir -p help)"
+sub=$(cat run/cgroup.subtree_control 2>/dev/null | tr -s ' \n' '\n\n')
+for c in memory pids cpu; do echo "$sub" | grep -qx "+\?$c" && ok "controller $c enabled for children" || fail "cgroup.subtree_control must enable $c (write +$c)"; done
+m=$(cat run/demo/memory.max 2>/dev/null || echo none)
+[ "$(bytes "$m")" = 104857600 ] && ok "memory.max is 100 MiB" || fail "memory.max must be 100 MiB (found: $m)"
+p=$(tr -d ' \n' < run/demo/pids.max 2>/dev/null || echo none)
+[ "$p" = 64 ] && ok "pids.max is 64" || fail "pids.max must be 64 (found: $p)"
+c=$(tr -s ' ' < run/demo/cpu.max 2>/dev/null | head -1 | sed 's/ *$//' || echo none)
+[ "$c" = "20000 100000" ] && ok "cpu.max is one fifth of a core" || fail "cpu.max must be 'quota period' for 20 percent of a core (found: $c)"
+pr=$(head -1 run/demo/cgroup.procs 2>/dev/null | tr -d ' ')
+case "$pr" in ''|*[!0-9]*) fail "cgroup.procs must receive a numeric process ID";; *) ok "a PID was written to cgroup.procs";; esac
+rm -rf run
+want_ns=$(paste -d' ' <(sort ns_host.txt) <(sort ns_container.txt) | awk '$1==$2{split($1,a,":"); print a[1]}' | sort | paste -sd, -)
+[ "$(get shared_namespaces)" = "$want_ns" ] && ok "shared namespaces: $want_ns" || fail "shared_namespaces: list the types whose inode is the same in both files, alphabetical, comma separated"
+mask=$(awk '/^CapEff:/{print $2}' status.txt)
+bit() { python3 -c "import sys; print('yes' if (int('$mask',16)>>$1)&1 else 'no')"; }
+[ "$(get has_sys_admin)" = "$(bit 21)" ] && ok "CAP_SYS_ADMIN decoded" || fail "has_sys_admin: decode bit 21 of CapEff"
+[ "$(get has_net_bind_service)" = "$(bit 10)" ] && ok "CAP_NET_BIND_SERVICE decoded" || fail "has_net_bind_service: decode bit 10 of CapEff"
+want_uid=$(awk '/^uid_map:/{print $3}' status.txt)
+[ "$(get host_uid_of_container_root)" = "$want_uid" ] && ok "host UID of container root is $want_uid" || fail "host_uid_of_container_root: the second column of the line whose first column is 0"
+exit "$bad"

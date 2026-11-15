@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Version-compare the SBOM with the advisories, validate the OpenVEX file and the verify command.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f sbom.cdx.json ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import json, re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+def vt(v): return tuple(int(x) for x in re.findall(r"\d+", v.split("-")[0]))
+sbom = json.load(open("sbom.cdx.json"))["components"]
+adv = json.load(open("advisories.json"))
+want = []
+for a in adv:
+    for c in sbom:
+        if c["name"] == a["name"] and vt(c["version"]) < vt(a["fixed_in"]):
+            patched = [p["value"] for p in c.get("properties", []) if p["name"] == "distro.patched"]
+            if a["cve"] not in patched: want.append("%s@%s" % (c["name"], c["version"]))
+want = ",".join(sorted(set(want)))
+ans = {}
+for l in open("answers.txt"):
+    if "=" in l and not l.startswith("#"):
+        k, v = l.split("=", 1); ans[k.strip()] = v.strip()
+(ok("vulnerable: " + want) if ans.get("vulnerable") == want else fail("vulnerable: name@version of components below fixed_in and not distro-patched, alphabetical, comma separated"))
+(ok("sign the digest") if ans.get("sign_target") == "digest" else fail("sign_target: digest or tag"))
+purl = {c["name"]: c["purl"] for c in sbom}
+try:
+    v = json.load(open("vex.json"))
+except Exception as e:
+    print("FAIL: vex.json is not valid JSON"); sys.exit(1)
+(ok("OpenVEX context") if str(v.get("@context", "")).startswith("https://openvex.dev/ns") else fail("vex.json: @context must start with https://openvex.dev/ns"))
+for k in ("@id", "author", "timestamp", "version"):
+    (ok("vex " + k) if v.get(k) else fail("vex.json: %s is required" % k))
+st = {s.get("vulnerability", {}).get("name"): s for s in v.get("statements", [])}
+JUST = {"component_not_present", "vulnerable_code_not_present", "vulnerable_code_not_in_execute_path", "vulnerable_code_cannot_be_controlled_by_adversary", "inline_mitigations_already_exist"}
+def prod(s, name):
+    return any(purl[name] in (p.get("@id", "") or "") or purl[name] == (p.get("identifiers", {}) or {}).get("purl") for p in s.get("products", []))
+s = st.get("CVE-2026-1111")
+if s is None: fail("vex.json: statement for CVE-2026-1111 is missing")
+else:
+    (ok("CVE-2026-1111 fixed") if s.get("status") == "fixed" else fail("CVE-2026-1111: status must be fixed (distribution back-port)"))
+    (ok("CVE-2026-1111 product") if prod(s, "openssl") else fail("CVE-2026-1111: products[].@id must be the openssl purl"))
+s = st.get("CVE-2026-4444")
+if s is None: fail("vex.json: statement for CVE-2026-4444 is missing")
+else:
+    (ok("CVE-2026-4444 not_affected") if s.get("status") == "not_affected" else fail("CVE-2026-4444: status must be not_affected"))
+    (ok("justification") if s.get("justification") in JUST else fail("CVE-2026-4444: justification must be one of " + ", ".join(sorted(JUST))))
+    (ok("impact statement") if len(str(s.get("impact_statement", "")).split()) >= 4 else fail("CVE-2026-4444: write an impact_statement of at least four words"))
+    (ok("CVE-2026-4444 product") if prod(s, "libxml2") else fail("CVE-2026-4444: products[].@id must be the libxml2 purl"))
+body = "\n".join(l for l in open("verify.sh").read().splitlines() if not l.strip().startswith("#"))
+(ok("cosign verify") if re.search(r"cosign\s+verify\b", body) else fail("verify.sh: cosign verify ..."))
+(ok("digest reference") if re.search(r"registry\.example/app@sha256:[0-9a-f]{64}", body) else fail("verify.sh: reference registry.example/app@sha256:<64 hex digits>, not a tag"))
+(ok("identity asserted") if re.search(r"--certificate-identity(-regexp)?[ =]\S+", body) else fail("verify.sh: add --certificate-identity or --certificate-identity-regexp"))
+(ok("issuer asserted") if re.search(r"--certificate-oidc-issuer(-regexp)?[ =]https?://\S+", body) else fail("verify.sh: add --certificate-oidc-issuer https://..."))
+(ok("transparency log not ignored") if "--insecure-ignore-tlog" not in body else fail("verify.sh: do not use --insecure-ignore-tlog"))
+sys.exit(bad)
+PY

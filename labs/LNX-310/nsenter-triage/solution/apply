@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+exit_signal=SIGTERM
+oom_killed=no
+restart_interval_seconds=31
+entrypoint_form=shell
+root_cause=stop_timeout
+fix=exec_form
+EOT
+cat > debug.sh <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+pid=$(docker inspect -f '{{.State.Pid}}' api)
+nsenter -t "$pid" -n tcpdump -ni any -w /tmp/api.pcap tcp port 8443
+EOT

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Lint the Containerfile against the lesson checklist.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f Containerfile ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import os, re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+lines = [l.strip() for l in re.sub(r"\\\n\s*", " ", open("Containerfile").read()).splitlines() if l.strip() and not l.strip().startswith("#")]
+froms = [i for i, l in enumerate(lines) if re.match(r"FROM\s", l, re.I)]
+(ok("multi-stage (%d FROM lines)" % len(froms)) if len(froms) >= 2 else fail("use at least two FROM lines (a build stage and a runtime stage)"))
+def base(l):
+    m = re.match(r"FROM\s+(?:--platform=\S+\s+)?(\S+)", l, re.I); return m.group(1) if m else ""
+badbase = [base(lines[i]) for i in froms if base(lines[i]) != "scratch" and not ("@sha256:" in base(lines[i]) or (":" in base(lines[i]).rsplit("/", 1)[-1] and not base(lines[i]).endswith(":latest")))]
+(ok("bases pinned") if froms and not badbase else fail("unpinned or latest base: " + ", ".join(badbase)))
+named = [m.group(1) for i in froms for m in [re.search(r"\sAS\s+(\S+)", lines[i], re.I)] if m]
+(ok("build stage named") if named else fail("name the build stage with FROM ... AS builder"))
+last = froms[-1] if froms else 0
+fin = lines[last:]
+(ok("COPY --from into the final stage") if any(re.match(r"COPY\s+--from=", l) for l in fin) else fail("the final stage must COPY --from=<build stage>"))
+(ok("no build tooling in final stage") if not any(re.search(r"build-essential|\bgcc\b|apt-get|\bpip\b", l) for l in fin) else fail("the final stage must not install compilers or run apt-get or pip"))
+for i, l in enumerate(lines):
+    if "apt-get" in l and "install" in l:
+        good = "update" in l and "--no-install-recommends" in l and "/var/lib/apt/lists" in l
+        (ok("apt-get hygiene") if good else fail("apt-get: combine update and install, add --no-install-recommends, remove /var/lib/apt/lists in one RUN"))
+    elif "apt-get" in l and "update" in l and "install" not in l:
+        fail("apt-get update alone in a RUN creates a stale cache layer")
+users = [l.split(None, 1)[1].strip() for l in fin if l.upper().startswith("USER ")]
+(ok("numeric non-root USER") if users and re.match(r"^[1-9][0-9]*(:[0-9]+)?$", users[-1]) else fail("the final stage needs USER with a numeric UID other than 0"))
+ep = [l for l in fin if re.match(r"(ENTRYPOINT|CMD)\s", l, re.I)]
+(ok("exec form start command") if ep and all(re.match(r"^(ENTRYPOINT|CMD)\s+\[", l, re.I) for l in ep) else fail("final stage: ENTRYPOINT or CMD in exec (JSON array) form"))
+(ok("no secrets in ENV or ARG") if not any(re.match(r"(ENV|ARG)\s+\S*(TOKEN|PASSWORD|SECRET|KEY)", l, re.I) for l in lines) else fail("remove ENV and ARG lines that carry credentials"))
+(ok("no ADD of a URL") if not any(re.match(r"ADD\s+https?://", l, re.I) for l in lines) else fail("do not ADD a URL; use COPY or ADD --checksum"))
+(ok("no curl pipe to shell") if not any(re.search(r"(curl|wget)[^|]*\|\s*(sh|bash)", l) for l in lines) else fail("remove curl | sh"))
+(ok("source label") if any(re.match(r"LABEL\s.*org\.opencontainers\.image\.source", l) for l in lines) else fail("add LABEL org.opencontainers.image.source=..."))
+ig = [f for f in (".containerignore", ".dockerignore") if os.path.isfile(f)]
+if ig:
+    t = open(ig[0]).read().split()
+    (ok("ignore file excludes .git and .env") if any(x.rstrip("/") == ".git" for x in t) and ".env" in t else fail("%s must list .git and .env" % ig[0]))
+else:
+    fail("create .containerignore (or .dockerignore)")
+sys.exit(bad)
+PY

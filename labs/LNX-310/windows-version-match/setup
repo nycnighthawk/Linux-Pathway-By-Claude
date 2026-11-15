@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# Starting state: pairs to classify and a Dockerfile to repair (portable: runs on Windows and Linux).
+import json, os
+from pathlib import Path
+
+os.chdir(os.environ.get("LAB_DIR", "."))
+for f in ("pairs.json", "plan.json", "Dockerfile", "answers.txt"):
+    Path(f).unlink(missing_ok=True)
+pairs = [
+    ["ws2025", "ws2025"], ["ws2025", "ws2022"], ["ws2025", "ws2019"],
+    ["ws2022", "ws2025"], ["ws2022", "ws2022"], ["ws2022", "ws2016"],
+    ["ws2019", "ws2022"], ["ws2019", "ws2016"],
+    ["win11-24h2", "ws2025"], ["win11-24h2", "ws2022"], ["win11-24h2", "ws2019"],
+]
+Path("pairs.json").write_text(json.dumps([{"host": h, "image": i} for h, i in pairs], indent=2), encoding="utf-8")
+Path("plan.json").write_text("{}\n", encoding="utf-8")
+Path("Dockerfile").write_text(
+    "# SPDX-License-Identifier: MIT\n"
+    "FROM mcr.microsoft.com/windows/servercore:latest\n"
+    "COPY app C:/app\n"
+    "ENTRYPOINT C:\\app\\server.exe\n", encoding="utf-8")
+Path("answers.txt").write_text("# SPDX-License-Identifier: MIT\nk8s_isolation=?\nlatest_tag=?\n", encoding="utf-8")
