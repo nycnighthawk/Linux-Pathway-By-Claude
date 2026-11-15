@@ -34,6 +34,10 @@ modules:
     title: 'Architecture: API server, etcd, scheduler, kubelet, CRI'
     file: lessons/LNX-311-T01.md
     minutes: 55
+  - topic: LNX-311-T02
+    title: kubeadm install on 3 VMs; HA control-plane design
+    file: lessons/LNX-311-T02.md
+    minutes: 55
 labs:
 - id: static-pod-repair
   topic: LNX-311-T01
@@ -41,8 +45,18 @@ labs:
   env: C
   license: MIT
   minutes: 30
+- id: kubeadm-ha-config
+  topic: LNX-311-T02
+  title: Write a kubeadm configuration for an HA control plane
+  env: V
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-311-T01
   topic: LNX-311-T01
   title: 'Quiz: Architecture: API server, etcd, scheduler, kubelet, CRI'
   file: quizzes/LNX-311-T01.yaml
+- id: LNX-311-T02
+  topic: LNX-311-T02
+  title: 'Quiz: kubeadm install on 3 VMs; HA control-plane design'
+  file: quizzes/LNX-311-T02.yaml

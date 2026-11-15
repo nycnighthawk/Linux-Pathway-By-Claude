@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > plan.txt <<'P'
+endpoint=k8s-api.lab.internal
+port=6443
+version=v1.35.2
+pod_subnet=10.244.0.0/16
+service_subnet=10.96.0.0/12
+nodes=cp1,cp2,cp3
+P
+cat > kubeadm.yaml <<'Y'
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+kubernetesVersion: v1.30.0
+networking:
+  podSubnet: 10.96.0.0/16
+Y
