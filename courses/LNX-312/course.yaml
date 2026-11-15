@@ -58,6 +58,13 @@ modules:
     title: Ingress and Gateway API
     file: lessons/LNX-312-T06.md
     minutes: 50
+- id: policy-discovery
+  title: Policy
+  lessons:
+  - topic: LNX-312-T07
+    title: NetworkPolicy and L7 CiliumNetworkPolicy
+    file: lessons/LNX-312-T07.md
+    minutes: 60
 labs:
 - id: netns-bridge-nat
   topic: LNX-312-T01
@@ -104,6 +111,12 @@ labs:
   env: C
   license: MIT
   minutes: 25
+- id: netpol-matrix
+  topic: LNX-312-T07
+  title: Policies for a three-tier application
+  env: C
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -129,3 +142,7 @@ quizzes:
   topic: LNX-312-T06
   title: 'Quiz: Ingress and Gateway API'
   file: quizzes/LNX-312-T06.yaml
+- id: LNX-312-T07
+  topic: LNX-312-T07
+  title: 'Quiz: NetworkPolicy and L7 CiliumNetworkPolicy'
+  file: quizzes/LNX-312-T07.yaml

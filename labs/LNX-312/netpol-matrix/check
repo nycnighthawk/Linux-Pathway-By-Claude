@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import sys, yaml
+NS = {"shop": {"kubernetes.io/metadata.name": "shop"},
+      "ingress-nginx": {"kubernetes.io/metadata.name": "ingress-nginx"},
+      "kube-system": {"kubernetes.io/metadata.name": "kube-system"}}
+PODS = {  # name: (namespace, labels)
+    "web": ("shop", {"tier": "web"}), "api": ("shop", {"tier": "api"}), "db": ("shop", {"tier": "db"}),
+    "ctrl": ("ingress-nginx", {"app": "controller"}), "dns": ("kube-system", {"k8s-app": "kube-dns"}),
+    "other": ("default", {"app": "other"}),
+}
+NS["default"] = {"kubernetes.io/metadata.name": "default"}
+def sel(s, labels):
+    s = s or {}
+    return all(labels.get(k) == v for k, v in (s.get("matchLabels") or {}).items())
+def peer_ok(peer, ns, labels, pol_ns):
+    if "ipBlock" in peer: return False        # Pods only in this lab
+    ok = True
+    if "namespaceSelector" in peer: ok &= sel(peer["namespaceSelector"], NS[ns])
+    else: ok &= (ns == pol_ns)
+    if "podSelector" in peer: ok &= sel(peer["podSelector"], labels)
+    return ok
+def port_ok(ports, proto, port):
+    if ports is None: return True
+    return any((p.get("protocol", "TCP") == proto) and ("port" not in p or p["port"] == port) for p in ports)
+def allowed(pols, src, dst, proto, port):
+    for direction, (a, b) in (("Egress", (src, dst)), ("Ingress", (dst, src))):
+        me_ns, me_l = PODS[a]; peer_ns, peer_l = PODS[b]
+        selecting = [p for p in pols if p["metadata"]["namespace"] == me_ns
+                     and sel(p["spec"].get("podSelector"), me_l)
+                     and direction in (p["spec"].get("policyTypes") or ["Ingress"])]
+        if not selecting: continue           # not isolated in this direction
+        ok = False
+        for p in selecting:
+            rules = p["spec"].get("ingress" if direction == "Ingress" else "egress") or []
+            for r in rules:
+                peers = r.get("from" if direction == "Ingress" else "to")
+                if peers is not None and not any(peer_ok(x, peer_ns, peer_l, me_ns) for x in peers): continue
+                if port_ok(r.get("ports"), proto, port): ok = True
+        if not ok: return False
+    return True
+CASES = [
+    ("ctrl", "web", "TCP", 8080, True), ("web", "api", "TCP", 9000, True), ("api", "db", "TCP", 5432, True),
+    ("web", "dns", "UDP", 53, True), ("db", "dns", "TCP", 53, True),
+    ("web", "db", "TCP", 5432, False), ("ctrl", "api", "TCP", 9000, False), ("other", "web", "TCP", 8080, False),
+    ("api", "web", "TCP", 8080, False), ("web", "api", "TCP", 22, False), ("db", "api", "TCP", 9000, False),
+    ("web", "other", "TCP", 80, False), ("other", "db", "TCP", 5432, False), ("web", "web", "TCP", 8080, False),
+]
+bad = 0
+try:
+    pols = [d for d in yaml.safe_load_all(open("policies.yaml")) if d and d.get("kind") == "NetworkPolicy"]
+    for s, d, pr, po, want in CASES:
+        got = allowed(pols, s, d, pr, po)
+        print(("ok:   " if got == want else "FAIL: ") + f"{s} -> {d} {pr}/{po} expected {'allow' if want else 'deny'}, got {'allow' if got else 'deny'}")
+        if got != want: bad = 1
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY
