@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Inspect the image chain with qemu-img info --output=json.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+command -v qemu-img >/dev/null || { echo "FAIL: qemu-img not installed (qemu-utils)"; exit 1; }
+[ -f base.qcow2 ] && [ -f .base.sha256 ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import json, os, stat, subprocess, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+def info(f):
+    r = subprocess.run(["qemu-img", "info", "--output=json", f], capture_output=True, text=True)
+    return json.loads(r.stdout) if r.returncode == 0 else None
+for name in ("vm1.qcow2", "vm2.qcow2"):
+    i = info(name)
+    if i is None:
+        fail("%s does not exist or is not a readable image" % name); continue
+    if i.get("format") != "qcow2": fail("%s must be qcow2" % name); continue
+    if i.get("backing-filename") == "base.qcow2": ok("%s backs onto base.qcow2 by relative path" % name)
+    else: fail("%s: backing file must be the relative name base.qcow2 (found %r)" % (name, i.get("backing-filename")))
+    if i.get("backing-filename-format") == "qcow2": ok("%s states the backing format explicitly" % name)
+    else: fail("%s: record the backing format (qemu-img create -F qcow2)" % name)
+    want = 128 * 1024 * 1024 if name == "vm1.qcow2" else 64 * 1024 * 1024
+    if i.get("virtual-size") == want: ok("%s virtual size %d MiB" % (name, want >> 20))
+    else: fail("%s: virtual size must be %d MiB" % (name, want >> 20))
+    r = subprocess.run(["qemu-img", "check", name], capture_output=True, text=True)
+    if r.returncode == 0: ok("%s passes qemu-img check" % name)
+    else: fail("%s fails qemu-img check" % name)
+i = info("vm1.qcow2")
+if i and any(s.get("name") == "clean" for s in i.get("snapshots", [])): ok("vm1.qcow2 has an internal snapshot named clean")
+else: fail("create an internal snapshot named clean in vm1.qcow2 (qemu-img snapshot -c clean vm1.qcow2)")
+mode = os.stat("base.qcow2").st_mode
+if not mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH): ok("template base.qcow2 is read-only")
+else: fail("make the template read-only (chmod a-w base.qcow2)")
+h = subprocess.run(["sha256sum", "base.qcow2"], capture_output=True, text=True).stdout.split()[0]
+if h == open(".base.sha256").read().strip(): ok("template content is unchanged")
+else: fail("base.qcow2 was modified; a template with children must never be written")
+sys.exit(bad)
+PY

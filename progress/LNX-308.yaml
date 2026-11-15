@@ -26,9 +26,17 @@ phases:
     units: 8
     done: []
   labs:
-    state: todo
+    state: done
     units: 8
-    done: []
+    done:
+    - LNX-308-T01
+    - LNX-308-T02
+    - LNX-308-T03
+    - LNX-308-T04
+    - LNX-308-T05
+    - LNX-308-T06
+    - LNX-308-T07
+    - LNX-308-T08
   checks:
     state: todo
     units: 0
@@ -43,3 +51,4 @@ log:
 - '2026-11-15 synth: LNX-308-T05'
 - '2026-11-15 synth: LNX-308-T06'
 - '2026-11-15 synth: LNX-308-T07, LNX-308-T08'
+- '2026-11-15 labs: LNX-308-T01, LNX-308-T02, LNX-308-T03, LNX-308-T04, LNX-308-T05, LNX-308-T06, LNX-308-T07, LNX-308-T08'

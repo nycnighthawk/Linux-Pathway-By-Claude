@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty migration plan to fill in.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f migration-plan.txt
+printf '# SPDX-License-Identifier: MIT\n# Fill in each ? (see README.md)\nguest=?\nsource_host=?\ndest_host=?\nshared_storage=?\nhosts_identical=?\ncpu_model=?\nmachine_type_pinned=?\ndowntime_ms=?\npostcopy=?\ntls=?\nfirewall_ports=?\nmigrate_command=?\nverify_steps=?\nabort_plan=?\n' > migration-plan.txt

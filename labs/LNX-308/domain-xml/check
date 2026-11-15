@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Parse web1.xml and verify each requirement; validate against the libvirt schema when virt-xml-validate exists.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f web1.xml ] || { echo "FAIL: web1.xml is missing; run setup"; exit 1; }
+python3 - <<'PY'
+import re, sys
+import xml.etree.ElementTree as ET
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+try:
+    d = ET.parse("web1.xml").getroot()
+except ET.ParseError as e:
+    print("FAIL: web1.xml is not well-formed XML: %s" % e); sys.exit(1)
+if d.tag != "domain": fail("root element must be <domain>")
+elif d.get("type") == "kvm": ok("domain type is kvm (hardware acceleration)")
+else: fail("domain type must be 'kvm'; 'qemu' means slow pure emulation")
+m = d.find("memory")
+mult = {"KiB": 1, "MiB": 1024, "GiB": 1024 * 1024, "k": 1, "M": 1024, "G": 1024 * 1024, "KB": 1000 / 1024.0, "MB": 1000 * 1000 / 1024.0}
+try:
+    kib = int(m.text) * mult[m.get("unit", "KiB")]
+    if abs(kib - 2 * 1024 * 1024) < 1: ok("memory is 2 GiB")
+    else: fail("memory must be exactly 2 GiB, found %d KiB" % kib)
+except Exception: fail("memory element missing or unreadable")
+v = d.find("vcpu")
+if v is not None and (v.text or "").strip() == "2": ok("2 vCPUs")
+else: fail("vcpu must be 2")
+t = d.find("os/type")
+mach = t.get("machine", "") if t is not None else ""
+if re.fullmatch(r"pc-q35-\d+\.\d+", mach): ok("versioned q35 machine type %s" % mach)
+else: fail("machine must be a versioned q35 type such as pc-q35-9.2, not the moving alias 'q35'")
+c = d.find("cpu")
+if c is not None and c.get("mode") == "host-model": ok("cpu mode host-model")
+else: fail("add <cpu mode='host-model'/> so the guest sees the host's features in a migratable way")
+disks = [x for x in d.findall("devices/disk") if x.get("device") == "disk"]
+if len(disks) == 1:
+    k = disks[0]; dr = k.find("driver"); tg = k.find("target"); sr = k.find("source")
+    if dr is not None and dr.get("name") == "qemu" and dr.get("type") == "qcow2": ok("disk driver qemu/qcow2 stated explicitly")
+    else: fail("disk <driver name='qemu' type='qcow2'/> (state the format, never let it be probed)")
+    if tg is not None and tg.get("bus") == "virtio" and tg.get("dev") == "vda": ok("disk is virtio vda")
+    else: fail("disk target must be dev='vda' bus='virtio'")
+    if sr is not None and sr.get("file") == "/var/lib/libvirt/images/web1.qcow2": ok("disk source is web1.qcow2")
+    else: fail("disk source file must be /var/lib/libvirt/images/web1.qcow2")
+else: fail("exactly one disk with device='disk' is expected")
+ifs = d.findall("devices/interface")
+if len(ifs) == 1:
+    i = ifs[0]; s = i.find("source"); mo = i.find("model")
+    if i.get("type") == "network" and s is not None and s.get("network") == "default": ok("interface on libvirt network 'default'")
+    else: fail("interface must be type='network' with <source network='default'/>")
+    if mo is not None and mo.get("type") == "virtio": ok("interface model virtio")
+    else: fail("interface model must be virtio")
+else: fail("exactly one interface is expected")
+g = d.findall("devices/graphics")
+exposed = [x for x in g if x.get("listen") not in ("127.0.0.1", "::1", "localhost") and (x.find("listen") is None or x.find("listen").get("address") not in ("127.0.0.1", "::1", "localhost"))]
+if not exposed: ok("no graphics console exposed beyond localhost")
+else: fail("graphics must be removed or listen only on 127.0.0.1")
+if d.find("devices/console") is not None or d.find("devices/serial") is not None: ok("serial console present for virsh console")
+else: fail("add a <console type='pty'/> so 'virsh console web1' works")
+sys.exit(bad)
+PY
+rc=$?
+if command -v virt-xml-validate >/dev/null 2>&1; then
+  if virt-xml-validate web1.xml domain >/dev/null 2>&1; then echo "ok:   passes the libvirt domain schema"; else echo "FAIL: virt-xml-validate rejects web1.xml"; rc=1; fi
+else echo "note: virt-xml-validate not installed, schema check skipped"; fi
+exit "$rc"

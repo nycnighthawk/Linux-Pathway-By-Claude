@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Verify the tuned domain against host.txt: pinning on isolated cores, huge pages, virtio, iothread, NUMA.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f db1.xml ] && [ -f host.txt ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys
+import xml.etree.ElementTree as ET
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+def cpus(spec):
+    out = set()
+    for p in spec.split(","):
+        if "-" in p:
+            a, b = p.split("-"); out |= set(range(int(a), int(b) + 1))
+        elif p.strip(): out.add(int(p))
+    return out
+host = dict(l.strip().split("=", 1) for l in open("host.txt") if "=" in l and not l.startswith("#"))
+iso, hk, node0 = cpus(host["isolated_cpus"]), cpus(host["housekeeping_cpus"]), cpus(host["node0_cpus"])
+try: d = ET.parse("db1.xml").getroot()
+except ET.ParseError as e:
+    print("FAIL: db1.xml is not well-formed: %s" % e); sys.exit(1)
+pins = d.findall("cputune/vcpupin")
+sets = {}
+for p in pins:
+    try: sets[int(p.get("vcpu"))] = cpus(p.get("cpuset"))
+    except Exception: pass
+if sorted(sets) == [0, 1, 2, 3] and all(len(s) == 1 for s in sets.values()): ok("each of the 4 vCPUs is pinned to exactly one host CPU")
+else: fail("cputune needs one <vcpupin vcpu='N' cpuset='C'/> per vCPU 0-3, each to a single CPU")
+allp = [next(iter(s)) for s in sets.values() if len(s) == 1]
+if allp and len(set(allp)) == len(allp): ok("no two vCPUs share a host CPU")
+else: fail("two vCPUs are pinned to the same host CPU")
+if allp and set(allp) <= iso: ok("vCPU pins stay inside the isolated cores %s" % host["isolated_cpus"])
+else: fail("vCPUs must be pinned inside the isolated set %s" % host["isolated_cpus"])
+e = d.find("cputune/emulatorpin")
+if e is not None and cpus(e.get("cpuset")) <= hk and cpus(e.get("cpuset")): ok("emulator thread on housekeeping cores")
+else: fail("<emulatorpin cpuset=...> must lie inside the housekeeping cores %s" % host["housekeeping_cpus"])
+io = d.find("iothreads")
+if io is not None and (io.text or "").strip() == "1": ok("one iothread")
+else: fail("add <iothreads>1</iothreads>")
+ip = d.find("cputune/iothreadpin")
+if ip is not None and cpus(ip.get("cpuset")) and cpus(ip.get("cpuset")) <= hk: ok("iothread pinned to housekeeping cores")
+else: fail("add <iothreadpin iothread='1' cpuset=.../> inside the housekeeping cores")
+hp = d.find("memoryBacking/hugepages/page")
+if hp is not None and hp.get("size") == "2048" and hp.get("unit") == "KiB" or (hp is not None and hp.get("size") == "2" and hp.get("unit") == "M") or (hp is not None and hp.get("size") == "2" and hp.get("unit") == "MiB"):
+    ok("2 MiB huge pages requested")
+else: fail("<memoryBacking><hugepages><page size='2048' unit='KiB' nodeset='0'/></hugepages></memoryBacking>")
+if d.find("memoryBacking/hugepages/page") is not None and d.find("memoryBacking/hugepages/page").get("nodeset") == "0": ok("huge pages taken from node 0")
+else: fail("the page element needs nodeset='0'")
+nm = d.find("numatune/memory")
+if nm is not None and nm.get("mode") == "strict" and nm.get("nodeset") == "0": ok("memory strictly bound to node 0")
+else: fail("<numatune><memory mode='strict' nodeset='0'/></numatune>")
+c = d.find("cpu")
+if c is not None and c.get("mode") == "host-passthrough": ok("cpu host-passthrough")
+else: fail("cpu mode must be host-passthrough for this guest")
+t = c.find("topology") if c is not None else None
+if t is not None and (t.get("sockets"), t.get("cores"), t.get("threads")) == ("1", "2", "2"): ok("topology 1 socket, 2 cores, 2 threads")
+else: fail("add <topology sockets='1' cores='2' threads='2'/> inside <cpu>")
+dk = d.find("devices/disk/driver")
+tg = d.find("devices/disk/target")
+if tg is not None and tg.get("bus") == "virtio" and tg.get("dev") == "vda": ok("disk is virtio vda")
+else: fail("disk target must be dev='vda' bus='virtio'")
+if dk is not None and dk.get("cache") == "none" and dk.get("io") == "native" and dk.get("discard") == "unmap" and dk.get("iothread") == "1": ok("disk driver cache=none io=native discard=unmap iothread=1")
+else: fail("disk driver needs cache='none' io='native' discard='unmap' iothread='1'")
+iface = d.find("devices/interface")
+mo = iface.find("model") if iface is not None else None
+dr = iface.find("driver") if iface is not None else None
+if mo is not None and mo.get("type") == "virtio" and dr is not None and dr.get("name") == "vhost" and dr.get("queues") == "4": ok("virtio-net with vhost and 4 queues")
+else: fail("interface: <model type='virtio'/> and <driver name='vhost' queues='4'/>")
+b = d.find("devices/memballoon")
+if b is not None and b.get("model") == "none": ok("memory balloon removed")
+else: fail("set <memballoon model='none'/> (a balloon cannot reclaim huge pages)")
+need = int(8 * 1024 * 1024 / int(host["hugepage_size_kib"]))
+ans = [l.split("=", 1)[1].strip() for l in open("answers.txt") if l.startswith("hugepages_needed=")]
+if ans and ans[0] == str(need): ok("hugepages_needed = %d (8 GiB / 2 MiB)" % need)
+else: fail("answers.txt hugepages_needed: how many 2 MiB pages does an 8 GiB guest need?")
+sys.exit(bad)
+PY
+rc=$?
+if command -v virt-xml-validate >/dev/null 2>&1; then
+  if virt-xml-validate db1.xml domain >/dev/null 2>&1; then echo "ok:   passes the libvirt domain schema"; else echo "FAIL: virt-xml-validate rejects db1.xml"; rc=1; fi
+fi
+exit "$rc"
