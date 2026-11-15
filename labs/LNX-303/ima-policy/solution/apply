@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > ima-policy <<'EOF'
+# pseudo filesystems first: they have no stable content
+dont_measure fsmagic=0x9fa0
+dont_measure fsmagic=0x62656572
+dont_measure fsmagic=0x1021994
+dont_measure fsmagic=0x64626720
+dont_measure fsmagic=0x73636673
+dont_appraise fsmagic=0x9fa0
+dont_appraise fsmagic=0x62656572
+dont_appraise fsmagic=0x1021994
+dont_appraise fsmagic=0x64626720
+dont_appraise fsmagic=0x73636673
+measure func=BPRM_CHECK
+measure func=MMAP_CHECK mask=MAY_EXEC
+measure func=MODULE_CHECK
+appraise func=BPRM_CHECK appraise_type=imasig
+appraise func=MMAP_CHECK mask=MAY_EXEC appraise_type=imasig
+appraise func=MODULE_CHECK appraise_type=imasig
+EOF
+echo 'ima_policy=tcb ima_appraise=log ima_hash=sha256 lockdown=integrity' > cmdline.txt

@@ -1,0 +1,79 @@
+title: 'Quiz: Compliance as code'
+questions:
+- id: parts
+  prompt: In SCAP, which part holds the machine-evaluable checks?
+  choices:
+  - XCCDF
+  - OVAL
+  - ARF
+  - CPE
+  answer:
+  - 1
+  explain: 'A) wrong: XCCDF describes the benchmark, rules and profiles. B) correct: OVAL definitions are evaluated by the scanner.
+    C) wrong: ARF is the result format. D) wrong: CPE names platforms.'
+- id: tailoring
+  prompt: Why tailor a profile with a tailoring file or an extending .profile instead of editing the data stream?
+  choices:
+  - Data streams cannot be edited at all
+  - Deviations stay small, reviewable and survive content updates
+  - Tailoring makes scans faster
+  - It removes the need for exceptions
+  answer:
+  - 1
+  explain: 'A) wrong: they can be, which is the problem. B) correct: the base content updates while your delta stays separate.
+    C) wrong: speed is unchanged. D) wrong: every deviation still needs a reason and an owner.'
+- id: na
+  prompt: A scan shows 94 percent pass on a new distribution release, using content for the previous release. What should worry you?
+  choices:
+  - The HTML report is too large
+  - Many rules may be notapplicable and skipped, so the score flatters the system
+  - The scan ran as root
+  - The profile has too many rules
+  answer:
+  - 1
+  explain: 'A) wrong: size is irrelevant. B) correct: platform mismatches skip rules and the pass rate rises. C) wrong: the scanner needs privileges. D) wrong:
+    count is not the issue.'
+- id: remediate
+  prompt: What is the safest way to apply generated remediation?
+  choices:
+  - Run it on all production hosts at once
+  - Review it, apply to a staging clone and a canary with out-of-band access, then rescan
+  - Run it only after a reboot
+  - Apply only the rules that fail
+  answer:
+  - 1
+  explain: 'A) wrong: one bad rule locks out everything. B) correct: a lockout is recoverable only with another way in. C) wrong:
+    rebooting does not make it safe. D) wrong: all remediation is applied to failing rules; the question is how safely.'
+- id: image
+  prompt: Why is hardening at image build time preferred to remediation on running hosts?
+  choices:
+  - Images cannot drift
+  - Hosts start compliant, changes are tested once, and later scans detect drift as an event
+  - It avoids using OpenSCAP
+  - It removes the need for exceptions
+  answer:
+  - 1
+  explain: 'A) wrong: running hosts still drift. B) correct: build-time application is testable and repeatable. C) wrong: the same tools are used. D) wrong:
+    exceptions still apply.'
+- id: evidence
+  prompt: What does a passing OpenSCAP report prove to an auditor?
+  choices:
+  - The system is secure
+  - The rules in that profile and content version passed as reported by the scanned host
+  - No vulnerabilities exist
+  - The application is correct
+  answer:
+  - 1
+  explain: 'A) wrong: benchmarks cover configuration only. B) correct: it is bounded by profile, version and the trustworthiness of
+    the host. C) wrong: vulnerability scanning is a separate activity. D) wrong: application correctness is out of scope.'
+- id: exceptions
+  prompt: What belongs in an exception register entry?
+  choices:
+  - Only the rule name
+  - The rule, the reason, an owner and an expiry date
+  - A screenshot
+  - The scan score
+  answer:
+  - 1
+  explain: 'A) wrong: it cannot be reviewed without context. B) correct: reason, owner and expiry force a periodic decision. C) wrong:
+    a screenshot is not a record. D) wrong: the score belongs to the result.'

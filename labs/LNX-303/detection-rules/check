@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse the audit rules and the Falco rule file.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f draft.rules ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import os, re, sys
+try:
+    import yaml
+except ImportError:
+    print("FAIL: python3-yaml is required"); sys.exit(1)
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+if not os.path.exists("audit.rules"):
+    fail("audit.rules is missing")
+    rules = []
+else:
+    rules = [l.strip() for l in open("audit.rules") if l.strip() and not l.startswith("#")]
+if rules:
+    if rules[0] == "-D": ok("rules start by clearing the old set (-D)")
+    else: fail("the first rule should be -D")
+    b = [r for r in rules if r.startswith("-b ")]
+    if b and int(b[0].split()[1]) >= 8192: ok("backlog limit %s" % b[0].split()[1])
+    else: fail("raise the backlog limit: -b 8192 or more")
+    if rules[-1] == "-e 2": ok("the last rule makes the configuration immutable (-e 2)")
+    else: fail("the last rule must be -e 2 so a root attacker cannot unload the rules")
+    def sys_rule(call, arch):
+        for r in rules:
+            if r.startswith("-a") and "arch=" + arch in r and re.search(r"-S\s+\S*\b" + call + r"\b", r): return r
+        return None
+    for arch in ("b64", "b32"):
+        r = sys_rule("execve", arch)
+        if r: ok("execve is audited for %s" % arch)
+        else: fail("execve must be audited for %s too: a 32-bit binary uses the other system call table" % arch)
+        if r and "auid>=1000" in r and "auid!=unset" in r: ok("execve rule (%s) limits itself to real login sessions" % arch)
+        elif r: fail("add -F auid>=1000 -F auid!=unset to the execve rule (%s) to keep service accounts out of the volume" % arch)
+        if sys_rule("finit_module", arch): ok("module loading is audited for %s" % arch)
+        else: fail("audit init_module, finit_module and delete_module for %s" % arch)
+    for path in ("/etc/passwd", "/etc/shadow", "/etc/sudoers"):
+        r = [x for x in rules if x.startswith("-w " + path + " ")]
+        if r and re.search(r"-p\s+\S*w\S*a?|-p\s+\S*a\S*w?", r[0]) and "-k " in r[0]: ok("watch on %s records writes and attribute changes with a key" % path)
+        else: fail("watch %s with -p wa and a -k key" % path)
+if not os.path.exists("local-falco.yaml"):
+    fail("local-falco.yaml is missing"); sys.exit(1)
+try:
+    docs = yaml.safe_load(open("local-falco.yaml"))
+except Exception as e:
+    fail("local-falco.yaml is not valid YAML (%s)" % e); sys.exit(1)
+rl = [d for d in docs if isinstance(d, dict) and "rule" in d]
+if rl: ok("a Falco rule is defined")
+else: fail("define a rule (- rule: ...)"); sys.exit(1)
+r = rl[0]
+for k in ("desc", "condition", "output", "priority", "tags"):
+    if r.get(k): ok("rule has %s" % k)
+    else: fail("rule needs %s" % k)
+cond = str(r.get("condition", ""))
+if re.search(r"evt\.type|spawned_process", cond): ok("condition looks at process execution")
+else: fail("the condition must test process execution (evt.type in (execve, execveat) or a spawned_process macro)")
+# expand macros and lists to check the content of the condition
+macros = {d["macro"]: str(d.get("condition", "")) for d in docs if isinstance(d, dict) and "macro" in d}
+lists = {d["list"]: d.get("items", []) for d in docs if isinstance(d, dict) and "list" in d}
+full = cond
+for _ in range(3):
+    for m, c in macros.items(): full = re.sub(r"\b" + re.escape(m) + r"\b", "(" + c + ")", full)
+for l, items in lists.items(): full = re.sub(r"\(" + re.escape(l) + r"\)", "(" + ",".join(map(str, items)) + ")", full)
+if re.search(r"proc\.pname\s+in\s*\([^)]*(httpd|nginx|apache2)", full): ok("the parent process is a web server")
+else: fail("condition: proc.pname must be a web server binary (httpd, nginx, apache2)")
+if re.search(r"proc\.name\s+in\s*\([^)]*\b(bash|sh)\b", full): ok("the child process is a shell")
+else: fail("condition: proc.name must be a shell (bash, sh)")
+if "%proc.cmdline" in str(r.get("output", "")): ok("output includes the command line")
+else: fail("output must include %proc.cmdline")
+if str(r.get("priority", "")).upper() in ("WARNING", "ERROR", "CRITICAL", "ALERT", "EMERGENCY"): ok("priority %s is above notice" % r["priority"])
+else: fail("a webshell is not a notice: use WARNING or higher")
+if isinstance(r.get("tags"), list) and any(str(t).startswith("mitre_") for t in r["tags"]): ok("tagged with a MITRE ATT&CK tactic")
+else: fail("add a tag such as mitre_execution")
+sys.exit(bad)
+PY

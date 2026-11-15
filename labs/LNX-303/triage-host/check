@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Compare the findings with what the evidence shows.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -d evidence ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import hashlib, json, os, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+try:
+    f = json.load(open("findings.json"))
+except Exception as e:
+    fail("findings.json is missing or not JSON"); sys.exit(1)
+if f.get("account") == "deploy": ok("the compromised account is deploy (the only account with a successful login from the attacker address)")
+else: fail("account: which account logged in successfully from the address that guessed passwords?")
+if f.get("source_ip") == "203.0.113.9": ok("source address 203.0.113.9")
+else: fail("source_ip: the address behind the failed and the first successful login")
+if str(f.get("first_access", "")).startswith("2026-11-14T03:12:44"): ok("first malicious access 2026-11-14T03:12:44")
+else: fail("first_access: the first Accepted login from the attacker address, as an ISO time")
+want = {"/var/spool/cron/crontabs/deploy", "/home/deploy/.ssh/authorized_keys", "/etc/ld.so.preload"}
+got = set(f.get("persistence", []))
+if got == want: ok("all three persistence mechanisms found, no false ones")
+else: fail("persistence: expected the cron entry, the added SSH key and the preload library (missing %s, extra %s)" % (sorted(want - got), sorted(got - want)))
+if f.get("c2") == "198.51.100.77:4444": ok("command-and-control endpoint 198.51.100.77:4444")
+else: fail("c2: the established connection owned by the deleted binary, as ip:port")
+if f.get("deleted_binary_pid") == 4242: ok("pid 4242 runs a deleted binary; copy it from /proc/4242/exe")
+else: fail("deleted_binary_pid: see lsof-deleted.txt")
+s = f.get("steps", [])
+allowed = {"isolate-network", "capture-memory", "copy-proc-exe", "image-disk", "hash-evidence", "rebuild", "reboot", "reinstall"}
+if s and set(s) <= allowed and "reboot" not in s and "reinstall" not in s[:s.index("image-disk")] if "image-disk" in s else False: ok("no reboot or reinstall before evidence is saved")
+else: fail("steps: no reboot or reinstall before the disk image exists")
+def before(a, b): return a in s and b in s and s.index(a) < s.index(b)
+if before("capture-memory", "image-disk"): ok("memory is captured before the disk (order of volatility)")
+else: fail("steps: capture-memory must come before image-disk")
+if before("copy-proc-exe", "rebuild") and before("capture-memory", "rebuild"): ok("rebuild comes after evidence is taken")
+else: fail("steps: copy-proc-exe and capture-memory must precede rebuild")
+if before("image-disk", "hash-evidence"): ok("hashes are taken after the image")
+else: fail("steps: hash-evidence after image-disk")
+if "isolate-network" in s and (not "capture-memory" in s or s.index("isolate-network") < s.index("capture-memory")): ok("the network is cut first, keeping memory and processes")
+else: fail("steps: isolate-network (not power-off) comes first")
+# hashes of the evidence files
+try:
+    lines = [l.split(None, 1) for l in open("evidence-hashes.txt") if l.strip()]
+except Exception:
+    lines = []
+    fail("evidence-hashes.txt is missing (sha256sum evidence/*)")
+names = {n.strip().lstrip("*").replace("evidence/", ""): h for h, n in lines}
+files = sorted(os.listdir("evidence"))
+good = all(names.get(n) == hashlib.sha256(open("evidence/" + n, "rb").read()).hexdigest() for n in files)
+if lines and set(names) == set(files) and good: ok("every evidence file has a correct sha256 in evidence-hashes.txt")
+elif lines: fail("evidence-hashes.txt must list a correct sha256 for every file in evidence/")
+sys.exit(bad)
+PY

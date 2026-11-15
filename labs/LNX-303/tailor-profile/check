@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse the tailored profile and the exception register.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f requirements.txt ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import csv, datetime, os, sys
+try:
+    import yaml
+except ImportError:
+    print("FAIL: python3-yaml is required"); sys.exit(1)
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+if not os.path.exists("site.profile"):
+    fail("site.profile is missing"); sys.exit(1)
+raw = open("site.profile").read()
+try:
+    p = yaml.safe_load(raw)
+except Exception as e:
+    fail("site.profile is not valid YAML (%s)" % e); sys.exit(1)
+if p.get("extends") == "cis_server_l1": ok("extends the base profile instead of copying it")
+else: fail("extends: cis_server_l1")
+if p.get("documentation_complete") is True: ok("documentation_complete: true")
+else: fail("documentation_complete: true is required for the profile to build")
+if p.get("title"): ok("has a title")
+else: fail("add a title")
+sel = [str(s) for s in p.get("selections", [])]
+if "!service_avahi_disabled" in sel: ok("service_avahi_disabled is deselected with a leading !")
+else: fail("deselect service_avahi_disabled with '!service_avahi_disabled'")
+if "var_accounts_tmout=900" in sel: ok("var_accounts_tmout set to 900 seconds")
+else: fail("set the variable: var_accounts_tmout=900")
+if "sshd_set_idle_timeout" in sel: ok("sshd_set_idle_timeout is selected")
+else: fail("select sshd_set_idle_timeout")
+extra = [s for s in sel if s not in ("!service_avahi_disabled", "var_accounts_tmout=900", "sshd_set_idle_timeout")]
+if not extra: ok("no other deviations from the base profile")
+else: fail("only the three required changes belong here; remove %s" % extra)
+dev = [s for s in sel if s.startswith("!")]
+reasons = [l for l in raw.splitlines() if l.strip().startswith("# reason:")]
+if len(reasons) >= len(sel) and len(sel) > 0: ok("each selection has a reason comment")
+else: fail("put a '# reason:' comment above every selection (found %d for %d)" % (len(reasons), len(sel)))
+rows = list(csv.DictReader(open("exceptions.csv"))) if os.path.exists("exceptions.csv") else []
+if rows and rows[0].keys() >= {"rule", "reason", "owner", "expires"}: ok("exception register has rule, reason, owner and expires")
+else: fail("exceptions.csv needs the header rule,reason,owner,expires")
+names = {r.get("rule") for r in rows}
+if set(x[1:] for x in dev) <= names and rows: ok("every deselected rule is in the register")
+else: fail("every rule you deselect must have a row in exceptions.csv")
+for r in rows:
+    try:
+        d = datetime.date.fromisoformat(r["expires"])
+    except Exception:
+        fail("expires must be an ISO date (%s)" % r.get("rule")); continue
+    if datetime.date(2026, 11, 15) < d <= datetime.date(2027, 11, 30) and r.get("owner", "").strip() and r.get("reason", "").strip():
+        ok("exception %s has an owner, a reason and an expiry within a year" % r["rule"])
+    else: fail("exception %s needs an owner, a reason and an expiry within one year of 2026-11-15" % r.get("rule"))
+sys.exit(bad)
+PY

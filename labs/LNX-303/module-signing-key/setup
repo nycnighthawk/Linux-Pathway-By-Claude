@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a log from a failed module load and nothing else.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f mok.priv mok.der mok.cnf enroll.sh diagnosis.txt modprobe.log
+cat > modprobe.log <<'EOF'
+$ sudo modprobe nvidia_example
+modprobe: ERROR: could not insert 'nvidia_example': Key was rejected by service
+$ dmesg | tail -3
+Loading of module with unavailable key is rejected
+$ modinfo -F signer nvidia_example
+Local build key (not enrolled)
+$ mokutil --sb-state
+SecureBoot enabled
+EOF

@@ -1,0 +1,79 @@
+title: 'Quiz: OpenBao/Vault, sops'
+questions:
+- id: seal
+  prompt: What does it mean that a Vault-compatible server is sealed?
+  choices:
+  - It rejects all TLS connections
+  - It holds encrypted data but cannot decrypt it until the master key is reconstructed from a quorum of unseal key shares or by auto-unseal
+  - The audit log is closed
+  - All tokens are revoked
+  answer:
+  - 1
+  explain: 'A) wrong: the listener may still answer status requests. B) correct: the master key is not in memory. C) wrong: audit
+    is separate. D) wrong: tokens are not revoked by sealing.'
+- id: root
+  prompt: What should happen to the initial root token after setup?
+  choices:
+  - It becomes the CI credential
+  - It is revoked, with a documented break-glass procedure to generate a new one when needed
+  - It is stored with the unseal keys
+  - It is shared with the on-call team
+  answer:
+  - 1
+  explain: 'A) wrong: a daily root credential defeats policies. B) correct: least privilege with recovery. C) wrong: one leak then
+    opens everything. D) wrong: sharing it widens exposure.'
+- id: kv2
+  prompt: A policy grants read on secret/payments/* but the service gets permission denied on a KV v2 secret. Why?
+  choices:
+  - KV v2 stores data under secret/data/payments/*, so the policy path matches nothing
+  - Tokens expired
+  - The service lacks a certificate
+  - The audit device failed
+  answer:
+  - 0
+  explain: 'A) correct: v2 inserts data/ and metadata/ path segments. B) wrong: an expired token gives a different error. C) wrong:
+    not needed for KV. D) wrong: that would stop all requests.'
+- id: dynamic
+  prompt: What is the main security benefit of dynamic database credentials?
+  choices:
+  - They never expire
+  - Each workload gets its own short-lived account, revoked at lease end, so a leak has bounded value and is attributable
+  - They are stored encrypted in Git
+  - They remove the need for policies
+  answer:
+  - 1
+  explain: 'A) wrong: expiry is the point. B) correct: lease-bound per-identity credentials limit damage. C) wrong: unrelated.
+    D) wrong: policies decide who may request them.'
+- id: sops
+  prompt: What does sops leave unencrypted in a YAML file?
+  choices:
+  - Nothing
+  - The keys, so diffs and reviews stay readable, while values are encrypted
+  - The values
+  - Only comments
+  answer:
+  - 1
+  explain: 'A) wrong: keys remain readable. B) correct: this leaks structure but allows review. C) wrong: values are what it protects.
+    D) wrong: comments are not the design point.'
+- id: recipient
+  prompt: A departing engineer is removed from .sops.yaml and the files are re-encrypted. What else is needed?
+  choices:
+  - Nothing, they can no longer decrypt anything
+  - Rotate the secrets themselves, because the engineer may hold copies and old ciphertext in history
+  - Delete the repository
+  - Change the file format
+  answer:
+  - 1
+  explain: 'A) wrong: old ciphertext and copies remain decryptable with their key. B) correct: only rotation invalidates values they
+    could have read. C) wrong: it does not help. D) wrong: format is irrelevant.'
+- id: audit
+  prompt: Why configure two audit devices?
+  choices:
+  - The server refuses requests when all audit devices fail, so a single full disk causes an outage
+  - Two devices double the log detail
+  - It is required by the licence
+  - To speed up unsealing
+  answer:
+  - 0
+  explain: 'A) correct: unlogged access is treated as worse than none. B) wrong: detail is unchanged. C) wrong: no such requirement.
+    D) wrong: unrelated.'

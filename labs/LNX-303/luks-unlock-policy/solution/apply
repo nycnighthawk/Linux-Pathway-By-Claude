@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > policy.json <<'EOF'
+{"t":2,"pins":{"tang":[{"url":"http://tang1.corp.example"},{"url":"http://tang2.corp.example"}],"tpm2":{"pcr_ids":"7"}}}
+EOF
+cat > bind.sh <<'EOF'
+#!/usr/bin/env bash
+clevis luks bind -d /dev/disk/by-uuid/3f9c1a52-7d0e-4b8a-9a64-0c5d2e7f1b11 sss "$(cat policy.json)"
+EOF
+echo 'data UUID=3f9c1a52-7d0e-4b8a-9a64-0c5d2e7f1b11 none luks,_netdev,tries=3' > crypttab
+cat > recovery.txt <<'EOF'
+recovery_slot=passphrase
+passphrase_stored=vault
+header_backup=offline
+EOF

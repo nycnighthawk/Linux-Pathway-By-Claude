@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Replay the log against the filter in Python, and parse the jail and the Suricata rule.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f access.log ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import configparser, os, re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+# --- filter
+if not os.path.exists("filter.conf"):
+    fail("filter.conf is missing")
+else:
+    c = configparser.ConfigParser(interpolation=None, strict=False)
+    c.read("filter.conf")
+    raw = c.get("Definition", "failregex", fallback="").strip().splitlines()
+    pats = []
+    for r in raw:
+        r = r.strip()
+        if not r: continue
+        if "<HOST>" not in r:
+            fail("every failregex line needs <HOST>"); continue
+        try:
+            pats.append(re.compile(r.replace("<HOST>", r"(?P<host>[0-9a-fA-F:.]+)")))
+        except re.error as e:
+            fail("bad regex: %s" % e)
+    hits = {}
+    for line in open("access.log"):
+        for p in pats:
+            m = p.search(line)
+            if m:
+                hits[line.strip()] = m.group("host"); break
+    expected = {"198.51.100.7": 3, "10.0.0.5": 1, "192.0.2.44": 1, "2001:db8::99": 1}
+    got = {}
+    for h in hits.values(): got[h] = got.get(h, 0) + 1
+    if got.get("198.51.100.7") == 3: ok("the three failed POSTs to /login from 198.51.100.7 match")
+    else: fail("the filter must match failed POST /login attempts (3 from 198.51.100.7, found %s)" % got.get("198.51.100.7", 0))
+    if "203.0.113.50" not in got: ok("successful logins and ordinary page views do not match")
+    else: fail("the filter matches a successful login or a normal request from 203.0.113.50")
+    if "192.0.2.44" in got and got["192.0.2.44"] == 1: ok("a POST with a query string and HTTP/2.0 matches, a failed GET does not")
+    else: fail("match failed POSTs including those with ?query and HTTP/2.0, but not failed GETs (found %s for 192.0.2.44)" % got.get("192.0.2.44", 0))
+    if got.get("2001:db8::99") == 1: ok("IPv6 client addresses match")
+    else: fail("the <HOST> capture must allow IPv6 addresses (the filter missed 2001:db8::99)")
+# --- jail
+if not os.path.exists("jail.local"):
+    fail("jail.local is missing")
+else:
+    j = configparser.ConfigParser(interpolation=None, strict=False)
+    j.read("jail.local")
+    g = lambda s, k: j.get(s, k, fallback="").strip()
+    s = "login-abuse"
+    if j.has_section(s): ok("jail [login-abuse] defined")
+    else: fail("define a [login-abuse] jail"); sys.exit(1)
+    if g(s, "enabled").lower() in ("true", "yes", "1"): ok("jail enabled")
+    else: fail("enabled = true")
+    if g(s, "filter") == "login-abuse": ok("jail uses the filter")
+    else: fail("filter = login-abuse")
+    if g(s, "logpath").endswith("access.log"): ok("jail watches the access log")
+    else: fail("logpath must point to the web access log")
+    mr = g(s, "maxretry")
+    if mr.isdigit() and 5 <= int(mr) <= 10: ok("maxretry %s tolerates typos but stops guessing" % mr)
+    else: fail("maxretry between 5 and 10 (found %r)" % mr)
+    def secs(v):
+        m = re.fullmatch(r"(\d+)\s*([smhd]?)", v.strip())
+        return int(m.group(1)) * {"": 1, "s": 1, "m": 60, "h": 3600, "d": 86400}[m.group(2)] if m else 0
+    if secs(g(s, "bantime")) >= 600: ok("bantime at least 10 minutes")
+    else: fail("bantime must be at least 10m")
+    if 60 <= secs(g(s, "findtime")) <= 3600: ok("findtime between 1 minute and 1 hour")
+    else: fail("findtime between 1m and 1h")
+    ign = (j.get("DEFAULT", "ignoreip", fallback="") + " " + g(s, "ignoreip"))
+    if "10.0.0.5" in ign: ok("the bastion 10.0.0.5 is never banned")
+    else: fail("ignoreip must include the bastion 10.0.0.5")
+    if "nft" in g(s, "banaction") or "firewalld" in g(s, "banaction"): ok("bans through nftables or firewalld")
+    else: fail("banaction = nftables-multiport (or a firewalld action)")
+# --- suricata rule
+rules = [l.strip() for l in open("local.rules")] if os.path.exists("local.rules") else []
+rules = [r for r in rules if r and not r.startswith("#")]
+if len(rules) == 1: ok("one local rule")
+else: fail("local.rules must hold exactly one rule")
+if rules:
+    r = rules[0]
+    if re.match(r"^alert\s+http\s+\S+\s+\S+\s+->\s+\$HOME_NET\s+\S+\s+\(", r): ok("alert on http traffic towards HOME_NET")
+    else: fail("start with: alert http $EXTERNAL_NET any -> $HOME_NET any (")
+    if re.search(r"http\.uri\s*;\s*content:\s*\"/admin/config\.php\"", r): ok("matches the URI buffer, not the whole stream")
+    else: fail('use http.uri; content:"/admin/config.php"')
+    if "nocase" in r: ok("case-insensitive")
+    else: fail("add nocase")
+    if "flow:" in r and "to_server" in r: ok("flow to_server")
+    else: fail("add flow:established,to_server")
+    m = re.search(r"sid:(\d+)", r)
+    if m and int(m.group(1)) >= 1000000: ok("local sid %s" % m.group(1))
+    else: fail("sid must be 1000000 or higher for local rules")
+    if "rev:" in r and "msg:" in r and "classtype:" in r: ok("msg, rev and classtype present")
+    else: fail("add msg, classtype and rev")
+    if r.rstrip().endswith(")"): ok("rule is closed")
+    else: fail("the rule must end with )")
+sys.exit(bad)
+PY

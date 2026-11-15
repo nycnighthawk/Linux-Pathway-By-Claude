@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse the IMA policy and the kernel command line.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f sample-policy ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import os, re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+if not os.path.exists("ima-policy"):
+    fail("ima-policy is missing"); sys.exit(1)
+rules = [l.split("#")[0].strip() for l in open("ima-policy")]
+rules = [r for r in rules if r]
+def idx(pred):
+    for i, r in enumerate(rules):
+        if pred(r): return i
+    return None
+def kv(r):
+    return dict(x.split("=", 1) for x in r.split()[1:] if "=" in x)
+# pseudo filesystems excluded, and before any measuring or appraising rule
+first_active = idx(lambda r: r.split()[0] in ("measure", "appraise"))
+fs = {"0x9fa0": "procfs", "0x62656572": "sysfs", "0x01021994": "tmpfs", "0x1021994": "tmpfs", "0x64626720": "debugfs", "0x73636673": "securityfs"}
+seen = set()
+for i, r in enumerate(rules):
+    if r.split()[0] in ("dont_measure", "dont_appraise") and "fsmagic" in r:
+        m = kv(r).get("fsmagic", "").lower()
+        if m in fs:
+            seen.add(fs[m])
+            if first_active is not None and i > first_active:
+                fail("exclusion for %s comes after a measure or appraise rule; the first matching rule decides" % fs[m])
+need = {"procfs", "sysfs", "tmpfs"}
+if need <= seen: ok("procfs, sysfs and tmpfs are excluded (%d pseudo filesystems)" % len(seen))
+else: fail("exclude at least procfs (0x9fa0), sysfs (0x62656572) and tmpfs (0x1021994) with dont_measure/dont_appraise fsmagic=")
+if first_active is not None and all(rules[i].split()[0].startswith("dont_") for i in range(first_active)): ok("exclusions precede the active rules")
+else: fail("put every dont_* rule before the first measure or appraise rule")
+def has(action, func, extra=()):
+    for r in rules:
+        p = r.split()
+        if p[0] == action and kv(r).get("func") == func and all(e in r for e in extra): return True
+    return False
+if has("measure", "BPRM_CHECK"): ok("executed programs are measured")
+else: fail("measure func=BPRM_CHECK")
+if has("measure", "MMAP_CHECK", ("mask=MAY_EXEC",)): ok("executable mappings (libraries) are measured")
+else: fail("measure func=MMAP_CHECK mask=MAY_EXEC")
+if has("appraise", "BPRM_CHECK", ("appraise_type=imasig",)): ok("executables must carry a signature")
+else: fail("appraise func=BPRM_CHECK appraise_type=imasig")
+if has("appraise", "MODULE_CHECK", ("appraise_type=imasig",)): ok("kernel modules must carry a signature")
+else: fail("appraise func=MODULE_CHECK appraise_type=imasig")
+if has("appraise", "MMAP_CHECK", ("appraise_type=imasig",)): ok("libraries must carry a signature")
+else: fail("appraise func=MMAP_CHECK mask=MAY_EXEC appraise_type=imasig")
+for r in rules:
+    p = r.split()
+    if p[0] == "appraise" and kv(r).get("func") == "FILE_CHECK":
+        fail("do not appraise FILE_CHECK: it covers every file read, including unit files and configuration that carry no signature")
+        break
+else: ok("no appraisal of general file reads")
+for r in rules:
+    if r.split()[0] == "appraise" and "appraise_type" not in r:
+        fail("appraise rules should require signatures (appraise_type=imasig), not local hashes: %s" % r); break
+else: ok("appraisal uses signatures, not locally generated hashes")
+c = open("cmdline.txt").read().split() if os.path.exists("cmdline.txt") else []
+args = dict(a.split("=", 1) for a in c if "=" in a)
+if args.get("ima_appraise") == "log": ok("first stage runs in ima_appraise=log, so violations are recorded, not enforced")
+else: fail("cmdline.txt: start the rollout with ima_appraise=log")
+if args.get("lockdown") == "integrity": ok("lockdown=integrity protects the verifier")
+else: fail("cmdline.txt: lockdown=integrity")
+if args.get("ima_hash") in ("sha256", "sha384", "sha512"): ok("ima_hash=%s" % args["ima_hash"])
+else: fail("cmdline.txt: ima_hash=sha256 or stronger (SHA-1 is the old default)")
+sys.exit(bad)
+PY

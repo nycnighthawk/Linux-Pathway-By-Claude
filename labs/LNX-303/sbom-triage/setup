@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an installed-package list, an advisory feed and a VEX statement.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f packages.txt advisories.json vex.json sbom.cdx.json findings.csv
+cat > packages.txt <<'EOF'
+openssl 3.0.11-1
+zlib1g 1.2.13-1
+libxml2 2.9.14-2
+curl 7.88.1-10
+bash 5.2.15-2
+libpng16-16 1.6.39-2
+sudo 1.9.13-1
+tzdata 2024a-0
+EOF
+cat > advisories.json <<'EOF'
+[
+  {"cve": "CVE-2026-1001", "package": "openssl", "fixed": "3.0.15-1", "severity": "HIGH", "kev": false},
+  {"cve": "CVE-2026-1002", "package": "curl", "fixed": "7.88.1-10", "severity": "CRITICAL", "kev": false},
+  {"cve": "CVE-2026-1003", "package": "sudo", "fixed": "1.9.17-1", "severity": "HIGH", "kev": true},
+  {"cve": "CVE-2026-1004", "package": "libxml2", "fixed": "2.9.14-4", "severity": "MEDIUM", "kev": false},
+  {"cve": "CVE-2026-1005", "package": "zlib1g", "fixed": "1.2.13-2", "severity": "CRITICAL", "kev": false},
+  {"cve": "CVE-2026-1006", "package": "bash", "fixed": null, "severity": "HIGH", "kev": false},
+  {"cve": "CVE-2026-1007", "package": "libpng16-16", "fixed": "1.6.40-1", "severity": "LOW", "kev": false}
+]
+EOF
+cat > vex.json <<'EOF'
+[
+  {"cve": "CVE-2026-1005", "package": "zlib1g", "status": "not_affected", "justification": "vulnerable_code_not_in_execute_path"}
+]
+EOF

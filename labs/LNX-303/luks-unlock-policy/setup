@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an inventory sheet for one server whose root volume must unlock unattended.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f policy.json bind.sh crypttab recovery.txt inventory.txt
+cat > inventory.txt <<'EOF'
+device=/dev/disk/by-uuid/3f9c1a52-7d0e-4b8a-9a64-0c5d2e7f1b11
+mapper=data
+tang_servers=http://tang1.corp.example,http://tang2.corp.example
+tpm=2.0
+secure_boot=enabled
+requirement=boots unattended after one Tang outage; survives bootloader and kernel updates; stolen machine stays locked
+EOF

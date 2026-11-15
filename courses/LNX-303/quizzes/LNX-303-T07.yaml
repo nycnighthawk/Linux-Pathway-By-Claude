@@ -1,0 +1,79 @@
+title: 'Quiz: OVAL, Trivy, SBOMs'
+questions:
+- id: backport
+  prompt: A scanner flags openssl 3.0.15-1~deb12u1 because upstream fixed the CVE in 3.0.16. What is the most likely explanation?
+  choices:
+  - The package is vulnerable and unpatched
+  - The distribution backported the fix into its own build, and the scanner compared upstream version strings
+  - The SBOM is corrupt
+  - The CVE does not exist
+  answer:
+  - 1
+  explain: 'A) wrong: confirm in the vendor tracker before assuming. B) correct: distributions fix older versions in place, so only
+    their own data gives the right answer. C) wrong: an SBOM is not involved. D) wrong: nothing suggests that.'
+- id: purl
+  prompt: What does a package URL (purl) provide in an SBOM?
+  choices:
+  - A download link
+  - A standard identifier that ties a component to ecosystem, name and version for advisory matching
+  - A licence text
+  - A signature
+  answer:
+  - 1
+  explain: 'A) wrong: it identifies, it does not fetch. B) correct: scanners join on purls. C) wrong: licences are separate fields.
+    D) wrong: signing is separate.'
+- id: oval
+  prompt: What does an OVAL definition express?
+  choices:
+  - A firewall rule
+  - A declarative check, such as an installed package being older than the fixed build for a given release
+  - A container policy
+  - A network capture filter
+  answer:
+  - 1
+  explain: 'A) wrong: firewalls use their own languages. B) correct: oscap evaluates it on the host. C) wrong: unrelated. D) wrong:
+    unrelated.'
+- id: vex
+  prompt: What is a VEX statement for?
+  choices:
+  - Encrypting an SBOM
+  - Stating per CVE and product whether it is affected, with a justification, so scanners can suppress non-exploitable findings
+  - Listing licences
+  - Scheduling scans
+  answer:
+  - 1
+  explain: 'A) wrong: it does not encrypt. B) correct: statuses are not_affected, affected, fixed and under_investigation. C) wrong:
+    licences are separate. D) wrong: scheduling is a pipeline matter.'
+- id: unfixed
+  prompt: Why is --ignore-unfixed risky as a global default?
+  choices:
+  - It slows the scan
+  - It hides findings with no available fix, including real risk that needs a mitigation
+  - It disables the database
+  - It changes the SBOM format
+  answer:
+  - 1
+  explain: 'A) wrong: speed is unaffected. B) correct: no fix does not mean no risk. C) wrong: the database is still used. D) wrong:
+    format is unrelated.'
+- id: priority
+  prompt: Which prioritisation is the most defensible?
+  choices:
+  - Sort by CVSS alone
+  - Known exploited first, then likelihood of exploitation (EPSS), then severity adjusted for exposure
+  - Fix in alphabetical order of package name
+  - Fix only critical findings
+  answer:
+  - 1
+  explain: 'A) wrong: severity in the abstract does not equal risk. B) correct: it uses exploitation evidence and context. C) wrong:
+    it ignores risk. D) wrong: a known-exploited medium may matter more.'
+- id: stale
+  prompt: A pipeline's scans always pass. Which check would reveal a hidden problem?
+  choices:
+  - Counting the lines of the SBOM
+  - The age of the vulnerability database the scanner used
+  - The size of the image
+  - The number of CPU cores
+  answer:
+  - 1
+  explain: 'A) wrong: size says nothing about freshness. B) correct: an old database knows no new CVEs and gives clean results. C)
+    wrong: irrelevant. D) wrong: irrelevant.'

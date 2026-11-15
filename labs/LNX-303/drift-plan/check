@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Consistency grading of a continuous-assurance plan.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f drift-plan.txt ] || { echo "FAIL: drift-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" drift-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+isint() { printf '%s' "$1" | grep -Eq '^[0-9]+$'; }
+v=$(get scan_frequency_days); if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 7 ]; then ok "hosts are scanned at least weekly ($v days)"; else fail "scan_frequency_days: an integer from 1 to 7"; fi
+e=$(get enforcement); case "$e" in converge|replace|both) ok "enforcement=$e" ;; *) fail "enforcement: converge, replace or both" ;; esac
+v=$(get max_host_age_days)
+if [ "$e" = replace ] || [ "$e" = both ]; then
+  if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 45 ]; then ok "hosts are replaced within $v days"; else fail "max_host_age_days: 1 to 45 when you replace hosts"; fi
+else
+  [ "$v" = "none" ] || isint "$v" && ok "max_host_age_days=$v" || fail "max_host_age_days: a number, or none"
+fi
+v=$(get agent_silence_alert_hours); if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 24 ]; then ok "a silent agent or scanner alerts within $v hours"; else fail "agent_silence_alert_hours: 1 to 24 (silence is an incident)"; fi
+v=$(get exception_max_days); if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 365 ]; then ok "exceptions expire within $v days"; else fail "exception_max_days: 1 to 365"; fi
+case "$(get exception_review)" in weekly|monthly) ok "exception review $(get exception_review)" ;; *) fail "exception_review: weekly or monthly" ;; esac
+o=$(get baseline_owner); if [ -n "$o" ] && [ "$o" != "?" ] && [ "$o" != none ]; then ok "baseline owner $o"; else fail "baseline_owner: a named team"; fi
+v=$(get baseline_review_months); if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 12 ]; then ok "baseline reviewed every $v months"; else fail "baseline_review_months: 1 to 12 (benchmarks change yearly)"; fi
+v=$(get evidence_retention_months); if isint "$v" && [ "$v" -ge 12 ]; then ok "evidence kept $v months"; else fail "evidence_retention_months: 12 or more"; fi
+m=$(get metrics)
+for k in pass_rate time_to_detect exception_age; do case ",$m," in *",$k,"*) ok "metric $k tracked" ;; *) fail "metrics must include $k" ;; esac; done
+c=$(get lifecycle_calendar)
+for k in certificate_expiry os_eol; do case ",$c," in *",$k,"*) ok "calendar has $k" ;; *) fail "lifecycle_calendar must include $k" ;; esac; done
+i=$(get independent_check)
+if [ -n "$i" ] && [ "$i" != "?" ] && [ "$(printf '%s' "$i" | tr -d '[:space:]')" != "none" ] && [ "$(printf '%s' "$i" | wc -c)" -ge 8 ]; then ok "independent check: $i"; else fail "independent_check: describe a check that does not rely on the host reporting about itself"; fi
+exit "$bad"

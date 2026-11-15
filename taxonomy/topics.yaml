@@ -115,8 +115,8 @@ topics:
   LNX-303-T03: {course: LNX-303, title: "Secure Boot, signed modules", depth: 2, env: V}
   LNX-303-T04: {course: LNX-303, title: "IMA/EVM, lockdown", depth: 2, env: V}
   LNX-303-T05: {course: LNX-303, title: "Falco, auditd advanced", depth: 3, env: V}
-  LNX-303-T06: {course: LNX-303, title: "Suricata, fail2ban", depth: 3, env: V}
-  LNX-303-T07: {course: LNX-303, title: "OVAL, Trivy, SBOMs", depth: 3, env: C}
+  LNX-303-T06: {course: LNX-303, title: "Suricata, fail2ban", depth: 3, env: V, query: [suricata, fail2ban, intrusion, nids, brute-force]}
+  LNX-303-T07: {course: LNX-303, title: "OVAL, Trivy, SBOMs", depth: 3, env: C, query: [oval, oscap, openscap, sbom, vulnerability, cve]}
   LNX-303-T08: {course: LNX-303, title: "Compliance as code", depth: 4, env: V}
   LNX-303-T09: {course: LNX-303, title: "OpenBao/Vault, sops", depth: 3, env: C}
   LNX-303-T10: {course: LNX-303, title: "Linux forensics basics", depth: 2, env: V}
