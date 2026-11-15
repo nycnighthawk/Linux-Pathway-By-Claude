@@ -1,0 +1,27 @@
+title: 'Quiz: MTU and throughput'
+questions:
+- id: vxlan
+  prompt: Underlay MTU is 1500 and the CNI uses VXLAN over IPv4. What is the Pod MTU?
+  choices: [1500, 1480, 1450, 1400]
+  answer: [2]
+  explain: 'A) wrong. B) wrong: that is IP-in-IP. C) correct: 50 bytes of overhead. D) wrong.'
+- id: ping
+  prompt: What payload size gives a 1450-byte packet with ping -M do -s?
+  choices: [1450, 1422, 1400, 1472]
+  answer: [1]
+  explain: 'A) wrong. B) correct: 1450 minus 20 IP and 8 ICMP. C) wrong. D) wrong: that fits 1500.'
+- id: clamp
+  prompt: What does MSS clamping not help?
+  choices: [UDP traffic such as QUIC, TCP handshakes, HTTP downloads, Database connections over TCP]
+  answer: [0]
+  explain: 'A) correct: clamping rewrites TCP SYN options only. B) wrong. C) wrong. D) wrong.'
+- id: symptoms
+  prompt: Which symptoms suggest an MTU black hole? (select two)
+  choices: [Pings and small requests work, large transfers stall, Every packet is dropped, DNS fails only for new names]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: measure
+  prompt: Why record CPU in a throughput test?
+  choices: [A saturated core shows a software limit, not a link limit, To lower MTU, To disable offloads, CPU has no effect]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

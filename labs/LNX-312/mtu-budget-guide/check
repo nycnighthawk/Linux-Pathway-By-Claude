@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f budget.txt ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" budget.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+want() { [ "$(get "$1")" = "$2" ] && ok "$1 = $2" || fail "$1 should be $2"; }
+want ipip_1500 1480
+want vxlan_1500 1450
+want wireguard_1500 1440
+want vxlan_in_wireguard_1500 1390
+want vxlan_9000 8950
+want max_ping_payload_vxlan_1500 1422
+num() { get "$1" | grep -Eq '^[0-9]+(\.[0-9]+)?$' && awk -v v="$(get "$1")" 'BEGIN{exit !(v>0)}'; }
+for k in gbps_node gbps_pod_same gbps_pod_cross gbps_service; do num $k && ok "$k is a positive number" || fail "$k must be a positive number"; done
+if num gbps_node; then
+  n=$(get gbps_node)
+  for k in gbps_pod_cross gbps_service; do
+    num $k && awk -v a="$n" -v b="$(get $k)" 'BEGIN{exit !(a>=b)}' && ok "gbps_node >= $k" || fail "gbps_node (the ceiling) must be at least $k"
+  done
+fi
+case "$(get bottleneck)" in link|cpu|offload|mtu) ok bottleneck ;; *) fail "bottleneck must be link, cpu, offload or mtu" ;; esac
+[ "$(wc -l < notes.txt)" -ge 3 ] && ok "notes.txt has evidence" || fail "notes.txt needs at least three lines"
+exit $bad

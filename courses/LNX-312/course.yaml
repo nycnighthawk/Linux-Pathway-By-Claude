@@ -84,6 +84,10 @@ modules:
     title: Cilium ClusterMesh across two kind clusters
     file: lessons/LNX-312-T11.md
     minutes: 45
+  - topic: LNX-312-T12
+    title: MTU, encapsulation overhead, throughput
+    file: lessons/LNX-312-T12.md
+    minutes: 40
 labs:
 - id: netns-bridge-nat
   topic: LNX-312-T01
@@ -160,6 +164,12 @@ labs:
   env: C
   license: MIT
   minutes: 25
+- id: mtu-budget-guide
+  topic: LNX-312-T12
+  title: Build an MTU budget and measure the layers
+  env: S
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -205,3 +215,7 @@ quizzes:
   topic: LNX-312-T11
   title: 'Quiz: Cilium ClusterMesh across two kind clusters'
   file: quizzes/LNX-312-T11.yaml
+- id: LNX-312-T12
+  topic: LNX-312-T12
+  title: 'Quiz: MTU, encapsulation overhead, throughput'
+  file: quizzes/LNX-312-T12.yaml
