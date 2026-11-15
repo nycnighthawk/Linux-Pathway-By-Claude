@@ -33,6 +33,13 @@ modules:
     title: cloud-init
     file: lessons/LNX-306-T03.md
     minutes: 45
+- id: images-and-iac
+  title: Images and infrastructure as code
+  lessons:
+  - topic: LNX-306-T04
+    title: Packer images
+    file: lessons/LNX-306-T04.md
+    minutes: 45
 labs:
 - id: unattended-install
   topic: LNX-306-T01
@@ -58,6 +65,12 @@ labs:
   minutes: 35
   packages:
   - python3-yaml
+- id: packer-template
+  topic: LNX-306-T04
+  title: Write a safe Packer template
+  env: V
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-306-T01
   topic: LNX-306-T01
@@ -71,3 +84,7 @@ quizzes:
   topic: LNX-306-T03
   title: 'Quiz: cloud-init'
   file: quizzes/LNX-306-T03.yaml
+- id: LNX-306-T04
+  topic: LNX-306-T04
+  title: 'Quiz: Packer images'
+  file: quizzes/LNX-306-T04.yaml

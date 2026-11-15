@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f el9.pkr.hcl ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+t = open("el9.pkr.hcl").read()
+code = re.sub(r"(?m)^\s*(#|//).*$", "", t)
+def has(p): return re.search(p, code, re.S) is not None
+ok("plugins are declared and pinned") if has(r'packer\s*\{[^{}]*required_plugins\s*\{.*?qemu\s*=\s*\{[^}]*version\s*=') else fail("packer { required_plugins { qemu = { version = ..., source = ... } } }")
+for v in ("iso_url", "iso_checksum", "ssh_password"):
+    ok("variable %s declared" % v) if has(r'variable\s+"%s"' % v) else fail('variable "%s"' % v)
+m = re.search(r'variable\s+"ssh_password"\s*\{(.*?)\}', code, re.S)
+ok("ssh_password is sensitive") if m and re.search(r"sensitive\s*=\s*true", m.group(1)) else fail("ssh_password needs sensitive = true")
+s = re.search(r'source\s+"qemu"\s+"el9"\s*\{(.*)\n\}', code, re.S)
+if not s: fail('source "qemu" "el9" { ... }')
+else:
+    b = s.group(1)
+    ok("ISO checksum comes from a variable") if re.search(r"iso_checksum\s*=\s*var\.iso_checksum", b) else fail("iso_checksum = var.iso_checksum")
+    ok("no checksum bypass") if not re.search(r'iso_checksum\s*=\s*"none"', b) else fail("never set iso_checksum to none")
+    ok("http_directory set") if re.search(r'http_directory\s*=\s*"', b) else fail("http_directory = \"http\"")
+    ok("boot command points the installer at the answer file") if "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/" in b else fail("boot_command must contain inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/...")
+    ok("ssh_username set") if re.search(r'ssh_username\s*=\s*"', b) else fail("ssh_username")
+bl = re.search(r"\nbuild\s*\{(.*)\n\}", code, re.S)
+if not bl: fail("a build { ... } block")
+else:
+    b = bl.group(1)
+    ok("build uses the qemu source") if "source.qemu.el9" in b else fail('sources = ["source.qemu.el9"]')
+    ok("cleanup script is a shell provisioner") if re.search(r'provisioner\s+"shell"\s*\{[^}]*scripts/cleanup\.sh', b, re.S) else fail('provisioner "shell" { script = "scripts/cleanup.sh" }')
+    ok("manifest post-processor") if re.search(r'post-processor\s+"manifest"', b) else fail('post-processor "manifest"')
+ok("no literal password") if not re.search(r'(?i)(password|passwd)\s*=\s*"[^"]+"', code) else fail("no literal password strings; use var.ssh_password")
+c = open("scripts/cleanup.sh").read()
+ok("cleanup has a shebang") if re.match(r"#!/bin/(ba)?sh", c) else fail("scripts/cleanup.sh needs a shebang")
+for pat, msg in [(r"userdel\s+(-r\s+)?packer|usermod\s+.*-L\s+packer", "removes or locks the build user"),
+                 (r"truncate\s+-s\s*0\s+/etc/machine-id", "truncates the machine id"),
+                 (r"rm\s+(-\w+\s+)*/etc/ssh/ssh_host_\*", "removes SSH host keys"),
+                 (r"cloud-init\s+clean\s+.*--logs", "cleans cloud-init state"),
+                 (r"(dnf|yum)\s+clean\s+all|apt-get\s+clean", "cleans the package cache"),
+                 (r"^\s*sync\b", "syncs the disk")]:
+    ok(msg) if re.search(pat, c, re.M) else fail("cleanup.sh must do this: " + msg)
+sys.exit(bad)
+PY
+rc=$?
+if [ $rc -eq 0 ] && command -v packer >/dev/null; then packer validate -syntax-only el9.pkr.hcl >/dev/null 2>&1 && echo "ok:   packer validate -syntax-only accepts the template" || { echo "FAIL: packer rejects the template"; rc=1; }; fi
+exit $rc
