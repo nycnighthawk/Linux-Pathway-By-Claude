@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: plain-text secrets in plain/, a vault password file, and a playbook that needs them encrypted.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf ansible.cfg inventory group_vars plain site.yml out answers.txt .vault_pass
+mkdir -p inventory group_vars/all plain
+cat > ansible.cfg <<'CFG'
+# SPDX-License-Identifier: MIT
+[defaults]
+inventory = inventory/hosts
+host_key_checking = False
+deprecation_warnings = False
+interpreter_python = auto_silent
+CFG
+printf '# SPDX-License-Identifier: MIT\nlocalhost ansible_connection=local\n' > inventory/hosts
+printf 'lab-vault-pass\n' > .vault_pass
+chmod 600 .vault_pass
+printf '# SPDX-License-Identifier: MIT\nvault_db_password: S3cr3t-DB-pw-7731\n' > plain/secrets.yml
+printf 'tok_live_9f8e7d6c5b4a\n' > plain/api_token.txt
+cat > group_vars/all/vars.yml <<'Y'
+# SPDX-License-Identifier: MIT
+db_user: appuser
+db_password: "{{ vault_db_password }}"
+Y
+cat > site.yml <<'PLAY'
+# SPDX-License-Identifier: MIT
+- name: Write an application configuration that holds secrets
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Create the output directory
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/out"
+        state: directory
+        mode: "0755"
+    - name: Render the configuration with the secrets
+      ansible.builtin.copy:
+        dest: "{{ playbook_dir }}/out/app.conf"
+        mode: "0600"
+        content: |
+          user={{ db_user }}
+          password={{ db_password }}
+          token={{ api_token }}
+      no_log: true
+PLAY
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nencrypt_one_value_command=?\nchange_password_command=?\nlabel_in_header_position=?\ntask_keyword_that_hides_output=?\n' > answers.txt

@@ -32,6 +32,8 @@ phases:
     done:
     - LNX-305-T01
     - LNX-305-T02
+    - LNX-305-T03
+    - LNX-305-T04
   checks:
     state: todo
     units: 0
@@ -50,3 +52,5 @@ log:
 - '2026-11-15 synth: LNX-305-T09'
 - '2026-11-15 labs: LNX-305-T01'
 - '2026-11-15 labs: LNX-305-T02'
+- '2026-11-15 labs: LNX-305-T03'
+- '2026-11-15 labs: LNX-305-T04'

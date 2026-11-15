@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the encrypted files by decrypting them, scan the tree for leaks and run the playbook with and without the key.
+set -u
+export LC_ALL=C.UTF-8 ANSIBLE_NOCOLOR=1
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f .vault_pass ] || { echo "FAIL: .vault_pass is missing; run setup"; exit 1; }
+vid="lab@$PWD/.vault_pass"
+v=group_vars/all/vault.yml
+if [ -f $v ] && head -1 $v | grep -q '^\$ANSIBLE_VAULT;1.2;AES256;lab$'; then ok "vault.yml is encrypted under the label lab"; else fail "group_vars/all/vault.yml must be encrypted with vault id lab (first line \$ANSIBLE_VAULT;1.2;AES256;lab)"; fi
+if [ -f $v ] && ansible-vault view --vault-id "$vid" $v 2>/dev/null | grep -q '^vault_db_password: S3cr3t-DB-pw-7731$'; then ok "vault.yml decrypts to vault_db_password"; else fail "vault.yml must hold vault_db_password with the value from plain/secrets.yml"; fi
+t=$(ls group_vars/all/*.yml 2>/dev/null | grep -v -e vars.yml -e vault.yml | head -1)
+if [ -n "$t" ] && grep -q '^api_token: !vault |' "$t" && grep -q 'ANSIBLE_VAULT;1.2;AES256;lab' "$t"; then ok "api_token is an inline !vault value with label lab ($t)"; else fail "put api_token as an inline encrypted value (ansible-vault encrypt_string --name api_token) in a second file under group_vars/all/"; fi
+leak=$(grep -rIl -e 'S3cr3t-DB-pw-7731' -e 'tok_live_9f8e7d6c5b4a' --exclude-dir=out --exclude-dir=.git . 2>/dev/null | head -3)
+[ -z "$leak" ] && ok "no plain-text secret is left in the tree" || fail "plain-text secrets still present in: $leak (delete plain/ after encrypting)"
+[ "$(stat -c %a .vault_pass)" = 600 ] && ok "vault password file is mode 600" || fail ".vault_pass must stay mode 600"
+rm -rf out
+out=$(ansible-playbook site.yml --vault-id "$vid" -vvv 2>&1); rc=$?
+[ $rc = 0 ] && ok "playbook runs with the vault id" || { fail "playbook failed with the vault id"; printf '%s\n' "$out" | tail -8; }
+[ "$(stat -c %a out/app.conf 2>/dev/null)" = 600 ] && ok "app.conf is mode 600" || fail "out/app.conf must exist with mode 600"
+grep -q '^password=S3cr3t-DB-pw-7731$' out/app.conf 2>/dev/null && grep -q '^token=tok_live_9f8e7d6c5b4a$' out/app.conf 2>/dev/null && ok "secrets reach the rendered file" || fail "app.conf must hold the decrypted password and token"
+printf '%s' "$out" | grep -q -e 'S3cr3t-DB-pw-7731' -e 'tok_live_9f8e7d6c5b4a' && fail "a secret appears in the -vvv output: keep no_log: true on the task" || ok "the secrets do not appear in -vvv output"
+ansible-playbook site.yml >/dev/null 2>&1 && fail "the playbook must not run without the vault password" || ok "without the password the run is refused"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get encrypt_one_value_command)" = "ansible-vault encrypt_string" ] && ok "encrypt_string" || fail "encrypt_one_value_command: the subcommand that encrypts a single value for inline use"
+[ "$(get change_password_command)" = "ansible-vault rekey" ] && ok "rekey" || fail "change_password_command: the subcommand that re-encrypts files under a new password"
+case "$(get label_in_header_position)" in 4|fourth|"4th") ok "label position" ;; *) fail "label_in_header_position: the header fields are separated by semicolons; which field number holds the vault id label (count from 1)" ;; esac
+[ "$(get task_keyword_that_hides_output)" = no_log ] && ok "no_log" || fail "task_keyword_that_hides_output: the task keyword that keeps arguments and results out of the output"
+exit $bad

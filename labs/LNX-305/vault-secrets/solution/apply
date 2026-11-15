@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+export ANSIBLE_NOCOLOR=1
+vid="lab@$PWD/.vault_pass"
+cp plain/secrets.yml group_vars/all/vault.yml
+ansible-vault encrypt --vault-id "$vid" --encrypt-vault-id lab group_vars/all/vault.yml >/dev/null
+printf '# SPDX-License-Identifier: MIT\n' > group_vars/all/token.yml
+ansible-vault encrypt_string --vault-id "$vid" --encrypt-vault-id lab --name api_token "$(tr -d '\n' < plain/api_token.txt)" >> group_vars/all/token.yml
+rm -rf plain
+sed -i -e 's/^encrypt_one_value_command=.*/encrypt_one_value_command=ansible-vault encrypt_string/' -e 's/^change_password_command=.*/change_password_command=ansible-vault rekey/' -e 's/^label_in_header_position=.*/label_in_header_position=4/' -e 's/^task_keyword_that_hides_output=.*/task_keyword_that_hides_output=no_log/' answers.txt

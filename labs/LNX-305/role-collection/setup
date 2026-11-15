@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a playbook that calls a role that does not exist yet, as acme.tools.banner.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf ansible.cfg inventory site.yml src dist collections out answers.txt
+mkdir -p inventory src/acme_tools
+cat > ansible.cfg <<'CFG'
+# SPDX-License-Identifier: MIT
+[defaults]
+inventory = inventory/hosts
+collections_path = collections
+host_key_checking = False
+deprecation_warnings = False
+interpreter_python = auto_silent
+CFG
+printf '# SPDX-License-Identifier: MIT\nlocalhost ansible_connection=local\n' > inventory/hosts
+cat > site.yml <<'PLAY'
+# SPDX-License-Identifier: MIT
+- name: Use the banner role from the acme.tools collection
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: acme.tools.banner
+      vars:
+        banner_dest: "{{ playbook_dir }}/out/banner.txt"
+        banner_text: Authorised use only
+PLAY
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nbuild_command=?\ninstall_command=?\ndefaults_vs_vars=?\nspec_file=?\n' > answers.txt

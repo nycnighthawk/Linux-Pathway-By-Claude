@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+c=src/acme_tools
+mkdir -p $c/roles/banner/{tasks,defaults,templates,meta,handlers}
+cat > $c/galaxy.yml <<'Y'
+# SPDX-License-Identifier: MIT
+namespace: acme
+name: tools
+version: 1.0.0
+readme: README.md
+authors:
+  - Lab Author <lab@example.invalid>
+description: Small tools for the lab
+license:
+  - MIT
+tags:
+  - lab
+Y
+printf '# acme.tools\n\nLab collection.\n' > $c/README.md
+cat > $c/roles/banner/defaults/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+banner_text: Authorised use only
+banner_repeat: 1
+Y
+cat > $c/roles/banner/meta/argument_specs.yml <<'Y'
+# SPDX-License-Identifier: MIT
+argument_specs:
+  main:
+    short_description: Write a login banner file
+    options:
+      banner_dest:
+        type: str
+        required: true
+        description: Path of the banner file.
+      banner_text:
+        type: str
+        default: Authorised use only
+        description: The banner line.
+      banner_repeat:
+        type: int
+        default: 1
+        description: How many times the line is written.
+Y
+cat > $c/roles/banner/meta/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+galaxy_info:
+  author: Lab Author
+  description: Write a login banner
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms: []
+dependencies: []
+Y
+cat > $c/roles/banner/tasks/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+- name: Make sure the destination directory exists
+  ansible.builtin.file:
+    path: "{{ banner_dest | dirname }}"
+    state: directory
+    mode: "0755"
+- name: Render the banner
+  ansible.builtin.template:
+    src: banner.j2
+    dest: "{{ banner_dest }}"
+    mode: "0644"
+  notify: Banner changed
+Y
+cat > $c/roles/banner/handlers/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+- name: Banner changed
+  ansible.builtin.debug:
+    msg: The banner file was rewritten
+Y
+cat > $c/roles/banner/templates/banner.j2 <<'Y'
+{# SPDX-License-Identifier: MIT #}
+{% for _ in range(banner_repeat | int) %}
+{{ banner_text }}
+{% endfor %}
+# end of banner
+Y
+ansible-galaxy collection build $c --output-path dist >/dev/null
+ansible-galaxy collection install dist/acme-tools-1.0.0.tar.gz -p collections >/dev/null
+sed -i -e 's/^build_command=.*/build_command=ansible-galaxy collection build/' -e 's/^install_command=.*/install_command=ansible-galaxy collection install/' -e 's/^defaults_vs_vars=.*/defaults_vs_vars=defaults/' -e 's#^spec_file=.*#spec_file=meta/argument_specs.yml#' answers.txt
