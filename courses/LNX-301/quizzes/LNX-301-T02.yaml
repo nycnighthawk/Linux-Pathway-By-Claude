@@ -1,0 +1,92 @@
+title: 'Quiz: Kerberos, keytabs, GSSAPI SSH'
+questions:
+- id: what-travels
+  prompt: In a normal Kerberos login, what does the user's client send to the service it wants to use?
+  choices:
+  - The user's password, encrypted with TLS
+  - A service ticket plus an authenticator proving the client holds the session key
+  - A hash of the password for the service to compare
+  - The ticket-granting ticket itself
+  answer:
+  - 1
+  explain: 'A (wrong): The password never goes to the service; that is the point of the protocol. B (correct): The
+    ticket is readable only by the service and the authenticator carries a timestamp encrypted with the session
+    key. C (wrong): A password-derived hash would make the service a target for offline attacks. D (wrong): The
+    TGT is only presented to the KDC''s ticket-granting service, never to ordinary services.'
+- id: clock-skew
+  prompt: Every login fails with 'Clock skew too great' after a VM is resumed from a snapshot. What is the first
+    fix?
+  choices:
+  - Reissue the keytab
+  - Delete the credential cache and reboot the KDC
+  - Step the clock back to correct time, for example with chronyc makestep
+  - Raise the ticket lifetime
+  answer:
+  - 2
+  explain: 'A (wrong): The keys are fine; the timestamps in authenticators are not. B (wrong): Neither addresses
+    the host''s wrong time. C (correct): Authenticators carry timestamps and the default tolerance is five minutes,
+    so correct time restores service. D (wrong): Lifetime does not change the skew check on authenticators.'
+- id: ktadd-rotates
+  prompt: You run kadmin 'ktadd' for host/web1 on a second occasion and keep the first keytab file as well. What
+    happens to the first file?
+  choices:
+  - It keeps working; both keytabs hold the current key
+  - It stops working because ktadd rotated the key and incremented the key version
+  - It is updated automatically over the network
+  - It becomes valid for a different realm
+  answer:
+  - 1
+  explain: 'A (wrong): ktadd generates a new key unless told otherwise. B (correct): The KDC now holds a newer key
+    version; tickets use it and the old keytab cannot decrypt them. C (wrong): Keytab files are local and are not
+    synchronised. D (wrong): The realm is part of the principal and does not change.'
+- id: ssh-fallback
+  prompt: ssh asks for a password although the user holds a valid TGT and GSSAPIAuthentication is on at both ends.
+    ssh -vvv reports 'Server not found in Kerberos database'. Most likely cause?
+  choices:
+  - The client built a service principal from a short name or a CNAME that the KDC does not know
+  - The TGT is too old for any service ticket
+  - sshd cannot read the client's cache
+  - PermitRootLogin is no
+  answer:
+  - 0
+  explain: 'A (correct): The client asks for host/<name>; the name must match a principal exactly, so connect by
+    the real FQDN or adjust canonicalisation. B (wrong): An expired TGT gives a different error. C (wrong): The
+    server never reads the client''s credentials cache. D (wrong): That affects authorisation after authentication,
+    not the lookup.'
+- id: keytab-secret
+  prompt: How should a host keytab be treated?
+  choices:
+  - 'Like a password: root-owned, mode 0600, never in images, and a distinct principal per host'
+  - As public data, because the keys inside are encrypted
+  - As a log file that can be world-readable for monitoring
+  - As disposable, since tickets expire after ten hours
+  answer:
+  - 0
+  explain: 'A (correct): A keytab holds long-term keys, so anyone who copies it can impersonate the host. B (wrong):
+    Keytabs store keys in a form directly usable by the owner. C (wrong): World-readable keys defeat the whole scheme.
+    D (wrong): Tickets expire, but the keytab key is what mints them.'
+- id: krb5-trace
+  prompt: Which switch prints a step-by-step trace of KDC discovery, pre-authentication and errors for the MIT client?
+  choices:
+  - KRB5_TRACE=/dev/stderr
+  - klist -e
+  - kdestroy -A
+  - kvno -q
+  answer:
+  - 0
+  explain: 'A (correct): This environment variable makes libkrb5 print its trace, and is the most useful debugging
+    aid. B (wrong): Shows encryption types of cached tickets, not the process. C (wrong): Deletes all caches. D
+    (wrong): Quiet mode of the key version tool; it hides information.'
+- id: auth-to-local
+  prompt: A Kerberos principal alice@EXAMPLE.COM authenticates to sshd but no account called alice exists locally.
+    Which mechanisms let the principal map to an account?
+  choices:
+  - The user's .k5login file, auth_to_local rules in krb5.conf, or SSSD resolving the name from the directory
+  - Setting GSSAPIAuthentication to no
+  - Removing the host keytab
+  - Running kinit on the server
+  answer:
+  - 0
+  explain: 'A (correct): These are the standard places where the principal-to-account mapping is defined. B (wrong):
+    That disables the method entirely. C (wrong): Without the keytab the server cannot authenticate anyone. D (wrong):
+    The server''s own ticket does not map users.'

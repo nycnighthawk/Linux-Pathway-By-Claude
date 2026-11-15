@@ -1,0 +1,81 @@
+title: 'Quiz: ansible-freeipa automation'
+questions:
+- id: idempotent
+  prompt: What does idempotent mean for an ansible-freeipa module?
+  choices:
+  - It always changes the object
+  - A second run with the same arguments reports no change because the object already matches
+  - It runs only once per year
+  - It deletes unmanaged objects
+  answer:
+  - 1
+  explain: 'A (wrong): That is the opposite. B (correct): Modules read the current state and change only the difference.
+    C (wrong): Frequency is not part of the definition. D (wrong): Pruning is not automatic.'
+- id: member-action
+  prompt: 'You set ''user: [alice, bob]'' on an ipagroup task with state present. Carol was added by hand earlier.
+    What happens?'
+  choices:
+  - Carol stays because lists are merged
+  - Carol is removed because the list replaces the membership
+  - The task fails
+  - Carol becomes admin
+  answer:
+  - 1
+  explain: 'A (wrong): Without action: member the list is treated as the full membership. B (correct): Use action:
+    member to add or remove only the listed users. C (wrong): It runs successfully. D (wrong): No such effect.'
+- id: secrets
+  prompt: Where should ipaadmin_password come from?
+  choices:
+  - A literal in the playbook
+  - A vaulted variable referenced with Jinja, or better a keytab for a narrow automation account
+  - The hostname
+  - An environment file committed next to the playbook
+  answer:
+  - 1
+  explain: 'A (wrong): Secrets in Git are a leak. B (correct): The secret stays out of plain text. C (wrong): Not
+    a secret. D (wrong): Still in the repository.'
+- id: fqcn
+  prompt: Why write freeipa.ansible_freeipa.ipahbacrule rather than ipahbacrule?
+  choices:
+  - The short form is faster
+  - RHEL 10 installs only the collection format, so the collection prefix (or module_defaults) is needed
+  - The short form needs Windows
+  - The prefix chooses the realm
+  answer:
+  - 1
+  explain: 'A (wrong): No performance difference. B (correct): Short names do not resolve without the prefix. C
+    (wrong): Irrelevant. D (wrong): It selects the collection.'
+- id: drift
+  prompt: How does a scheduled '--check --diff' run help?
+  choices:
+  - It repairs problems automatically
+  - It reports any difference between Git and the domain, so manual edits show up as drift
+  - It speeds up replication
+  - It rotates the CA
+  answer:
+  - 1
+  explain: 'A (wrong): Check mode changes nothing. B (correct): Changed tasks in check mode identify drift. C (wrong):
+    Unrelated. D (wrong): Unrelated.'
+- id: no-hbac-allow
+  prompt: 'What does ipaserver_no_hbac_allow: true do?'
+  choices:
+  - It skips creating the default allow_all HBAC rule at install
+  - It disables Kerberos
+  - It removes sudo
+  - It disables the web UI
+  answer:
+  - 0
+  explain: 'A (correct): The domain starts default-deny for HBAC. B (wrong): No. C (wrong): No. D (wrong): No.'
+- id: where-run
+  prompt: Where do the ansible-freeipa modules need to run?
+  choices:
+  - On a host with the IPA Python libraries, normally an IdM server or enrolled client, with the target set to one
+    server
+  - Only on the control node laptop with no IPA packages
+  - On every client at once for objects
+  - Only inside a container without network
+  answer:
+  - 0
+  explain: 'A (correct): The modules reuse the IPA code, which must be present on the managed node. B (wrong): They
+    fail with import errors. C (wrong): Objects need one change on one server; replication propagates it. D (wrong):
+    They need the server API.'
