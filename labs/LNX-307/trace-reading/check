@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Recompute the answers from the recorded trace and read the bpftrace program.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f app.strace ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+cfg=$(awk '/openat\(/ && !/ENOENT/ && !/EACCES/ && /\.conf"/ {match($0,/"[^"]*"/); print substr($0,RSTART+1,RLENGTH-2); exit}' app.strace)
+[ "$(get config_file_used)" = "$cfg" ] && ok "config file $cfg" || fail "config_file_used: the .conf path whose openat succeeded"
+ff=$(awk '/ = -1 E/ && /openat\(/ {match($0,/"[^"]*"/); print substr($0,RSTART+1,RLENGTH-2); exit}' app.strace)
+[ "$(get first_failing_path)" = "$ff" ] && ok "first failing path" || fail "first_failing_path: the first path an openat could not open"
+[ "$(get errno_of_key_file)" = EACCES ] && ok "EACCES on the key" || fail "errno_of_key_file: the error name for /etc/svc/tls/server.key"
+sc=$(awk 'NR>2 && /^ *[0-9]/ && $1!="100.00" && $2+0>m {m=$2+0; s=$NF} END{print s}' strace-c.txt)
+[ "$(get slowest_syscall)" = "$sc" ] && ok "slowest syscall $sc" || fail "slowest_syscall: the syscall with most seconds in strace-c.txt"
+g=$(get slowest_seconds)
+awk -v a="$g" 'BEGIN{exit !(a+0>=3.0 && a+0<=3.01)}' && ok "slowest seconds" || fail "slowest_seconds: the <time> of the slowest call, from app.strace"
+case "$(get root_cause_class)" in network|network+permissions|permissions+network) ok "root cause class" ;; *) fail "root_cause_class: the ETIMEDOUT on connect is a network or backend problem (the key file EACCES is a second, permissions fault); answer network+permissions" ;; esac
+grep -q 'tracepoint:syscalls:sys_enter_openat' count.bt && ok "tracepoint probe" || fail "count.bt: probe tracepoint:syscalls:sys_enter_openat"
+grep -Eq '@[A-Za-z_]*\[comm\][[:space:]]*=[[:space:]]*count\(\)' count.bt && ok "count by comm in a map" || fail "count.bt: aggregate with @[comm] = count()"
+exit "$bad"

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a recorded strace log and an strace -c summary of a service that fails to start slowly.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f app.strace strace-c.txt count.bt answers.txt
+cat > app.strace <<'EOT'
+2310  10:00:00.000100 execve("/usr/local/bin/svc", ["svc", "--config", "/etc/svc/svc.conf"], 0x7ffd) = 0 <0.000310>
+2310  10:00:00.001200 openat(AT_FDCWD, "/etc/svc/svc.conf.d/local.conf", O_RDONLY) = -1 ENOENT (No such file or directory) <0.000020>
+2310  10:00:00.001300 openat(AT_FDCWD, "/usr/local/etc/svc/svc.conf", O_RDONLY) = -1 ENOENT (No such file or directory) <0.000018>
+2310  10:00:00.001400 openat(AT_FDCWD, "/etc/svc/svc.conf", O_RDONLY) = 3 <0.000030>
+2310  10:00:00.001500 read(3, "listen=8443\ntls_key=/etc/svc/tls/server.key\nbackend=db.internal:5432\n", 4096) = 71 <0.000012>
+2310  10:00:00.001600 close(3) = 0 <0.000008>
+2310  10:00:00.001800 openat(AT_FDCWD, "/etc/svc/tls/server.key", O_RDONLY) = -1 EACCES (Permission denied) <0.000025>
+2310  10:00:00.002000 socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) = 4 <0.000040>
+2310  10:00:00.002200 connect(4, {sa_family=AF_INET, sin_port=htons(5432), sin_addr=inet_addr("10.0.0.9")}, 16) = -1 ETIMEDOUT (Connection timed out) <3.002400>
+2310  10:00:03.004800 close(4) = 0 <0.000020>
+2310  10:00:03.005000 write(2, "svc: cannot start: configuration error\n", 40) = 40 <0.000030>
+2310  10:00:03.005200 exit_group(1) = ?
+EOT
+cat > strace-c.txt <<'EOT'
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 94.20    3.002400     3002400         1         1 connect
+  2.10    0.000670         111         6         3 openat
+  1.30    0.000310         310         1           execve
+  0.90    0.000090          30         3           close
+------ ----------- ----------- --------- --------- ----------------
+100.00    3.003470                    11         4 total
+EOT
+printf '# SPDX-License-Identifier: MIT\n# Fill in each ? from app.strace and strace-c.txt (see README.md)\nconfig_file_used=?\nfirst_failing_path=?\nerrno_of_key_file=?\nslowest_syscall=?\nslowest_seconds=?\nroot_cause_class=?\n' > answers.txt
+printf '// SPDX-License-Identifier: MIT\n// TODO: a bpftrace program counting openat calls per process name (see README.md)\n' > count.bt

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+total_rate_per_s=90.0
+error_ratio_pct=0.6
+range_vector_for_5m=[5m]
+metric_type=counter
+EOT
+cat > alerts.yml <<'EOT'
+# SPDX-License-Identifier: MIT
+groups:
+- name: shop
+  rules:
+  - alert: HighErrorRatio
+    expr: sum(rate(http_requests_total{job="shop",code=~"5.."}[5m])) / sum(rate(http_requests_total{job="shop"}[5m])) > 0.02
+    for: 10m
+    labels:
+      severity: page
+    annotations:
+      summary: "5xx ratio above 2 percent"
+      runbook_url: https://wiki.example.org/runbooks/high-error-ratio
+EOT
+cat > alertmanager.yml <<'EOT'
+# SPDX-License-Identifier: MIT
+route:
+  receiver: team-mail
+  group_by: [alertname, job]
+  group_wait: 30s
+  repeat_interval: 4h
+  routes:
+  - matchers: ['severity="page"']
+    receiver: pager
+receivers:
+- name: team-mail
+- name: pager
+EOT

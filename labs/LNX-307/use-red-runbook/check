@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the USE reading against the snapshot and the runbook structure.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f snapshot.txt ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+# the bottleneck is the resource with the highest saturation among those above 90 percent utilisation
+want=$(awk '!/^#/ && $2>=90 && $4>m {m=$4; r=$1} END{print r}' snapshot.txt)
+[ "$(get bottleneck)" = "$want" ] && ok "bottleneck = $want" || fail "bottleneck: the resource with utilisation of 90 or more and the deepest saturation"
+[ "$(get check_order)" = "errors,saturation,utilisation" ] && ok "check order" || fail "check_order: comma-separated, the order the USE method suggests"
+case "$(get service_symptom)" in latency) ok "service symptom is latency" ;; *) fail "service_symptom: rate, errors or latency; read service.txt (errors are low, which signal is bad?)" ;; esac
+case "$(get first_method)" in RED) ok "RED first for the service" ;; *) fail "first_method: RED or USE; which method finds the guilty service?" ;; esac
+if grep -q TODO runbook.md; then fail "runbook.md still has TODO"; else ok "no TODO left in runbook.md"; fi
+for h in 'Alert:' 'Impact:' 'Checks:' 'Action:' 'Rollback:' 'Owner:'; do
+  grep -q "^$h" runbook.md && ok "runbook has $h" || fail "runbook.md needs a line starting with $h"
+done
+n=$(grep -cE '^[0-9]+\. ' runbook.md)
+[ "$n" -ge 3 ] && ok "$n numbered checks" || fail "runbook.md needs at least 3 numbered checks (lines like '1. iostat -xz 1 3')"
+grep -Eq 'iostat|pidstat|/proc/pressure' runbook.md && ok "uses a real disk tool" || fail "at least one check should use iostat, pidstat or /proc/pressure/io"
+exit "$bad"

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+bottleneck=disk_sda
+check_order=errors,saturation,utilisation
+service_symptom=latency
+first_method=RED
+EOT
+cat > runbook.md <<'EOT'
+# SPDX-License-Identifier: MIT
+# Runbook: DiskQueueDeep
+
+Alert: DiskQueueDeep on db-host
+Impact: slow writes for services on this host
+Checks:
+1. iostat -xz 1 3 : is the queue size above 4 for the device? If not, stop (false alarm)
+2. dmesg -T | grep -i 'i/o error' : yes means escalate to the storage team
+3. pidstat -d 1 5 : which process writes most, and is it a known job?
+Action: known job, throttle it with io.max; unknown job, capture strace -p evidence and escalate
+Rollback: remove the io.max limit with systemctl revert; verify iostat queue is back under 4
+Owner: platform-oncall, last verified 2026-11-15
+EOT

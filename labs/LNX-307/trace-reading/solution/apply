@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+config_file_used=/etc/svc/svc.conf
+first_failing_path=/etc/svc/svc.conf.d/local.conf
+errno_of_key_file=EACCES
+slowest_syscall=connect
+slowest_seconds=3.0024
+root_cause_class=network+permissions
+EOT
+cat > count.bt <<'EOT'
+// SPDX-License-Identifier: MIT
+tracepoint:syscalls:sys_enter_openat { @[comm] = count(); }
+EOT
