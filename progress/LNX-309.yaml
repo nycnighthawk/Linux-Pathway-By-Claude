@@ -1,7 +1,7 @@
 item: LNX-309
 label: High Availability & Clusters
 branch: build/LNX-309
-state: in-progress
+state: done
 started: '2026-11-15'
 updated: '2026-11-15'
 phases:
@@ -46,7 +46,7 @@ phases:
     - LNX-309-T05
     - LNX-309-T06
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -76,3 +76,6 @@ log:
 - '2026-11-15 lessons: LNX-309-T06'
 - '2026-11-15 quizzes: LNX-309-T06'
 - '2026-11-15 labs: LNX-309-T06'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'
