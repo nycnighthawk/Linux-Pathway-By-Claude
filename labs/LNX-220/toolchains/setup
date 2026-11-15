@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: the same tiny program in C, Rust, Go and Python, nothing built.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf src bin venv answers.txt
+mkdir -p src/go bin
+cat > src/hello.c <<'X'
+/* SPDX-License-Identifier: MIT */
+#include <stdio.h>
+int main(void) { puts("hello from c"); return 0; }
+X
+cat > src/hello.rs <<'X'
+// SPDX-License-Identifier: MIT
+fn main() {
+    println!("hello from rust");
+}
+X
+cat > src/go/hello.go <<'X'
+// SPDX-License-Identifier: MIT
+package main
+
+import "fmt"
+
+func main() { fmt.Println("hello from go") }
+X
+printf 'module hello\n\ngo 1.21\n' > src/go/go.mod
+cat > src/hello.py <<'X'
+# SPDX-License-Identifier: MIT
+print("hello from python")
+X
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nstatic_c_flag=?\nrust_static_codegen_option=?\ngo_cgo_variable=?\nvenv_command=?\nlinkage_inspection_tool=?\n' > answers.txt
