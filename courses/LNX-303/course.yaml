@@ -51,6 +51,13 @@ modules:
     title: Suricata, fail2ban
     file: lessons/LNX-303-T06.md
     minutes: 45
+- id: supply-and-compliance
+  title: Supply chain
+  lessons:
+  - topic: LNX-303-T07
+    title: OVAL, Trivy, SBOMs
+    file: lessons/LNX-303-T07.md
+    minutes: 45
 labs:
 - id: pki-two-tier
   topic: LNX-303-T01
@@ -92,6 +99,12 @@ labs:
   env: V
   license: MIT
   minutes: 40
+- id: sbom-triage
+  topic: LNX-303-T07
+  title: Build an SBOM and triage the findings
+  env: C
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-303-T01
   topic: LNX-303-T01
@@ -117,3 +130,7 @@ quizzes:
   topic: LNX-303-T06
   title: 'Quiz: Suricata, fail2ban'
   file: quizzes/LNX-303-T06.yaml
+- id: LNX-303-T07
+  topic: LNX-303-T07
+  title: 'Quiz: OVAL, Trivy, SBOMs'
+  file: quizzes/LNX-303-T07.yaml
