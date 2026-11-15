@@ -1,0 +1,68 @@
+title: 'Quiz: OCI image and runtime specs; runc, crun, containerd, CRI-O'
+questions:
+- id: layer-digest
+  prompt: In an OCI image, which digest covers the compressed bytes of a layer?
+  choices:
+  - The digest of index.json
+  - The oci-layout version
+  - The digest of the layer descriptor in the manifest
+  - The diff_id in the image config
+  answer:
+  - 2
+  explain: 'A) Wrong: index.json lists manifests, not layer bytes. B) Wrong: oci-layout only holds a layout version. C) Correct: the manifest descriptor addresses the blob as stored, usually gzip or zstd
+    compressed. D) Wrong: diff_ids cover the uncompressed tar.'
+- id: whiteout
+  prompt: How is a file deleted by an upper OCI layer expressed in the layer tarball?
+  choices:
+  - A symlink to /dev/null
+  - Nothing; deletes are handled by the manifest
+  - An entry named .wh.<name>
+  - A zero-length file of the same name
+  answer:
+  - 2
+  explain: 'A) Wrong: a symlink would still exist as a path. B) Wrong: the manifest only lists layers and does not describe file changes. C) Correct: the whiteout marker hides the lower file when layers
+    are applied. D) Wrong: an empty file would replace it with an empty file, not delete it.'
+- id: shim-role
+  prompt: Why does containerd start a shim per container or pod?
+  choices:
+  - The shim implements the CRI for the kubelet
+  - The shim stores the image content
+  - The shim is the container's parent, keeps stdio and reports exit, so containerd can restart without killing containers
+  - The shim compresses image layers
+  answer:
+  - 2
+  explain: 'A) Wrong: the CRI is served by the containerd CRI plugin or by CRI-O. B) Wrong: the content store holds blobs. C) Correct: it decouples the container''s lifetime from the daemon. D) Wrong: compression
+    happens in the pull/push code.'
+- id: runc-crun
+  prompt: What is the difference in intent between runc and crun?
+  choices:
+  - Both implement the OCI runtime command line; crun is written in C and is smaller and faster to start
+  - runc runs VMs and crun runs containers
+  - crun is for Windows and runc for Linux
+  - crun replaces containerd
+  answer:
+  - 0
+  explain: 'A) Correct: they are interchangeable low-level runtimes with the same bundle semantics. B) Wrong: neither starts VMs by default. C) Wrong: both target Linux. D) Wrong: crun is a low-level runtime,
+    not a daemon.'
+- id: bundle-state
+  prompt: After runc create but before runc start, which state does runc state report?
+  choices:
+  - creating
+  - created
+  - running
+  - stopped
+  answer:
+  - 1
+  explain: 'A) Wrong: creating is the transient state while create is still executing. B) Correct: namespaces and mounts exist and the user process waits to be released. C) Wrong: running begins only after
+    start. D) Wrong: stopped means the process has exited.'
+- id: cgroup-driver
+  prompt: A node's pods lose their limits intermittently. The kubelet uses the systemd cgroup driver and containerd has SystemdCgroup = false. What is the likely cause?
+  choices:
+  - The registry is rate limiting
+  - The manifest list is flattened
+  - Two managers write the cgroup tree and disagree
+  - The image digests differ
+  answer:
+  - 2
+  explain: 'A) Wrong: rate limits affect pulls. B) Wrong: a flattened index affects platform choice. C) Correct: the driver mismatch makes systemd and the runtime fight over the same hierarchy. D) Wrong:
+    digests do not affect limits.'

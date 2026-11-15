@@ -1,0 +1,66 @@
+title: 'Quiz: Windows containers'
+questions:
+- id: isolation-mode
+  prompt: Which Windows isolation mode gives each container its own Windows kernel?
+  choices:
+  - Server silos
+  - Job objects
+  - Hyper-V isolation
+  - Process isolation
+  answer:
+  - 2
+  explain: 'A) Wrong: silos are the shared-kernel namespacing feature. B) Wrong: job objects supply limits. C) Correct: a utility VM holds the container''s kernel. D) Wrong: process isolation shares the
+    host kernel.'
+- id: 2019-on-2022
+  prompt: Can a Windows Server 2019 host run a Windows Server 2022 container image?
+  choices:
+  - Yes, with Hyper-V isolation
+  - Yes, with process isolation
+  - Only with --privileged
+  - No, under either isolation mode
+  answer:
+  - 3
+  explain: 'A) Wrong: Hyper-V helps only with older images. B) Wrong: process isolation needs matching builds. C) Wrong: there is no privileged mode for this. D) Correct: a host cannot run images newer
+    than itself.'
+- id: 2025-on-2019
+  prompt: A Windows Server 2025 host runs a 2019 image. Which isolation is supported?
+  choices:
+  - Process isolation only
+  - Both
+  - Neither
+  - Hyper-V isolation only
+  answer:
+  - 3
+  explain: 'A) Wrong: process isolation needs a matching build (or the Windows 11 and 2022 exception). B) Wrong: only one mode works. C) Wrong: Hyper-V isolation makes it work. D) Correct: older builds
+    need their own kernel from the utility VM.'
+- id: no-privileged
+  prompt: Which Linux pod field does the Kubernetes API reject for a Windows pod?
+  choices:
+  - image
+  - command
+  - resources.limits
+  - securityContext.privileged on a container
+  answer:
+  - 3
+  explain: 'A) Wrong: images are required. B) Wrong: command works. C) Wrong: limits are supported. D) Correct: privileged is not supported; HostProcess containers are the replacement.'
+- id: latest-tag
+  prompt: Why must Windows base image references carry an explicit tag?
+  choices:
+  - Tags are required by Docker
+  - latest always selects Nano Server
+  - Digests cannot be used
+  - Microsoft no longer publishes latest for those repositories
+  answer:
+  - 3
+  explain: 'A) Wrong: Docker accepts untagged names elsewhere. B) Wrong: there is no such mapping. C) Wrong: digests can be used. D) Correct: choose a version such as ltsc2022 deliberately.'
+- id: same-pid
+  prompt: In process isolation, docker top and the host's Get-Process show the same PID. Why?
+  choices:
+  - PIDs are global on Hyper-V
+  - Windows has no PIDs in containers
+  - The container shares the host kernel
+  - The container uses the host's PID namespace by default on Linux
+  answer:
+  - 2
+  explain: 'A) Wrong: under Hyper-V the host does not see the process. B) Wrong: PIDs exist. C) Correct: it is one kernel with a per-container view of IDs. D) Wrong: this is a Windows behaviour, not a Linux
+    namespace choice.'
