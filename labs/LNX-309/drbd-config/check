@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Static review of wwwdata.res and drbd-pcs.sh (nothing is executed).
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f wwwdata.res ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+res=$(sed 's/#.*$//' wwwdata.res | tr -s ' \t' ' ')
+hr() { printf '%s\n' "$res" | tr '\n' ' ' | grep -Eq -- "$1"; }
+hr 'resource "?wwwdata"? *\{' && ok "resource wwwdata" || fail 'resource "wwwdata" { ... }'
+hr 'device minor 1 *;|device /dev/drbd1' && ok "device /dev/drbd1" || fail "device minor 1;"
+hr 'meta-disk internal *;' && ok "internal metadata" || fail "meta-disk internal;"
+hr 'protocol C *;' && ok "protocol C (synchronous)" || fail "protocol C;"
+hr 'fencing resource-and-stonith *;' && ok "fencing resource-and-stonith" || fail "fencing resource-and-stonith;"
+hr 'fence-peer "?[^";]*crm-fence-peer[^";]*"? *;' && ok "fence-peer handler" || fail 'fence-peer "/usr/lib/drbd/crm-fence-peer.9.sh";'
+hr 'unfence-peer "?[^";]*crm-unfence-peer[^";]*"? *;' && ok "unfence-peer handler" || fail 'unfence-peer "/usr/lib/drbd/crm-unfence-peer.9.sh";'
+hr 'verify-alg [a-z0-9]+ *;' && ok "online verify configured" || fail "verify-alg sha1;"
+if hr 'allow-two-primaries *(yes|true)'; then fail "this pair is active/passive: remove allow-two-primaries"; else ok "single primary"; fi
+hr 'on "?node1"? *\{[^}]*disk "?/dev/vg0/data"? *;[^}]*node-id 0 *;' && ok "node1 section" || fail 'on "node1" { disk "/dev/vg0/data"; node-id 0; }'
+hr 'on "?node2"? *\{[^}]*disk "?/dev/vg0/data"? *;[^}]*node-id 1 *;' && ok "node2 section" || fail 'on "node2" { disk "/dev/vg0/data"; node-id 1; }'
+hr 'host "?node1"? address 192\.168\.122\.11:[0-9]+' && ok "node1 address and port" || fail 'host "node1" address 192.168.122.11:7789;'
+hr 'host "?node2"? address 192\.168\.122\.12:[0-9]+' && ok "node2 address and port" || fail 'host "node2" address 192.168.122.12:7789;'
+if command -v drbdadm >/dev/null 2>&1; then
+  drbdadm -c "$PWD/wwwdata.res" dump wwwdata >/dev/null 2>&1 && ok "drbdadm parses the file" || fail "drbdadm dump reports an error"
+fi
+# ---- Pacemaker side ----
+[ -f drbd-pcs.sh ] || { fail "drbd-pcs.sh is missing"; exit 1; }
+body=$(sed -e ':a' -e '/\\$/N; s/\\\n//; ta' drbd-pcs.sh | sed 's/^[[:space:]]*#.*$//' | tr -s ' ')
+has() { printf '%s\n' "$body" | grep -Eq -- "$1"; }
+has 'pcs cluster cib [A-Za-z0-9_.-]+' && ok "changes are queued in a file" || fail "pcs cluster cib <file> first"
+has 'pcs -f [A-Za-z0-9_.-]+ resource create [A-Za-z0-9_-]+ ocf:linbit:drbd .*drbd_resource=wwwdata' && ok "DRBD resource" || fail "ocf:linbit:drbd with drbd_resource=wwwdata"
+has 'op monitor interval=[0-9]+s role=Promoted' && has 'monitor interval=[0-9]+s role=Unpromoted' && ok "separate monitors for the two roles" || fail "monitor operations for role=Promoted and role=Unpromoted"
+p=$(printf '%s\n' "$body" | sed -nE 's/.*resource create ([A-Za-z0-9_-]+) ocf:linbit:drbd.*/\1/p' | head -1)
+f=$(printf '%s\n' "$body" | sed -nE 's/.*resource create ([A-Za-z0-9_-]+) (ocf:heartbeat:)?Filesystem.*/\1/p' | head -1)
+has 'resource promotable .*promoted-max=1' && ok "promotable with one promoted instance" || fail "resource promotable <name> promoted-max=1 ..."
+has 'promotable .*clone-max=2' && ok "two copies" || fail "clone-max=2"
+has 'Filesystem .*device="?/dev/drbd1"? .*directory="?/srv/www"? .*fstype="?xfs"?|Filesystem .*directory="?/srv/www"? .*device="?/dev/drbd1"? .*fstype="?xfs"?' && ok "xfs on /dev/drbd1 at /srv/www" || fail "Filesystem device=/dev/drbd1 directory=/srv/www fstype=xfs"
+if [ -n "$p" ] && [ -n "$f" ]; then
+  has "colocation add $f with (Promoted )?${p}(-clone)? .*INFINITY|colocation add $f with .*Promoted.*INFINITY" && ok "file system follows the promoted role" || fail "colocation add $f with Promoted $p-clone INFINITY"
+  has "order promote ${p}(-clone)? then start $f" && ok "start after promotion" || fail "order promote $p-clone then start $f"
+else fail "create the DRBD and Filesystem resources first"; fi
+has 'pcs cluster cib-push [A-Za-z0-9_.-]+' && ok "pushed at the end" || fail "pcs cluster cib-push <file>"
+has 'fstype="?gfs2"?' && fail "active/passive uses a normal file system, not GFS2"
+[ $bad -eq 0 ] && echo PASS || exit 1

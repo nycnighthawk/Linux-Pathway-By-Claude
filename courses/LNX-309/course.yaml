@@ -21,10 +21,20 @@ modules:
     title: Pacemaker/Corosync, fence_virsh
     file: lessons/LNX-309-T01.md
     minutes: 45
+  - topic: LNX-309-T02
+    title: DRBD, GFS2 awareness
+    file: lessons/LNX-309-T02.md
+    minutes: 45
 labs:
 - id: pcs-build
   topic: LNX-309-T01
   title: Script a two-node Pacemaker cluster with fencing
+  env: V
+  license: GPL-2.0-only
+  minutes: 40
+- id: drbd-config
+  topic: LNX-309-T02
+  title: Configure DRBD and its Pacemaker resources
   env: V
   license: GPL-2.0-only
   minutes: 40
@@ -33,3 +43,7 @@ quizzes:
   topic: LNX-309-T01
   title: 'Quiz: Pacemaker/Corosync, fence_virsh'
   file: quizzes/LNX-309-T01.yaml
+- id: LNX-309-T02
+  topic: LNX-309-T02
+  title: 'Quiz: DRBD, GFS2 awareness'
+  file: quizzes/LNX-309-T02.yaml
