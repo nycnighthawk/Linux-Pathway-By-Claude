@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > smartcard-plan.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+pam_cert_auth=true
+authselect_feature=with-smartcard
+required_mode_rollout=canary
+break_glass=yes
+certificate_verification=soft_ocsp
+ca_bundle=/etc/sssd/pki/sssd_auth_ca_db.pem
+mapping_rule=<ISSUER>CN=Example Issuing CA,O=Example
+map_rule=LDAPU1:(userCertificate;binary={cert!bin})
+second_card=yes
+sso=pkinit
+verify=pcsc_scan, pkcs11-tool --module opensc-pkcs11.so -L, openssl verify -CAfile ca.pem card.pem, sssctl cert-eval-rule, sssctl user-checks alice -a auth
+EOT

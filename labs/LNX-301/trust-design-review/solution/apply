@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > trust-design.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+trust_direction=one-way
+direction_reason=AD users must reach IdM hosts, and IdM users need nothing in AD beyond what a trust offers.
+range_type=ipa-ad-trust
+range_reason=AD stores no uidNumber attributes, so IDs are derived from SIDs and need no AD schema work.
+trust_controllers=2
+agents_per_remote_site=1
+dns=forward-zone
+ports=53,88,464,389,636,3268,3269,135,445
+ad_groups_in_policy=external-plus-posix
+external_group=ad_admins_external
+enctypes=aes
+verify=ipa trust-show corp.example.net, ipa-healthcheck --source=ipahealthcheck.ipa.trust, kvno host/client.lab.test, sssctl domain-status corp.example.net
+EOT

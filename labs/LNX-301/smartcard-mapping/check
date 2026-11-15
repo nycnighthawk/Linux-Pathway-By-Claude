@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f smartcard-plan.txt ] || { echo "FAIL: smartcard-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" smartcard-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get pam_cert_auth)" = true ] && ok "pam_cert_auth true" || fail "pam_cert_auth: true (it enables the p11_child helper in the PAM responder)"
+f=$(get authselect_feature); rm=$(get required_mode_rollout); bg=$(get break_glass)
+case "$f" in with-smartcard|with-smartcard-required|with-smartcard-lock-on-removal) ok "authselect feature" ;; *) fail "authselect_feature: with-smartcard, with-smartcard-required or with-smartcard-lock-on-removal" ;; esac
+case "$rm" in canary|fleet|not-planned) ok "rollout answered" ;; *) fail "required_mode_rollout: canary, fleet or not-planned" ;; esac
+case "$bg" in yes|no) ok "break glass answered" ;; *) fail "break_glass: yes or no" ;; esac
+if [ "$f" = with-smartcard-required ] && { [ "$rm" != canary ] || [ "$bg" != yes ]; }; then fail "with-smartcard-required needs a canary rollout and a tested break-glass path, or a failed reader locks everybody out"; fi
+case "$(get certificate_verification)" in ocsp|soft_ocsp|no_ocsp) ok "revocation checking kept" ;; no_verification) fail "certificate_verification: no_verification switches the security benefit off" ;; *) fail "certificate_verification: ocsp, soft_ocsp, no_ocsp or no_verification" ;; esac
+case "$(get ca_bundle)" in /*.pem|/*.crt) ok "CA bundle path" ;; *) fail "ca_bundle: an absolute path ending in .pem or .crt" ;; esac
+case "$(get mapping_rule)" in '<ISSUER>'?*) ok "mapping rule names an issuer" ;; *) fail "mapping_rule: start with <ISSUER> followed by the issuer DN, so that other CAs cannot match" ;; esac
+get map_rule | grep -Eq '\{[a-z_]+(![a-z_0-9]+)?\}' && ok "map rule uses a certificate field" || fail "map_rule: an LDAP filter with a placeholder such as {cert!bin} or {subject_principal}"
+[ "$(get second_card)" = yes ] && ok "second card" || fail "second_card: yes (a lost or locked card must not block an administrator)"
+[ "$(get sso)" = pkinit ] && ok "PKINIT single sign-on" || fail "sso: pkinit (the card proof becomes a Kerberos ticket, so the PIN is entered once)"
+v=$(get verify); miss=""
+for c in "pcsc_scan" "pkcs11-tool" "openssl verify" "sssctl cert-eval-rule" "sssctl user-checks"; do printf '%s' "$v" | grep -q -- "$c" || miss="$miss [$c]"; done
+[ -z "$miss" ] && ok "verification complete" || fail "verify: add$miss"
+exit "$bad"

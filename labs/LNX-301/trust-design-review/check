@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f trust-design.txt ] || { echo "FAIL: trust-design.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" trust-design.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+words() { [ "$(printf '%s' "$1" | wc -w)" -ge "$2" ] && [ "$1" != "?" ]; }
+d=$(get trust_direction)
+case "$d" in one-way|two-way) ok "direction chosen" ;; *) fail "trust_direction: one-way or two-way" ;; esac
+words "$(get direction_reason)" 8 && ok "direction reason" || fail "direction_reason: at least eight words"
+if [ "$d" = two-way ] && ! get direction_reason | grep -qi kerberos; then fail "a two-way trust needs a reason that mentions Kerberized services (IdM users cannot reach general AD resources)"; fi
+case "$(get range_type)" in ipa-ad-trust|ipa-ad-trust-posix) ok "range type" ;; *) fail "range_type: ipa-ad-trust or ipa-ad-trust-posix" ;; esac
+words "$(get range_reason)" 8 && ok "range reason" || fail "range_reason: at least eight words (the choice is close to irreversible)"
+tc=$(get trust_controllers)
+printf '%s' "$tc" | grep -Eq '^[0-9]+$' && [ "$tc" -ge 2 ] && ok "at least two controllers" || fail "trust_controllers: a number, at least 2"
+case "$(get agents_per_remote_site)" in 0|1|2) ok "agents answered" ;; *) fail "agents_per_remote_site: 0, 1 or 2" ;; esac
+[ "$(get dns)" = forward-zone ] && ok "dns forwarding" || fail "dns: forward-zone (AD names must resolve from IdM and the reverse)"
+p=$(get ports | tr ',' ' '); miss=""
+for n in 53 88 464 389 3268 135 445; do printf ' %s ' $p | grep -q " $n " || miss="$miss $n"; done
+[ -z "$miss" ] && ok "ports complete" || fail "ports: still missing$miss"
+[ "$(get ad_groups_in_policy)" = external-plus-posix ] && ok "external group nested in POSIX group" || fail "ad_groups_in_policy: external-plus-posix (HBAC and sudo accept POSIX groups only)"
+get external_group | grep -Eq '^ad_[a-z0-9_]+_external$' && ok "external group name" || fail "external_group: ad_<role>_external, for example ad_admins_external"
+[ "$(get enctypes)" = aes ] && ok "AES trust" || fail "enctypes: aes (RC4 is being retired in Windows)"
+v=$(get verify); miss=""
+for c in "ipa trust-show" "ipa-healthcheck" "kvno" "sssctl domain-status"; do printf '%s' "$v" | grep -q -- "$c" || miss="$miss [$c]"; done
+[ -z "$miss" ] && ok "verification complete" || fail "verify: add$miss"
+exit "$bad"

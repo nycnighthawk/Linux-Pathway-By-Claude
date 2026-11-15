@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f join-plan.txt
+printf '# SPDX-License-Identifier: MIT\njoin_account=?\njoin_method=?\ncomputer_ou=?\nid_mapping=?\nid_mapping_reason=?\naudit_missing_uidnumber=?\ngpo_mode=?\npilot_done=?\naccess_control=?\nports=?\ndns_updates=?\nverify=?\nrollback=?\n' > join-plan.txt

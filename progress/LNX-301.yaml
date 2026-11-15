@@ -28,16 +28,19 @@ phases:
     units: 10
     done: []
   labs:
-    state: in-progress
+    state: done
     units: 10
     done:
     - LNX-301-T01
     - LNX-301-T02
     - LNX-301-T03
     - LNX-301-T04
+    - LNX-301-T05
     - LNX-301-T06
+    - LNX-301-T07
     - LNX-301-T08
     - LNX-301-T09
+    - LNX-301-T10
   checks:
     state: todo
     units: 0
@@ -57,3 +60,4 @@ log:
 - '2026-11-15 labs: LNX-301-T03, LNX-301-T04'
 - '2026-11-15 labs: LNX-301-T06'
 - '2026-11-15 labs: LNX-301-T08, LNX-301-T09'
+- '2026-11-15 labs: LNX-301-T05, LNX-301-T07, LNX-301-T10'
