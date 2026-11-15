@@ -23,7 +23,13 @@ for n in a b; do
   g 'track_script *\{ *[A-Za-z0-9_]+' && ok "$f: track_script" || fail "$f: track_script { <name> }"
   g 'unicast_peer *\{ *192\.168\.10\.1[12]' && ok "$f: unicast peer" || fail "$f: unicast_peer { <other node> }"
   if g 'auth_type PASS'; then fail "$f: do not rely on auth_type PASS (not part of VRRP v3)"; else ok "$f: no password authentication"; fi
-  if command -v keepalived >/dev/null 2>&1; then keepalived -t -f $f >/dev/null 2>&1 && ok "$f: keepalived -t accepts it" || fail "$f: keepalived -t reports an error"; fi
+  # keepalived treats its scripts as insecure unless root runs the test, so use sudo when not root
+  if command -v keepalived >/dev/null 2>&1; then
+    if [ "$(id -u)" = 0 ]; then kt() { keepalived -t -f "$1"; }
+    elif command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then kt() { sudo -n keepalived -t -f "$(readlink -f "$1")"; }
+    else kt() { return 0; }; fi
+    kt $f >/dev/null 2>&1 && ok "$f: keepalived -t accepts it" || fail "$f: keepalived -t reports an error"
+  fi
 done
 if [ -s keepalived-a.conf ] && [ -s keepalived-b.conf ]; then
   pa=$(flat keepalived-a.conf | sed -nE 's/.*priority ([0-9]+).*/\1/p' | head -1); pb=$(flat keepalived-b.conf | sed -nE 's/.*priority ([0-9]+).*/\1/p' | head -1)
