@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the kdump configuration files and the reading of the crash session.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f crash-session.txt ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+conf() { grep -v '^\s*#' kdump.conf; }
+conf | grep -Eq '^path[[:space:]]+/var/crash' && ok "path /var/crash" || fail "kdump.conf: a line 'path /var/crash'"
+cc=$(conf | grep -E '^core_collector[[:space:]]+makedumpfile' | head -1)
+[ -n "$cc" ] && ok "core_collector makedumpfile" || fail "kdump.conf: core_collector makedumpfile ..."
+printf '%s' "$cc" | grep -Eq -- '-d[[:space:]]+31' && ok "dump level 31" || fail "core_collector needs -d 31 (skip zero, cache, user and free pages)"
+printf '%s' "$cc" | grep -Eq -- '(-l|-c|-p|-z)([[:space:]]|$)' && ok "compression" || fail "core_collector needs a compression flag (-l, -c, -p or -z)"
+conf | grep -Eq '^failure_action[[:space:]]+(reboot|halt|poweroff|shell|dump_to_rootfs)' && ok "failure_action" || fail "kdump.conf: failure_action reboot (or halt, poweroff, shell)"
+sz=$(grep -v '^\s*#' cmdline.txt | sed -n 's/.*crashkernel=\([0-9]\+\)M.*/\1/p' | head -1)
+if [ -n "$sz" ] && [ "$sz" -ge 192 ]; then ok "crashkernel=${sz}M"; else fail "cmdline.txt: crashkernel=NNNM with NNN of at least 192 (the capture kernel needs room for its drivers)"; fi
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get panic_class)" = null-dereference ] && ok "panic class" || fail "panic_class: null-dereference, hard-lockup, oom or hung-task"
+ff=$(sed -n 's/^RIP: [0-9a-f:]*\([A-Za-z0-9_]*\)+0x.*/\1/p' crash-session.txt | head -1)
+[ "$(get faulting_function)" = "$ff" ] && ok "faulting function $ff" || fail "faulting_function: the function in the RIP line (without the offset)"
+mod=$(sed -n 's/^RIP:.*\[\([a-z0-9_]*\)\].*/\1/p' crash-session.txt | head -1)
+[ "$(get owner_module)" = "$mod" ] && ok "owner module $mod" || fail "owner_module: the module in brackets on the RIP line"
+[ "$(get third_party_modules)" = none ] && ok "no third-party modules" || fail "third_party_modules: the mod filter printed nothing, so answer none"
+cpu=$(sed -n 's/.*CPU: \([0-9]\+\).*/\1/p' crash-session.txt | head -1)
+[ "$(get cpu_of_panic)" = "$cpu" ] && ok "cpu $cpu" || fail "cpu_of_panic: the CPU number in the bt header"
+case "$(get next_action)" in *update*kernel*|*kernel*update*|*errata*) ok "next action" ;; *) fail "next_action: a phrase naming a kernel update (a module from the distribution, no third-party code)" ;; esac
+exit "$bad"

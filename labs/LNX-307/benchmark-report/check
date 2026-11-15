@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of a benchmark report: every key present, values of the right kind and consistent with each other.
+# The numbers come from your measurements, so this script checks shape and sanity, not truth.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f bench-report.txt ] || { echo "FAIL: bench-report.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" bench-report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+isnum() { printf '%s' "$1" | grep -Eq '^[0-9]+(\.[0-9]+)?$'; }
+words() { [ "$(printf '%s' "$1" | wc -w)" -ge "$2" ] && [ "$1" != "?" ]; }
+words "$(get question)" 6 && ok "question stated" || fail "question: at least six words, the decision the benchmark supports"
+words "$(get workload)" 3 && ok "workload described" || fail "workload: at least three words (pattern, block size or payload, concurrency)"
+case "$(get tool)" in fio|iperf3|sysbench|stress-ng|wrk|wrk2|vegeta|pgbench|hyperfine|other) ok "tool" ;; *) fail "tool: fio, iperf3, sysbench, stress-ng, wrk, wrk2, vegeta, pgbench, hyperfine or other" ;; esac
+case "$(get cache_bypassed)" in yes|no|not-applicable) ok "cache_bypassed" ;; *) fail "cache_bypassed: yes, no or not-applicable" ;; esac
+case "$(get cpu_governor)" in performance|powersave|schedutil|ondemand|unknown|not-applicable) ok "governor recorded" ;; *) fail "cpu_governor: performance, powersave, schedutil, ondemand, unknown or not-applicable" ;; esac
+r=$(get runs); mn=$(get min); md=$(get median); mx=$(get max)
+printf '%s' "$r" | grep -Eq '^[0-9]+$' && [ "$r" -ge 3 ] && ok "runs = $r" || fail "runs: an integer of 3 or more"
+if isnum "$mn" && isnum "$md" && isnum "$mx"; then
+  awk -v a="$mn" -v b="$md" -v c="$mx" 'BEGIN{exit !(a<=b && b<=c && c>0)}' && ok "min <= median <= max" || fail "min, median and max must satisfy min <= median <= max and be positive"
+else fail "min, median and max must be numbers"; fi
+case "$(get unit)" in IOPS|MB/s|MiB/s|Mb/s|Gb/s|ops/s|req/s|events/s|ms|s) ok "unit" ;; *) fail "unit: IOPS, MB/s, MiB/s, Mb/s, Gb/s, ops/s, req/s, events/s, ms or s" ;; esac
+case "$(get limiting_resource)" in cpu|memory|disk|network|lock|generator|device|unknown) ok "limiting resource" ;; *) fail "limiting_resource: cpu, memory, disk, network, lock, generator, device or unknown (name what you saw in mpstat or iostat during the run)" ;; esac
+words "$(get changed_one_variable)" 2 && ok "one variable changed" || fail "changed_one_variable: what you changed between two sets of runs (two words or more), or 'nothing'"
+exit "$bad"

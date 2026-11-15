@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Compute the rates from the scrapes, then validate the rule and routing files structurally.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f scrapes.txt ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+read -r want_rate want_ratio < <(awk '!/^#/{t=$1; if($2 ~ /code="500"/){e[NR]=$3; et[++ne]=$3} else {rt[++nr]=$3}; ts[++n]=$1} END{dt=ts[n]-ts[1]; dr=(rt[nr]-rt[1])+(et[ne]-et[1]); de=et[ne]-et[1]; printf "%.1f %.1f\n", dr/dt, 100*de/dr}' scrapes.txt)
+g=$(get total_rate_per_s)
+awk -v a="$g" -v b="$want_rate" 'BEGIN{exit !(a+0>0 && a+0>=b-0.15 && a+0<=b+0.15)}' && ok "total rate $want_rate per second" || fail "total_rate_per_s: (increase of all codes) divided by the seconds between scrapes"
+g=$(get error_ratio_pct)
+awk -v a="$g" -v b="$want_ratio" 'BEGIN{exit !(a+0>0 && a+0>=b-0.1 && a+0<=b+0.1)}' && ok "error ratio $want_ratio percent" || fail "error_ratio_pct: increase of code=500 over increase of all codes, in percent"
+[ "$(get range_vector_for_5m)" = "[5m]" ] && ok "range vector" || fail "range_vector_for_5m: the PromQL range selector for five minutes, with brackets"
+[ "$(get metric_type)" = counter ] && ok "metric type" || fail "metric_type: counter, gauge or histogram"
+python3 - <<'PY' || bad=1
+import sys, re, yaml
+def f(m): print("FAIL: " + m); return 1
+bad = 0
+try:
+    a = yaml.safe_load(open("alerts.yml"))
+    rules = [r for g in a["groups"] for r in g["rules"] if "alert" in r]
+    r = next(r for r in rules if "http_requests_total" in str(r.get("expr")))
+except Exception as e:
+    sys.exit(f("alerts.yml: need groups[].rules[] with an alert whose expr uses http_requests_total (%s)" % type(e).__name__))
+expr = str(r["expr"])
+print("ok:   alert", r["alert"]) if "rate(" in expr else (bad := f("expr must use rate() on the counter"))
+m = re.match(r"^(\d+)([smh])$", str(r.get("for", "")))
+secs = int(m.group(1)) * {"s": 1, "m": 60, "h": 3600}[m.group(2)] if m else 0
+print("ok:   for =", r["for"]) if secs >= 300 else (bad := f("for: must be at least 5m so blips do not page"))
+print("ok:   severity label") if str(r.get("labels", {}).get("severity", "")) in ("page", "ticket") else (bad := f("labels.severity must be page or ticket"))
+print("ok:   runbook_url") if str(r.get("annotations", {}).get("runbook_url", "")).startswith("http") else (bad := f("annotations.runbook_url must be an http link"))
+if re.search(r"\b5\.\.|code=~?\"5", expr) is None: bad = f("expr should select 5xx codes, for example code=~\"5..\"") or bad
+try:
+    c = yaml.safe_load(open("alertmanager.yml"))
+    route = c["route"]; names = {x["name"] for x in c["receivers"]}
+    assert route["receiver"] in names and route.get("group_by")
+    sub = route.get("routes", [])
+    assert any(str(s.get("matchers") or s.get("match")).find("page") >= 0 and s["receiver"] in names for s in sub)
+    print("ok:   alertmanager route for severity page")
+except Exception as e:
+    bad = f("alertmanager.yml: route with receiver and group_by, plus a sub-route matching severity page to a defined receiver (%s)" % type(e).__name__) or bad
+sys.exit(1 if bad else 0)
+PY
+exit "$bad"

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the forwarding rule and the rotation stanza by reading them. Runs rsyslogd -N1 too when rsyslog is installed.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f 10-forward.conf ] || { echo "FAIL: run setup first"; exit 1; }
+f=10-forward.conf
+has() { grep -Eqi "$1" "$f"; }
+has 'type="omfwd"' && ok "omfwd action" || fail "use action(type=\"omfwd\" ...)"
+has 'target="logs\.example\.org"' && ok "target" || fail "target=\"logs.example.org\""
+has 'port="6514"' && ok "port 6514" || fail "port=\"6514\""
+has 'protocol="tcp"' && ok "tcp" || fail "protocol=\"tcp\" (UDP can lose messages)"
+has 'StreamDriver="gtls"' && has 'StreamDriverMode="1"' && ok "TLS driver" || fail "StreamDriver=\"gtls\" and StreamDriverMode=\"1\""
+has 'StreamDriverAuthMode="x509/name"' && has 'StreamDriverPermittedPeers="logs\.example\.org"' && ok "peer authentication" || fail "authenticate the server: StreamDriverAuthMode=\"x509/name\" and StreamDriverPermittedPeers"
+has 'queue\.type="(LinkedList|FixedArray)"' && has 'queue\.filename=' && ok "disk-assisted queue" || fail "a disk-assisted queue: queue.type and queue.filename"
+has 'queue\.saveOnShutdown="on"' && ok "saveOnShutdown" || fail "queue.saveOnShutdown=\"on\""
+has 'action\.resumeRetryCount="-1"' && ok "infinite retry" || fail "action.resumeRetryCount=\"-1\""
+if grep -v '^#' "$f" | grep -q 'protocol="udp"'; then fail "no UDP in the rule"; fi
+if command -v rsyslogd >/dev/null 2>&1; then
+  rsyslogd -N1 -f "$PWD/$f" >/dev/null 2>&1 && ok "rsyslogd -N1 accepts the file" || echo "note: rsyslogd -N1 complained (it may need modules the rule file does not load); not graded"
+fi
+g=logrotate-myapp.conf
+head=$(grep -v '^#' "$g" | head -1)
+case "$head" in */var/log/myapp/*.log*) ok "path" ;; *) fail "the stanza must start with the path /var/log/myapp/*.log {" ;; esac
+grep -Eq '^\s*(daily|weekly)' "$g" && ok "schedule" || fail "daily or weekly"
+n=$(sed -n 's/^\s*rotate\s\+\([0-9]\+\).*/\1/p' "$g" | head -1)
+[ -n "$n" ] && [ "$n" -ge 7 ] && ok "rotate $n" || fail "rotate N with N of at least 7"
+grep -Eq '^\s*compress' "$g" && ok "compress" || fail "compress"
+grep -Eq '^\s*(postrotate|copytruncate)' "$g" && ok "reopen or copytruncate" || fail "postrotate (reload the service) or copytruncate, or the service keeps writing to the old file"
+grep -Eq '^\s*missingok' "$g" && ok "missingok" || fail "missingok"
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get lossy_transport)" = UDP ] && ok "lossy transport" || fail "lossy_transport: UDP or TCP"
+[ "$(get previous_boot_kernel_log)" = "journalctl -b -1 -k" ] && ok "previous boot command" || fail "previous_boot_kernel_log: the journalctl command for the previous boot's kernel messages"
+case "$(get rotation_without_reload_symptom)" in *empty*|*old\ file*|*silent*) ok "rotation symptom" ;; *) fail "rotation_without_reload_symptom: one phrase containing empty, old file or silent" ;; esac
+exit "$bad"

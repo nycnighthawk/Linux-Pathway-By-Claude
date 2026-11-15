@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i 's#/opt/webapp/bin/webapp-server#/opt/webapp/bin/webapp#' host/etc/systemd/system/webapp.service
+chmod 755 host/opt/webapp/bin/webapp
+sed -i 's/^listen_port=.*/listen_port=9090/' host/etc/webapp/webapp.conf
+sed -i 's#^/dev/sdz1\(.*\)defaults#/dev/sdz1\1defaults,nofail#' host/etc/fstab
+cat > host/etc/logrotate.d/webapp <<'EOT'
+# SPDX-License-Identifier: MIT
+/var/log/webapp/*.log {
+    daily
+    rotate 14
+    compress
+    missingok
+    copytruncate
+}
+EOT
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+status_before_fix=203/EXEC
+port_owner=legacy-proxy
+boot_hazard_device=/dev/sdz1
+log_problem=no rotation configured for the application log
+EOT

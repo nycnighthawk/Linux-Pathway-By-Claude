@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: stub files for a forwarding rule and a rotation stanza, and an answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f 10-forward.conf logrotate-myapp.conf answers.txt
+printf '# SPDX-License-Identifier: MIT\n# TODO: forward all messages to logs.example.org port 6514 over TCP with TLS (see README.md)\n' > 10-forward.conf
+printf '# SPDX-License-Identifier: MIT\n# TODO: rotation stanza for /var/log/myapp/*.log\n' > logrotate-myapp.conf
+printf '# SPDX-License-Identifier: MIT\n# Fill in each ?\nlossy_transport=?\nprevious_boot_kernel_log=?\nrotation_without_reload_symptom=?\n' > answers.txt

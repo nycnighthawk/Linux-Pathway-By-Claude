@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: recorded counters and tool output from a host with a disk problem.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f stat1.txt stat2.txt iostat.txt pidstat.txt vmstat.txt answers.txt
+# two readings of the aggregate cpu line of /proc/stat taken 10 s apart (user nice system idle iowait irq softirq steal)
+echo 'cpu  4705000 1200 1801000 91820000 612000 0 41000 0' > stat1.txt
+echo 'cpu  4705300 1200 1801400 91820600 612900 0 41100 0' > stat2.txt
+cat > vmstat.txt <<'EOT'
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 1  0      0 812340  90112 3011220    0    0    12    40  300  500  3  1 96  0  0
+ 2  5      0 811900  90112 3011900    0    0   110 52000  900 1200  4  2 61 33  0
+ 1  6      0 811100  90116 3012100    0    0    90 51500  880 1190  4  2 60 34  0
+ 2  5      0 811500  90116 3012600    0    0   100 52400  910 1210  3  2 62 33  0
+EOT
+cat > iostat.txt <<'EOT'
+Device            r/s     w/s   rkB/s     wkB/s  r_await  w_await  aqu-sz  %util
+sda              2.00   12.00   40.00    180.00     1.10     2.30    0.03    1.2
+sdb              6.00  410.00  120.00  52000.00     1.40    41.50   16.20   98.6
+Device            r/s     w/s   rkB/s     wkB/s  r_await  w_await  aqu-sz  %util
+sda              1.00    9.00   20.00    120.00     1.00     2.10    0.02    0.9
+sdb              5.00  405.00  100.00  51500.00     1.30    39.80   15.90   98.9
+EOT
+cat > pidstat.txt <<'EOT'
+# Time   UID   PID   kB_rd/s   kB_wr/s kB_ccwr/s iodelay  Command
+10:15:01     0  2210      0.00  51900.00      0.00     310  backup.sh
+10:15:01   100   880     40.00     90.00      0.00       2  rsyslogd
+10:15:01  1000  3101      0.00     10.00      0.00       0  sshd
+EOT
+printf '# SPDX-License-Identifier: MIT\n# Fill in each ? from the recorded files (see README.md)\ncpu_busy_percent=?\nbusy_device=?\nmax_w_await_ms=?\ntop_writer=?\nmemory_saturated=?\ncpu_wait_state_high=?\n' > answers.txt

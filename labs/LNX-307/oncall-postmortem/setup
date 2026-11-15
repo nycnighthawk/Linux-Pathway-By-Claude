@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: the facts of an incident and a postmortem template. Writing it up is the exercise.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f incident.txt postmortem.md
+cat > incident.txt <<'EOT'
+# UTC times, facts only
+02:05Z deploy of checkout v212 finishes
+02:10Z alert HighErrorRatio pages the primary on-call; acknowledged 02:11Z
+02:14Z dashboard shows 5xx ratio 9 percent, started 02:05Z; journal shows connection pool exhausted
+02:18Z responder saves journal export and a thread dump from checkout-3, then rolls back to v211
+02:21Z error ratio back under 0.5 percent
+02:40Z incident closed; ticket opened for the owning team
+Notes: v212 lowered the database pool size from 40 to 4 by a typo in a config template. The deploy checks only tested one request. The runbook did not mention rollback.
+EOT
+cat > postmortem.md <<'EOT'
+# Postmortem: checkout errors after deploy v212
+
+TODO: write each section named in README.md
+EOT

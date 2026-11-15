@@ -1,0 +1,62 @@
+title: 'Quiz: Reliable benchmarking'
+questions:
+- id: direct-io
+  prompt: Why use --direct=1 in a fio disk test?
+  choices:
+  - It encrypts data
+  - It bypasses the page cache so you measure the device
+  - It is faster
+  - It writes zeros
+  answer:
+  - 1
+  explain: Buffered I/O may be served from memory and report impossible speeds.
+- id: repeats
+  prompt: How many runs support a credible comparison?
+  choices:
+  - One
+  - Three to five at least, with spread reported
+  - Two identical
+  - None, use a vendor figure
+  answer:
+  - 1
+  explain: Repeats reveal variance; a difference inside the spread is not evidence.
+- id: co
+  prompt: What is coordinated omission?
+  choices:
+  - A closed-loop load generator under-reports latency by slowing down when the server stalls
+  - Omitting a benchmark
+  - Skipping warm-up
+  - Dropping packets
+  answer:
+  - 0
+  explain: Use an open-loop generator or correct with a histogram.
+- id: loopback
+  prompt: Why is an iperf3 test over loopback misleading?
+  choices:
+  - It uses UDP
+  - It measures the CPU and stack, not the network path
+  - It is too slow
+  - It needs root
+  answer:
+  - 1
+  explain: Use two hosts to include NICs, links and offloads.
+- id: governor
+  prompt: Which setting removes CPU frequency noise?
+  choices:
+  - powersave governor
+  - performance governor
+  - More swap
+  - Smaller packets
+  answer:
+  - 1
+  explain: A fixed frequency makes runs comparable; record the governor with the result.
+- id: active
+  prompt: What is active benchmarking?
+  choices:
+  - Running the test twice
+  - Observing the system with other tools while the test runs to find the limiting resource
+  - Using a GUI
+  - Running at night
+  answer:
+  - 1
+  explain: It turns a number into a finding by naming the bottleneck.

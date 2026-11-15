@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > kdump.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+path /var/crash
+core_collector makedumpfile -l --message-level 7 -d 31
+failure_action reboot
+EOT
+printf '# SPDX-License-Identifier: MIT\ncrashkernel=256M\n' > cmdline.txt
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+panic_class=null-dereference
+faulting_function=nfs4_run_state_manager
+owner_module=nfsv4
+third_party_modules=none
+cpu_of_panic=3
+next_action=update the kernel to the errata that fixes the NFS client bug
+EOT

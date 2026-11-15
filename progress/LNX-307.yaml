@@ -1,0 +1,87 @@
+item: LNX-307
+label: Observability, Performance & Troubleshooting
+branch: build/LNX-307
+state: done
+started: '2026-11-15'
+updated: '2026-11-15'
+phases:
+  synth:
+    state: done
+    units: 10
+    done:
+    - LNX-307-T01
+    - LNX-307-T02
+    - LNX-307-T03
+    - LNX-307-T04
+    - LNX-307-T05
+    - LNX-307-T06
+    - LNX-307-T07
+    - LNX-307-T08
+    - LNX-307-T09
+    - LNX-307-T10
+  lessons:
+    state: done
+    units: 10
+    done:
+    - LNX-307-T01
+    - LNX-307-T02
+    - LNX-307-T03
+    - LNX-307-T04
+    - LNX-307-T05
+    - LNX-307-T06
+    - LNX-307-T07
+    - LNX-307-T08
+    - LNX-307-T09
+    - LNX-307-T10
+  quizzes:
+    state: done
+    units: 10
+    done:
+    - LNX-307-T01
+    - LNX-307-T02
+    - LNX-307-T03
+    - LNX-307-T04
+    - LNX-307-T05
+    - LNX-307-T06
+    - LNX-307-T07
+    - LNX-307-T08
+    - LNX-307-T09
+    - LNX-307-T10
+  labs:
+    state: done
+    units: 10
+    done:
+    - LNX-307-T01
+    - LNX-307-T02
+    - LNX-307-T03
+    - LNX-307-T04
+    - LNX-307-T05
+    - LNX-307-T06
+    - LNX-307-T07
+    - LNX-307-T08
+    - LNX-307-T09
+    - LNX-307-T10
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-15 started
+- '2026-11-15 synth: LNX-307-T01, LNX-307-T02'
+- '2026-11-15 synth: LNX-307-T03'
+- '2026-11-15 synth: LNX-307-T04'
+- '2026-11-15 synth: LNX-307-T05'
+- '2026-11-15 synth: LNX-307-T06'
+- '2026-11-15 synth: LNX-307-T07'
+- '2026-11-15 synth: LNX-307-T08'
+- '2026-11-15 synth: LNX-307-T09, LNX-307-T10'
+- '2026-11-15 lessons: LNX-307-T01, LNX-307-T02, LNX-307-T03, LNX-307-T04, LNX-307-T05, LNX-307-T06, LNX-307-T07,
+  LNX-307-T08, LNX-307-T09, LNX-307-T10'
+- '2026-11-15 quizzes: LNX-307-T01, LNX-307-T02, LNX-307-T03, LNX-307-T04, LNX-307-T05, LNX-307-T06, LNX-307-T07,
+  LNX-307-T08, LNX-307-T09, LNX-307-T10'
+- '2026-11-15 labs: LNX-307-T01, LNX-307-T02, LNX-307-T03, LNX-307-T04, LNX-307-T05, LNX-307-T06, LNX-307-T07, LNX-307-T08,
+  LNX-307-T09, LNX-307-T10'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'

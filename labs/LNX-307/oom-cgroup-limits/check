@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Recompute the diagnosis from the recorded log and validate the proposed limits.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f oom.log ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+c=$(sed -n 's/.*constraint=\(CONSTRAINT_[A-Z]*\).*/\1/p' oom.log | head -1)
+[ "$c" = CONSTRAINT_MEMCG ] && want=cgroup || want=global
+[ "$(get scope)" = "$want" ] && ok "scope $want" || fail "scope: cgroup or global; read the constraint= field"
+un=$(sed -n 's/.*oom_memcg=\/system.slice\/\([^, ]*\).*/\1/p' oom.log | head -1)
+[ "$(get unit)" = "$un" ] && ok "unit $un" || fail "unit: the service named in oom_memcg="
+vi=$(sed -n 's/.*Killed process [0-9]* (\([^)]*\)).*/\1/p' oom.log | head -1)
+[ "$(get victim)" = "$vi" ] && ok "victim $vi" || fail "victim: the process name in the Killed process line"
+rss=$(sed -n 's/.*anon-rss:\([0-9]*\)kB.*/\1/p' oom.log | head -1)
+[ "$(get victim_rss_kb)" = "$rss" ] && ok "rss $rss kB" || fail "victim_rss_kb: the anon-rss value in kB, digits only"
+k=$(awk '$1=="oom_kill"{print $2}' memory.events)
+[ "$(get kills_so_far)" = "$k" ] && ok "kills so far $k" || fail "kills_so_far: oom_kill in memory.events"
+[ "$(get host_was_out_of_memory)" = no ] && ok "host had memory" || fail "host_was_out_of_memory: yes or no; a MEMCG constraint means a limit was hit, not the whole machine"
+# limits drop-in
+f=limits.conf
+grep -q '^\[Service\]' "$f" && ok "[Service] section" || fail "limits.conf must start a [Service] section"
+tokb() { awk -v v="$1" 'BEGIN{ if (match(v,/^[0-9]+[KMGT]?$/)) { n=substr(v,1,length(v)-(v ~ /[KMGT]$/)); u=(v ~ /[KMGT]$/)?substr(v,length(v)):"B"; m=(u=="K")?1:(u=="M")?1024:(u=="G")?1048576:(u=="T")?1073741824:1/1024; printf "%d", n*m } else print -1 }'; }
+hi=$(sed -n 's/^MemoryHigh=\(.*\)/\1/p' "$f" | head -1); mx=$(sed -n 's/^MemoryMax=\(.*\)/\1/p' "$f" | head -1)
+hk=$(tokb "$hi"); mk=$(tokb "$mx")
+if [ "$mk" -gt "$rss" ] 2>/dev/null; then ok "MemoryMax=$mx is above the victim's working set"; else fail "MemoryMax= must be set and above $rss kB (the process died at the old limit with that much resident)"; fi
+if [ "$hk" -gt 0 ] 2>/dev/null && [ "$hk" -lt "$mk" ]; then ok "MemoryHigh=$hi is below MemoryMax"; else fail "MemoryHigh= must be set and lower than MemoryMax so growth is throttled and visible before a kill"; fi
+grep -Eq '^MemorySwapMax=' "$f" && ok "MemorySwapMax" || fail "set MemorySwapMax= (0 or a small value)"
+grep -Eq '^TasksMax=[0-9]+' "$f" && ok "TasksMax" || fail "set TasksMax= to a number"
+grep -Eq '^OOMPolicy=(stop|kill|continue)' "$f" && ok "OOMPolicy" || fail "set OOMPolicy= to stop, kill or continue"
+exit "$bad"

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Recompute every answer from the recorded files.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f answers.txt ] && [ -f stat1.txt ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+busy=$(awk 'NR==FNR{for(i=2;i<=9;i++)a[i]=$i;next}{t=0;for(i=2;i<=9;i++){d[i]=$i-a[i];t+=d[i]} idle=d[5]+d[6]; printf "%d", 100*(t-idle)/t}' stat1.txt stat2.txt)
+g=$(get cpu_busy_percent)
+if printf '%s' "$g" | grep -Eq '^[0-9]+$' && [ "$g" -ge $((busy-1)) ] && [ "$g" -le $((busy+1)) ]; then ok "cpu busy about $busy percent (idle and iowait are not busy)"; else fail "cpu_busy_percent: delta of (all fields minus idle minus iowait) over delta of all fields, from stat1.txt and stat2.txt"; fi
+dev=$(awk '$1!="Device" && $NF>m {m=$NF; d=$1} END{print d}' iostat.txt)
+[ "$(get busy_device)" = "$dev" ] && ok "busy device $dev" || fail "busy_device: the device with the highest %util in iostat.txt"
+mw=$(awk '$1!="Device" && $7>m {m=$7} END{print m}' iostat.txt)
+g=$(get max_w_await_ms)
+awk -v a="$g" -v b="$mw" 'BEGIN{exit !(a+0>0 && a+0>=b-0.05 && a+0<=b+0.05)}' && ok "max w_await $mw" || fail "max_w_await_ms: the largest w_await in iostat.txt"
+tw=$(awk '!/^#/ && $5>m {m=$5; c=$NF} END{print c}' pidstat.txt)
+[ "$(get top_writer)" = "$tw" ] && ok "top writer $tw" || fail "top_writer: the Command with the highest kB_wr/s in pidstat.txt"
+sw=$(awk 'NR>2 && ($7>0 || $8>0){f=1} END{print f?"yes":"no"}' vmstat.txt)
+[ "$(get memory_saturated)" = "$sw" ] && ok "memory saturated: $sw (si/so in vmstat.txt)" || fail "memory_saturated: yes or no, from the si and so columns of vmstat.txt"
+wa=$(awk 'NR>3 && $16>20{f=1} END{print f?"yes":"no"}' vmstat.txt)
+[ "$(get cpu_wait_state_high)" = "$wa" ] && ok "iowait high: $wa" || fail "cpu_wait_state_high: yes if the wa column is above 20 in the interval lines of vmstat.txt"
+exit "$bad"

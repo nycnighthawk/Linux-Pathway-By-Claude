@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > postmortem.md <<'EOT'
+# Postmortem: checkout errors after deploy v212
+
+## Summary
+A config template typo set the database connection pool of checkout to 4 instead of 40. After deploy v212 the 5xx ratio reached 9 percent until a rollback restored service.
+
+## Impact
+About 16 minutes of elevated errors on checkout, peaking at 9 percent of requests.
+
+## Timeline
+- 02:05Z deploy of v212 finishes
+- 02:10Z HighErrorRatio pages the primary on-call
+- 02:14Z dashboard and journal show an exhausted connection pool
+- 02:18Z evidence saved (journal export, thread dump), rollback to v211 started
+- 02:21Z error ratio under 0.5 percent
+- 02:40Z incident closed
+minutes_to_mitigate=11
+
+## Root cause
+The configuration template allowed a pool size of 4 and nothing validated it. The deploy check sent one request, which a pool of 4 serves.
+
+## Contributing factors
+The runbook did not list rollback as the first mitigation. The alert fired five minutes after errors began because of its for clause.
+
+## What went well
+The page was acknowledged in one minute, evidence was saved before the rollback, and the rollback worked first time.
+
+## What went badly
+Recovery waited for a manual search for the rollback command. The deploy check could not detect a small pool.
+
+## Action items
+- Validate pool size bounds in the config template tests | owner: checkout-team | due: 2026-12-01 | class: prevent
+- Add a load-shaped smoke test to the deploy pipeline | owner: platform | due: 2026-12-15 | class: detect
+- Put the rollback command first in the HighErrorRatio runbook | owner: sre | due: 2026-11-30 | class: mitigate
+EOT

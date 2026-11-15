@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: two scrapes of the same counters and an answer sheet. No rule files exist yet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f scrapes.txt answers.txt alerts.yml alertmanager.yml
+cat > scrapes.txt <<'EOT'
+# unix_time metric{labels} value  (two scrapes of one target, 300 s apart)
+1700000000 http_requests_total{job="shop",code="200"} 150000
+1700000000 http_requests_total{job="shop",code="500"} 150
+1700000300 http_requests_total{job="shop",code="200"} 176850
+1700000300 http_requests_total{job="shop",code="500"} 300
+EOT
+printf '# SPDX-License-Identifier: MIT\n# Fill in each ? from scrapes.txt (see README.md)\ntotal_rate_per_s=?\nerror_ratio_pct=?\nrange_vector_for_5m=?\nmetric_type=?\n' > answers.txt
