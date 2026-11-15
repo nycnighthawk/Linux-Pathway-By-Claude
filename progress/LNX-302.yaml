@@ -1,7 +1,7 @@
 item: LNX-302
 label: Mixed Environments
 branch: build/LNX-302
-state: in-progress
+state: done
 started: '2026-11-15'
 updated: '2026-11-15'
 phases:
@@ -20,19 +20,49 @@ phases:
     - LNX-302-T09
     - LNX-302-T10
   lessons:
-    state: todo
+    state: done
     units: 10
-    done: []
+    done:
+    - LNX-302-T01
+    - LNX-302-T02
+    - LNX-302-T03
+    - LNX-302-T04
+    - LNX-302-T05
+    - LNX-302-T06
+    - LNX-302-T07
+    - LNX-302-T08
+    - LNX-302-T09
+    - LNX-302-T10
   quizzes:
-    state: todo
+    state: done
     units: 10
-    done: []
+    done:
+    - LNX-302-T01
+    - LNX-302-T02
+    - LNX-302-T03
+    - LNX-302-T04
+    - LNX-302-T05
+    - LNX-302-T06
+    - LNX-302-T07
+    - LNX-302-T08
+    - LNX-302-T09
+    - LNX-302-T10
   labs:
-    state: todo
+    state: done
     units: 10
-    done: []
+    done:
+    - LNX-302-T01
+    - LNX-302-T02
+    - LNX-302-T03
+    - LNX-302-T04
+    - LNX-302-T05
+    - LNX-302-T06
+    - LNX-302-T07
+    - LNX-302-T08
+    - LNX-302-T09
+    - LNX-302-T10
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -46,3 +76,12 @@ log:
 - '2026-11-15 synth: LNX-302-T08'
 - '2026-11-15 synth: LNX-302-T09'
 - '2026-11-15 synth: LNX-302-T10'
+- '2026-11-15 lessons: LNX-302-T01, LNX-302-T02, LNX-302-T03, LNX-302-T04, LNX-302-T05, LNX-302-T06, LNX-302-T07,
+  LNX-302-T08, LNX-302-T09, LNX-302-T10'
+- '2026-11-15 quizzes: LNX-302-T01, LNX-302-T02, LNX-302-T03, LNX-302-T04, LNX-302-T05, LNX-302-T06, LNX-302-T07,
+  LNX-302-T08, LNX-302-T09, LNX-302-T10'
+- '2026-11-15 labs: LNX-302-T01, LNX-302-T02, LNX-302-T03, LNX-302-T04, LNX-302-T05, LNX-302-T06, LNX-302-T07, LNX-302-T08,
+  LNX-302-T09, LNX-302-T10'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'

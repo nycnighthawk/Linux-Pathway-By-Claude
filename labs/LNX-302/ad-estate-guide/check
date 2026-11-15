@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of the report: every key present and each value of the right kind.
+set -u
+export LC_ALL=C.UTF-8
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f report.txt ] || { echo "FAIL: report.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+chk() {
+  v=$(get "$1")
+  case "|$2|none|" in *"|$v|"*) ok "$1" ;; *) fail "$1 must be one of: ${2//|/, } or none ($3)" ;; esac
+}
+chk join_method "delegated-account|one-time-password|admin-password|keytab" "how hosts enrolled"
+chk access_provider "simple|ad" "from sssd.conf"
+chk gpo_mode "permissive|enforcing|disabled" "ad_gpo_access_control"
+chk sudo_rule_subject "group|user" "what sudo rules name"
+chk ldap_tls "starttls|ldaps" "how SSSD reaches the DCs"
+chk keytab_enctypes "aes|rc4|both" "from klist -ke"
+chk breakglass_account "yes|no" "a local emergency account"
+chk stale_object_report "yes|no" "computer objects idle for 90 days"
+v=$(get ntlm_dependencies_found)
+case "$v" in none|[0-9]|[0-9][0-9]|[0-9][0-9][0-9]) ok "ntlm_dependencies_found" ;; *) fail "ntlm_dependencies_found must be a number or none" ;; esac
+exit $bad

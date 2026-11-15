@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the export, mount and idmap configuration and the diagnosis.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f observed.txt ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+ex=$(grep -v '^\s*#' exports | grep -E '^/srv/export/projects[[:space:]]' | head -1)
+if [ -z "$ex" ]; then fail "exports: a line for /srv/export/projects"
+else
+  printf '%s' "$ex" | grep -q '\*\.example\.com' && ok "client pattern" || fail "exports: restrict to *.example.com"
+  printf '%s' "$ex" | grep -Eq '[(,]rw[,)]' && printf '%s' "$ex" | grep -Eq '[(,]sync[,)]' && ok "rw,sync" || fail "exports: options rw and sync"
+  printf '%s' "$ex" | grep -Eq 'sec=krb5p([,)]|$)' && ok "sec=krb5p" || fail "exports: sec=krb5p"
+  printf '%s' "$ex" | grep -Eq 'sec=[^,)]*(sys|none|krb5:|krb5i|:krb5[^p])' && fail "exports: allow krb5p only, no weaker flavour" || ok "no weaker flavour"
+  printf '%s' "$ex" | grep -q 'no_root_squash' && fail "exports: remove no_root_squash (a client keytab would own the export)" || ok "root squashed"
+fi
+fs=$(grep -v '^\s*#' fstab.line | grep -E '[[:space:]]nfs4[[:space:]]' | head -1)
+if [ -z "$fs" ]; then fail "fstab.line: one entry of type nfs4"
+else
+  set -- $fs
+  [ "$1" = nfs01.example.com:/srv/export/projects ] && ok "device" || fail "fstab.line: nfs01.example.com:/srv/export/projects"
+  [ "$2" = /mnt/projects ] && ok "mount point" || fail "fstab.line: /mnt/projects"
+  o=",$4,"
+  case "$o" in *,sec=krb5p,*) ok "client sec=krb5p" ;; *) fail "fstab.line: sec=krb5p, named explicitly" ;; esac
+  case "$o" in *,vers=4.2,*|*,nfsvers=4.2,*) ok "vers=4.2" ;; *) fail "fstab.line: vers=4.2" ;; esac
+  case "$o" in *,_netdev,*) ok "_netdev" ;; *) fail "fstab.line: _netdev" ;; esac
+  case "$o" in *,x-systemd.automount,*) ok "automount" ;; *) fail "fstab.line: x-systemd.automount so a missing server cannot block boot" ;; esac
+fi
+sed -n '/^\[General\]/,/^\[/p' idmapd.conf | grep -Eq '^Domain[[:space:]]*=[[:space:]]*example\.com$' && ok "idmap domain" || fail "idmapd.conf: [General] with Domain = example.com"
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get server_principal)" = "nfs/nfs01.example.com" ] && ok "server principal" || fail "server_principal: the service/FQDN form, without the realm"
+[ "$(get client_principal_prefix)" = host ] && ok "client principal" || fail "client_principal_prefix: clients need the machine identity (host or nfs)"
+[ "$(get cause_of_nobody)" = idmap-domain-mismatch ] && ok "cause" || fail "cause_of_nobody: compare the idmap domain with the client's DNS domain in observed.txt"
+[ "$(get clear_cache_command)" = "nfsidmap -c" ] && ok "cache" || fail "clear_cache_command: the nfsidmap option that clears cached results"
+[ "$(get port)" = 2049 ] && ok "port" || fail "port: the one TCP port of NFSv4"
+exit "$bad"

@@ -1,0 +1,81 @@
+title: 'Quiz: Samba file server'
+questions:
+- id: daemons
+  prompt: Which daemon serves file and print requests for SMB clients and forks one process per connection?
+  choices:
+  - winbindd
+  - samba-tool
+  - smbd
+  - nmbd
+  answer:
+  - 2
+  explain: smbd handles negotiation, authentication and file/print operations. nmbd only answers NetBIOS names and browsing,
+    winbindd maps domain accounts to Unix ids, and samba-tool is an administration command, not a daemon.
+- id: shadow
+  prompt: Why does a standalone Samba server need smbpasswd or pdbedit to add a user who already has a Unix account?
+  choices:
+  - Unix passwords are limited to 8 characters
+  - The Unix account must be deleted first
+  - SMB needs NT hashes or Kerberos keys that /etc/shadow does not hold
+  - smbd refuses to read /etc/passwd
+  answer:
+  - 2
+  explain: The Unix password hash format cannot answer SMB challenge-response, so credentials go into the passdb (tdbsam).
+    smbd does read the Unix account for the uid, passwords have no 8-character limit here, and the Unix account must remain
+    because it supplies the identity.
+- id: testparm
+  prompt: What does testparm -s do?
+  choices:
+  - Lists connected clients
+  - Parses smb.conf and prints the effective configuration, failing on errors
+  - Starts a test share for clients
+  - Restarts smbd
+  answer:
+  - 1
+  explain: testparm validates syntax and prints the resulting parameters. It starts nothing and restarts nothing; connected
+    clients are listed by smbstatus.
+- id: acl-xattr
+  prompt: With vfs objects = acl_xattr, where is the Windows security descriptor kept?
+  choices:
+  - In the file's three mode digits
+  - In the security.NTACL extended attribute of each file
+  - In /etc/samba/smb.conf
+  - In a database on the client
+  answer:
+  - 1
+  explain: acl_xattr stores the full descriptor in an extended attribute, so the filesystem must support xattrs. smb.conf
+    holds configuration, not per-file ACLs; clients keep nothing; the mode bits cannot express deny entries or inheritance.
+- id: denied
+  prompt: A share has valid users = @staff and create mask = 0660, alice authenticates fine, yet cannot write. The directory
+    is root:root 0755. What is the cause?
+  choices:
+  - SMB signing blocks writes
+  - nmbd is not running
+  - valid users must list individual names
+  - create mask only affects new files; the directory itself denies alice
+  answer:
+  - 3
+  explain: Masks apply to files created later, so an existing root-owned 0755 directory still blocks a non-root session. Group
+    names are allowed with @, signing does not change write permission, and nmbd is unrelated to authorisation.
+- id: proto
+  prompt: What is the safest response when an old scanner only speaks SMB1?
+  choices:
+  - Lower server min protocol to NT1 for all shares
+  - Open port 139 to the internet
+  - Disable signing
+  - Isolate it on a separate exception (another instance or an SFTP/HTTPS upload) with a review date
+  answer:
+  - 3
+  explain: SMB1 carries known remote exploits, so enabling it globally exposes every client. Disabling signing weakens all
+    sessions, and exposing 139 widens the attack surface without fixing the dialect issue.
+- id: mac
+  prompt: For macOS clients using the fruit module, what ordering rule applies?
+  choices:
+  - streams_xattr before fruit
+  - fruit before streams_xattr, enabled globally
+  - fruit only on one share
+  - Either order works
+  answer:
+  - 1
+  explain: fruit must be listed before streams_xattr, and because clients negotiate the Apple extensions on first connection
+    it must be enabled globally. The other answers contradict that.

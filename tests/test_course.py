@@ -251,3 +251,17 @@ def test_cli_end_to_end(root, tmp_path):
     assert r.returncode == 0 and (root / "site" / "courses" / "index.html").is_file(), r.stdout + r.stderr
     r = subprocess.run([sys.executable, "-m", "lpc", "course", "lab", "LNX-900"], env=env, capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_argv_runs_python_lab_scripts_with_the_interpreter_on_windows(tmp_path):
+    """Windows cannot exec a shebang file: a Python lab script is run through sys.executable, a bash one is left alone."""
+    import sys
+    from lpc.course import _argv
+    py = tmp_path / "check"
+    py.write_text("#!/usr/bin/env python3\nprint('x')\n")
+    sh = tmp_path / "setup"
+    sh.write_text("#!/usr/bin/env bash\ntrue\n")
+    assert _argv([str(py)], nt=True) == [sys.executable, str(py)]
+    assert _argv([str(sh)], nt=True) == [str(sh)]
+    assert _argv([str(py)], nt=False) == [str(py)]
+    assert _argv([str(tmp_path / "missing")], nt=True) == [str(tmp_path / "missing")]

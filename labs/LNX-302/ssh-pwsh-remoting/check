@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# Grade sshd_config, the PowerShell script and the answers (portable: Linux and Windows).
+import os
+import re
+import sys
+from pathlib import Path
+
+d = Path(os.environ.get("LAB_DIR", "."))
+bad = 0
+
+
+def fail(msg):
+    global bad
+    print("FAIL:", msg)
+    bad = 1
+
+
+def ok(msg):
+    print("ok:  ", msg)
+
+
+def read(name):
+    p = d / name
+    if not p.is_file():
+        print("FAIL: run setup first")
+        sys.exit(1)
+    return p.read_text(encoding="utf-8", errors="replace")
+
+
+def live(text):
+    return [ln.strip() for ln in text.splitlines() if ln.strip() and not ln.strip().startswith("#")]
+
+
+cfg = live(read("sshd_config"))
+low = [ln.lower() for ln in cfg]
+match_idx = next((i for i, ln in enumerate(low) if ln.startswith("match ")), len(cfg))
+head, tail = low[:match_idx], cfg[match_idx:]
+ok("PubkeyAuthentication yes") if "pubkeyauthentication yes" in head else fail("sshd_config: PubkeyAuthentication yes (before any Match block)")
+ok("passwords off") if "passwordauthentication no" in head else fail("sshd_config: PasswordAuthentication no (before any Match block)")
+sub = [ln for ln in cfg[:match_idx] if ln.lower().startswith("subsystem powershell")]
+if sub and re.search(r"C:/Progra~1/PowerShell/7/pwsh\.exe\s+-sshs", sub[0], re.I):
+    ok("PowerShell subsystem")
+else:
+    fail("sshd_config: Subsystem powershell C:/Progra~1/PowerShell/7/pwsh.exe -sshs ... (short path, before any Match block)")
+if tail and re.match(r"match\s+group\s+administrators\s*$", tail[0], re.I):
+    block = []
+    for ln in tail[1:]:
+        if ln.lower().startswith("match "):
+            break
+        block.append(ln)
+    if any(re.match(r"authorizedkeysfile\s+__PROGRAMDATA__/ssh/administrators_authorized_keys\s*$", ln, re.I) for ln in block):
+        ok("administrators key file")
+    else:
+        fail("Match Group administrators: AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys")
+else:
+    fail("sshd_config: a 'Match Group administrators' block after the global settings")
+
+ps = "\n".join(live(read("harden-keys.ps1")))
+if re.search(r"HKLM:\\SOFTWARE\\OpenSSH", ps, re.I) and re.search(r"DefaultShell", ps) and re.search(r"C:\\Program Files\\PowerShell\\7\\pwsh\.exe", ps, re.I):
+    ok("default shell")
+else:
+    fail("harden-keys.ps1: set DefaultShell under HKLM:\\SOFTWARE\\OpenSSH to C:\\Program Files\\PowerShell\\7\\pwsh.exe")
+ic = [ln for ln in ps.splitlines() if re.search(r"\bicacls\b", ln, re.I)]
+if ic and any("/inheritance:r" in ln for ln in ic) and re.search(r"Administrators:\(?F\)?", ps) and re.search(r"SYSTEM:\(?F\)?", ps) and "administrators_authorized_keys" in ps:
+    ok("ACL reset")
+else:
+    fail("harden-keys.ps1: icacls on administrators_authorized_keys with /inheritance:r and full control for Administrators and SYSTEM")
+if re.search(r"Out-File|Set-Content|Add-Content", ps, re.I):
+    if re.search(r"-Encoding\s+(ascii|utf8NoBOM)", ps, re.I):
+        ok("key file encoding")
+    else:
+        fail("harden-keys.ps1: write the key file with -Encoding ascii or utf8NoBOM")
+else:
+    ok("no key file written (encoding not applicable)")
+
+
+def get(key):
+    for ln in read("answers.txt").splitlines():
+        if ln.startswith(key + "="):
+            return ln.split("=", 1)[1].strip()
+    return ""
+
+
+ok("transport switch") if get("transport_switch") == "-HostName" else fail("transport_switch: the parameter that selects SSH (the other, -ComputerName, selects WinRM)")
+ok("event channel") if get("event_log_channel").lower() == "openssh/operational" else fail("event_log_channel: the Windows event log channel of the OpenSSH server")
+ok("PowerShell 7 not preinstalled") if get("pwsh_preinstalled_on_server_2025").lower() == "no" else fail("pwsh_preinstalled_on_server_2025: yes or no")
+ok("no delegation") if get("delegation_with_ssh").lower() == "no" else fail("delegation_with_ssh: yes or no (an SSH key gives no delegable credential)")
+sys.exit(bad)

@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+import os
+from pathlib import Path
+
+d = Path(os.environ.get("LAB_DIR", "."))
+
+
+def w(name, text):
+    with open(d / name, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(text)
+
+
+w("sshd_config", """# SPDX-License-Identifier: MIT
+PubkeyAuthentication yes
+PasswordAuthentication no
+Subsystem sftp sftp-server.exe
+Subsystem powershell C:/Progra~1/PowerShell/7/pwsh.exe -sshs -NoLogo -NoProfile
+
+Match Group administrators
+    AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
+""")
+w("harden-keys.ps1", """# SPDX-License-Identifier: MIT
+# Run elevated on the Windows server.
+$p = @{
+    Path         = 'HKLM:\\SOFTWARE\\OpenSSH'
+    Name         = 'DefaultShell'
+    Value        = 'C:\\Program Files\\PowerShell\\7\\pwsh.exe'
+    PropertyType = 'String'
+    Force        = $true
+}
+New-ItemProperty @p
+$f = Join-Path $env:ProgramData 'ssh\\administrators_authorized_keys'
+Set-Content -Path $f -Value $env:NEW_ADMIN_KEY -Encoding ascii
+icacls $f /inheritance:r /grant 'Administrators:F' /grant 'SYSTEM:F'
+Restart-Service sshd
+""")
+w("answers.txt", """# SPDX-License-Identifier: MIT
+transport_switch=-HostName
+event_log_channel=OpenSSH/Operational
+pwsh_preinstalled_on_server_2025=no
+delegation_with_ssh=no
+""")

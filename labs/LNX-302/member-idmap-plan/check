@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the winbind and SSSD configuration and the recorded decisions.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f smb.conf ] && [ -f sssd.conf ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+command -v testparm >/dev/null || { echo "FAIL: testparm not found (install samba-common-bin)"; exit 1; }
+testparm -s smb.conf >/dev/null 2>&1 && ok "smb.conf parses" || { fail "testparm rejects smb.conf"; exit 1; }
+p() { testparm -s --section-name=global --parameter-name="$1" smb.conf 2>/dev/null | tail -n 1; }
+lc() { printf '%s' "$1" | tr 'A-Z' 'a-z'; }
+[ "$(lc "$(p security)")" = ads ] && ok "security = ads" || fail "[global] security = ads"
+[ "$(lc "$(p realm)")" = acme.example ] && ok "realm" || fail "[global] realm = ACME.EXAMPLE"
+[ "$(lc "$(p workgroup)")" = acme ] && ok "workgroup" || fail "[global] workgroup = ACME"
+[ "$(lc "$(p 'winbind use default domain')")" = yes ] && ok "default domain names" || fail "[global] winbind use default domain = yes"
+[ "$(lc "$(p 'idmap config * : backend')")" = tdb ] && ok "default domain backend tdb" || fail "idmap config * : backend = tdb"
+[ "$(lc "$(p 'idmap config ACME : backend')")" = rid ] && ok "ACME backend rid" || fail "idmap config ACME : backend = rid (no POSIX attributes, same ids on every host)"
+rng() { printf '%s' "$1" | sed -n 's/^\([0-9]\+\)[ ]*-[ ]*\([0-9]\+\)$/\1 \2/p'; }
+d=$(rng "$(p 'idmap config * : range')"); a=$(rng "$(p 'idmap config ACME : range')")
+if [ -z "$d" ] || [ -z "$a" ]; then fail "both idmap ranges must be written as LOW-HIGH"
+else
+  dl=${d% *}; dh=${d#* }; al=${a% *}; ah=${a#* }
+  [ "$dh" -lt 10000 ] && ok "default range is small ($dl-$dh)" || fail "the default range * should stay below 10000"
+  [ $((ah - al)) -ge 99999 ] && ok "ACME range holds at least 100000 ids" || fail "idmap config ACME : range must hold at least 100000 ids"
+  if [ "$ah" -lt "$dl" ] || [ "$al" -gt "$dh" ]; then ok "ranges do not overlap"; else fail "the idmap ranges overlap"; fi
+fi
+conf=$(grep -v '^\s*[#;]' sssd.conf)
+printf '%s\n' "$conf" | grep -Eq '^\[domain/acme\.example\]' && ok "SSSD domain section" || fail "sssd.conf: a [domain/acme.example] section"
+printf '%s\n' "$conf" | grep -Eq '^id_provider[[:space:]]*=[[:space:]]*ad$' && ok "id_provider ad" || fail "sssd.conf: id_provider = ad"
+printf '%s\n' "$conf" | grep -Eqi '^ldap_id_mapping[[:space:]]*=[[:space:]]*true$' && ok "algorithmic mapping" || fail "sssd.conf: ldap_id_mapping = True (the directory has no POSIX attributes)"
+printf '%s\n' "$conf" | grep -Eq '^access_provider[[:space:]]*=[[:space:]]*ad$' && ok "access_provider ad" || fail "sssd.conf: access_provider = ad"
+printf '%s\n' "$conf" | grep -Eqi '^use_fully_qualified_names[[:space:]]*=[[:space:]]*false$' && ok "short names" || fail "sssd.conf: use_fully_qualified_names = False"
+mode=$(stat -c %a sssd.conf 2>/dev/null || stat -f %Lp sssd.conf)
+[ "$mode" = 600 ] && ok "sssd.conf mode 0600" || fail "sssd.conf must have mode 0600 (SSSD refuses to start otherwise); it is $mode"
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(lc "$(get backend_for_acme)")" = rid ] && ok "answer: backend" || fail "backend_for_acme: rid"
+[ "$(lc "$(get same_ids_on_both_hosts)")" = yes ] && ok "answer: same ids" || fail "same_ids_on_both_hosts: yes (identical settings derive identical ids from the SID)"
+case "$(lc "$(get risk_of_changing_range_later)")" in *orphan*|*owner*|*ownership*) ok "answer: risk" ;; *) fail "risk_of_changing_range_later: a phrase naming what happens to file ownership" ;; esac
+[ "$(get check_trust_command)" = "wbinfo -t" ] && ok "answer: trust check" || fail "check_trust_command: the exact command, wbinfo with one option"
+exit "$bad"

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the resolver and chrony files and the answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f resolv.conf ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+live() { grep -v '^\s*#' "$1"; }
+live resolv.conf | grep -Eq '^(search|domain)[[:space:]].*acme\.example' && ok "search domain" || fail "resolv.conf: search acme.example"
+ns=$(live resolv.conf | awk '$1=="nameserver"{print $2}' | sort | tr '\n' ' ')
+[ "$ns" = "10.0.0.10 10.0.0.11 " ] && ok "two DCs are the only nameservers" || fail "resolv.conf: nameservers must be exactly 10.0.0.10 and 10.0.0.11 (found: $ns)"
+m=$(live chrony-member.conf)
+printf '%s\n' "$m" | grep -Eq '^server[[:space:]]+dc1\.acme\.example[[:space:]].*iburst' && printf '%s\n' "$m" | grep -Eq '^server[[:space:]]+dc2\.acme\.example[[:space:]].*iburst' && ok "member uses both DCs" || fail "chrony-member.conf: server dc1.acme.example iburst and server dc2.acme.example iburst"
+printf '%s\n' "$m" | grep -Eq '^makestep[[:space:]]' && ok "member makestep" || fail "chrony-member.conf: a makestep line (a restored VM needs its clock stepped)"
+printf '%s\n' "$m" | grep -Eq '^allow([[:space:]]|$)' && fail "chrony-member.conf must not allow clients: a member serves no time" || ok "member serves no time"
+d=$(live chrony-dc.conf)
+printf '%s\n' "$d" | grep -Eq '^server[[:space:]]+[^[:space:]]+[[:space:]].*iburst' && ok "DC upstream" || fail "chrony-dc.conf: an upstream 'server <name> iburst'"
+printf '%s\n' "$d" | grep -Eq '^bindcmdaddress[[:space:]]+10\.0\.0\.10$' && ok "bindcmdaddress" || fail "chrony-dc.conf: bindcmdaddress 10.0.0.10"
+printf '%s\n' "$d" | grep -Eq '^allow[[:space:]]+10\.0\.0\.0/16$' && ok "allow" || fail "chrony-dc.conf: allow 10.0.0.0/16"
+printf '%s\n' "$d" | grep -Eq '^makestep[[:space:]]' && ok "DC makestep" || fail "chrony-dc.conf: a makestep line"
+printf '%s\n' "$d" | grep -Eq '^ntpsigndsocket[[:space:]]+/var/lib/samba/ntp_signd/?$' && ok "signed time socket" || fail "chrony-dc.conf: ntpsigndsocket /var/lib/samba/ntp_signd (Windows clients expect signed replies)"
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get failing_query)" = "_ldap._tcp.dc._msdcs.acme.example" ] && ok "failing query" || fail "failing_query: the name in the NXDOMAIN line of lookup.txt"
+[ "$(get why_nxdomain)" = router-answered ] && ok "why" || fail "why_nxdomain: the record exists on the DC; who answered instead? (router-answered or record-missing)"
+[ "$(get max_kerberos_skew_minutes)" = 5 ] && ok "skew" || fail "max_kerberos_skew_minutes: the default tolerance"
+case "$(get tool_to_recreate_dc_records)" in samba_dnsupdate*) ok "tool" ;; *) fail "tool_to_recreate_dc_records: the Samba tool that compares expected and actual records" ;; esac
+exit "$bad"

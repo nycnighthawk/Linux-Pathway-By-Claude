@@ -311,9 +311,22 @@ def print_status(root: Path) -> None:
 
 
 # ------------------------------------------------------------------ lab harness
+def _argv(cmd: list[str], nt: bool | None = None) -> list[str]:
+    """Windows cannot execute a shebang script: run a Python lab script (shebang names python) with this interpreter."""
+    if (os.name == "nt" if nt is None else nt) and len(cmd) == 1:
+        try:
+            with open(cmd[0], encoding="utf-8", errors="replace") as fh:
+                first = fh.readline()
+        except OSError:
+            return cmd
+        if first.startswith("#!") and "python" in first:
+            return [sys.executable, cmd[0]]
+    return cmd
+
+
 def _run(cmd: list[str], cwd: Path, env: dict, timeout: int = 900) -> subprocess.CompletedProcess:
     try:
-        return subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, text=True, timeout=timeout)
+        return subprocess.run(_argv(cmd), cwd=cwd, env=env, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired as e:
         return subprocess.CompletedProcess(cmd, 124, e.stdout or "", f"timed out after {timeout}s")
 

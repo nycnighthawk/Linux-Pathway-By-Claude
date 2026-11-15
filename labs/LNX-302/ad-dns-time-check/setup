@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a faulty resolver file, recorded lookups and stubs.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f resolv.conf lookup.txt chrony-member.conf chrony-dc.conf answers.txt
+cat > resolv.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+search lan
+nameserver 10.0.0.10
+nameserver 192.168.1.1
+EOT
+cat > lookup.txt <<'EOT'
+$ host dc1.acme.example
+dc1.acme.example has address 10.0.0.10
+$ host -t SRV _ldap._tcp.dc._msdcs.acme.example
+Host _ldap._tcp.dc._msdcs.acme.example not found: 3(NXDOMAIN)
+# context: the DC was rebooting, so the query was answered by the second nameserver, 192.168.1.1 (an office router).
+EOT
+for f in chrony-member.conf chrony-dc.conf; do printf '# SPDX-License-Identifier: MIT\n# TODO: see README.md\n' > "$f"; done
+printf '# SPDX-License-Identifier: MIT\nfailing_query=?\nwhy_nxdomain=?\nmax_kerberos_skew_minutes=?\ntool_to_recreate_dc_records=?\n' > answers.txt

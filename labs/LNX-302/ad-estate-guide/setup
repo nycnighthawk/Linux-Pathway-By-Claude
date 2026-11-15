@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a report with every key set to a question mark.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f report.txt
+printf '# SPDX-License-Identifier: MIT\njoin_method=?\naccess_provider=?\ngpo_mode=?\nsudo_rule_subject=?\nldap_tls=?\nkeytab_enctypes=?\nbreakglass_account=?\nstale_object_report=?\nntlm_dependencies_found=?\n' > report.txt

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an observation and stub configuration files.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f observed.txt exports fstab.line idmapd.conf answers.txt
+cat > observed.txt <<'EOT'
+client$ kinit alice@EXAMPLE.COM          # succeeded
+client$ mount -t nfs4 -o sec=krb5p nfs01.example.com:/srv/export/projects /mnt/projects   # succeeded
+client$ ls -l /mnt/projects
+-rw-r----- 1 nobody nobody 4096 Nov 14 09:12 plan.ods
+client$ hostname -d
+corp.example.com
+server$ grep -i domain /etc/idmapd.conf
+Domain = example.com
+EOT
+for f in exports fstab.line idmapd.conf; do printf '# SPDX-License-Identifier: MIT\n# TODO: see README.md\n' > "$f"; done
+printf '# SPDX-License-Identifier: MIT\nserver_principal=?\nclient_principal_prefix=?\ncause_of_nobody=?\nclear_cache_command=?\nport=?\n' > answers.txt

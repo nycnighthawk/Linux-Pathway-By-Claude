@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a recorded upcall log and stub configuration files.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f upcall.log fstab.line request-key.conf krb5.conf answers.txt
+cat > upcall.log <<'EOT'
+cifs.upcall: key description: cifs.spnego;0;0;39010000;ver=0x2;host=files.acme.example;ip4=10.0.0.20;sec=krb5;uid=0x3e9;creduid=0x3e9;user=alice;pid=0x1b3c
+cifs.upcall: ver=2
+cifs.upcall: host=files.acme.example
+cifs.upcall: sec=1
+cifs.upcall: uid=1001
+cifs.upcall: creduid=1001
+cifs.upcall: user=alice
+cifs.upcall: get_existing_cc: default ccache is KCM:1001
+cifs.upcall: handle_krb5_mech: getting service ticket for files.acme.example
+cifs.upcall: handle_krb5_mech: failed to obtain service ticket (-1765328377): Server cifs/files.acme.example@ACME.EXAMPLE not found in Kerberos database
+cifs.upcall: Exit status 1
+# context: files.acme.example is a DNS CNAME for fs07.acme.example. The server's keytab holds cifs/fs07.acme.example.
+EOT
+for f in fstab.line request-key.conf krb5.conf; do printf '# SPDX-License-Identifier: MIT\n# TODO: see README.md\n' > "$f"; done
+printf '# SPDX-License-Identifier: MIT\nrequested_principal=?\nwhy_it_failed=?\ncorrect_fix=?\nverify_command=?\n' > answers.txt

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade smb.conf with testparm and the two answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f smb.conf ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+command -v testparm >/dev/null || { echo "FAIL: testparm not found (install samba-common-bin)"; exit 1; }
+testparm -s smb.conf >/dev/null 2>&1 && ok "smb.conf parses" || { fail "testparm rejects smb.conf"; exit 1; }
+p() { testparm -s --section-name="$1" --parameter-name="$2" smb.conf 2>/dev/null | tail -n 1; }
+has_share() { testparm -s smb.conf 2>/dev/null | grep -q "^\[$1\]"; }
+lc() { printf '%s' "$1" | tr 'A-Z' 'a-z'; }
+case "$(lc "$(p global 'server min protocol')")" in
+  smb2|smb2_02|smb2_10|smb3|smb3_00|smb3_02|smb3_11) ok "SMB1 refused" ;;
+  *) fail "[global] server min protocol must be SMB2_10 or higher" ;;
+esac
+[ "$(lc "$(p global 'server signing')")" = required ] && ok "signing mandatory" || fail "[global] server signing = mandatory"
+case "$(lc "$(p global 'smb encrypt')")" in desired|required|if_required) ok "encryption requested" ;; *) fail "[global] smb encrypt = desired (or required)" ;; esac
+[ "$(lc "$(p global 'map to guest')")" = never ] && ok "no anonymous mapping" || fail "[global] map to guest = Never"
+[ "$(lc "$(p global 'workgroup')")" = lab ] && ok "workgroup" || fail "[global] workgroup = LAB"
+if has_share projects; then
+  [ "$(p projects path)" = /srv/samba/projects ] && ok "projects path" || fail "[projects] path = /srv/samba/projects"
+  [ "$(lc "$(p projects 'read only')")" = no ] && ok "projects writable" || fail "[projects] read only = no"
+  p projects 'valid users' | grep -q '@staff' && ok "valid users @staff" || fail "[projects] valid users = @staff"
+  [ "$(p projects 'force group')" = staff ] && ok "force group" || fail "[projects] force group = staff"
+  [ "$(p projects 'create mask')" = 0660 ] && ok "create mask" || fail "[projects] create mask = 0660"
+  case "$(p projects 'directory mask')" in 2770|02770) ok "directory mask" ;; *) fail "[projects] directory mask = 2770" ;; esac
+  [ "$(lc "$(p projects 'guest ok')")" = no ] && ok "no guests" || fail "[projects] guest ok = no"
+else fail "share [projects] is missing"; fi
+if has_share docs; then
+  [ "$(p docs path)" = /srv/samba/docs ] && ok "docs path" || fail "[docs] path = /srv/samba/docs"
+  [ "$(lc "$(p docs 'read only')")" = no ] && ok "docs writable" || fail "[docs] read only = no"
+  p docs 'vfs objects' | grep -qw acl_xattr && ok "acl_xattr" || fail "[docs] vfs objects = acl_xattr"
+  [ "$(lc "$(p docs 'map acl inherit')")" = yes ] && ok "map acl inherit" || fail "[docs] map acl inherit = yes"
+  [ "$(lc "$(p docs 'store dos attributes')")" = yes ] && ok "store dos attributes" || fail "[docs] store dos attributes = yes"
+else fail "share [docs] is missing"; fi
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get status_after_good_login_but_no_permission)" = NT_STATUS_ACCESS_DENIED ] && ok "status code" || fail "status_after_good_login_but_no_permission: the NT_STATUS code shown when authentication worked but access is refused"
+[ "$(get daemon_for_domain_ids)" = winbindd ] && ok "daemon" || fail "daemon_for_domain_ids: the daemon that maps domain accounts to Unix ids"
+exit "$bad"

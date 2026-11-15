@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# Starting state: a default sshd_config, a stub script and an answer sheet.
+import os
+from pathlib import Path
+
+d = Path(os.environ.get("LAB_DIR", "."))
+
+
+def w(name, text):
+    with open(d / name, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(text)
+
+
+for n in ("sshd_config", "harden-keys.ps1", "answers.txt"):
+    (d / n).unlink(missing_ok=True)
+w("sshd_config", "# SPDX-License-Identifier: MIT\n"
+  "# Windows OpenSSH default-like configuration (C:\\ProgramData\\ssh\\sshd_config)\n"
+  "PasswordAuthentication yes\n"
+  "Subsystem sftp sftp-server.exe\n")
+w("harden-keys.ps1", "# SPDX-License-Identifier: MIT\n# TODO: see README.md\n")
+w("answers.txt", "# SPDX-License-Identifier: MIT\ntransport_switch=?\nevent_log_channel=?\n"
+  "pwsh_preinstalled_on_server_2025=?\ndelegation_with_ssh=?\n")

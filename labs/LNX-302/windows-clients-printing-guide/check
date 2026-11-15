@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of the report: every key present and each value of the right kind.
+set -u
+export LC_ALL=C.UTF-8
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f report.txt ] || { echo "FAIL: report.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+chk() { # key, allowed words (pipe separated), hint
+  v=$(get "$1")
+  case "|$2|none|" in *"|$v|"*) ok "$1" ;; *) fail "$1 must be one of: ${2//|/, } or none ($3)" ;; esac
+}
+chk dc_found_via "srv|netbios|hosts" "how the client located its DC"
+chk gpresult_shows_policy "yes|no" "from gpresult /r"
+chk drive_mechanism "logon-script|gpp|dfs|redirection" "what mapped the drive"
+chk smbstatus_auth "krb5|ntlm" "the authentication shown by smbstatus"
+chk printer_queue_type "ipp-driverless|raw|postscript" "how the queue was defined"
+chk driver_source "inbox-ipp|print\$|staged" "where the client got the driver"
+chk point_and_print_restriction "enabled|disabled" "the client policy"
+chk test_page_printed "yes|no" "the outcome"
+exit $bad

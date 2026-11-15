@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a report with every key set to a question mark.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f report.txt
+printf '# SPDX-License-Identifier: MIT\nconnection_plugin=?\nauthentication=?\ninventory_host_form=?\nticket_source=?\ncert_validation=?\nwin_ping_result=?\nfeature_changed_first_run=?\nfeature_changed_second_run=?\ndouble_hop_fix=?\nshell_task_idempotent=?\n' > report.txt

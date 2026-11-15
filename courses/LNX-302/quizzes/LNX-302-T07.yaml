@@ -1,0 +1,74 @@
+title: 'Quiz: Windows clients and printing'
+questions:
+- id: printdollar
+  prompt: Which Samba share holds printer drivers for Windows clients?
+  choices:
+  - print$
+  - homes
+  - netlogon
+  - IPC$
+  answer:
+  - 0
+  explain: print$ is the driver repository. homes exposes home directories, netlogon holds logon scripts, IPC$ carries named
+    pipes.
+- id: raw
+  prompt: What does cups options = raw do?
+  choices:
+  - Encrypts jobs
+  - Enables SMB1
+  - Passes jobs to CUPS without conversion
+  - Disables printing
+  answer:
+  - 2
+  explain: Raw submission suits a native Windows driver; without it CUPS filters the job.
+- id: pn
+  prompt: Why can a standard user no longer install a server-supplied printer driver by default?
+  choices:
+  - Samba removed print$
+  - CUPS forbids it
+  - Kerberos tickets
+  - Point and Print was hardened after PrintNightmare
+  answer:
+  - 3
+  explain: Driver installation ran as SYSTEM and was an attack path, so policy now requires approval, staged drivers or administrator
+    rights.
+- id: driverless
+  prompt: What is a driverless IPP queue?
+  choices:
+  - A queue using the printer's own advertised formats so no vendor driver is needed
+  - A queue that deletes jobs
+  - A queue without a printer
+  - A raw queue
+  answer:
+  - 0
+  explain: lpadmin -m everywhere sets one up. Standard formats like PDF or PWG raster replace vendor drivers.
+- id: sysvol-edit
+  prompt: Where should group policy be edited in a Samba AD with rsync-based SYSVOL?
+  choices:
+  - Only on clients
+  - In /etc/samba
+  - On the PDC emulator holder
+  - On any DC
+  answer:
+  - 2
+  explain: The one-way copy overwrites edits made elsewhere.
+- id: browsed
+  prompt: Why avoid cups-browsed on servers?
+  choices:
+  - It is too slow
+  - Its 2024 vulnerabilities allowed unauthenticated remote printer injection and it is rarely needed
+  - It disables IPP
+  - It needs Windows
+  answer:
+  - 1
+  explain: Distributions removed legacy discovery; do not run what you do not need.
+- id: script
+  prompt: Which mechanism maps drives per group with item-level targeting?
+  choices:
+  - print$
+  - DFS replication
+  - nmbd
+  - Group policy preferences, Drive Maps
+  answer:
+  - 3
+  explain: Preferences support targeting by group, site or OS; logon scripts lack that targeting by design.
