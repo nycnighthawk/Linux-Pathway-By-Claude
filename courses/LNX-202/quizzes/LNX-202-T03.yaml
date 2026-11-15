@@ -41,7 +41,7 @@ questions:
   - 1
   explain: ff:fe is inserted in the middle and bit 1 of the first byte is inverted.
 - id: radvd-fwd
-  prompt: What does radvd require of the host?
+  prompt: What does radvd expect of the router host?
   choices:
   - A DHCPv6 server
   - Jumbo frames
@@ -49,7 +49,7 @@ questions:
   - IPv4 NAT
   answer:
   - 2
-  explain: radvd refuses to run on a host that does not forward.
+  explain: radvd logs a warning and carries on when forwarding is off, but hosts would then adopt a gateway that does not forward.
 - id: icmp6
   prompt: Why must firewalls allow ICMPv6?
   choices:
