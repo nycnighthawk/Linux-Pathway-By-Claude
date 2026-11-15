@@ -79,6 +79,10 @@ modules:
     title: Troubleshooting nodes, control plane and apps
     file: lessons/LNX-311-T10.md
     minutes: 55
+  - topic: LNX-311-T11
+    title: Managed Kubernetes (EKS/AKS/GKE)
+    file: lessons/LNX-311-T11.md
+    minutes: 40
 labs:
 - id: static-pod-repair
   topic: LNX-311-T01
@@ -140,6 +144,12 @@ labs:
   env: V
   license: MIT
   minutes: 30
+- id: managed-cluster-guide
+  topic: LNX-311-T11
+  title: Review a managed Kubernetes cluster against a checklist
+  env: K
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-311-T01
   topic: LNX-311-T01
@@ -181,3 +191,7 @@ quizzes:
   topic: LNX-311-T10
   title: 'Quiz: Troubleshooting nodes, control plane and apps'
   file: quizzes/LNX-311-T10.yaml
+- id: LNX-311-T11
+  topic: LNX-311-T11
+  title: 'Quiz: Managed Kubernetes (EKS/AKS/GKE)'
+  file: quizzes/LNX-311-T11.yaml

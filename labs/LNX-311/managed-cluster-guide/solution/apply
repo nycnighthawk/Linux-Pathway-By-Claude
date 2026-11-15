@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+printf 'provider=gke\nnode_model=auto\napi_endpoint=restricted\nworkload_identity=GKE Workload Identity\naudit_logs=on\nk8s_minor=1.35\nsupport_end=2027-03-31\nmetadata_blocked=yes\n' > report.txt
+printf 'provider: gcloud container clusters describe\nendpoint: authorized networks in the describe output\nsupport_end: release schedule page for the channel\n' > notes.txt
