@@ -1,0 +1,30 @@
+item: LNX-305
+label: Configuration Management with Ansible
+branch: build/LNX-305
+state: in-progress
+started: '2026-11-15'
+updated: '2026-11-15'
+phases:
+  synth:
+    state: todo
+    units: 9
+    done: []
+  lessons:
+    state: todo
+    units: 9
+    done: []
+  quizzes:
+    state: todo
+    units: 9
+    done: []
+  labs:
+    state: todo
+    units: 9
+    done: []
+  checks:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-15 started
