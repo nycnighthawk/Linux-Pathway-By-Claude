@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f storage.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+by = {(d["kind"], d["metadata"]["name"]): d for d in yaml.safe_load_all(open("storage.yaml")) if d}
+sc = by.get(("StorageClass", "db-fast"), {})
+if sc.get("reclaimPolicy") == "Retain": ok("class keeps volumes (Retain)")
+else: fail("StorageClass reclaimPolicy must be Retain")
+if sc.get("volumeBindingMode") == "WaitForFirstConsumer": ok("topology-aware binding")
+else: fail("volumeBindingMode must be WaitForFirstConsumer")
+if sc.get("allowVolumeExpansion") is True: ok("expansion allowed")
+else: fail("set allowVolumeExpansion: true")
+ss = by.get(("StatefulSet", "db"), {}).get("spec", {})
+if ss.get("replicas") == 3: ok("three replicas")
+else: fail("StatefulSet needs 3 replicas")
+t = ss.get("volumeClaimTemplates") or []
+c = t[0] if t else {}
+sp = c.get("spec", {})
+if c.get("metadata", {}).get("name") == "data" and sp.get("accessModes") == ["ReadWriteOnce"] and sp.get("storageClassName") == "db-fast" and sp.get("resources", {}).get("requests", {}).get("storage") == "20Gi": ok("claim template data: RWO, 20Gi, db-fast")
+else: fail("volumeClaimTemplates must contain claim data (ReadWriteOnce, 20Gi, storageClassName db-fast)")
+m = [x for x in (ss.get("template", {}).get("spec", {}).get("containers") or [{}])[0].get("volumeMounts", []) if x.get("name") == "data" and x.get("mountPath") == "/var/lib/db"]
+if m: ok("claim mounted at /var/lib/db")
+else: fail("mount volume data at /var/lib/db")
+vs = by.get(("VolumeSnapshotClass", "db-snap"), {})
+if vs.get("deletionPolicy") == "Retain" and vs.get("driver") == "csi.example.com": ok("snapshot class retains snapshots")
+else: fail("VolumeSnapshotClass db-snap needs deletionPolicy Retain and the same driver")
+sys.exit(bad)
+PY

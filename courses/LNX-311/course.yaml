@@ -53,6 +53,10 @@ modules:
     title: 'Scheduling: affinity, taints, resources, autoscaling'
     file: lessons/LNX-311-T05.md
     minutes: 50
+  - topic: LNX-311-T06
+    title: 'Storage: PV/PVC, StorageClass, CSI'
+    file: lessons/LNX-311-T06.md
+    minutes: 50
 labs:
 - id: static-pod-repair
   topic: LNX-311-T01
@@ -84,6 +88,12 @@ labs:
   env: C
   license: MIT
   minutes: 35
+- id: storage-manifests
+  topic: LNX-311-T06
+  title: Production-sensible class
+  env: C
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-311-T01
   topic: LNX-311-T01
@@ -105,3 +115,7 @@ quizzes:
   topic: LNX-311-T05
   title: 'Quiz: Scheduling: affinity, taints, resources, autoscaling'
   file: quizzes/LNX-311-T05.yaml
+- id: LNX-311-T06
+  topic: LNX-311-T06
+  title: 'Quiz: Storage: PV/PVC, StorageClass, CSI'
+  file: quizzes/LNX-311-T06.yaml
