@@ -1,0 +1,31 @@
+item: LNX-301
+label: Identity, Directory & AD Integration
+branch: build/LNX-301
+state: in-progress
+started: '2026-11-15'
+updated: '2026-11-15'
+phases:
+  synth:
+    state: in-progress
+    units: 10
+    done:
+    - LNX-301-T03
+  lessons:
+    state: todo
+    units: 10
+    done: []
+  quizzes:
+    state: todo
+    units: 10
+    done: []
+  labs:
+    state: todo
+    units: 10
+    done: []
+  checks:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-15 started
