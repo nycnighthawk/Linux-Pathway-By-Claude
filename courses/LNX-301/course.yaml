@@ -1,0 +1,183 @@
+id: LNX-301
+title: Identity, Directory & AD Integration
+summary: 'How Linux hosts learn who a user is and decide whether to let them in: LDAP and Kerberos fundamentals, SSSD with
+  nsswitch and PAM, joining Samba and Windows Active Directory, FreeIPA/IdM with replicas, HBAC and sudo rules, trusts to
+  AD, ID mapping and troubleshooting, ansible-freeipa automation and smart-card login.'
+hours: 60
+outcomes:
+- Query and protect an OpenLDAP directory with ordered access rules, indexes and verified TLS
+- Issue Kerberos keytabs and use GSSAPI single sign-on for SSH
+- Configure SSSD, nsswitch and PAM so that directory users can log in safely
+- Join a Linux host to a Samba or Windows Active Directory domain and verify the join
+- Run FreeIPA/IdM with replicas and express access and sudo policy as HBAC and sudo rules
+- Design a one-way trust between IdM and Active Directory and map AD groups into IdM policy
+- Choose and verify an ID mapping model and troubleshoot SSSD with sssctl
+- Automate IdM with ansible-freeipa and plan smart-card login with certificate mapping
+certifications:
+- cert: EX362
+  objectives: []
+- cert: LPIC3-300
+  objectives: []
+modules:
+- id: directory-and-kerberos
+  title: Directories and Kerberos
+  lessons:
+  - topic: LNX-301-T01
+    title: LDAP servers and clients
+    file: lessons/LNX-301-T01.md
+    minutes: 55
+  - topic: LNX-301-T02
+    title: Kerberos, keytabs, GSSAPI SSH
+    file: lessons/LNX-301-T02.md
+    minutes: 60
+- id: client-stack-and-ad
+  title: The client stack and Active Directory
+  lessons:
+  - topic: LNX-301-T03
+    title: SSSD, nsswitch, PAM
+    file: lessons/LNX-301-T03.md
+    minutes: 65
+  - topic: LNX-301-T04
+    title: realmd/adcli joins to Samba AD DC
+    file: lessons/LNX-301-T04.md
+    minutes: 65
+  - topic: LNX-301-T05
+    title: Joining a genuine Windows AD
+    file: lessons/LNX-301-T05.md
+    minutes: 55
+- id: idm-and-trusts
+  title: FreeIPA/IdM, trusts and automation
+  lessons:
+  - topic: LNX-301-T06
+    title: 'FreeIPA/IdM: replicas, HBAC, sudo rules'
+    file: lessons/LNX-301-T06.md
+    minutes: 75
+  - topic: LNX-301-T07
+    title: IdM to AD trust
+    file: lessons/LNX-301-T07.md
+    minutes: 55
+  - topic: LNX-301-T08
+    title: ID mapping, sssctl troubleshooting
+    file: lessons/LNX-301-T08.md
+    minutes: 60
+  - topic: LNX-301-T09
+    title: ansible-freeipa automation
+    file: lessons/LNX-301-T09.md
+    minutes: 60
+  - topic: LNX-301-T10
+    title: Smart-card login
+    file: lessons/LNX-301-T10.md
+    minutes: 45
+labs:
+- id: ldap-acl-search
+  topic: LNX-301-T01
+  title: Protect password hashes with OpenLDAP access rules and write a client configuration
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - ldap-utils
+  - slapd
+- id: krb-keytab-gssapi
+  topic: LNX-301-T02
+  title: Export a service keytab and prove it against a real KDC
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - krb5-kdc
+  - krb5-admin-server
+  - krb5-user
+- id: sssd-pam-config
+  topic: LNX-301-T03
+  title: Make a host resolve and authenticate directory users with SSSD, nsswitch and PAM
+  env: V
+  license: MIT
+  minutes: 40
+- id: prejoin-checks
+  topic: LNX-301-T04
+  title: Write the pre-join check script that stops a bad realm join early
+  env: V
+  license: MIT
+  minutes: 40
+- id: ad-join-runbook
+  topic: LNX-301-T05
+  title: Plan a join to a genuine Windows AD domain
+  env: S
+  license: MIT
+  minutes: 40
+- id: idm-hbac-sudo
+  topic: LNX-301-T06
+  title: Express HBAC rules, sudo rules and a replica topology and prove them with a decision table
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - python3-yaml
+- id: trust-design-review
+  topic: LNX-301-T07
+  title: Design an IdM to AD trust
+  env: S
+  license: MIT
+  minutes: 40
+- id: sssd-idmap-triage
+  topic: LNX-301-T08
+  title: Triage five SSSD identity problems from recorded evidence
+  env: V
+  license: MIT
+  minutes: 40
+- id: freeipa-playbook
+  topic: LNX-301-T09
+  title: Write an ansible-freeipa inventory, a policy playbook and a drift check
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - python3-yaml
+- id: smartcard-mapping
+  topic: LNX-301-T10
+  title: Plan smart-card login with certificate mapping
+  env: S
+  license: MIT
+  minutes: 40
+quizzes:
+- id: LNX-301-T01
+  topic: LNX-301-T01
+  title: 'Quiz: LDAP servers and clients'
+  file: quizzes/LNX-301-T01.yaml
+- id: LNX-301-T02
+  topic: LNX-301-T02
+  title: 'Quiz: Kerberos, keytabs, GSSAPI SSH'
+  file: quizzes/LNX-301-T02.yaml
+- id: LNX-301-T03
+  topic: LNX-301-T03
+  title: 'Quiz: SSSD, nsswitch, PAM'
+  file: quizzes/LNX-301-T03.yaml
+- id: LNX-301-T04
+  topic: LNX-301-T04
+  title: 'Quiz: realmd/adcli joins to Samba AD DC'
+  file: quizzes/LNX-301-T04.yaml
+- id: LNX-301-T05
+  topic: LNX-301-T05
+  title: 'Quiz: Joining a genuine Windows AD'
+  file: quizzes/LNX-301-T05.yaml
+- id: LNX-301-T06
+  topic: LNX-301-T06
+  title: 'Quiz: FreeIPA/IdM: replicas, HBAC, sudo rules'
+  file: quizzes/LNX-301-T06.yaml
+- id: LNX-301-T07
+  topic: LNX-301-T07
+  title: 'Quiz: IdM to AD trust'
+  file: quizzes/LNX-301-T07.yaml
+- id: LNX-301-T08
+  topic: LNX-301-T08
+  title: 'Quiz: ID mapping, sssctl troubleshooting'
+  file: quizzes/LNX-301-T08.yaml
+- id: LNX-301-T09
+  topic: LNX-301-T09
+  title: 'Quiz: ansible-freeipa automation'
+  file: quizzes/LNX-301-T09.yaml
+- id: LNX-301-T10
+  topic: LNX-301-T10
+  title: 'Quiz: Smart-card login'
+  file: quizzes/LNX-301-T10.yaml

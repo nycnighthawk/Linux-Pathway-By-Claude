@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Starting state: a draft libvirt domain definition with several mistakes.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f web1.xml
+cat > web1.xml <<'XML'
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<domain type='qemu'>
+  <name>web1</name>
+  <memory unit='MiB'>512</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+  </os>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/web1.img'/>
+      <target dev='hda' bus='ide'/>
+    </disk>
+    <interface type='user'>
+      <model type='e1000'/>
+    </interface>
+    <graphics type='vnc' port='-1' listen='0.0.0.0'/>
+  </devices>
+</domain>
+XML

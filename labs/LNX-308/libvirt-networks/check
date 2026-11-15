@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Parse the three XML files, check the network design and validate against libvirt's schemas when available.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f lab-net.xml ] && [ -f trunk-iface.xml ] && [ -f macvtap-iface.xml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import ipaddress, re, sys
+import xml.etree.ElementTree as ET
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+def load(f):
+    try: return ET.parse(f).getroot()
+    except ET.ParseError as e:
+        fail("%s is not well-formed: %s" % (f, e)); return None
+n = load("lab-net.xml")
+if n is not None:
+    if n.findtext("name") == "labnet": ok("network named labnet")
+    else: fail("network name must be labnet")
+    f = n.find("forward")
+    if f is not None and f.get("mode") == "nat": ok("forward mode nat")
+    else: fail("<forward mode='nat'/> is required")
+    b = n.find("bridge")
+    if b is not None and b.get("name") == "virbr10": ok("bridge virbr10")
+    else: fail("<bridge name='virbr10'/> is required (and not the default virbr0)")
+    ip = n.find("ip")
+    try:
+        net = ipaddress.ip_interface("%s/%s" % (ip.get("address"), ip.get("netmask") or ip.get("prefix")))
+        if str(net) == "192.168.150.1/24": ok("gateway 192.168.150.1/24")
+        else: fail("ip address 192.168.150.1 with netmask 255.255.255.0 expected, found %s" % net)
+        r = ip.find("dhcp/range")
+        lo, hi = ipaddress.ip_address(r.get("start")), ipaddress.ip_address(r.get("end"))
+        if lo == ipaddress.ip_address("192.168.150.100") and hi == ipaddress.ip_address("192.168.150.200"): ok("dhcp range .100 to .200")
+        else: fail("dhcp range must be 192.168.150.100 to 192.168.150.200")
+        h = [x for x in ip.findall("dhcp/host") if x.get("name") == "db1"]
+        if h and h[0].get("mac", "").lower() == "52:54:00:aa:bb:01" and h[0].get("ip") == "192.168.150.10": ok("reservation db1 -> 192.168.150.10")
+        else: fail("add <host mac='52:54:00:aa:bb:01' name='db1' ip='192.168.150.10'/> inside <dhcp>")
+        if ipaddress.ip_address("192.168.150.10") in net.network and not (lo <= ipaddress.ip_address("192.168.150.10") <= hi): ok("reservation lies outside the dynamic range")
+    except Exception as e:
+        fail("ip/dhcp block missing or malformed (%s)" % e)
+t = load("trunk-iface.xml")
+if t is not None:
+    s = t.find("source")
+    if t.tag == "interface" and t.get("type") == "bridge" and s is not None and s.get("bridge") == "br0": ok("bridge interface on br0")
+    else: fail("trunk-iface.xml: <interface type='bridge'> with <source bridge='br0'/>")
+    tag = t.find("vlan/tag")
+    if tag is not None and tag.get("id") == "20" and t.find("vlan").get("trunk") != "yes": ok("access VLAN 20")
+    else: fail("trunk-iface.xml: <vlan><tag id='20'/></vlan> (an access port, not trunk='yes')")
+    m = t.find("model")
+    if m is not None and m.get("type") == "virtio": ok("bridge interface model virtio")
+    else: fail("trunk-iface.xml: <model type='virtio'/>")
+v = load("macvtap-iface.xml")
+if v is not None:
+    s = v.find("source")
+    if v.get("type") == "direct" and s is not None and s.get("dev") == "eth0" and s.get("mode") == "bridge": ok("macvtap on eth0 in bridge mode")
+    else: fail("macvtap-iface.xml: type='direct' with <source dev='eth0' mode='bridge'/>")
+    m = v.find("model")
+    if m is not None and m.get("type") == "virtio": ok("macvtap interface model virtio")
+    else: fail("macvtap-iface.xml: <model type='virtio'/>")
+sys.exit(bad)
+PY
+rc=$?
+if command -v virt-xml-validate >/dev/null 2>&1 && command -v xmllint >/dev/null 2>&1; then
+  if virt-xml-validate lab-net.xml network >/dev/null 2>&1; then echo "ok:   lab-net.xml passes the libvirt network schema"; else echo "FAIL: virt-xml-validate rejects lab-net.xml"; rc=1; fi
+else echo "note: virt-xml-validate not installed, schema check skipped"; fi
+exit "$rc"

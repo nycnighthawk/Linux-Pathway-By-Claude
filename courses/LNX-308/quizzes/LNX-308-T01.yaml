@@ -1,0 +1,71 @@
+title: 'Quiz: KVM/QEMU, libvirt, virsh, virt-install'
+questions:
+- id: layers
+  prompt: Which component opens /dev/kvm and emulates the guest's chipset and devices?
+  choices:
+  - The kvm kernel module
+  - QEMU
+  - libvirtd
+  - virsh
+  answer:
+  - 1
+  explain: 'A) wrong: it exposes the device but does no device emulation. B) correct: it opens /dev/kvm, runs each
+    vCPU thread and emulates the machine and its devices. C) wrong: it manages definitions and starts QEMU, it does
+    not emulate. D) wrong: it is only a client of libvirt.'
+- id: session
+  prompt: A normal user runs virsh list --all and sees no guests, but root created some. Most likely cause?
+  choices:
+  - The guests crashed
+  - virsh connected to qemu:///session, a per-user instance
+  - libvirt deletes guests at logout
+  - KVM is disabled
+  answer:
+  - 1
+  explain: 'A) wrong: a crash would show the guest as shut off, not hide it. B) correct: the default URI for non-root
+    users is the session instance; use -c qemu:///system. C) wrong: it does not. D) wrong: that would affect starting
+    guests, not listing them.'
+- id: type-qemu
+  prompt: dumpxml shows <domain type='qemu'> on a host with a CPU that supports virtualisation. What does it mean?
+  choices:
+  - The guest uses KVM acceleration
+  - The guest runs in pure emulation, very slowly
+  - The guest is a container
+  - The guest is transient
+  answer:
+  - 1
+  explain: 'A) wrong: that is type=''kvm''. B) correct: type ''qemu'' means no hardware acceleration was used, usually
+    because /dev/kvm was unavailable at creation. C) wrong: containers use other drivers. D) wrong: persistence
+    is unrelated to the type attribute.'
+- id: destroy
+  prompt: What does virsh destroy web1 do?
+  choices:
+  - Deletes the guest and its disk
+  - Powers the guest off immediately, like pulling the plug
+  - Sends an ACPI shutdown request
+  - Pauses the vCPUs
+  answer:
+  - 1
+  explain: 'A) wrong: that is undefine with --remove-all-storage. B) correct: it is a hard stop that can leave filesystems
+    inconsistent, the definition and disk stay. C) wrong: that is virsh shutdown. D) wrong: that is virsh suspend.'
+- id: variant
+  prompt: Why pass --os-variant to virt-install?
+  choices:
+  - It selects the hypervisor
+  - It lets libosinfo choose suitable defaults such as device models and buses
+  - It sets the root password
+  - It enables nested virtualisation
+  answer:
+  - 1
+  explain: 'A) wrong: the hypervisor comes from the connection URI. B) correct: the database holds per-OS recommendations,
+    listed by osinfo-query os. C) wrong: it does not. D) wrong: unrelated.'
+- id: machine
+  prompt: Why use pc-q35-9.2 instead of plain q35 in the XML?
+  choices:
+  - The versioned type keeps the virtual hardware stable across QEMU upgrades
+  - It makes the guest faster
+  - Plain q35 is invalid
+  - It enables huge pages
+  answer:
+  - 0
+  explain: 'A) correct: the unversioned alias moves with the installed QEMU and can change the guest''s hardware.
+    B) wrong: speed is not affected. C) wrong: it is accepted, just not stable. D) wrong: unrelated.'

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+upper_dir=/var/lib/docker/overlay2/3f1a/diff
+whiteout=index.html.bak
+source_type=container_t
+target_type=user_home_t
+categories=c101,c909
+best_fix=fcontext
+db_data_location=volume
+EOT
+cat > fix.sh <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+semanage fcontext -a -t container_file_t '/srv/site(/.*)?'
+restorecon -Rv /srv/site
+EOT

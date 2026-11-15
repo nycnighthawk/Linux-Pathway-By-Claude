@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Compare the answers with the recorded evidence and inspect fix.sh.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f inspect.json ] && [ -f avc.log ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+want=$(python3 -c "import json; print(json.load(open('inspect.json'))['Data']['UpperDir'])")
+[ "$(get upper_dir)" = "$want" ] && ok "upper_dir" || fail "upper_dir: the UpperDir value in inspect.json"
+want=$(awk '$1 ~ /^c/ && $5=="0," && $6=="0" {print $NF}' upper_listing.txt | head -1)
+[ "$(get whiteout)" = "$want" ] && ok "whiteout is $want" || fail "whiteout: the character device with major, minor 0, 0 in upper_listing.txt"
+sctx=$(grep -o 'scontext=[^ ]*' avc.log | head -1 | cut -d= -f2)
+tctx=$(grep -o 'tcontext=[^ ]*' avc.log | head -1 | cut -d= -f2)
+[ "$(get source_type)" = "$(echo "$sctx" | cut -d: -f3)" ] && ok "source type" || fail "source_type: third field of scontext"
+[ "$(get target_type)" = "$(echo "$tctx" | cut -d: -f3)" ] && ok "target type" || fail "target_type: third field of tcontext"
+[ "$(get categories)" = "$(echo "$sctx" | cut -d: -f5 | sed 's/^s0://')" ] || [ "$(get categories)" = "$(echo "$sctx" | awk -F: '{print $5}')" ] && ok "categories" || fail "categories: the category list after s0: in scontext, for example c1,c2"
+[ "$(get best_fix)" = "fcontext" ] && ok "best fix: fcontext" || fail "best_fix: shared by two containers and surviving a relabel points to a persistent rule (Z, z, fcontext or disable)"
+[ "$(get db_data_location)" = "volume" ] && ok "databases belong on a volume" || fail "db_data_location: volume or layer"
+body=$(grep -v '^[[:space:]]*#' fix.sh)
+echo "$body" | grep -Eq "semanage[[:space:]]+fcontext[[:space:]]+-a[[:space:]]+-t[[:space:]]+container_file_t[[:space:]]+['\"]?/srv/site" && ok "semanage fcontext rule" || fail "fix.sh: semanage fcontext -a -t container_file_t '/srv/site(/.*)?'"
+echo "$body" | grep -Eq "restorecon[[:space:]]+(-[A-Za-z]*R[A-Za-z]*)[[:space:]]+(-[A-Za-z]+[[:space:]]+)*/srv/site" && ok "restorecon -R" || fail "fix.sh: restorecon -Rv /srv/site"
+echo "$body" | grep -Eq "chcon|setenforce|label=disable|label:disable" && fail "fix.sh must not use chcon, setenforce or label=disable" || ok "no shortcuts"
+exit "$bad"

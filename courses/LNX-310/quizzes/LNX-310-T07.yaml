@@ -1,0 +1,66 @@
+title: 'Quiz: Storage: overlayfs, volumes, SELinux labels'
+questions:
+- id: copy-up
+  prompt: When does overlayfs copy a file from a lower layer to the upper layer?
+  choices:
+  - On the first write or metadata change to it
+  - Whenever the container starts
+  - When it is read
+  - Only when the container stops
+  answer:
+  - 0
+  explain: 'A) Correct: copy-up is triggered by modification, and copies the whole file. B) Wrong: starting the container copies nothing. C) Wrong: reads are served from the lower layer. D) Wrong: nothing
+    is copied at stop.'
+- id: whiteout
+  prompt: How does overlayfs represent a deleted lower file in the upper directory?
+  choices:
+  - A zero-byte regular file
+  - A hard link to /dev/null
+  - An extended attribute on the lower file
+  - A character device 0/0 with the file's name
+  answer:
+  - 3
+  explain: 'A) Wrong: a regular file would show up as an empty file. B) Wrong: that would still be a visible file. C) Wrong: lower layers are never modified. D) Correct: the whiteout hides the lower entry.'
+- id: volume-perf
+  prompt: Where should a database's data directory live in a container?
+  choices:
+  - In the image
+  - On a named volume or bind mount
+  - In the writable layer
+  - In /tmp
+  answer:
+  - 1
+  explain: 'A) Wrong: the image is read-only. B) Correct: volumes bypass copy-up and survive container removal. C) Wrong: copy-up costs and loss at docker rm. D) Wrong: /tmp is often tmpfs or the writable
+    layer and volatile.'
+- id: avc-fix
+  prompt: A bind-mounted host directory returns Permission denied under SELinux although modes are correct. Which mount option gives that one container a private label?
+  choices:
+  - :U
+  - :Z
+  - :z
+  - :ro
+  answer:
+  - 1
+  explain: 'A) Wrong: :U fixes ownership through chown, not labels. B) Correct: :Z relabels with the container''s own categories. C) Wrong: :z is the shared label for several containers. D) Wrong: :ro only
+    makes it read-only.'
+- id: persistent-label
+  prompt: Which approach makes a container-readable label survive a filesystem relabel?
+  choices:
+  - Running the container as root
+  - Disabling AppArmor
+  - semanage fcontext plus restorecon
+  - chcon on the directory
+  answer:
+  - 2
+  explain: 'A) Wrong: the user does not change SELinux type enforcement. B) Wrong: AppArmor is another system. C) Correct: fcontext records the rule in policy so restorecon applies it. D) Wrong: chcon is
+    lost at the next relabel.'
+- id: mount-vs-v
+  prompt: What happens with -v /srv/missing:/data when /srv/missing does not exist?
+  choices:
+  - It mounts an empty tmpfs
+  - It is mounted read-only
+  - Docker creates it as a root-owned directory
+  - The command fails
+  answer:
+  - 2
+  explain: 'A) Wrong: no tmpfs is created. B) Wrong: no read-only option was given. C) Correct: a silent source of mistakes; --mount type=bind errors instead. D) Wrong: that is the --mount behaviour.'

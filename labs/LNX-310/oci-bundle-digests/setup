@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a flawed bundle config and an image layout whose index entry is wrong.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf bundle layout answers.txt
+mkdir -p bundle/rootfs/bin bundle/rootfs/etc layout/blobs/sha256
+printf '#!/bin/sh\necho serving\n' > bundle/rootfs/bin/app
+chmod +x bundle/rootfs/bin/app
+python3 - <<'PY'
+import gzip, hashlib, io, json, tarfile
+def sha(b): return "sha256:" + hashlib.sha256(b).hexdigest()
+# deterministic layer: one file, fixed metadata, gzip with mtime 0
+buf = io.BytesIO()
+with tarfile.open(fileobj=buf, mode="w", format=tarfile.USTAR_FORMAT) as t:
+    data = b"#!/bin/sh\necho serving\n"
+    ti = tarfile.TarInfo("bin/app"); ti.size = len(data); ti.mode = 0o755; ti.mtime = 0
+    t.addfile(ti, io.BytesIO(data))
+tar = buf.getvalue()
+gz = io.BytesIO()
+with gzip.GzipFile(fileobj=gz, mode="wb", mtime=0) as g: g.write(tar)
+layer = gz.getvalue()
+cfg = json.dumps({"architecture": "amd64", "os": "linux", "config": {"Entrypoint": ["/bin/app"], "User": "10001"},
+                  "rootfs": {"type": "layers", "diff_ids": [sha(tar)]}}, sort_keys=True).encode()
+man = json.dumps({"schemaVersion": 2, "mediaType": "application/vnd.oci.image.manifest.v1+json",
+                  "config": {"mediaType": "application/vnd.oci.image.config.v1+json", "digest": sha(cfg), "size": len(cfg)},
+                  "layers": [{"mediaType": "application/vnd.oci.image.layer.v1.tar+gzip", "digest": sha(layer), "size": len(layer)}]},
+                 sort_keys=True).encode()
+for b in (layer, cfg, man):
+    open("layout/blobs/sha256/" + sha(b).split(":")[1], "wb").write(b)
+open("layout/oci-layout", "w").write('{"imageLayoutVersion": "1.0.0"}\n')
+idx = {"schemaVersion": 2, "mediaType": "application/vnd.oci.image.index.v1+json",
+       "manifests": [{"mediaType": "application/vnd.oci.image.manifest.v1+json",
+                      "digest": "sha256:" + "0" * 64, "size": 1,
+                      "annotations": {"org.opencontainers.image.ref.name": "app:1"}}]}
+json.dump(idx, open("layout/index.json", "w"), indent=2)
+cfgj = {"ociVersion": "1.1.0",
+        "process": {"terminal": False, "user": {"uid": 0, "gid": 0}, "args": ["/bin/sh"], "cwd": "/",
+                    "noNewPrivileges": False,
+                    "capabilities": {"bounding": ["CAP_SYS_ADMIN", "CAP_NET_ADMIN"], "effective": ["CAP_SYS_ADMIN"], "permitted": ["CAP_SYS_ADMIN"]}},
+        "root": {"path": "rootfs", "readonly": False},
+        "mounts": [{"destination": "/proc", "type": "proc", "source": "proc"}],
+        "linux": {"resources": {"memory": {"limit": 4294967296}},
+                  "namespaces": [{"type": "mount"}, {"type": "network"}],
+                  "maskedPaths": ["/proc/timer_list"]}}
+json.dump(cfgj, open("bundle/config.json", "w"), indent=2)
+PY
+printf '# SPDX-License-Identifier: MIT\nlayer_digest=?\ndiff_id=?\nlayer_media_type=?\n' > answers.txt

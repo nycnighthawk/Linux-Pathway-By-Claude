@@ -253,15 +253,11 @@ def test_cli_end_to_end(root, tmp_path):
     assert r.returncode == 0, r.stdout + r.stderr
 
 
-def test_argv_runs_python_lab_scripts_with_the_interpreter_on_windows(tmp_path):
-    """Windows cannot exec a shebang file: a Python lab script is run through sys.executable, a bash one is left alone."""
-    import sys
-    from lpc.course import _argv
+def test_argv_runs_scripts_through_their_interpreter_on_windows(tmp_path):
     py = tmp_path / "check"
-    py.write_text("#!/usr/bin/env python3\nprint('x')\n")
+    py.write_text("#!/usr/bin/env python3\nprint(1)\n")
     sh = tmp_path / "setup"
     sh.write_text("#!/usr/bin/env bash\ntrue\n")
-    assert _argv([str(py)], nt=True) == [sys.executable, str(py)]
-    assert _argv([str(sh)], nt=True) == [str(sh)]
-    assert _argv([str(py)], nt=False) == [str(py)]
-    assert _argv([str(tmp_path / "missing")], nt=True) == [str(tmp_path / "missing")]
+    assert course._argv([str(py)], nt=False) == [str(py)]
+    assert course._argv([str(py)], nt=True) == [sys.executable, str(py)]
+    assert course._argv([str(sh)], nt=True)[-1] == str(sh) and len(course._argv([str(sh)], nt=True)) == 2

@@ -17,7 +17,7 @@ Two small jobs: write the `radvd` configuration for a router, then write the cal
 
 ## Notes
 
-- `radvd -c -C radvd.conf` checks the file; on a real router radvd also needs `net.ipv6.conf.all.forwarding=1`.
+- `radvd -c -C radvd.conf` checks the file; on a real router set `net.ipv6.conf.all.forwarding=1`; radvd only logs a warning when it is off, but hosts would then adopt a gateway that does not forward.
 - Modern hosts often use stable-privacy or temporary addresses instead of the EUI-64 form; the calculator shows the original method.
 - Bash can do the arithmetic with `$(( 0x52 ^ 0x02 ))`, and `printf '%x'` prints hex without leading zeros.
 - The lab needs the packages `radvd` and `python3`.

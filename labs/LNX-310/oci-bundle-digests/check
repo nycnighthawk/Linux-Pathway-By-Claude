@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Validate the bundle config and recompute the layout digests.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f bundle/config.json ] && [ -f layout/index.json ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import gzip, hashlib, json, os, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+def sha(b): return "sha256:" + hashlib.sha256(b).hexdigest()
+try:
+    c = json.load(open("bundle/config.json"))
+except Exception as e:
+    print("FAIL: bundle/config.json is not valid JSON (%s)" % e); sys.exit(1)
+p = c.get("process", {}); l = c.get("linux", {})
+(ok("args") if p.get("args") == ["/bin/app", "--serve"] else fail("process.args must be [\"/bin/app\", \"--serve\"]"))
+u = p.get("user", {})
+(ok("user 10001:10001") if (u.get("uid"), u.get("gid")) == (10001, 10001) else fail("process.user must be uid 10001 and gid 10001"))
+(ok("noNewPrivileges") if p.get("noNewPrivileges") is True else fail("process.noNewPrivileges must be true"))
+(ok("read-only rootfs") if c.get("root", {}).get("readonly") is True else fail("root.readonly must be true"))
+caps = p.get("capabilities", {})
+for s in ("bounding", "permitted", "effective"):
+    (ok("capabilities." + s) if caps.get(s) == ["CAP_NET_BIND_SERVICE"] else fail("capabilities.%s must be exactly [CAP_NET_BIND_SERVICE]" % s))
+(ok("memory limit") if l.get("resources", {}).get("memory", {}).get("limit") == 268435456 else fail("linux.resources.memory.limit must be 268435456 (256 MiB)"))
+(ok("pids limit") if l.get("resources", {}).get("pids", {}).get("limit") == 100 else fail("linux.resources.pids.limit must be 100"))
+have = {n.get("type") for n in l.get("namespaces", [])}
+want = {"pid", "mount", "network", "ipc", "uts", "cgroup", "user"}
+(ok("namespaces") if want <= have else fail("linux.namespaces is missing: " + ", ".join(sorted(want - have))))
+(ok("kcore masked") if "/proc/kcore" in l.get("maskedPaths", []) else fail("linux.maskedPaths must contain /proc/kcore"))
+da = l.get("seccomp", {}).get("defaultAction", "")
+(ok("seccomp default action " + da) if da in ("SCMP_ACT_ERRNO", "SCMP_ACT_KILL", "SCMP_ACT_KILL_PROCESS") else fail("linux.seccomp.defaultAction must deny by default (SCMP_ACT_ERRNO)"))
+# layout
+idx = json.load(open("layout/index.json"))
+try:
+    d = idx["manifests"][0]
+    mb = open("layout/blobs/sha256/" + d["digest"].split(":")[1], "rb").read()
+except Exception:
+    mb = None
+if mb is None:
+    fail("index.json: the manifest digest does not name a blob in blobs/sha256")
+else:
+    (ok("index digest matches the manifest blob") if sha(mb) == d["digest"] else fail("index.json: digest does not match the manifest blob"))
+    (ok("index size matches") if len(mb) == d["size"] else fail("index.json: size must be the byte length of the manifest blob"))
+    man = json.loads(mb); layer = man["layers"][0]
+    lb = open("layout/blobs/sha256/" + layer["digest"].split(":")[1], "rb").read()
+    tar = gzip.decompress(lb)
+    ans = {}
+    for line in open("answers.txt"):
+        if "=" in line and not line.startswith("#"):
+            k, v = line.split("=", 1); ans[k.strip()] = v.strip()
+    (ok("layer_digest") if ans.get("layer_digest") == sha(lb) else fail("layer_digest: sha256 of the layer blob as stored (compressed)"))
+    (ok("diff_id") if ans.get("diff_id") == sha(tar) else fail("diff_id: sha256 of the uncompressed tar (gunzip -c blob | sha256sum)"))
+    (ok("layer_media_type") if ans.get("layer_media_type") == layer["mediaType"] else fail("layer_media_type: copy it from the manifest's layer descriptor"))
+sys.exit(bad)
+PY

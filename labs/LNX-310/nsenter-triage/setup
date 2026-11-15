@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: recorded evidence of a container killed by a stop timeout.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f inspect.json events.txt memory.events answers.txt debug.sh
+cat > inspect.json <<'EOT'
+[{"Name": "/api", "State": {"Status": "running", "Running": true, "ExitCode": 143, "OOMKilled": false, "Error": "", "Pid": 4242,
+   "StartedAt": "2026-11-15T09:00:41Z", "FinishedAt": "2026-11-15T09:00:40Z"},
+  "Config": {"Entrypoint": ["/bin/sh", "-c", "node server.js"], "Cmd": null, "User": "10001"},
+  "HostConfig": {"Memory": 536870912, "RestartPolicy": {"Name": "always"}}}]
+EOT
+cat > events.txt <<'EOT'
+2026-11-15T09:00:10Z container die api (exitCode=137, signal=9)
+2026-11-15T09:00:11Z container start api
+2026-11-15T09:00:40Z container kill api (signal=15)
+2026-11-15T09:00:41Z container die api (exitCode=143, signal=15)
+2026-11-15T09:00:42Z container start api
+2026-11-15T09:01:12Z container kill api (signal=15)
+2026-11-15T09:01:42Z container die api (exitCode=137, signal=9)
+EOT
+printf 'low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\n' > memory.events
+printf '# SPDX-License-Identifier: MIT\nexit_signal=?\noom_killed=?\nrestart_interval_seconds=?\nentrypoint_form=?\nroot_cause=?\nfix=?\n' > answers.txt
+printf '#!/usr/bin/env bash\n# SPDX-License-Identifier: MIT\n# TODO: nsenter commands\n' > debug.sh

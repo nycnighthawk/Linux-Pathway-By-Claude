@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+case_a_cause=different-idmap-backends
+case_b_cause=missing-posix-attributes
+case_c_cause=stale-cache
+case_c_first_command=sss_cache -u carol@corp.example.com
+case_d_uid=801105
+case_d_rid_250001=unmapped
+case_e_first_command=sssctl domain-status corp.example.com
+debug_level_for_auth=6
+EOT
+cat > sssd-fix.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[domain/corp.example.com]
+ldap_id_mapping = False
+min_id = 10000
+max_id = 2000000
+EOT

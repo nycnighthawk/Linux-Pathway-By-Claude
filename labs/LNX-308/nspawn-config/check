@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse the nspawn unit-style file, the drop-in and the Incus profile.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f bld.nspawn ] && [ -f limits.conf ] && [ -f incus-profile.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import configparser, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad
+    bad = 1
+    print("FAIL: " + m)
+def ini(f):
+    c = configparser.ConfigParser(strict=False, interpolation=None)
+    c.optionxform = str
+    c.read(f)
+    return c
+n = ini("bld.nspawn")
+g = lambda c, s, k: c.get(s, k, fallback="").strip() if c.has_section(s) else ""
+if g(n, "Exec", "Boot").lower() in ("yes", "true", "1", "on"): ok("Boot=yes runs the container's init")
+else: fail("bld.nspawn [Exec] needs Boot=yes")
+if g(n, "Exec", "PrivateUsers") in ("pick", "yes", "identity") or g(n, "Exec", "PrivateUsers").isdigit(): ok("user namespace enabled (PrivateUsers=%s)" % g(n, "Exec", "PrivateUsers"))
+else: fail("bld.nspawn [Exec] needs PrivateUsers=pick so container root is not host root")
+caps = g(n, "Exec", "Capability").lower()
+if "all" in caps.split() or "cap_sys_admin" in caps: fail("do not add broad capabilities to the container")
+else: ok("no broad capabilities added")
+if g(n, "Network", "VirtualEthernet").lower() in ("yes", "true", "1", "on"): ok("VirtualEthernet=yes")
+else: fail("bld.nspawn [Network] needs VirtualEthernet=yes")
+bro = g(n, "Files", "BindReadOnly")
+if bro.startswith("/srv/src:/src"): ok("/srv/src bound read-only at /src")
+else: fail("bld.nspawn [Files] needs BindReadOnly=/srv/src:/src")
+if g(n, "Files", "Bind").startswith("/srv/src"): fail("/srv/src must not also be bound read-write")
+l = ini("limits.conf")
+mm = g(l, "Service", "MemoryMax")
+if mm.upper() in ("1G", "1024M", "1073741824"): ok("MemoryMax=%s" % mm)
+else: fail("limits.conf [Service] needs MemoryMax=1G")
+if g(l, "Service", "TasksMax") == "512": ok("TasksMax=512")
+else: fail("limits.conf [Service] needs TasksMax=512")
+if g(l, "Service", "Delegate").lower() in ("yes", "true", "1"): ok("Delegate=yes")
+else: fail("limits.conf [Service] needs Delegate=yes so the container's systemd can manage its own cgroups")
+try:
+    import yaml
+    p = yaml.safe_load(open("incus-profile.yaml"))
+except Exception as e:
+    print("FAIL: incus-profile.yaml is not valid YAML (%s)" % e); sys.exit(1)
+cfg = (p or {}).get("config") or {}
+dev = (p or {}).get("devices") or {}
+if str(cfg.get("limits.memory", "")).lower() in ("1gib", "1gb", "1g"): ok("limits.memory 1GiB")
+else: fail("incus-profile.yaml config needs limits.memory: 1GiB")
+if str(cfg.get("limits.cpu", "")) == "2": ok("limits.cpu 2")
+else: fail("incus-profile.yaml config needs limits.cpu: '2'")
+if str(cfg.get("security.privileged", "false")).lower() != "true": ok("instance is not privileged")
+else: fail("do not set security.privileged: true")
+src = [d for d in dev.values() if isinstance(d, dict) and d.get("type") == "disk" and d.get("source") == "/srv/src" and d.get("path") == "/src"]
+if src and str(src[0].get("readonly", "false")).lower() == "true": ok("disk device /srv/src at /src is read-only")
+else: fail("devices needs a disk device with source: /srv/src, path: /src and readonly: 'true'")
+sys.exit(bad)
+PY

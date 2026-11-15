@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cat > lab-net.xml <<'XML'
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<network>
+  <name>labnet</name>
+  <forward mode='nat'/>
+  <bridge name='virbr10' stp='on' delay='0'/>
+  <ip address='192.168.150.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.150.100' end='192.168.150.200'/>
+      <host mac='52:54:00:aa:bb:01' name='db1' ip='192.168.150.10'/>
+    </dhcp>
+  </ip>
+</network>
+XML
+cat > trunk-iface.xml <<'XML'
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<interface type='bridge'>
+  <source bridge='br0'/>
+  <vlan>
+    <tag id='20'/>
+  </vlan>
+  <model type='virtio'/>
+</interface>
+XML
+cat > macvtap-iface.xml <<'XML'
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<interface type='direct'>
+  <source dev='eth0' mode='bridge'/>
+  <model type='virtio'/>
+</interface>
+XML

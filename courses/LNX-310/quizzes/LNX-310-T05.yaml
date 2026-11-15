@@ -1,0 +1,67 @@
+title: 'Quiz: Containerfile craft: multi-stage, non-root, distroless'
+questions:
+- id: exec-form
+  prompt: Why write ENTRYPOINT as a JSON array?
+  choices:
+  - It enables shell variable expansion
+  - It makes the command run as root
+  - The application becomes PID 1 and receives signals directly
+  - The image becomes smaller
+  answer:
+  - 2
+  explain: 'A) Wrong: expansion is a property of the shell form. B) Wrong: the user is set by USER. C) Correct: the shell form wraps the program in sh -c, which often does not forward SIGTERM. D) Wrong:
+    the form does not change layer size.'
+- id: numeric-user
+  prompt: Why use USER 10001:10001 instead of a user name?
+  choices:
+  - Names are not allowed in Dockerfiles
+  - Numeric users get more capabilities
+  - It avoids creating the user
+  - Kubernetes can verify runAsNonRoot without resolving the name
+  answer:
+  - 3
+  explain: 'A) Wrong: names are allowed. B) Wrong: capabilities are independent of the form of USER. C) Wrong: the account still needs to be able to own files; for files it does not need an entry. D) Correct:
+    a numeric ID is checkable without reading /etc/passwd.'
+- id: scratch-certs
+  prompt: A Go service on scratch fails TLS handshakes with a certificate authority error. Why?
+  choices:
+  - scratch has no kernel
+  - Go cannot do TLS
+  - The user is not root
+  - The image has no CA bundle
+  answer:
+  - 3
+  explain: 'A) Wrong: containers use the host kernel. B) Wrong: Go has a full TLS stack but needs trust roots. C) Wrong: TLS verification does not depend on being root. D) Correct: copy ca-certificates.crt
+    from the build stage or use distroless static.'
+- id: layer-delete
+  prompt: A secret was written in one RUN and removed in the next. Is it gone from the image?
+  choices:
+  - Only if the file name starts with a dot
+  - No, it remains in the earlier layer
+  - Yes, deletion removes it from all layers
+  - Only if the image is squashed with docker commit
+  answer:
+  - 1
+  explain: 'A) Wrong: file naming has no effect. B) Correct: layers are append-only; a later delete only hides the file. C) Wrong: lower layers are immutable. D) Wrong: commit does not scrub earlier layer
+    history.'
+- id: stage-purpose
+  prompt: What is the main purpose of a multi-stage build?
+  choices:
+  - Make COPY faster
+  - Keep compilers and caches out of the runtime image
+  - Run stages on different hosts
+  - Avoid using a registry
+  answer:
+  - 1
+  explain: 'A) Wrong: COPY speed is unaffected. B) Correct: only the needed artefacts are copied into the final stage. C) Wrong: stages run in one build, possibly in parallel. D) Wrong: stage output still
+    goes to the registry if pushed.'
+- id: pin-digest
+  prompt: What does pinning a base image by digest buy you?
+  choices:
+  - The exact same bytes on every build, until you deliberately update
+  - Automatic security updates
+  - Faster pulls
+  - Immunity from vulnerabilities in the base
+  answer:
+  - 0
+  explain: 'A) Correct: tags are mutable, digests are not. B) Wrong: pinned images need a bot or process to update. C) Wrong: pull speed is unchanged. D) Wrong: a pinned vulnerable image stays vulnerable.'

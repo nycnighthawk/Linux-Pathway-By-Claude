@@ -1,0 +1,68 @@
+title: 'Quiz: Namespaces, cgroups v2, capabilities: a container by hand'
+questions:
+- id: namespace-share
+  prompt: Two processes show the same inode in /proc/<pid>/ns/net. What does that mean?
+  choices:
+  - They are parent and child
+  - They share a network namespace
+  - They run in the same cgroup
+  - They have the same capabilities
+  answer:
+  - 1
+  explain: 'A) Wrong: unrelated processes can share a namespace and relatives can be in different ones. B) Correct: equal inode numbers identify the same namespace instance. C) Wrong: cgroup membership
+    is read from /proc/<pid>/cgroup, not the ns links. D) Wrong: capabilities come from the CapEff/CapBnd masks in /proc/<pid>/status.'
+- id: pid-fork
+  prompt: Why does unshare --pid usually need --fork?
+  choices:
+  - The caller must give up its capabilities first
+  - Only forked processes can be PID 1 of a cgroup
+  - A PID namespace applies to children, not to the caller
+  - Forking is required to read /proc
+  answer:
+  - 2
+  explain: 'A) Wrong: capabilities are not involved in this behaviour. B) Wrong: cgroups do not have a PID 1; this is about the PID namespace. C) Correct: the calling process keeps its old PID namespace;
+    its first child becomes PID 1 of the new one. D) Wrong: reading /proc has nothing to do with fork.'
+- id: memory-high-max
+  prompt: What is the difference between memory.high and memory.max in cgroup v2?
+  choices:
+  - high limits swap and max limits RAM
+  - They are the same, one is for v1 and one for v2
+  - high throttles by reclaim and kills nothing; max is a hard limit that can trigger the OOM killer
+  - high is the hard limit and max is the soft limit
+  answer:
+  - 2
+  explain: 'A) Wrong: swap is controlled by memory.swap.max. B) Wrong: both exist in v2 with different semantics. C) Correct: exceeding high slows allocation through reclaim; exceeding max after reclaim
+    fails invokes the group OOM killer. D) Wrong: the roles are reversed in this option.'
+- id: cpu-max
+  prompt: Which value of cpu.max gives a group one fifth of a CPU core?
+  choices:
+  - max 20000
+  - 20000 100000
+  - 100000 20000
+  - 20 100
+  answer:
+  - 1
+  explain: 'A) Wrong: ''max'' means no quota; the second number is only the period. B) Correct: the format is quota then period in microseconds, so 20000 of every 100000. C) Wrong: this is quota 100000
+    per period 20000, five cores'' worth. D) Wrong: the unit is microseconds, so this is a tiny, nearly useless quota.'
+- id: sys-admin
+  prompt: Why is granting CAP_SYS_ADMIN to a container a poor way to fix one narrow permission problem?
+  choices:
+  - It covers a huge range of privileged operations, close to root
+  - It disables namespaces
+  - It only works with --privileged
+  - It removes the cgroup limits
+  answer:
+  - 0
+  explain: 'A) Correct: CAP_SYS_ADMIN is the catch-all capability: mounts, namespaces, many ioctls. B) Wrong: namespaces stay in place; the capability widens what may be done. C) Wrong: it can be granted
+    alone with --cap-add. D) Wrong: cgroup limits are separate and remain in force.'
+- id: userns-root
+  prompt: What does a user namespace change about root inside a container?
+  choices:
+  - Inside UID 0 maps to an unprivileged UID outside, and its capabilities apply only to objects the namespace owns
+  - Root inside becomes root on the host with fewer files
+  - Root inside cannot run any program
+  - Root inside is replaced by the nobody user
+  answer:
+  - 0
+  explain: 'A) Correct: the mapping in uid_map keeps the host view unprivileged. B) Wrong: that is the case without a user namespace, not with one. C) Wrong: root inside can still run programs it owns or
+    may execute. D) Wrong: nobody appears only for unmapped IDs.'

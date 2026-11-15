@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a loadable slapd.conf with an unsafe access rule, test data and stubs.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf slapd.conf data.ldif ldap.conf filter.txt db
+mkdir db
+schema=/etc/ldap/schema; [ -d "$schema" ] || schema=/etc/openldap/schema
+mods=""
+for d in /usr/lib/ldap /usr/lib64/openldap /usr/lib/openldap; do [ -e "$d/back_mdb.so" ] && mods=$d && break; done
+{
+  echo "# SPDX-License-Identifier: MIT"
+  for s in core cosine inetorgperson nis; do echo "include $schema/$s.schema"; done
+  if [ -n "$mods" ]; then echo "modulepath $mods"; echo "moduleload back_mdb"; fi
+  cat <<'EOT'
+pidfile ./slapd.pid
+argsfile ./slapd.args
+database mdb
+maxsize 10485760
+suffix "dc=lab,dc=test"
+rootdn "cn=admin,dc=lab,dc=test"
+rootpw secret
+directory ./db
+access to * by * read
+EOT
+} > slapd.conf
+cat > data.ldif <<'EOT'
+dn: dc=lab,dc=test
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: Lab
+dc: lab
+
+dn: ou=people,dc=lab,dc=test
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc=lab,dc=test
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=svc,dc=lab,dc=test
+objectClass: organizationalUnit
+ou: svc
+
+dn: uid=helpdesk,ou=svc,dc=lab,dc=test
+objectClass: account
+objectClass: simpleSecurityObject
+uid: helpdesk
+userPassword: helpdesk-pw
+
+dn: uid=sssd-reader,ou=svc,dc=lab,dc=test
+objectClass: account
+objectClass: simpleSecurityObject
+uid: sssd-reader
+userPassword: reader-pw
+EOT
+for u in "alice 2001 /bin/bash" "bob 2002 /bin/bash" "carol 2003 /sbin/nologin" "dave 1500 /bin/bash" "eve 2005 /bin/bash"; do
+  set -- $u
+  {
+  echo; echo "dn: uid=$1,ou=people,dc=lab,dc=test"
+  echo "objectClass: inetOrgPerson"; echo "objectClass: posixAccount"; echo "objectClass: shadowAccount"
+  echo "uid: $1"; echo "cn: $1"; echo "sn: $1"; echo "uidNumber: $2"; echo "gidNumber: 2000"
+  echo "homeDirectory: /home/$1"; echo "loginShell: $3"; echo "userPassword: pw-$1"
+  [ "$1" = bob ] && echo "shadowExpire: 1"
+  } >> data.ldif
+done
+cat >> data.ldif <<'EOT'
+
+dn: cn=dba,ou=groups,dc=lab,dc=test
+objectClass: posixGroup
+cn: dba
+gidNumber: 2100
+memberUid: alice
+memberUid: eve
+
+dn: cn=staff,ou=groups,dc=lab,dc=test
+objectClass: posixGroup
+cn: staff
+gidNumber: 2000
+memberUid: alice
+memberUid: bob
+memberUid: carol
+EOT
+printf '# SPDX-License-Identifier: MIT\n# TODO: URI, BASE, TLS_CACERT, TLS_REQCERT (see README.md)\n' > ldap.conf
+printf '# TODO: one LDAP filter on a single line (see README.md)\n' > filter.txt

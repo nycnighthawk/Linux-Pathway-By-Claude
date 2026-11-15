@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > join-plan.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+join_account=delegated-ou
+join_method=prestaged-otp
+computer_ou=OU=Linux,OU=Servers,DC=corp,DC=example,DC=com
+id_mapping=algorithmic
+id_mapping_reason=No uidNumber is stored in AD and every Linux host will use SSSD, so SIDs map consistently.
+audit_missing_uidnumber=no
+gpo_mode=permissive
+pilot_done=no
+access_control=realm-permit
+ports=53,88,464,389,3268,445
+dns_updates=dyndns
+verify=klist -ke /etc/krb5.keytab, getent passwd user@corp.example.com, sssctl domain-status corp.example.com, realm list
+rollback=Run realm leave --remove on the host, then ask the AD team to delete the computer object if it remains.
+EOT

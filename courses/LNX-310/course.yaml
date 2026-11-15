@@ -1,0 +1,195 @@
+id: LNX-310
+title: Containers in Depth
+summary: 'How a Linux container really works and how to run it well: namespaces, cgroups v2 and capabilities by hand, the
+  OCI specs and runtimes, rootless Podman with Quadlet, Docker Engine with BuildKit and Compose, lean non-root images, registries
+  and mirrors, overlayfs, volumes and SELinux labels, SBOMs, cosign and Trivy, debugging with nsenter, sandboxed runtimes,
+  and Windows containers.'
+hours: 50
+coverage: full
+outcomes:
+- Assemble a container from namespaces, a cgroup v2 group and a capability set, and explain each layer
+- Read an OCI image and a runtime bundle and name what each runtime in the stack does
+- Run rootless Podman, pods and Quadlet-managed services under systemd
+- Build and cache images with BuildKit and describe applications with Compose
+- Write small, non-root, reproducible Containerfiles
+- Configure registries, mirrors and faithful image copies with Skopeo
+- Explain overlayfs, volumes and SELinux labelling and fix mount permission failures
+- Produce SBOMs, sign and verify images with cosign, and triage Trivy findings
+- Debug a failing container with inspect, events and nsenter
+- Choose between shared-kernel, gVisor, Kata and Windows container isolation
+certifications:
+- cert: EX188
+  objectives: []
+- cert: KCNA
+  objectives: []
+- cert: LPIC3-305
+  objectives: []
+modules:
+- id: foundations
+  title: Containers from the kernel up
+  lessons:
+  - topic: LNX-310-T01
+    title: 'Namespaces, cgroups v2, capabilities: a container by hand'
+    file: lessons/LNX-310-T01.md
+    minutes: 75
+  - topic: LNX-310-T02
+    title: OCI image and runtime specs; runc, crun, containerd, CRI-O
+    file: lessons/LNX-310-T02.md
+    minutes: 60
+- id: engines-and-images
+  title: Engines, images and registries
+  lessons:
+  - topic: LNX-310-T03
+    title: Podman rootless, pods, Quadlet units
+    file: lessons/LNX-310-T03.md
+    minutes: 75
+  - topic: LNX-310-T04
+    title: Docker Engine, BuildKit, Compose
+    file: lessons/LNX-310-T04.md
+    minutes: 60
+  - topic: LNX-310-T05
+    title: 'Containerfile craft: multi-stage, non-root, distroless'
+    file: lessons/LNX-310-T05.md
+    minutes: 70
+  - topic: LNX-310-T06
+    title: Registries, Skopeo, mirrors
+    file: lessons/LNX-310-T06.md
+    minutes: 55
+- id: state-security-ops
+  title: Storage, supply chain and debugging
+  lessons:
+  - topic: LNX-310-T07
+    title: 'Storage: overlayfs, volumes, SELinux labels'
+    file: lessons/LNX-310-T07.md
+    minutes: 60
+  - topic: LNX-310-T08
+    title: 'Supply chain: SBOM, cosign signing, Trivy'
+    file: lessons/LNX-310-T08.md
+    minutes: 65
+  - topic: LNX-310-T09
+    title: 'Debugging: nsenter, inspect, events'
+    file: lessons/LNX-310-T09.md
+    minutes: 60
+- id: isolation
+  title: Stronger isolation and other platforms
+  lessons:
+  - topic: LNX-310-T10
+    title: 'Sandboxed runtimes: gVisor, Kata (needs KVM)'
+    file: lessons/LNX-310-T10.md
+    minutes: 45
+  - topic: LNX-310-T11
+    title: Windows containers
+    file: lessons/LNX-310-T11.md
+    minutes: 40
+labs:
+- id: ns-cgroup-by-hand
+  topic: LNX-310-T01
+  title: Build the limits and read the namespaces of a container by hand
+  env: C
+  license: MIT
+  minutes: 45
+- id: oci-bundle-digests
+  topic: LNX-310-T02
+  title: Repair an OCI runtime bundle and an image layout
+  env: C
+  license: MIT
+  minutes: 45
+- id: quadlet-unit
+  topic: LNX-310-T03
+  title: Write a hardened Quadlet container, volume and pod
+  env: V
+  license: MIT
+  minutes: 45
+- id: compose-buildkit
+  topic: LNX-310-T04
+  title: Fix a Compose file and a BuildKit Dockerfile
+  env: C
+  license: MIT
+  minutes: 45
+- id: containerfile-hardening
+  topic: LNX-310-T05
+  title: Rewrite a bloated Containerfile
+  env: C
+  license: MIT
+  minutes: 45
+- id: registries-mirror
+  topic: LNX-310-T06
+  title: Configure a mirror and plan a faithful copy
+  env: C
+  license: MIT
+  minutes: 40
+- id: overlay-selinux-readout
+  topic: LNX-310-T07
+  title: Read an overlay layout and an SELinux denial and fix the mount
+  env: V
+  license: MIT
+  minutes: 40
+- id: sbom-vex-verify
+  topic: LNX-310-T08
+  title: Triage an SBOM, write a VEX statement and a verify command
+  env: C
+  license: MIT
+  minutes: 45
+- id: nsenter-triage
+  topic: LNX-310-T09
+  title: Triage a failing container from recorded evidence
+  env: C
+  license: MIT
+  minutes: 40
+- id: runtimeclass-sandbox
+  topic: LNX-310-T10
+  title: Wire a sandbox runtime class and check KVM readiness
+  env: V
+  license: MIT
+  minutes: 40
+- id: windows-version-match
+  topic: LNX-310-T11
+  title: Decide isolation modes from host and image versions
+  env: W
+  license: MIT
+  minutes: 35
+quizzes:
+- id: LNX-310-T01
+  topic: LNX-310-T01
+  title: 'Quiz: Namespaces, cgroups v2, capabilities: a container by hand'
+  file: quizzes/LNX-310-T01.yaml
+- id: LNX-310-T02
+  topic: LNX-310-T02
+  title: 'Quiz: OCI image and runtime specs; runc, crun, containerd, CRI-O'
+  file: quizzes/LNX-310-T02.yaml
+- id: LNX-310-T03
+  topic: LNX-310-T03
+  title: 'Quiz: Podman rootless, pods, Quadlet units'
+  file: quizzes/LNX-310-T03.yaml
+- id: LNX-310-T04
+  topic: LNX-310-T04
+  title: 'Quiz: Docker Engine, BuildKit, Compose'
+  file: quizzes/LNX-310-T04.yaml
+- id: LNX-310-T05
+  topic: LNX-310-T05
+  title: 'Quiz: Containerfile craft: multi-stage, non-root, distroless'
+  file: quizzes/LNX-310-T05.yaml
+- id: LNX-310-T06
+  topic: LNX-310-T06
+  title: 'Quiz: Registries, Skopeo, mirrors'
+  file: quizzes/LNX-310-T06.yaml
+- id: LNX-310-T07
+  topic: LNX-310-T07
+  title: 'Quiz: Storage: overlayfs, volumes, SELinux labels'
+  file: quizzes/LNX-310-T07.yaml
+- id: LNX-310-T08
+  topic: LNX-310-T08
+  title: 'Quiz: Supply chain: SBOM, cosign signing, Trivy'
+  file: quizzes/LNX-310-T08.yaml
+- id: LNX-310-T09
+  topic: LNX-310-T09
+  title: 'Quiz: Debugging: nsenter, inspect, events'
+  file: quizzes/LNX-310-T09.yaml
+- id: LNX-310-T10
+  topic: LNX-310-T10
+  title: 'Quiz: Sandboxed runtimes: gVisor, Kata (needs KVM)'
+  file: quizzes/LNX-310-T10.yaml
+- id: LNX-310-T11
+  topic: LNX-310-T11
+  title: 'Quiz: Windows containers'
+  file: quizzes/LNX-310-T11.yaml

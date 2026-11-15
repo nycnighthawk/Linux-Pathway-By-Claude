@@ -1,0 +1,65 @@
+title: 'Quiz: Sandboxed runtimes: gVisor, Kata (needs KVM)'
+questions:
+- id: shared-kernel
+  prompt: Why is a runc container not a hard boundary for mutually untrusted tenants?
+  choices:
+  - All containers share one host kernel and its syscall surface
+  - Containers have no namespaces
+  - runc cannot enforce limits
+  - Images are not isolated
+  answer:
+  - 0
+  explain: 'A) Correct: a kernel bug can cross every container boundary. B) Wrong: namespaces exist. C) Wrong: cgroups enforce limits. D) Wrong: image layers are separate from isolation.'
+- id: sentry
+  prompt: What does the gVisor Sentry do?
+  choices:
+  - Signs images
+  - Implements Linux system calls in user space for the sandboxed application
+  - Boots a guest Linux kernel under KVM
+  - Mounts layers for containerd
+  answer:
+  - 1
+  explain: 'A) Wrong: cosign signs. B) Correct: it is the application kernel, run under a tight seccomp filter. C) Wrong: that describes Kata. D) Wrong: snapshotters do that.'
+- id: kata-agent
+  prompt: In Kata Containers, which component creates the containers inside the guest VM?
+  choices:
+  - The host kubelet directly
+  - The Gofer
+  - runc on the host
+  - The kata-agent, reached over vsock
+  answer:
+  - 3
+  explain: 'A) Wrong: the kubelet speaks CRI to the host runtime. B) Wrong: the Gofer is gVisor''s file helper. C) Wrong: the host runc is not used for the pod. D) Correct: the agent sets up namespaces
+    and cgroups inside the guest.'
+- id: runtimeclass
+  prompt: How does a pod choose a sandboxed runtime in Kubernetes?
+  choices:
+  - An image annotation
+  - A node taint alone
+  - The pod's service account
+  - runtimeClassName naming a RuntimeClass whose handler exists on the node
+  answer:
+  - 3
+  explain: 'A) Wrong: annotations do not select runtimes. B) Wrong: taints only repel pods. C) Wrong: service accounts are identity. D) Correct: the handler must also be configured in containerd or CRI-O.'
+- id: overhead
+  prompt: What does overhead.podFixed in a RuntimeClass do?
+  choices:
+  - Adds a sidecar
+  - Selects a hypervisor
+  - Tells the scheduler to add the sandbox's own CPU and memory to the pod's requests
+  - Limits the pod's disk
+  answer:
+  - 2
+  explain: 'A) Wrong: no container is added. B) Wrong: hypervisors are configured on the node. C) Correct: otherwise nodes are over-committed by the VM or Sentry cost. D) Wrong: it concerns CPU and memory
+    only.'
+- id: nested-kvm
+  prompt: systemd-detect-virt reports kvm and /dev/kvm is missing. What is the likely problem for a Kata pod?
+  choices:
+  - cosign is missing
+  - The CRI is not running
+  - Nested virtualisation is not enabled
+  - The image is too large
+  answer:
+  - 2
+  explain: 'A) Wrong: signing is unrelated. B) Wrong: a stopped CRI gives other symptoms. C) Correct: Kata needs /dev/kvm, which requires nested virtualisation inside a VM. D) Wrong: image size does not
+    affect KVM.'

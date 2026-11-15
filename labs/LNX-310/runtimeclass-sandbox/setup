@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a recorded readiness check from a cloud VM without nested virtualisation.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf kvm_check.txt answers.txt k8s containerd-snippet.toml
+mkdir k8s
+cat > kvm_check.txt <<'EOT'
+$ grep -c -E 'vmx|svm' /proc/cpuinfo
+0
+$ ls -l /dev/kvm
+ls: cannot access '/dev/kvm': No such file or directory
+$ systemd-detect-virt
+kvm
+EOT
+printf '# SPDX-License-Identifier: MIT\n# TODO: containerd runtime handler for runsc\n' > containerd-snippet.toml
+printf '# SPDX-License-Identifier: MIT\nkvm_ready=?\nlikely_cause=?\ngvisor_usable=?\n' > answers.txt

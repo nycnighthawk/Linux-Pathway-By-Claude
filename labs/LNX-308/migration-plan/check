@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural and consistency grading of a migration plan; the facts of your own hosts are yours to supply.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f migration-plan.txt ] || { echo "FAIL: migration-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" migration-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+words() { [ "$(printf '%s' "$1" | wc -w)" -ge "$2" ] && [ "$1" != "?" ]; }
+for k in guest source_host dest_host; do
+  v=$(get $k); [ -n "$v" ] && [ "$v" != "?" ] && ok "$k set" || fail "$k: give a name"
+done
+[ "$(get source_host)" != "$(get dest_host)" ] && ok "source and destination differ" || fail "source_host and dest_host must differ"
+ss=$(get shared_storage); case "$ss" in yes|no) ok "shared_storage=$ss" ;; *) fail "shared_storage: yes or no" ;; esac
+hi=$(get hosts_identical); case "$hi" in yes|no) ok "hosts_identical=$hi" ;; *) fail "hosts_identical: yes or no (same CPU model on both hosts)" ;; esac
+cm=$(get cpu_model); case "$cm" in host-model|host-passthrough|named-baseline) ok "cpu_model=$cm" ;; *) fail "cpu_model: host-model, host-passthrough or named-baseline" ;; esac
+if [ "$cm" = host-passthrough ] && [ "$hi" != yes ]; then fail "host-passthrough cannot be checked by libvirt before migration; use it only when hosts_identical=yes"; fi
+mp=$(get machine_type_pinned); [ "$mp" = yes ] && ok "machine type is pinned" || fail "machine_type_pinned must be yes (use a versioned machine type)"
+dt=$(get downtime_ms); printf '%s' "$dt" | grep -Eq '^[0-9]+$' && [ "$dt" -ge 20 ] && [ "$dt" -le 5000 ] && ok "downtime budget ${dt} ms" || fail "downtime_ms: integer between 20 and 5000"
+pc=$(get postcopy); case "$pc" in yes|no) ok "postcopy=$pc" ;; *) fail "postcopy: yes or no" ;; esac
+tl=$(get tls); case "$tl" in yes|no) ok "tls=$tl" ;; *) fail "tls: yes or no" ;; esac
+fp=$(get firewall_ports); printf '%s' "$fp" | grep -Eq '49152' && ok "firewall_ports mention the QEMU migration range 49152-49215" || fail "firewall_ports: the destination must allow the migration port range 49152-49215"
+cmd=$(get migrate_command)
+case "$cmd" in "virsh migrate "*) ok "command starts with virsh migrate" ;; *) fail "migrate_command must start with 'virsh migrate'" ;; esac
+case "$cmd" in *--live*) ok "--live present" ;; *) fail "migrate_command needs --live" ;; esac
+case "$cmd" in *qemu+ssh://*|*qemu+tls://*) ok "destination URI present" ;; *) fail "migrate_command needs a qemu+ssh:// or qemu+tls:// destination URI" ;; esac
+case "$cmd" in *--unsafe*) fail "never use --unsafe" ;; *) ok "no --unsafe" ;; esac
+if [ "$ss" = no ]; then case "$cmd" in *--copy-storage-all*|*--copy-storage-inc*) ok "storage is copied because it is not shared" ;; *) fail "shared_storage=no needs --copy-storage-all or --copy-storage-inc in the command" ;; esac; fi
+if [ "$pc" = yes ]; then case "$cmd" in *--postcopy*) ok "postcopy enabled in the command" ;; *) fail "postcopy=yes needs --postcopy in the command" ;; esac; fi
+if [ "$tl" = yes ]; then case "$cmd" in *--tls*) ok "--tls present" ;; *) fail "tls=yes needs --tls in the command" ;; esac; fi
+words "$(get verify_steps)" 6 && ok "verification described" || fail "verify_steps: at least six words (what you check on both hosts and from outside)"
+words "$(get abort_plan)" 6 && ok "abort plan described" || fail "abort_plan: at least six words (how you stop and what state the guest is left in)"
+exit "$bad"

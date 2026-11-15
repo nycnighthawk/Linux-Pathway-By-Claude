@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > inventory.yml <<'EOT'
+# SPDX-License-Identifier: MIT
+all:
+  children:
+    ipaserver:
+      hosts:
+        ipa1.lab.test:
+      vars:
+        ipaserver_domain: lab.test
+        ipaserver_realm: LAB.TEST
+        ipaserver_setup_dns: true
+        ipaserver_no_hbac_allow: true
+    ipareplicas:
+      hosts:
+        ipa2.lab.test:
+    ipaclients:
+      hosts:
+        web1.lab.test:
+        db1.lab.test:
+  vars:
+    ipaadmin_password: "{{ vault_ipaadmin_password }}"
+    ipadm_password: "{{ vault_ipadm_password }}"
+EOT
+cat > policy.yml <<'EOT'
+# SPDX-License-Identifier: MIT
+- hosts: ipaserver
+  gather_facts: false
+  become: false
+  module_defaults:
+    group/freeipa.ansible_freeipa.modules:
+      ipaadmin_password: "{{ vault_ipaadmin_password }}"
+  tasks:
+    - freeipa.ansible_freeipa.ipagroup:
+        name: dba
+        state: present
+    - freeipa.ansible_freeipa.ipagroup:
+        name: dba
+        user: [alice]
+        action: member
+        state: present
+    - freeipa.ansible_freeipa.ipahostgroup:
+        name: dbservers
+        state: present
+    - freeipa.ansible_freeipa.ipasudocmd:
+        name: /usr/bin/systemctl
+        state: present
+    - freeipa.ansible_freeipa.ipasudocmdgroup:
+        name: pgctl
+        sudocmd: [/usr/bin/systemctl]
+        state: present
+    - freeipa.ansible_freeipa.ipahbacrule:
+        name: db-ssh
+        group: [dba]
+        hostgroup: [dbservers]
+        hbacsvc: [sshd]
+        state: present
+    - freeipa.ansible_freeipa.ipasudorule:
+        name: dba-restart
+        group: [dba]
+        hostgroup: [dbservers]
+        allow_sudocmdgroup: [pgctl]
+        state: present
+EOT
+cat > drift.sh <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Exit 1 when the playbook would change anything (drift between Git and the domain).
+out=$(ansible-playbook -i inventory.yml policy.yml --check --diff 2>&1)
+echo "$out"
+if echo "$out" | grep -Eq 'changed=[1-9]'; then exit 1; fi
+EOT
+chmod +x drift.sh

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a realm database with one user, a KDC profile, a stub client configuration and a failed trace.
+set -eu
+cd "${LAB_DIR:-.}"
+here=$(pwd)
+rm -rf kdc kdc.conf env.sh krb5.conf trace.txt answers.txt web1.keytab sshd_gssapi.conf ccache
+mkdir kdc
+cat > kdc.conf <<EOT
+# SPDX-License-Identifier: MIT
+[kdcdefaults]
+ kdc_ports = 8888
+ kdc_tcp_ports = 8888
+[realms]
+ LAB.TEST = {
+  database_name = $here/kdc/principal
+  key_stash_file = $here/kdc/.k5.LAB.TEST
+  acl_file = $here/kdc/kadm5.acl
+  max_life = 10h 0m 0s
+  supported_enctypes = aes256-cts-hmac-sha1-96:normal aes128-cts-hmac-sha1-96:normal
+ }
+EOT
+cat > env.sh <<EOT
+# SPDX-License-Identifier: MIT
+export KRB5_CONFIG=$here/krb5.conf
+export KRB5_KDC_PROFILE=$here/kdc.conf
+export KRB5CCNAME=FILE:$here/ccache
+EOT
+cat > boot.conf <<EOT
+[libdefaults]
+ default_realm = LAB.TEST
+ dns_lookup_kdc = false
+[realms]
+ LAB.TEST = { kdc = 127.0.0.1:8888 }
+EOT
+export KRB5_CONFIG=$here/boot.conf KRB5_KDC_PROFILE=$here/kdc.conf
+echo '*/admin@LAB.TEST *' > kdc/kadm5.acl
+kdb5_util create -s -r LAB.TEST -P masterpw >/dev/null 2>&1
+kadmin.local -q "addprinc -pw alicepw alice@LAB.TEST" >/dev/null 2>&1
+rm -f boot.conf
+printf '# SPDX-License-Identifier: MIT\n# TODO: see README.md\n[libdefaults]\n default_realm = EXAMPLE.COM\n' > krb5.conf
+cat > trace.txt <<'EOT'
+$ KRB5_TRACE=/dev/stderr kinit -k -t /etc/krb5.keytab host/www.lab.test
+[4021] Resolving unique ccache of type FILE
+[4021] Getting initial credentials for host/www.lab.test@LAB.TEST
+[4021] Sending unauthenticated request
+[4021] Sending request (181 bytes) to LAB.TEST
+[4021] Received error from KDC: -1765328377/Server not found in Kerberos database
+kinit: Client 'host/www.lab.test@LAB.TEST' not found in Kerberos database while getting initial credentials
+$ klist -k /etc/krb5.keytab
+Keytab name: FILE:/etc/krb5.keytab
+KVNO Principal
+---- --------------------------------------------------------------------------
+   2 host/web1.lab.test@LAB.TEST
+EOT
+printf '# SPDX-License-Identifier: MIT\nkvno=?\ndiagnosis=?\n' > answers.txt
+printf '# SPDX-License-Identifier: MIT\n# TODO: GSSAPI settings for sshd, see README.md\n' > sshd_gssapi.conf

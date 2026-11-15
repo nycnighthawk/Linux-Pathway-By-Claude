@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade slapd.conf with the offline OpenLDAP tools, then ldap.conf and the search filter.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+command -v slaptest >/dev/null && command -v slapacl >/dev/null || { echo "FAIL: slapd and ldap-utils must be installed"; exit 1; }
+[ -f slapd.conf ] && [ -f data.ldif ] || { echo "FAIL: run setup first"; exit 1; }
+SLAPTEST=$(command -v slaptest); SLAPADD=$(command -v slapadd); SLAPACL=$(command -v slapacl); SLAPCAT=$(command -v slapcat)
+mkdir -p db
+if "$SLAPTEST" -u -f slapd.conf >/dev/null 2>&1; then ok "slaptest accepts slapd.conf"; else fail "slaptest -f slapd.conf rejects the file; run it to see why"; exit 1; fi
+rm -rf db && mkdir db
+if "$SLAPADD" -f slapd.conf -l data.ldif >/dev/null 2>&1; then ok "data loads"; else fail "slapadd could not load data.ldif with your configuration"; exit 1; fi
+P=ou=people,dc=lab,dc=test
+A="uid=alice,$P"; B="uid=bob,$P"; H="uid=helpdesk,ou=svc,dc=lab,dc=test"; R="uid=sssd-reader,ou=svc,dc=lab,dc=test"
+# verdict TARGET BINDDN ATTR/LEVEL EXPECTED(ALLOWED|DENIED)   (BINDDN empty = anonymous)
+verdict() {
+  local t=$1 d=$2 al=$3 want=$4 out
+  if [ -n "$d" ]; then out=$("$SLAPACL" -f slapd.conf -b "$t" -D "$d" "$al" 2>&1); else out=$("$SLAPACL" -f slapd.conf -b "$t" "$al" 2>&1); fi
+  if printf '%s' "$out" | grep -q "$want"; then ok "${d:-anonymous} $al on ${t%%,*}: $want"; else fail "${d:-anonymous} $al on ${t%%,*} should be $want (got: $(printf '%s' "$out" | tail -1))"; fi
+}
+verdict "$A" ""   userPassword/auth  ALLOWED
+verdict "$A" ""   userPassword/read  DENIED
+verdict "$A" "$B" userPassword/read  DENIED
+verdict "$A" "$A" userPassword/write ALLOWED
+verdict "$A" "$H" userPassword/write ALLOWED
+verdict "$A" "$R" userPassword/read  DENIED
+verdict "$A" "$B" uidNumber/read     ALLOWED
+verdict "$A" "$R" loginShell/read    ALLOWED
+verdict "$A" ""   uidNumber/read     DENIED
+grep -Eq '^index[[:space:]]+.*\buid\b.*\beq\b' slapd.conf && ok "index on uid" || fail "slapd.conf: an 'index' line with uid and eq"
+grep -Eq '^index[[:space:]]+.*memberUid.*\beq\b' slapd.conf && ok "index on memberUid" || fail "slapd.conf: an 'index' line with memberUid and eq"
+grep -Eq '^loglevel[[:space:]]+stats' slapd.conf && ok "loglevel stats" || fail "slapd.conf: loglevel stats"
+cf() { grep -v '^[[:space:]]*#' ldap.conf | grep -Ei "^$1[[:space:]]" | head -1 | awk '{print $2}'; }
+case "$(cf URI)" in ldaps://*) ok "URI uses ldaps" ;; *) fail "ldap.conf: URI ldaps://host" ;; esac
+[ "$(cf BASE)" = "dc=lab,dc=test" ] && ok "BASE" || fail "ldap.conf: BASE dc=lab,dc=test"
+case "$(cf TLS_CACERT)" in /*) ok "TLS_CACERT is an absolute path" ;; *) fail "ldap.conf: TLS_CACERT /path/to/ca.pem" ;; esac
+[ "$(cf TLS_REQCERT | tr A-Z a-z)" = demand ] && ok "TLS_REQCERT demand" || fail "ldap.conf: TLS_REQCERT demand (never skips certificate checks)"
+f=$(grep -v '^[[:space:]]*#' filter.txt | head -1)
+if [ -z "$f" ]; then fail "filter.txt: write the filter on one line"; else
+  got=$("$SLAPCAT" -f slapd.conf -a "$f" 2>/dev/null | sed -n 's/^dn: //p' | sort | tr '\n' ' ')
+  want=$(printf '%s\n' "uid=alice,$P" "uid=eve,$P" | sort | tr '\n' ' ')
+  [ "$got" = "$want" ] && ok "filter selects alice and eve" || fail "filter should select exactly alice and eve (got: ${got:-nothing})"
+fi
+exit "$bad"

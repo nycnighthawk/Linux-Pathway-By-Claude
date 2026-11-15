@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a Compose file and a Dockerfile with the classic mistakes.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f compose.yaml Dockerfile
+cat > compose.yaml <<'EOT'
+# SPDX-License-Identifier: MIT
+services:
+  web:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      DATABASE_URL: postgres://app:hunter2@db:5432/app
+    depends_on: [db]
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: hunter2
+    volumes: [dbdata:/var/lib/postgresql/data]
+volumes:
+  dbdata:
+EOT
+cat > Dockerfile <<'EOT'
+# SPDX-License-Identifier: MIT
+FROM python:3.12-slim
+ARG PIP_TOKEN
+ENV PIP_INDEX_URL=https://__token__:${PIP_TOKEN}@pypi.example.com/simple
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+CMD python -m app
+EOT

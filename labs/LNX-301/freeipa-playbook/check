@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse the inventory and the playbook and apply the review rules.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f inventory.yml ] && [ -f policy.yml ] && [ -f drift.sh ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys, yaml
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+def chk(c, good, why): ok(good) if c else fail(why)
+try:
+    inv = yaml.safe_load(open("inventory.yml")) or {}
+    pb = yaml.safe_load(open("policy.yml")) or []
+except Exception as e:
+    print("FAIL: YAML does not parse: %s" % e); sys.exit(1)
+groups = inv.get("all", {}).get("children", inv) if isinstance(inv, dict) else {}
+def grp(n): return groups.get(n) or {}
+hosts = lambda n: list((grp(n).get("hosts") or {}).keys())
+chk(len(hosts("ipaserver")) == 1, "one ipaserver host", "inventory: group ipaserver with exactly one host")
+chk(len(hosts("ipareplicas")) >= 1, "a replica", "inventory: group ipareplicas with at least one host")
+chk(len(hosts("ipaclients")) >= 1, "a client", "inventory: group ipaclients with at least one host")
+v = grp("ipaserver").get("vars") or {}
+chk(v.get("ipaserver_domain") == "lab.test" and v.get("ipaserver_realm") == "LAB.TEST", "domain and realm", "ipaserver vars: ipaserver_domain lab.test and ipaserver_realm LAB.TEST")
+chk(v.get("ipaserver_setup_dns") is True, "setup_dns", "ipaserver_setup_dns: true")
+chk(v.get("ipaserver_no_hbac_allow") is True, "no allow_all rule created", "ipaserver_no_hbac_allow: true (do not create allow_all)")
+allv = {}
+for g in groups.values():
+    allv.update((g or {}).get("vars") or {})
+allv.update(inv.get("all", {}).get("vars") or {}) if isinstance(inv.get("all"), dict) else None
+for k in ("ipaadmin_password", "ipadm_password"):
+    val = str(allv.get(k, ""))
+    chk(val.startswith("{{") and "vault" in val, "%s is a vault reference" % k, "%s must be a Jinja reference such as \"{{ vault_%s }}\"" % (k, k))
+text = open("policy.yml").read()
+chk(not re.search(r"password\s*:\s*['\"]?(?!\{\{)[^\s'\"{]", text), "no literal password in policy.yml", "policy.yml contains a literal password; use a Jinja vault reference")
+play = pb[0] if isinstance(pb, list) and pb and isinstance(pb[0], dict) else {}
+chk(play.get("hosts") == "ipaserver" and play.get("gather_facts") is False and play.get("become") is False, "play header", "play: hosts ipaserver, gather_facts: false, become: false")
+tasks = [t for t in play.get("tasks") or [] if isinstance(t, dict)]
+P = "freeipa.ansible_freeipa."
+def mods(t):
+    return [k for k in t if k.startswith(P)] , [k for k in t if k.startswith("ipa") and not k.startswith(P)]
+nofq = [t for t in tasks if mods(t)[1]]
+chk(not nofq and all(mods(t)[0] for t in tasks), "all tasks use the collection prefix", "every task needs a module named freeipa.ansible_freeipa.<module> (no short names)")
+def find(m, **kw):
+    for t in tasks:
+        a = t.get(P + m)
+        if isinstance(a, dict) and all(str(a.get(k)) == str(x) or (isinstance(x, str) and x in map(str, a.get(k) if isinstance(a.get(k), list) else [a.get(k)])) for k, x in kw.items()): return a
+    return None
+chk(all("state" in (t.get(mods(t)[0][0]) or {}) for t in tasks if mods(t)[0]), "every task has a state", "every task must give an explicit state (present, absent, enabled or disabled)")
+chk(find("ipagroup", name="dba") is not None, "group dba", "task: ipagroup dba")
+mem = None
+for t in tasks:
+    a = t.get(P + "ipagroup")
+    if isinstance(a, dict) and a.get("action") == "member" and a.get("name") == "dba" and "alice" in (a.get("user") if isinstance(a.get("user"), list) else [a.get("user")]): mem = a
+chk(mem is not None, "membership with action: member", "task: ipagroup name dba, user [alice], action: member")
+chk(find("ipahostgroup", name="dbservers") is not None, "hostgroup dbservers", "task: ipahostgroup dbservers")
+chk(find("ipasudocmd", name="/usr/bin/systemctl") is not None, "sudocmd", "task: ipasudocmd /usr/bin/systemctl")
+g = None
+for t in tasks:
+    a = t.get(P + "ipasudocmdgroup")
+    if isinstance(a, dict) and a.get("name") == "pgctl" and "/usr/bin/systemctl" in str(a.get("sudocmd")): g = a
+chk(g is not None, "sudocmdgroup pgctl with member", "task: ipasudocmdgroup pgctl containing /usr/bin/systemctl")
+h = find("ipahbacrule", name="db-ssh")
+chk(bool(h) and "dba" in str(h.get("group")) and "dbservers" in str(h.get("hostgroup")) and "sshd" in str(h.get("hbacsvc")), "hbac rule db-ssh", "task: ipahbacrule db-ssh with group dba, hostgroup dbservers and hbacsvc sshd")
+s = find("ipasudorule", name="dba-restart")
+chk(bool(s) and "pgctl" in str(s.get("allow_sudocmdgroup")) and "dba" in str(s.get("group")) and "dbservers" in str(s.get("hostgroup")), "sudo rule dba-restart", "task: ipasudorule dba-restart with group dba, hostgroup dbservers, allow_sudocmdgroup [pgctl]")
+md = (play.get("module_defaults") or {})
+has_default = any(("ipaadmin_password" in (v or {})) and "{{" in str((v or {}).get("ipaadmin_password")) for v in md.values())
+per_task = all("{{" in str((t.get(mods(t)[0][0]) or {}).get("ipaadmin_password", "")) for t in tasks if mods(t)[0])
+chk(has_default or per_task, "admin password set from the vault", "set ipaadmin_password once through module_defaults or on every task, as a Jinja reference")
+d = open("drift.sh").read()
+body = "\n".join(l for l in d.splitlines() if not l.strip().startswith("#"))
+chk("ansible-playbook" in body and "--check" in body and "--diff" in body and "inventory.yml" in body and "policy.yml" in body, "drift.sh runs check mode with diff", "drift.sh: ansible-playbook -i inventory.yml policy.yml --check --diff")
+chk("changed=" in body and "exit 1" in body, "drift.sh fails on changes", "drift.sh must inspect 'changed=' in the recap and exit 1 when it is not 0")
+sys.exit(bad)
+PY

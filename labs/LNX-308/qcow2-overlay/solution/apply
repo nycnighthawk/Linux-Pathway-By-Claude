@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+qemu-img create -q -f qcow2 -b base.qcow2 -F qcow2 vm1.qcow2 128M
+qemu-img create -q -f qcow2 -b base.qcow2 -F qcow2 vm2.qcow2
+qemu-img snapshot -c clean vm1.qcow2
+chmod a-w base.qcow2

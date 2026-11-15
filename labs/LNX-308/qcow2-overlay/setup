@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Starting state: a template image and nothing built on it.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f base.qcow2 vm1.qcow2 vm2.qcow2 .base.sha256
+qemu-img create -q -f qcow2 base.qcow2 64M
+sha256sum base.qcow2 | cut -d' ' -f1 > .base.sha256

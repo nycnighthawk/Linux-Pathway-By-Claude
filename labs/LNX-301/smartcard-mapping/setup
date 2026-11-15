@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f smartcard-plan.txt
+printf '# SPDX-License-Identifier: MIT\npam_cert_auth=?\nauthselect_feature=?\nrequired_mode_rollout=?\nbreak_glass=?\ncertificate_verification=?\nca_bundle=?\nmapping_rule=?\nmap_rule=?\nsecond_card=?\nsso=?\nverify=?\n' > smartcard-plan.txt

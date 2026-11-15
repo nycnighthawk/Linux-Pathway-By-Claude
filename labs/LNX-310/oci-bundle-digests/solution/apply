@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import gzip, hashlib, json, os
+def sha(b): return "sha256:" + hashlib.sha256(b).hexdigest()
+c = json.load(open("bundle/config.json"))
+c["process"]["args"] = ["/bin/app", "--serve"]
+c["process"]["user"] = {"uid": 10001, "gid": 10001}
+c["process"]["noNewPrivileges"] = True
+c["process"]["capabilities"] = {k: ["CAP_NET_BIND_SERVICE"] for k in ("bounding", "permitted", "effective")}
+c["root"]["readonly"] = True
+c["linux"]["resources"] = {"memory": {"limit": 268435456}, "pids": {"limit": 100}}
+c["linux"]["namespaces"] = [{"type": t} for t in ("pid", "mount", "network", "ipc", "uts", "cgroup", "user")]
+c["linux"]["maskedPaths"] = ["/proc/kcore", "/proc/timer_list"]
+c["linux"]["seccomp"] = {"defaultAction": "SCMP_ACT_ERRNO", "syscalls": [{"names": ["read", "write", "exit_group"], "action": "SCMP_ACT_ALLOW"}]}
+json.dump(c, open("bundle/config.json", "w"), indent=2)
+d = "layout/blobs/sha256/"
+man = None
+for n in os.listdir(d):
+    b = open(d + n, "rb").read()
+    try:
+        j = json.loads(b)
+        if "layers" in j: man = (b, j)
+    except Exception: pass
+idx = json.load(open("layout/index.json"))
+idx["manifests"][0]["digest"] = sha(man[0]); idx["manifests"][0]["size"] = len(man[0])
+json.dump(idx, open("layout/index.json", "w"), indent=2)
+lay = man[1]["layers"][0]
+lb = open(d + lay["digest"].split(":")[1], "rb").read()
+open("answers.txt", "w").write("# SPDX-License-Identifier: MIT\nlayer_digest=%s\ndiff_id=%s\nlayer_media_type=%s\n" % (sha(lb), sha(gzip.decompress(lb)), lay["mediaType"]))
+PY

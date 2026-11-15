@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > k8s/runtimeclass.yaml <<'EOT'
+# SPDX-License-Identifier: MIT
+kind: RuntimeClass
+apiVersion: node.k8s.io/v1
+metadata:
+  name: gvisor
+handler: runsc
+overhead:
+  podFixed:
+    memory: 120Mi
+    cpu: 100m
+scheduling:
+  nodeSelector:
+    sandbox.example/gvisor: "true"
+EOT
+cat > k8s/pod.yaml <<'EOT'
+# SPDX-License-Identifier: MIT
+apiVersion: v1
+kind: Pod
+metadata:
+  name: plugin
+spec:
+  runtimeClassName: gvisor
+  securityContext:
+    runAsNonRoot: true
+  containers:
+  - name: plugin
+    image: registry.example/plugin:2.3.1
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+EOT
+cat > containerd-snippet.toml <<'EOT'
+# SPDX-License-Identifier: MIT
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runsc]
+  runtime_type = "io.containerd.runsc.v1"
+EOT
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+kvm_ready=no
+likely_cause=nested_virtualisation
+gvisor_usable=yes
+EOT

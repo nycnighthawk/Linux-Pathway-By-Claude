@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > Containerfile <<'EOT'
+# SPDX-License-Identifier: MIT
+FROM docker.io/library/golang:1.24-bookworm AS builder
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/app ./cmd/app
+
+FROM gcr.io/distroless/static-debian13:nonroot
+LABEL org.opencontainers.image.source="https://example.com/org/app"
+COPY --from=builder /out/app /app
+USER 65532:65532
+ENTRYPOINT ["/app", "--serve"]
+EOT
+printf '.git\n.env\nnode_modules\n' > .containerignore

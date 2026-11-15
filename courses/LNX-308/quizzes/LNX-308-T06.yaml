@@ -1,0 +1,68 @@
+title: 'Quiz: systemd-nspawn, LXC/Incus'
+questions:
+- id: kernel
+  prompt: What do a system container and its host share?
+  choices:
+  - The kernel
+  - The init system
+  - The root filesystem
+  - The hardware clock only
+  answer:
+  - 0
+  explain: 'A) correct: containers use host kernel namespaces, so isolation depends on it. B) wrong: the container
+    runs its own init. C) wrong: it has its own tree. D) wrong: it shares much more.'
+- id: userns
+  prompt: What does PrivateUsers=pick (user namespace) change?
+  choices:
+  - Nothing visible
+  - Root inside maps to an unprivileged range outside
+  - It enables Boot=yes
+  - It limits memory
+  answer:
+  - 1
+  explain: 'A) wrong: it changes who root is. B) correct: an escape does not give host root. C) wrong: separate
+    setting. D) wrong: that is MemoryMax.'
+- id: where
+  prompt: Where do nspawn resource limits belong?
+  choices:
+  - In the .nspawn [Exec] section
+  - In a drop-in for systemd-nspawn@NAME.service
+  - In /etc/fstab
+  - In /proc
+  answer:
+  - 1
+  explain: 'A) wrong: limits are unit properties. B) correct: MemoryMax=, TasksMax= and Delegate= are service settings.
+    C) wrong: unrelated. D) wrong: not persistent.'
+- id: incus
+  prompt: What is Incus?
+  choices:
+  - A systemd tool
+  - A community fork of LXD that manages containers and VMs through one API
+  - A container image format
+  - A Kubernetes distribution
+  answer:
+  - 1
+  explain: 'A) wrong: not systemd. B) correct: forked in 2023 after Canonical took LXD in-house. C) wrong: not that.
+    D) wrong: no.'
+- id: choose
+  prompt: Which workload suits a VM rather than a system container?
+  choices:
+  - A Debian build tree
+  - Hostile tenants or a guest needing its own kernel
+  - Many small trusted services
+  - A test of package installs
+  answer:
+  - 1
+  explain: 'A) wrong: a container is fine. B) correct: shared kernel is too weak a boundary. C) wrong: containers
+    are denser. D) wrong: a container is fine.'
+- id: meminfo
+  prompt: A Java service in a container sizes its heap from the host's memory. Why?
+  choices:
+  - Java ignores limits
+  - /proc/meminfo shows host values unless lxcfs or limit-aware software corrects it
+  - The cgroup is v1
+  - The container is privileged
+  answer:
+  - 1
+  explain: 'A) wrong: not Java-specific. B) correct: cgroup limits are not visible there by default. C) wrong: unrelated.
+    D) wrong: unrelated.'

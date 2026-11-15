@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > limits.sh <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+: "${CGROOT:=/sys/fs/cgroup}"
+echo "+memory +pids +cpu" > "$CGROOT/cgroup.subtree_control"
+mkdir -p "$CGROOT/demo"
+echo 100M > "$CGROOT/demo/memory.max"
+echo 64 > "$CGROOT/demo/pids.max"
+echo "20000 100000" > "$CGROOT/demo/cpu.max"
+echo "$$" > "$CGROOT/demo/cgroup.procs"
+EOT
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+shared_namespaces=time,user
+has_sys_admin=no
+has_net_bind_service=yes
+host_uid_of_container_root=100000
+EOT

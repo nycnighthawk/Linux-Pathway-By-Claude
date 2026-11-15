@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > prejoin.sh <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# prejoin.sh DOMAIN: four checks before `realm join`
+domain=${1:?usage: prejoin.sh DOMAIN}
+rc=0
+name=$(hostname -f 2>/dev/null)
+lname=$(printf '%s' "$name" | tr A-Z a-z)
+first=${lname%%.*}
+ldom=$(printf '%s' "$domain" | tr A-Z a-z)
+if [ -z "$name" ] || [[ "$lname" != *.* ]]; then echo "FAIL fqdn: '$name' is not fully qualified"; rc=1
+elif [[ "$lname" != *".$ldom" ]]; then echo "FAIL fqdn: '$name' is not inside $domain"; rc=1
+elif [ "${#first}" -gt 15 ]; then echo "FAIL fqdn: first label '$first' is longer than 15 characters"; rc=1
+elif [ "$first" = localhost ]; then echo "FAIL fqdn: localhost is not a valid machine name"; rc=1
+else echo "OK fqdn"; fi
+recs=$(dig +short SRV "_ldap._tcp.dc._msdcs.$domain")
+dc=$(printf '%s\n' "$recs" | awk 'NF>=4 {sub(/\.$/,"",$4); print $4; exit}')
+if [ -z "$dc" ]; then echo "FAIL srv: no domain controller records for $domain"; rc=1; else echo "OK srv"; fi
+skew=$(chronyc tracking | awk '/^System time/ {print $4}')
+if awk -v s="${skew:-999999}" 'BEGIN{exit !(s>120 || s<-120)}'; then echo "FAIL skew: ${skew:-unknown} s from NTP time"; rc=1; else echo "OK skew"; fi
+if [ -z "$dc" ]; then echo "SKIP ports"; rc=1
+else
+  closed=""
+  for p in 53 88 389 464; do nc -z -w 2 "$dc" "$p" || closed="$closed $p"; done
+  if [ -n "$closed" ]; then echo "FAIL ports: closed on $dc:$closed"; rc=1; else echo "OK ports"; fi
+fi
+exit $rc
+EOT
+chmod +x prejoin.sh

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a careless web unit and an api unit that is not yet in a pod.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf quadlet
+mkdir quadlet
+cat > quadlet/web.container <<'EOT'
+# SPDX-License-Identifier: MIT
+[Container]
+Image=docker.io/library/nginx:latest
+PublishPort=8080:80
+Volume=/srv/site:/usr/share/nginx/html
+
+[Service]
+Restart=no
+EOT
+cat > quadlet/api.container <<'EOT'
+# SPDX-License-Identifier: MIT
+[Container]
+Image=docker.io/library/redis:7.4
+PublishPort=6379:6379
+
+[Install]
+WantedBy=default.target
+EOT
