@@ -67,6 +67,10 @@ modules:
     title: Cloud provisioning
     file: lessons/LNX-306-T10.md
     minutes: 45
+  - topic: LNX-306-T11
+    title: Real BMC firmware
+    file: lessons/LNX-306-T11.md
+    minutes: 45
 labs:
 - id: unattended-install
   topic: LNX-306-T01
@@ -134,6 +138,12 @@ labs:
   env: K
   license: MIT
   minutes: 30
+- id: firmware-campaign
+  topic: LNX-306-T11
+  title: Plan a BMC firmware campaign
+  env: H
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-306-T01
   topic: LNX-306-T01
@@ -175,3 +185,7 @@ quizzes:
   topic: LNX-306-T10
   title: 'Quiz: Cloud provisioning'
   file: quizzes/LNX-306-T10.yaml
+- id: LNX-306-T11
+  topic: LNX-306-T11
+  title: 'Quiz: Real BMC firmware'
+  file: quizzes/LNX-306-T11.yaml

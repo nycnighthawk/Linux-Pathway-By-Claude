@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's/^firmware_source=.*/firmware_source=vendor_site/' -e 's/^verify_image=.*/verify_image=checksum_or_signature/' \
+  -e 's/^read_release_notes=.*/read_release_notes=yes/' -e 's/^group_by=.*/group_by=model_and_version/' \
+  -e 's/^first_test_target=.*/first_test_target=sacrificial_machine/' -e 's/^test_console_access=.*/test_console_access=yes/' \
+  -e 's/^config_backup=.*/config_backup=yes/' -e 's/^pilot_size=.*/pilot_size=4/' -e 's/^wave_sizes=.*/wave_sizes=12,30,74/' \
+  -e 's/^stop_rule=.*/stop_rule=pause_on_any_failure/' -e 's/^power_protection=.*/power_protection=ups_or_stable/' \
+  -e 's/^interrupt_update=.*/interrupt_update=never/' -e 's/^preserve_config_check=.*/preserve_config_check=yes/' \
+  -e 's/^post_update_checks=.*/post_update_checks=version,network,accounts,event_log,power_control/' \
+  -e 's/^default_account_after=.*/default_account_after=absent/' -e 's/^signed_images_only=.*/signed_images_only=yes/' \
+  -e 's/^record_in_inventory=.*/record_in_inventory=yes/' firmware-campaign.txt
