@@ -73,6 +73,13 @@ modules:
     title: 'Service mesh: Istio ambient / Linkerd, mTLS'
     file: lessons/LNX-312-T09.md
     minutes: 40
+- id: reach-and-scale
+  title: Reaching the outside and scaling out
+  lessons:
+  - topic: LNX-312-T10
+    title: MetalLB and BGP with FRR
+    file: lessons/LNX-312-T10.md
+    minutes: 55
 labs:
 - id: netns-bridge-nat
   topic: LNX-312-T01
@@ -137,6 +144,12 @@ labs:
   env: C
   license: MIT
   minutes: 20
+- id: metallb-frr
+  topic: LNX-312-T10
+  title: MetalLB resources and the FRR router side
+  env: C
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -174,3 +187,7 @@ quizzes:
   topic: LNX-312-T09
   title: 'Quiz: Service mesh: Istio ambient / Linkerd, mTLS'
   file: quizzes/LNX-312-T09.yaml
+- id: LNX-312-T10
+  topic: LNX-312-T10
+  title: 'Quiz: MetalLB and BGP with FRR'
+  file: quizzes/LNX-312-T10.yaml

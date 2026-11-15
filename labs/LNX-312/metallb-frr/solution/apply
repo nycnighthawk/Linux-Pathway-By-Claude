@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > metallb.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata: {name: lab-pool, namespace: metallb-system}
+spec:
+  addresses: ["192.0.2.240-192.0.2.250"]
+  autoAssign: true
+---
+apiVersion: metallb.io/v1beta1
+kind: BFDProfile
+metadata: {name: fast, namespace: metallb-system}
+spec:
+  receiveInterval: 300
+  transmitInterval: 300
+---
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata: {name: tor-a, namespace: metallb-system}
+spec:
+  myASN: 65010
+  peerASN: 65000
+  peerAddress: 10.0.0.1
+  bfdProfile: fast
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata: {name: lab-adv, namespace: metallb-system}
+spec:
+  ipAddressPools: [lab-pool]
+  aggregationLength: 32
+J
+cat > frr.conf <<'J'
+! SPDX-License-Identifier: MIT
+router bgp 65000
+ bgp router-id 10.0.0.1
+ neighbor NODES peer-group
+ neighbor NODES remote-as 65010
+ neighbor NODES bfd
+ bgp listen range 10.0.0.0/24 peer-group NODES
+ address-family ipv4 unicast
+  neighbor NODES activate
+  neighbor NODES prefix-list METALLB in
+  maximum-paths 8
+ exit-address-family
+!
+ip prefix-list METALLB seq 5 permit 192.0.2.240/28 le 32
+J
