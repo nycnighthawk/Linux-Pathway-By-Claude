@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse compose.yaml and the Dockerfile and apply the lesson checklist.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f compose.yaml ] && [ -f Dockerfile ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys, yaml
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+try:
+    c = yaml.safe_load(open("compose.yaml"))
+    web, db = c["services"]["web"], c["services"]["db"]
+except Exception as e:
+    print("FAIL: compose.yaml needs services web and db (%s)" % type(e).__name__); sys.exit(1)
+ports = [str(p) for p in web.get("ports", [])]
+(ok("web ports on loopback") if ports and all(p.startswith("127.0.0.1:") for p in ports) else fail("web.ports must be published on 127.0.0.1"))
+(ok("web read_only") if web.get("read_only") is True else fail("web.read_only must be true"))
+(ok("web cap_drop ALL") if "ALL" in [str(x).upper() for x in web.get("cap_drop", [])] else fail("web.cap_drop must contain ALL"))
+(ok("restart policies") if web.get("restart") == "unless-stopped" and db.get("restart") == "unless-stopped" else fail("web and db need restart: unless-stopped"))
+dep = web.get("depends_on")
+(ok("web waits for a healthy db") if isinstance(dep, dict) and dep.get("db", {}).get("condition") == "service_healthy" else fail("web.depends_on must be a mapping with db: {condition: service_healthy}"))
+img = str(db.get("image", ""))
+(ok("db image pinned") if ":" in img and not img.endswith(":latest") else fail("db.image must carry a version tag, not latest"))
+(ok("db healthcheck") if db.get("healthcheck", {}).get("test") else fail("db.healthcheck.test is required"))
+envs = {}
+for s in (web, db):
+    e = s.get("environment", {})
+    if isinstance(e, list): e = dict(x.split("=", 1) for x in e if "=" in x)
+    envs[id(s)] = e
+lit = [k for s in (web, db) for k, v in envs[id(s)].items() if re.search(r"pass|secret|token", k, re.I) and not k.endswith("_FILE")] \
+    + [k for s in (web, db) for k, v in envs[id(s)].items() if "://" in str(v) and re.search(r":[^/@:]+@", str(v))]
+(ok("no literal passwords in environment") if not lit else fail("literal credentials in environment: " + ", ".join(sorted(set(lit)))))
+(ok("POSTGRES_PASSWORD_FILE") if envs[id(db)].get("POSTGRES_PASSWORD_FILE", "").startswith("/run/secrets/") else fail("db.environment.POSTGRES_PASSWORD_FILE must point under /run/secrets/"))
+(ok("db uses the secret") if "db_password" in [x if isinstance(x, str) else x.get("source") for x in db.get("secrets", [])] else fail("db.secrets must include db_password"))
+(ok("top-level secret from a file") if c.get("secrets", {}).get("db_password", {}).get("file") else fail("secrets.db_password must be defined with file:"))
+raw = open("Dockerfile").read()
+d = re.sub(r"\\\n\s*", " ", raw).splitlines()
+(ok("syntax directive") if d and d[0].strip() == "# syntax=docker/dockerfile:1" else fail("Dockerfile line 1 must be # syntax=docker/dockerfile:1"))
+txt = "\n".join(d)
+(ok("no secret in ARG or ENV") if not re.search(r"^(ARG|ENV)\s+\S*(TOKEN|PASSWORD|SECRET)", txt, re.M | re.I) else fail("remove ARG and ENV lines that carry the token"))
+(ok("secret mount") if re.search(r"--mount=type=secret,id=pip_token", txt) else fail("install with RUN --mount=type=secret,id=pip_token ..."))
+inst = [i for i, l in enumerate(d) if re.match(r"RUN\b.*pip install", l)]
+(ok("cache mount on install") if inst and "--mount=type=cache" in d[inst[0]] else fail("the pip install RUN needs --mount=type=cache,target=..."))
+req = [i for i, l in enumerate(d) if re.match(r"COPY\s+requirements\.txt", l)]
+src = [i for i, l in enumerate(d) if re.match(r"COPY\s+\.\s+\.", l)]
+(ok("cache order") if req and inst and src and req[0] < inst[0] < src[0] else fail("order must be COPY requirements.txt, RUN pip install, COPY . ."))
+users = [l.split(None, 1)[1].strip() for l in d if l.startswith("USER ")]
+(ok("numeric non-root USER") if users and re.match(r"^[1-9][0-9]*(:[0-9]+)?$", users[-1]) else fail("add USER with a numeric non-root UID, for example USER 10001:10001"))
+cmds = [l for l in d if re.match(r"(ENTRYPOINT|CMD)\s", l)]
+(ok("exec form") if cmds and all(re.match(r"^(ENTRYPOINT|CMD)\s+\[", l) for l in cmds) else fail("ENTRYPOINT or CMD must use the JSON exec form"))
+sys.exit(bad)
+PY

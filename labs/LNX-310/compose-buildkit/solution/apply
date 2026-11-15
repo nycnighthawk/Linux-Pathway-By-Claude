@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > compose.yaml <<'EOT'
+# SPDX-License-Identifier: MIT
+services:
+  web:
+    build: .
+    ports: ["127.0.0.1:8000:8000"]
+    environment:
+      DB_HOST: db
+    read_only: true
+    cap_drop: [ALL]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets: [db_password]
+    volumes: [dbdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app"]
+      interval: 5s
+      retries: 10
+volumes:
+  dbdata:
+secrets:
+  db_password:
+    file: ./db_password.txt
+EOT
+cat > Dockerfile <<'EOT'
+# syntax=docker/dockerfile:1
+# SPDX-License-Identifier: MIT
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=secret,id=pip_token \
+    PIP_INDEX_URL="https://__token__:$(cat /run/secrets/pip_token)@pypi.example.com/simple" pip install -r requirements.txt
+COPY . .
+USER 10001:10001
+ENTRYPOINT ["python", "-m", "app"]
+EOT

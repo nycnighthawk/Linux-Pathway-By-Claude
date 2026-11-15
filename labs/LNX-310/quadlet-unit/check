@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse the Quadlet files (duplicate keys allowed) and check the hardening requirements.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -d quadlet ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import os, re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+def parse(path):
+    d, sec = {}, None
+    for raw in open(path):
+        s = raw.strip()
+        if not s or s[0] in "#;": continue
+        m = re.match(r"^\[(.+)\]$", s)
+        if m: sec = m.group(1); d.setdefault(sec, {}); continue
+        if "=" in s and sec:
+            k, v = s.split("=", 1); d[sec].setdefault(k.strip(), []).append(v.strip())
+    return d
+def pinned(img):
+    if "@sha256:" in img: return True
+    last = img.rsplit("/", 1)[-1]
+    return ":" in last and not last.endswith(":latest")
+def g(d, sec, key): return d.get(sec, {}).get(key, [])
+for f in ("web.container", "site.volume", "app.pod", "api.container"):
+    if not os.path.isfile("quadlet/" + f): fail("quadlet/%s is missing" % f)
+if bad: sys.exit(1)
+w = parse("quadlet/web.container")
+img = g(w, "Container", "Image")
+(ok("web image pinned") if img and pinned(img[0]) else fail("web.container: Image must carry a version tag or digest, not latest"))
+ports = g(w, "Container", "PublishPort")
+(ok("web ports on loopback") if ports and all(p.startswith("127.0.0.1:") for p in ports) else fail("web.container: every PublishPort must start with 127.0.0.1:"))
+vols = [v for v in g(w, "Container", "Volume") if v.startswith("site.volume:")]
+if vols:
+    parts = vols[0].split(":")
+    opts = parts[2].split(",") if len(parts) > 2 else []
+    (ok("volume mounts at the web root") if parts[1] == "/usr/share/nginx/html" else fail("web.container: site.volume must mount at /usr/share/nginx/html"))
+    (ok("volume read-only") if "ro" in opts else fail("web.container: add the ro option to the volume"))
+    (ok("volume relabelled") if ("Z" in opts or "z" in opts) else fail("web.container: add :Z (private) or :z (shared) so SELinux allows the mount"))
+else:
+    fail("web.container: Volume=site.volume:/usr/share/nginx/html:ro,Z is expected")
+for key, want in (("ReadOnly", "true"), ("NoNewPrivileges", "true"), ("DropCapability", "ALL")):
+    (ok(key) if want in [v.lower() if want == "true" else v for v in g(w, "Container", key)] else fail("web.container: set %s=%s" % (key, want)))
+(ok("HealthCmd") if g(w, "Container", "HealthCmd") else fail("web.container: add a HealthCmd"))
+(ok("Notify=healthy") if g(w, "Container", "Notify") == ["healthy"] else fail("web.container: Notify=healthy so dependants wait for readiness"))
+(ok("restart policy") if g(w, "Service", "Restart") and g(w, "Service", "Restart")[0] in ("always", "on-failure") else fail("web.container: [Service] Restart=always or on-failure"))
+u = w.get("Unit", {})
+(ok("network-online ordering") if any("network-online.target" in v for v in u.get("After", [])) and any("network-online.target" in v for v in u.get("Wants", [])) else fail("web.container: [Unit] After= and Wants= network-online.target"))
+(ok("WantedBy=default.target") if "default.target" in g(w, "Install", "WantedBy") else fail("web.container: [Install] WantedBy=default.target"))
+sv = parse("quadlet/site.volume")
+(ok("site.volume has [Volume]") if "Volume" in sv else fail("site.volume: needs a [Volume] section (it may be empty)"))
+pod = parse("quadlet/app.pod")
+(ok("PodName=app") if g(pod, "Pod", "PodName") == ["app"] else fail("app.pod: [Pod] PodName=app"))
+pp = g(pod, "Pod", "PublishPort")
+(ok("pod publishes on loopback") if pp and all(p.startswith("127.0.0.1:") for p in pp) else fail("app.pod: PublishPort on 127.0.0.1"))
+a = parse("quadlet/api.container")
+(ok("api joins the pod") if g(a, "Container", "Pod") == ["app.pod"] else fail("api.container: Pod=app.pod"))
+(ok("api does not publish ports") if not g(a, "Container", "PublishPort") else fail("api.container: remove PublishPort; the pod owns published ports"))
+ai = g(a, "Container", "Image")
+(ok("api image pinned") if ai and pinned(ai[0]) else fail("api.container: pin the image"))
+gen = "/usr/lib/systemd/system-generators/podman-system-generator"
+if os.access(gen, os.X_OK):
+    import subprocess
+    r = subprocess.run([gen, "--user", "--dryrun"], env=dict(os.environ, QUADLET_UNIT_DIRS=os.path.abspath("quadlet")), capture_output=True, text=True)
+    print("note: generator dry run exit %d, %d lines of output" % (r.returncode, len((r.stdout + r.stderr).splitlines())))
+sys.exit(bad)
+PY
