@@ -28,6 +28,10 @@ modules:
     title: 'RPM: spec, rpmbuild, mock'
     file: lessons/LNX-304-T01.md
     minutes: 45
+  - topic: LNX-304-T02
+    title: 'DEB: debhelper, sbuild'
+    file: lessons/LNX-304-T02.md
+    minutes: 45
 labs:
 - id: rpm-spec
   topic: LNX-304-T01
@@ -37,8 +41,22 @@ labs:
   minutes: 45
   packages:
   - rpm
+- id: deb-package
+  topic: LNX-304-T02
+  title: Package a script as a .deb
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - dpkg-dev
+  - debhelper
+  - fakeroot
 quizzes:
 - id: LNX-304-T01
   topic: LNX-304-T01
   title: 'Quiz: RPM: spec, rpmbuild, mock'
   file: quizzes/LNX-304-T01.yaml
+- id: LNX-304-T02
+  topic: LNX-304-T02
+  title: 'Quiz: DEB: debhelper, sbuild'
+  file: quizzes/LNX-304-T02.yaml
