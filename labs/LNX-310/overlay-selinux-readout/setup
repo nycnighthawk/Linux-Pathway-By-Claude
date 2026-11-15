@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: recorded overlay and SELinux evidence plus empty answers.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f inspect.json upper_listing.txt avc.log ls_Z.txt answers.txt fix.sh
+cat > inspect.json <<'EOT'
+{"Name": "overlay2", "Data": {
+  "LowerDir": "/var/lib/docker/overlay2/3f1a-init/diff:/var/lib/docker/overlay2/9c7e/diff:/var/lib/docker/overlay2/b410/diff",
+  "MergedDir": "/var/lib/docker/overlay2/3f1a/merged",
+  "UpperDir": "/var/lib/docker/overlay2/3f1a/diff",
+  "WorkDir": "/var/lib/docker/overlay2/3f1a/work"}}
+EOT
+cat > upper_listing.txt <<'EOT'
+total 12
+drwxr-xr-x 3 root  root  4096 Nov 14 09:12 etc
+c--------- 1 root  root  0, 0 Nov 14 09:15 index.html.bak
+-rw-r--r-- 1 root  root   212 Nov 14 09:20 access.log
+drwxr-xr-x 2 root  root  4096 Nov 14 09:12 run
+EOT
+cat > avc.log <<'EOT'
+----
+time->Fri Nov 14 09:21:03 2026
+type=AVC msg=audit(1763111063.412:512): avc:  denied  { read } for  pid=4412 comm="nginx" name="index.html" dev="dm-0" ino=1310722 scontext=system_u:system_r:container_t:s0:c101,c909 tcontext=unconfined_u:object_r:user_home_t:s0 tclass=file permissive=0
+EOT
+echo 'drwxr-xr-x. 2 deploy deploy unconfined_u:object_r:user_home_t:s0 4096 Nov 14 09:10 /srv/site' > ls_Z.txt
+printf '# SPDX-License-Identifier: MIT\nupper_dir=?\nwhiteout=?\nsource_type=?\ntarget_type=?\ncategories=?\nbest_fix=?\ndb_data_location=?\n' > answers.txt
+printf '#!/usr/bin/env bash\n# SPDX-License-Identifier: MIT\n# TODO: the persistent fix\n' > fix.sh
