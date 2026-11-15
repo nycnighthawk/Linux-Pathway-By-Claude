@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: nothing but a broken certificate to diagnose and a blank answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f ca.key ca.pem server.key server.csr server.pem broken.pem broken.key answers.txt
+openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -keyout broken.key -out broken.pem -days 30 -subj "/CN=app.lab.example" >/dev/null 2>&1
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nbroken_pem_problem=?\nexpiry_check_command=?\ninspect_server_command=?\nsan_option_for_req=?\nroot_not_in_chain_sent_by_server=?\n' > answers.txt

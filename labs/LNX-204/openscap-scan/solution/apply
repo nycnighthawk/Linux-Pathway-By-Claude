@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+P=xccdf_lab_profile_baseline
+oscap xccdf eval --profile $P --results results-before.xml --report report-before.html xccdf.xml >/dev/null 2>&1 || true
+sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' host/etc/sshd_config
+sed -i 's/^deny.*/deny = 4/' host/etc/faillock.conf
+sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 90/' host/etc/login.defs
+oscap xccdf eval --profile $P --results results-after.xml --report report-after.html xccdf.xml >/dev/null 2>&1
+sed -i -e 's/^scan_command=.*/scan_command=oscap xccdf eval --profile ID xccdf.xml/' -e 's/^list_profiles_command=.*/list_profiles_command=oscap info xccdf.xml/' -e 's/^remediation_formats=.*/remediation_formats=bash, ansible/' -e 's/^highest_severity_failure=.*/highest_severity_failure=xccdf_lab_rule_ssh_root/' -e 's/^why_tailor=.*/why_tailor=change selections and variables without editing the shared content/' answers.txt

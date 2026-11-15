@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Inspect the CA and the leaf with openssl itself, then check the key handling.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+if [ -f ca.pem ] && [ -f ca.key ]; then
+  ext=$(openssl x509 -in ca.pem -noout -ext basicConstraints 2>&1)
+  printf '%s\n' "$ext" | grep -q 'CA:TRUE' && ok "ca.pem is a CA" || fail "ca.pem needs basicConstraints=critical,CA:TRUE"
+  printf '%s\n' "$ext" | grep -q 'pathlen:0' && ok "pathlen:0" || fail "limit the CA with pathlen:0"
+  [ "$(openssl x509 -in ca.pem -noout -subject | sed 's/subject=//')" = "$(openssl x509 -in ca.pem -noout -issuer | sed 's/issuer=//')" ] && ok "CA is self-signed" || fail "ca.pem must be self-signed"
+else fail "create ca.key and ca.pem (a self-signed CA certificate)"; fi
+if [ -f server.pem ] && [ -f server.key ] && [ -f ca.pem ]; then
+  openssl verify -CAfile ca.pem server.pem >/dev/null 2>&1 && ok "server.pem verifies against ca.pem" || fail "openssl verify -CAfile ca.pem server.pem fails"
+  san=$(openssl x509 -in server.pem -noout -ext subjectAltName 2>&1)
+  printf '%s\n' "$san" | grep -q 'DNS:app.lab.example' && printf '%s\n' "$san" | grep -q 'DNS:app' && printf '%s\n' "$san" | grep -q 'IP Address:127.0.0.1' && ok "SAN has both names and 127.0.0.1" || fail "SAN must be DNS:app.lab.example, DNS:app, IP:127.0.0.1"
+  openssl x509 -in server.pem -noout -ext extendedKeyUsage 2>&1 | grep -q 'TLS Web Server Authentication' && ok "serverAuth" || fail "add extendedKeyUsage=serverAuth"
+  openssl x509 -in server.pem -noout -ext basicConstraints 2>&1 | grep -q 'CA:FALSE' && ok "leaf is not a CA" || fail "add basicConstraints=CA:FALSE"
+  end=$(date -d "$(openssl x509 -in server.pem -noout -enddate | cut -d= -f2)" +%s); now=$(date +%s)
+  days=$(( (end-now)/86400 ))
+  [ "$days" -gt 0 ] && [ "$days" -le 91 ] && ok "valid for $days more days (90 or fewer)" || fail "lifetime must be 90 days or less (it is $days days left)"
+  openssl x509 -in server.pem -noout -text | grep -q 'Signature Algorithm: .*sha1' && fail "do not sign with SHA-1" || ok "no SHA-1 signature"
+  a=$(openssl x509 -in server.pem -noout -pubkey | sha256sum); b=$(openssl pkey -in server.key -pubout 2>/dev/null | sha256sum)
+  [ "$a" = "$b" ] && ok "key matches certificate" || fail "server.key does not match server.pem"
+  openssl pkey -in server.key -noout -text 2>/dev/null | grep -q 'prime256v1' && ok "P-256 key" || fail "use an EC P-256 key (prime256v1)"
+  m=$(stat -c %a server.key); [ "$m" = 600 ] || [ "$m" = 400 ] && ok "server.key mode $m" || fail "server.key must be mode 600 (it is $m)"
+else fail "create server.key and server.pem signed by the CA"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get broken_pem_problem)" in *SAN*|*san*|*AltName*|*altname*|*"alternative name"*|*"Alternative Name"*) ok "broken.pem has no SAN" ;; *) fail "broken_pem_problem: inspect broken.pem with openssl x509 -text and name what is missing" ;; esac
+case "$(get expiry_check_command)" in "openssl x509 -checkend "*) ok "checkend" ;; *) fail "expiry_check_command: openssl x509 -checkend SECONDS ..." ;; esac
+case "$(get inspect_server_command)" in "openssl s_client -connect "*) ok "s_client" ;; *) fail "inspect_server_command: openssl s_client -connect host:443 ..." ;; esac
+[ "$(get san_option_for_req)" = "-addext" ] && ok "-addext" || fail "san_option_for_req: the openssl req option that adds an extension"
+case "$(get root_not_in_chain_sent_by_server)" in *true*|*yes*|*"should not"*|*"not send"*|*"not sent"*|*anchor*) ok "root is not sent" ;; *) fail "root_not_in_chain_sent_by_server: should a server send the root? say why in a phrase" ;; esac
+exit $bad

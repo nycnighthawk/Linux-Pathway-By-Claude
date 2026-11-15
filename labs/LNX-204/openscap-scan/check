@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run oscap itself: before and after results must exist, and a fresh scan must pass every rule.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+count() { grep -o "<result>$2</result>" "$1" 2>/dev/null | wc -l; }
+if [ -f results-before.xml ]; then
+  [ "$(count results-before.xml fail)" -eq 3 ] && ok "results-before.xml records 3 failures" || fail "results-before.xml must come from a scan of the unmodified host (3 failures)"
+else fail "scan first: oscap xccdf eval --profile xccdf_lab_profile_baseline --results results-before.xml --report report-before.html xccdf.xml"; fi
+out=$(oscap xccdf eval --profile xccdf_lab_profile_baseline --results "${TMPDIR:-/tmp}/lab-scap-now.$$.xml" xccdf.xml 2>&1 | tr -d '\r')
+pass=$(printf '%s\n' "$out" | grep -c '^Result.pass')
+failn=$(printf '%s\n' "$out" | grep -c '^Result.fail')
+[ "$pass" -eq 3 ] && [ "$failn" -eq 0 ] && ok "a fresh scan passes all 3 rules" || fail "a fresh scan gives $pass pass and $failn fail; fix the files under host/etc"
+rm -f "${TMPDIR:-/tmp}/lab-scap-now.$$.xml"
+if [ -f results-after.xml ]; then
+  [ "$(count results-after.xml pass)" -eq 3 ] && ok "results-after.xml records 3 passes" || fail "results-after.xml must come from a scan after the fixes"
+else fail "rescan: oscap xccdf eval ... --results results-after.xml --report report-after.html xccdf.xml"; fi
+[ -s report-after.html ] && ok "HTML report written" || fail "write report-after.html with --report"
+grep -q '^PermitRootLogin no$' host/etc/sshd_config && ok "sshd_config fixed in place" || fail "set PermitRootLogin no (replace the line, do not append a second one)"
+[ "$(grep -c PermitRootLogin host/etc/sshd_config)" -eq 1 ] && ok "no duplicate directive" || fail "sshd_config must keep exactly one PermitRootLogin line"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get scan_command)" in "oscap xccdf eval"*) ok "scan command" ;; *) fail "scan_command: the oscap sub-command that evaluates an XCCDF profile" ;; esac
+case "$(get list_profiles_command)" in "oscap info"*) ok "profiles" ;; *) fail "list_profiles_command: shows the profiles in a data stream" ;; esac
+case "$(get remediation_formats)" in *ansible*bash*|*bash*ansible*) ok "fix formats" ;; *) fail "remediation_formats: two formats oscap xccdf generate fix can write (name both)" ;; esac
+[ "$(get highest_severity_failure)" = xccdf_lab_rule_ssh_root ] && ok "highest severity" || fail "highest_severity_failure: the rule id with severity high that failed first"
+case "$(get why_tailor)" in *local*|*exception*|*site*|*"without editing"*|*variable*) ok "tailoring reason" ;; *) fail "why_tailor: one phrase on what a tailoring file lets you do" ;; esac
+exit $bad

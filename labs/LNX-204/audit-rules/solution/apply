@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > rules.d/50-lab.rules <<'R'
+# SPDX-License-Identifier: MIT
+-b 8192
+-w /etc/passwd -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/sudoers -p wa -k scope
+-w /etc/sudoers.d/ -p wa -k scope
+-w /etc/ssh/sshd_config -p wa -k sshd_config
+-a always,exit -S execve -F arch=b64 -F auid>=1000 -k exec
+-a always,exit -S execve -F arch=b32 -F auid>=1000 -k exec
+-e 2
+R
+sed -i -e 's/^who_changed_sshd_config_auid=.*/who_changed_sshd_config_auid=1002/' -e 's#^editor_used=.*#editor_used=/usr/bin/vim.basic#' -e 's/^report_command=.*/report_command=aureport -x --summary/' -e 's/^rule_reload_command=.*/rule_reload_command=augenrules --load/' -e 's/^immutable_flag=.*/immutable_flag=-e 2/' answers.txt

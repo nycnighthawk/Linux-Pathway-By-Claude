@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Run aide itself: the baseline must predate the change, the change must be found, the volatile logs must not be.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f aide.conf ] || { echo "FAIL: aide.conf missing"; exit 1; }
+grep -v '^#' aide.conf | grep -q -E '^[A-Za-z_]+ *= *.*sha(256|512)' && ok "a group with a SHA-2 hash is defined" || fail "define a group such as Mine = p+u+g+s+m+sha256 in aide.conf"
+grep -v '^#' aide.conf | grep -q -E "^$PWD/target +[A-Za-z_]+" && ok "target is covered" || fail "add the rule: $PWD/target <group>"
+grep -v '^#' aide.conf | grep -q -E "^!$PWD/target/logs" && ok "logs excluded" || fail "exclude the volatile directory: !$PWD/target/logs"
+[ -s db/aide.db ] && ok "baseline database is in place (db/aide.db)" || fail "build the baseline: aide -c aide.conf --init, then move db/aide.db.new to db/aide.db"
+if [ -s db/aide.db ]; then
+  cp -a target /tmp/lab-aide-target.$$ 2>/dev/null; echo "noise" >> target/logs/app.log
+  out=$(aide -c aide.conf --check 2>&1); rc=$?
+  [ "$rc" -eq 4 ] && ok "aide --check exits 4 (changed entries only)" || fail "aide --check exit code is $rc; the baseline must be taken before editing target/conf/app.conf, and that edit must remain"
+  printf '%s\n' "$out" | grep -q 'target/conf/app.conf' && ok "the edited config is reported" || fail "the edited target/conf/app.conf is not in the report"
+  printf '%s\n' "$out" | grep -q 'target/logs' && fail "logs must not be reported" || ok "volatile logs are ignored"
+  rm -rf /tmp/lab-aide-target.$$
+fi
+[ -s report.txt ] && grep -q 'app.conf' report.txt && ok "report.txt saved" || fail "save the report: aide -c aide.conf --check > report.txt"
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get init_command)" in "aide -c aide.conf --init"|"aide --init"*|"aide -c aide.conf -i"|"aide -i"*) ok "init" ;; *) fail "init_command: build a new database" ;; esac
+case "$(get check_command)" in "aide -c aide.conf --check"|"aide --check"*|"aide -c aide.conf -C"|"aide -C"*) ok "check" ;; *) fail "check_command: compare the filesystem with the database" ;; esac
+[ "$(get exit_bit_for_changed)" = 4 ] && ok "exit bit 4" || fail "exit_bit_for_changed: the exit status bit that means changed entries"
+case "$(get why_baseline_offline)" in *attacker*|*tamper*|*regenerat*|*rewrite*|*trust*) ok "baseline protection" ;; *) fail "why_baseline_offline: one phrase on why the database must not be writable by the monitored host" ;; esac
+exit $bad

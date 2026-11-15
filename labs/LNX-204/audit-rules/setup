@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an audit log with two keyed events, and an empty rules directory.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf audit.log rules.d answers.txt investigation.txt
+mkdir -p rules.d
+cat > audit.log <<'L'
+type=SYSCALL msg=audit(1731600000.123:100): arch=c000003e syscall=257 success=yes exit=3 a0=ffffff9c a1=5581 a2=441 a3=1b6 items=1 ppid=1500 pid=1710 auid=1002 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=pts0 ses=3 comm="vi" exe="/usr/bin/vim.basic" key="sshd_config"
+type=CWD msg=audit(1731600000.123:100): cwd="/root"
+type=PATH msg=audit(1731600000.123:100): item=0 name="/etc/ssh/sshd_config" inode=5 dev=08:01 mode=0100644 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0
+type=EOE msg=audit(1731600000.123:100):
+type=SYSCALL msg=audit(1731600100.456:101): arch=c000003e syscall=257 success=yes exit=3 a0=ffffff9c a1=5582 a2=441 a3=1b6 items=1 ppid=1500 pid=1720 auid=1003 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0 fsgid=0 tty=pts1 ses=4 comm="nano" exe="/usr/bin/nano" key="hosts_file"
+type=CWD msg=audit(1731600100.456:101): cwd="/root"
+type=PATH msg=audit(1731600100.456:101): item=0 name="/etc/hosts" inode=9 dev=08:01 mode=0100644 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0 cap_fi=0 cap_fe=0 cap_fver=0 cap_frootid=0
+type=EOE msg=audit(1731600100.456:101):
+L
+printf '# SPDX-License-Identifier: MIT\n# TODO: fill in each ?\nwho_changed_sshd_config_auid=?\neditor_used=?\nreport_command=?\nrule_reload_command=?\nimmutable_flag=?\n' > answers.txt
