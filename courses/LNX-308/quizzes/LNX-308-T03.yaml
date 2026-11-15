@@ -1,0 +1,68 @@
+title: 'Quiz: VM networking: bridges, macvtap, VLANs'
+questions:
+- id: nat
+  prompt: Why can a LAN host not reach a guest on libvirt's default NAT network?
+  choices:
+  - The guest has no IP
+  - Guest addresses are private behind host translation, so inbound connections need port forwards or routing
+  - DHCP is disabled
+  - macvtap is active
+  answer:
+  - 1
+  explain: 'A) wrong: it has one from dnsmasq. B) correct: NAT hides guests; use a bridge, a routed network or forwards.
+    C) wrong: it is enabled by default. D) wrong: the default network uses a bridge virbr0.'
+- id: macvtap-host
+  prompt: A guest attached through macvtap on eth0 cannot talk to the hypervisor, but everyone else can. Why?
+  choices:
+  - The guest is misconfigured
+  - Macvtap traffic leaves through eth0 and is not looped back to the host's own stack on that interface
+  - VLAN tag mismatch
+  - virtio is missing
+  answer:
+  - 1
+  explain: 'A) wrong: other machines reach it. B) correct: the common workaround is a macvlan interface for the
+    host or a real bridge. C) wrong: no tags are involved. D) wrong: the model does not affect this.'
+- id: vlan-filter
+  prompt: What does enabling vlan_filtering on a Linux bridge allow?
+  choices:
+  - Encrypting traffic
+  - One bridge acting like a managed switch with per-port VLAN membership
+  - Faster NAT
+  - Disabling STP
+  answer:
+  - 1
+  explain: 'A) wrong: not its function. B) correct: trunk uplink, access ports for guests, no bridge per VLAN. C)
+    wrong: unrelated. D) wrong: unrelated.'
+- id: xml-tag
+  prompt: Which XML gives a guest an access port on VLAN 20 of a VLAN-aware bridge?
+  choices:
+  - <vlan trunk='yes'><tag id='20'/></vlan>
+  - <vlan><tag id='20'/></vlan>
+  - <bridge vlan='20'/>
+  - <tag vlan='20'/>
+  answer:
+  - 1
+  explain: 'A) wrong: trunk=''yes'' means the guest receives tagged frames for the listed VLANs. B) correct: a single
+    tag without trunk is an access port. C) wrong: not a libvirt element. D) wrong: not a libvirt element.'
+- id: diag
+  prompt: Guest cannot get a DHCP lease. Which first step localises the fault best?
+  choices:
+  - Reinstall the guest
+  - tcpdump on the guest's vnet tap and then on the bridge to see where the DISCOVER stops
+  - Reboot the host
+  - Change the machine type
+  answer:
+  - 1
+  explain: 'A) wrong: destroys evidence. B) correct: walks the path hop by hop. C) wrong: hides the cause. D) wrong:
+    unrelated.'
+- id: fw
+  prompt: After installing Docker, guest NAT stops. What is the likely cause?
+  choices:
+  - Docker removes virbr0
+  - The FORWARD chain policy became DROP without rules accepting libvirt traffic
+  - DNS expired
+  - QEMU crashed
+  answer:
+  - 1
+  explain: 'A) wrong: it does not touch libvirt bridges directly. B) correct: firewall managers compete for the
+    same chains. C) wrong: would not stop all outbound traffic. D) wrong: guests would be down.'

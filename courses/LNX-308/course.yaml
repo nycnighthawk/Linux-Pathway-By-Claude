@@ -15,11 +15,9 @@ outcomes:
 - Enable nested virtualisation and configure a Firecracker microVM
 - Explain quorum, fencing and shared storage in Proxmox VE and oVirt clusters
 certifications:
-- cert: LPIC3
+- cert: LPIC3-305
   objectives: []
 - cert: LPLUS
-  objectives: []
-- cert: LFCS
   objectives: []
 modules:
 - id: hypervisor-basics

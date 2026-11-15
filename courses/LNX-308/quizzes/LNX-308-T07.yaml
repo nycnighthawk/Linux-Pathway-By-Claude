@@ -1,0 +1,66 @@
+title: 'Quiz: Nested virtualization, Firecracker microVMs'
+questions:
+- id: param
+  prompt: Which file shows whether Intel nested virtualisation is enabled?
+  choices:
+  - /sys/module/kvm_intel/parameters/nested
+  - /proc/nested
+  - /etc/kvm.conf
+  - /dev/kvm
+  answer:
+  - 0
+  explain: 'A) correct: Y or 1 means on. B) wrong: no such file. C) wrong: no such file. D) wrong: exists regardless.'
+- id: named
+  prompt: The L1 guest uses a named CPU model and has no vmx flag. Why?
+  choices:
+  - Nesting is disabled
+  - A named model lists only its own features and omits vmx unless required
+  - Firecracker is installed
+  - QEMU is too old
+  answer:
+  - 1
+  explain: 'A) wrong: L0 may have it on. B) correct: use host-passthrough or require the feature. C) wrong: unrelated.
+    D) wrong: not the cause.'
+- id: cost
+  prompt: Which workload suffers most in an L2 guest?
+  choices:
+  - A tight CPU loop
+  - I/O-heavy or page-table-heavy work, because exits pass through L0
+  - Idle guest
+  - A guest that only sleeps
+  answer:
+  - 1
+  explain: 'A) wrong: ordinary instructions do not trap. B) correct: each exit costs several transitions. C) wrong:
+    nothing runs. D) wrong: few exits.'
+- id: jailer
+  prompt: What does the Firecracker jailer add?
+  choices:
+  - A GUI
+  - Chroot, namespaces, cgroups and dropped privileges around the VMM process
+  - Live migration
+  - Windows support
+  answer:
+  - 1
+  explain: 'A) wrong: no. B) correct: defence in depth beyond KVM. C) wrong: not offered. D) wrong: not supported.'
+- id: clones
+  prompt: Two restored microVM clones produce identical random values. Why?
+  choices:
+  - A hardware fault
+  - The snapshot captured the guest's random-number state and both resumed from it
+  - Different CPUs
+  - SMT is on
+  answer:
+  - 1
+  explain: 'A) wrong: no. B) correct: reseed on resume, avoid generating secrets before the snapshot. C) wrong:
+    no. D) wrong: no.'
+- id: devices
+  prompt: Which is NOT offered by Firecracker?
+  choices:
+  - virtio-net
+  - virtio-block
+  - GPU passthrough
+  - vsock
+  answer:
+  - 2
+  explain: 'A) wrong: offered. B) wrong: offered. C) correct: not offered, the device set is deliberately tiny.
+    D) wrong: offered.'

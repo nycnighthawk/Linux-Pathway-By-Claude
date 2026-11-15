@@ -1,7 +1,7 @@
 item: LNX-308
 label: Virtualization with KVM & libvirt
 branch: build/LNX-308
-state: in-progress
+state: done
 started: '2026-11-15'
 updated: '2026-11-15'
 phases:
@@ -18,13 +18,29 @@ phases:
     - LNX-308-T07
     - LNX-308-T08
   lessons:
-    state: todo
+    state: done
     units: 8
-    done: []
+    done:
+    - LNX-308-T01
+    - LNX-308-T02
+    - LNX-308-T03
+    - LNX-308-T04
+    - LNX-308-T05
+    - LNX-308-T06
+    - LNX-308-T07
+    - LNX-308-T08
   quizzes:
-    state: todo
+    state: done
     units: 8
-    done: []
+    done:
+    - LNX-308-T01
+    - LNX-308-T02
+    - LNX-308-T03
+    - LNX-308-T04
+    - LNX-308-T05
+    - LNX-308-T06
+    - LNX-308-T07
+    - LNX-308-T08
   labs:
     state: done
     units: 8
@@ -38,7 +54,7 @@ phases:
     - LNX-308-T07
     - LNX-308-T08
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -52,3 +68,10 @@ log:
 - '2026-11-15 synth: LNX-308-T06'
 - '2026-11-15 synth: LNX-308-T07, LNX-308-T08'
 - '2026-11-15 labs: LNX-308-T01, LNX-308-T02, LNX-308-T03, LNX-308-T04, LNX-308-T05, LNX-308-T06, LNX-308-T07, LNX-308-T08'
+- '2026-11-15 lessons: LNX-308-T01, LNX-308-T02, LNX-308-T03, LNX-308-T04, LNX-308-T05, LNX-308-T06, LNX-308-T07,
+  LNX-308-T08'
+- '2026-11-15 quizzes: LNX-308-T01, LNX-308-T02, LNX-308-T03, LNX-308-T04, LNX-308-T05, LNX-308-T06, LNX-308-T07,
+  LNX-308-T08'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'
