@@ -63,6 +63,10 @@ modules:
     title: Drift detection, secure wipe
     file: lessons/LNX-306-T09.md
     minutes: 45
+  - topic: LNX-306-T10
+    title: Cloud provisioning
+    file: lessons/LNX-306-T10.md
+    minutes: 45
 labs:
 - id: unattended-install
   topic: LNX-306-T01
@@ -124,6 +128,12 @@ labs:
   env: V
   license: MIT
   minutes: 40
+- id: cloud-plan
+  topic: LNX-306-T10
+  title: Plan a safe cloud deployment
+  env: K
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-306-T01
   topic: LNX-306-T01
@@ -161,3 +171,7 @@ quizzes:
   topic: LNX-306-T09
   title: 'Quiz: Drift detection, secure wipe'
   file: quizzes/LNX-306-T09.yaml
+- id: LNX-306-T10
+  topic: LNX-306-T10
+  title: 'Quiz: Cloud provisioning'
+  file: quizzes/LNX-306-T10.yaml

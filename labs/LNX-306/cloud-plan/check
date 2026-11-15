@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f cloud-plan.txt ] || { echo "FAIL: cloud-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" cloud-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+eq() { [ "$(get "$1")" = "$2" ] && ok "$1=$2" || fail "$1 must be $2"; }
+eq image_source own_account
+eq image_selection filter_by_tag
+eq image_build pipeline
+eq user_data_secrets none
+eq secret_delivery secret_manager
+eq instance_identity role
+eq metadata_service token_required
+eq metadata_pod_access blocked
+eq admin_access federated_or_session_manager
+eq public_ip none
+z=$(get zones); if printf '%s' "$z" | grep -Eq '^[0-9]+$' && [ "$z" -ge 3 ]; then ok "spread over $z zones"; else fail "zones: an integer, at least 3"; fi
+eq persistent_data separate_volume
+eq ephemeral_disk_use disposable_only
+eq root_credentials_for_automation never
+eq state_backend remote_locked
+eq plan_review required
+eq rollout rolling_replace
+exit "$bad"
