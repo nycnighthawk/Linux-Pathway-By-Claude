@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Validate the RuntimeClass, the pod, the containerd handler and the readiness answers.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f kvm_check.txt ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import os, re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+try:
+    import yaml, tomllib
+except ImportError as e:
+    print("FAIL: python3-yaml and Python 3.11+ are required (%s)" % e); sys.exit(1)
+def load(p):
+    try: return yaml.safe_load(open(p))
+    except Exception: return None
+rc = load("k8s/runtimeclass.yaml")
+if not isinstance(rc, dict): fail("k8s/runtimeclass.yaml is missing or invalid")
+else:
+    (ok("RuntimeClass kind and version") if rc.get("kind") == "RuntimeClass" and rc.get("apiVersion") == "node.k8s.io/v1" else fail("runtimeclass.yaml: kind RuntimeClass, apiVersion node.k8s.io/v1"))
+    (ok("name gvisor") if rc.get("metadata", {}).get("name") == "gvisor" else fail("runtimeclass.yaml: metadata.name must be gvisor"))
+    (ok("handler runsc") if rc.get("handler") == "runsc" else fail("runtimeclass.yaml: handler must be runsc"))
+    pf = rc.get("overhead", {}).get("podFixed", {})
+    (ok("overhead memory and cpu") if pf.get("memory") and pf.get("cpu") else fail("runtimeclass.yaml: overhead.podFixed needs memory and cpu"))
+    (ok("scheduling nodeSelector") if rc.get("scheduling", {}).get("nodeSelector") else fail("runtimeclass.yaml: scheduling.nodeSelector needs a label"))
+pod = load("k8s/pod.yaml")
+if not isinstance(pod, dict): fail("k8s/pod.yaml is missing or invalid")
+else:
+    sp = pod.get("spec", {})
+    (ok("pod uses the RuntimeClass") if pod.get("kind") == "Pod" and sp.get("runtimeClassName") == "gvisor" else fail("pod.yaml: kind Pod with spec.runtimeClassName gvisor"))
+    cs = sp.get("containers", [])
+    img = cs[0].get("image", "") if cs else ""
+    (ok("pinned image") if img and ("@sha256:" in img or (":" in img.rsplit("/", 1)[-1] and not img.endswith(":latest"))) else fail("pod.yaml: pin the image with a version tag or digest"))
+    sc = sp.get("securityContext", {}).get("runAsNonRoot") or (cs and cs[0].get("securityContext", {}).get("runAsNonRoot"))
+    (ok("runAsNonRoot") if sc is True else fail("pod.yaml: securityContext.runAsNonRoot: true"))
+    rq = cs[0].get("resources", {}).get("requests", {}) if cs else {}
+    (ok("resource requests") if rq.get("memory") and rq.get("cpu") else fail("pod.yaml: resources.requests for memory and cpu"))
+try:
+    t = tomllib.load(open("containerd-snippet.toml", "rb"))
+    p = t.get("plugins", {})
+    cri = p.get("io.containerd.grpc.v1.cri") or p.get("io.containerd.cri.v1.runtime") or {}
+    rt = cri.get("containerd", {}).get("runtimes", {}).get("runsc", {})
+    (ok("containerd runsc handler") if rt.get("runtime_type") == "io.containerd.runsc.v1" else fail("containerd-snippet.toml: runtimes.runsc.runtime_type = \"io.containerd.runsc.v1\" under the CRI plugin"))
+except Exception as e:
+    fail("containerd-snippet.toml is not valid TOML (%s)" % type(e).__name__)
+ans = {}
+for l in open("answers.txt"):
+    if "=" in l and not l.startswith("#"):
+        k, v = l.split("=", 1); ans[k.strip()] = v.strip()
+(ok("kvm_ready no") if ans.get("kvm_ready") == "no" else fail("kvm_ready: is /dev/kvm present in kvm_check.txt?"))
+(ok("likely cause") if ans.get("likely_cause") == "nested_virtualisation" else fail("likely_cause: the host is itself a VM (systemd-detect-virt) and the vmx or svm count is zero, so the hypervisor does not expose virtualisation"))
+(ok("gvisor usable") if ans.get("gvisor_usable") == "yes" else fail("gvisor_usable: the systrap platform does not need /dev/kvm"))
+if os.path.exists("/dev/kvm"): print("note: /dev/kvm exists on this runner")
+sys.exit(bad)
+PY
