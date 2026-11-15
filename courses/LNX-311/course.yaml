@@ -72,6 +72,13 @@ modules:
     title: CRDs and operators
     file: lessons/LNX-311-T09.md
     minutes: 50
+- id: operations
+  title: Troubleshooting and scale
+  lessons:
+  - topic: LNX-311-T10
+    title: Troubleshooting nodes, control plane and apps
+    file: lessons/LNX-311-T10.md
+    minutes: 55
 labs:
 - id: static-pod-repair
   topic: LNX-311-T01
@@ -127,6 +134,12 @@ labs:
   env: C
   license: MIT
   minutes: 35
+- id: triage-cases
+  topic: LNX-311-T10
+  title: Diagnose five captured cluster failures
+  env: V
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-311-T01
   topic: LNX-311-T01
@@ -164,3 +177,7 @@ quizzes:
   topic: LNX-311-T09
   title: 'Quiz: CRDs and operators'
   file: quizzes/LNX-311-T09.yaml
+- id: LNX-311-T10
+  topic: LNX-311-T10
+  title: 'Quiz: Troubleshooting nodes, control plane and apps'
+  file: quizzes/LNX-311-T10.yaml

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > diagnosis.txt <<'D'
+1: oom-killed | kubectl top pod api-7d9c-xk2
+2: selector-mismatch | kubectl get pods --show-labels
+3: cgroup-driver-mismatch | systemctl status containerd
+4: cert-expired | kubeadm certs check-expiration
+5: image-not-found | kubectl describe pod billing-0
+D
