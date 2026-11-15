@@ -68,6 +68,10 @@ modules:
     title: Helm and Kustomize
     file: lessons/LNX-311-T08.md
     minutes: 50
+  - topic: LNX-311-T09
+    title: CRDs and operators
+    file: lessons/LNX-311-T09.md
+    minutes: 50
 labs:
 - id: static-pod-repair
   topic: LNX-311-T01
@@ -117,6 +121,12 @@ labs:
   env: C
   license: MIT
   minutes: 35
+- id: crd-schema
+  topic: LNX-311-T09
+  title: Write a CRD with a structural schema and validation
+  env: C
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-311-T01
   topic: LNX-311-T01
@@ -150,3 +160,7 @@ quizzes:
   topic: LNX-311-T08
   title: 'Quiz: Helm and Kustomize'
   file: quizzes/LNX-311-T08.yaml
+- id: LNX-311-T09
+  topic: LNX-311-T09
+  title: 'Quiz: CRDs and operators'
+  file: quizzes/LNX-311-T09.yaml
