@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Inspect the repository metadata.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -d incoming ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok()   { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+r=repo/rpm
+[ -f $r/repodata/repomd.xml ] && ok "repodata/repomd.xml exists" || fail "run createrepo_c repo/rpm"
+if [ -f $r/repodata/repomd.xml ]; then
+  p=$(ls $r/repodata/*primary.xml* 2>/dev/null | head -1)
+  if [ -n "$p" ]; then
+    txt=$( (zcat -f "$p" 2>/dev/null || zstdcat "$p" 2>/dev/null || xzcat "$p" 2>/dev/null) )
+    echo "$txt" | grep -q '<name>site-a</name>' && ok "site-a is in the metadata" || fail "site-a missing from primary.xml"
+    echo "$txt" | grep -q '<name>site-b</name>' && ok "site-b is in the metadata" || fail "site-b missing from primary.xml"
+    echo "$txt" | grep -q 'ver="1.1"' && ok "site-a 1.1 is in the metadata (update ran)" || fail "add site-a-1.1-1.noarch.rpm and run createrepo_c --update"
+  else fail "no primary.xml in repodata"; fi
+fi
+d=repo/deb
+if [ -f $d/Packages ] || [ -f $d/Packages.gz ]; then
+  idx=$( (cat $d/Packages 2>/dev/null || zcat $d/Packages.gz) )
+  echo "$idx" | grep -q '^Package: site-a' && echo "$idx" | grep -q '^Package: site-b' && ok "both packages listed in Packages" || fail "Packages must list site-a and site-b"
+  echo "$idx" | grep -q '^SHA256:' && ok "Packages carries SHA256 sums" || fail "use apt-ftparchive packages (it writes SHA256)"
+else fail "no Packages or Packages.gz in repo/deb"; fi
+[ -f $d/Packages.gz ] && ok "Packages.gz exists" || fail "gzip the Packages file (gzip -k Packages)"
+if [ -f $d/Release ]; then
+  grep -q '^SHA256:' $d/Release && grep -q 'Packages' $d/Release && ok "Release lists Packages with SHA256" || fail "Release must list the index files (apt-ftparchive release .)"
+else fail "no Release file in repo/deb"; fi
+exit $bad

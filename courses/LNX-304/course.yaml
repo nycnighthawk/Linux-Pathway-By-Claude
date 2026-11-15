@@ -39,6 +39,10 @@ modules:
     title: Signing and key rotation
     file: lessons/LNX-304-T03.md
     minutes: 45
+  - topic: LNX-304-T04
+    title: createrepo_c, aptly, Pulp 3
+    file: lessons/LNX-304-T04.md
+    minutes: 45
 labs:
 - id: rpm-spec
   topic: LNX-304-T01
@@ -67,6 +71,17 @@ labs:
   packages:
   - rpm
   - gnupg
+- id: repo-build
+  topic: LNX-304-T04
+  title: Build RPM and Debian repositories
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - rpm
+  - createrepo-c
+  - apt-utils
+  - dpkg-dev
 quizzes:
 - id: LNX-304-T01
   topic: LNX-304-T01
@@ -80,3 +95,7 @@ quizzes:
   topic: LNX-304-T03
   title: 'Quiz: Signing and key rotation'
   file: quizzes/LNX-304-T03.yaml
+- id: LNX-304-T04
+  topic: LNX-304-T04
+  title: 'Quiz: createrepo_c, aptly, Pulp 3'
+  file: quizzes/LNX-304-T04.yaml
