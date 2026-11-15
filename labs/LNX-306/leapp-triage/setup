@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f triage.py blockers.txt
+python3 - <<'PY'
+import json
+def e(title, sev, flags, summary, rem=None):
+    d = {"title": title, "severity": sev, "flags": flags, "summary": summary, "audience": "sysadmin", "key": "k-" + title[:6].lower().replace(" ", "")}
+    if rem: d["detail"] = {"remediations": [{"type": "command", "context": rem}]}
+    return d
+rep = {"entries": [
+    e("Third-party kernel module is loaded", "high", ["inhibitor"], "A module outside the vendor kernel is loaded.", ["modprobe", "-r", "vendor_mod"]),
+    e("Possible problems with remote login using root account", "high", ["inhibitor"], "Root login by password will change.", ["leapp", "answer", "--section", "sshd.confirm=True"]),
+    e("Missing required answers in the answer file", "high", ["inhibitor"], "A question needs a recorded answer."),
+    e("Packages not signed by a vendor key will be left unchanged", "medium", [], "Third-party packages stay at the old version."),
+    e("Network interface naming may change", "low", [], "Names follow the new policy."),
+    e("Difference in Python version", "info", [], "The system Python moves to a newer version."),
+    e("Some file systems are not required", "medium", ["inhibitor"], "A data mount may slow the upgrade.", ["sed", "-i", "/data/s/^/#/", "/etc/fstab"]),
+    e("Cleaning of leftover packages is advised", "low", [], "Review after the upgrade."),
+]}
+json.dump(rep, open("leapp-report.json", "w"), indent=1)
+clean = {"entries": [e("Difference in Python version", "info", [], "The system Python moves to a newer version.")]}
+json.dump(clean, open("clean-report.json", "w"), indent=1)
+PY
+echo "Created leapp-report.json (has inhibitors) and clean-report.json (none)."

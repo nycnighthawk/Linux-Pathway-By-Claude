@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f leapp-report.json ] || { echo "FAIL: run setup first"; exit 1; }
+[ -f triage.py ] || { echo "FAIL: write triage.py"; exit 1; }
+python3 - <<'PY'
+import json, os, subprocess, sys, tempfile, shutil
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+def run(report):
+    d = tempfile.mkdtemp()
+    shutil.copy("triage.py", d); shutil.copy(report, d + "/report.json")
+    p = subprocess.run([sys.executable, "triage.py", "report.json"], cwd=d, capture_output=True, text=True, timeout=30)
+    b = open(d + "/blockers.txt").read().splitlines() if os.path.exists(d + "/blockers.txt") else None
+    return p, b
+rep = json.load(open("leapp-report.json"))
+want = [x["title"] for x in sorted((x for x in rep["entries"] if "inhibitor" in x["flags"]), key=lambda x: ({"high": 0, "medium": 1, "low": 2, "info": 3}[x["severity"]], x["title"]))]
+p, b = run("leapp-report.json")
+ok("triage.py runs on the report") if p.returncode in (0, 1) and "Traceback" not in p.stderr else fail("triage.py crashed: " + p.stderr[-200:])
+ok("exit status 1 when inhibitors exist") if p.returncode == 1 else fail("exit 1 when the report contains inhibitors")
+if b is None: fail("triage.py must write blockers.txt")
+else:
+    ok("blockers.txt lists exactly the inhibitors") if sorted(b) == sorted(want) else fail("blockers.txt should list only the inhibitor titles (%d), one per line" % len(want))
+    ok("blockers sorted by severity then title") if b == want else fail("sort blockers by severity (high, medium, low, info), then by title")
+ok("output shows the severity counts") if all(w in p.stdout.lower() for w in ("high", "medium", "low", "info")) else fail("print a count for each severity: high, medium, low and info")
+p2, b2 = run("clean-report.json")
+ok("exit status 0 for a clean report") if p2.returncode == 0 else fail("exit 0 when no inhibitor is present")
+ok("blockers.txt empty for a clean report") if b2 == [] else fail("blockers.txt must exist and be empty when there are no inhibitors")
+raise SystemExit(bad)
+PY

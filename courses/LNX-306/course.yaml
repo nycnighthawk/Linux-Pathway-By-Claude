@@ -55,6 +55,10 @@ modules:
     title: Simulated Redfish/IPMI
     file: lessons/LNX-306-T07.md
     minutes: 45
+  - topic: LNX-306-T08
+    title: Leapp and release upgrades
+    file: lessons/LNX-306-T08.md
+    minutes: 45
 labs:
 - id: unattended-install
   topic: LNX-306-T01
@@ -104,6 +108,12 @@ labs:
   env: V
   license: MIT
   minutes: 40
+- id: leapp-triage
+  topic: LNX-306-T08
+  title: Triage a Leapp pre-upgrade report
+  env: V
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-306-T01
   topic: LNX-306-T01
@@ -133,3 +143,7 @@ quizzes:
   topic: LNX-306-T07
   title: 'Quiz: Simulated Redfish/IPMI'
   file: quizzes/LNX-306-T07.yaml
+- id: LNX-306-T08
+  topic: LNX-306-T08
+  title: 'Quiz: Leapp and release upgrades'
+  file: quizzes/LNX-306-T08.yaml

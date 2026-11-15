@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > triage.py <<'PY'
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""Summarise a leapp report: count by severity, list inhibitors, set the exit status."""
+import json
+import sys
+
+ORDER = ["high", "medium", "low", "info"]
+entries = json.load(open(sys.argv[1] if len(sys.argv) > 1 else "leapp-report.json"))["entries"]
+counts = {s: 0 for s in ORDER}
+for e in entries:
+    counts[e.get("severity", "info")] = counts.get(e.get("severity", "info"), 0) + 1
+blockers = sorted((e for e in entries if "inhibitor" in e.get("flags", [])),
+                  key=lambda e: (ORDER.index(e["severity"]) if e["severity"] in ORDER else 9, e["title"]))
+print("severity counts: " + ", ".join("%s=%d" % (s, counts[s]) for s in ORDER))
+print("inhibitors: %d" % len(blockers))
+with open("blockers.txt", "w") as f:
+    for e in blockers:
+        f.write(e["title"] + "\n")
+for e in blockers:
+    print("  [%s] %s" % (e["severity"], e["title"]))
+sys.exit(1 if blockers else 0)
+PY
+chmod +x triage.py
