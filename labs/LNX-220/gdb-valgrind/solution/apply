@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cp src/crash.c src/crash.c.orig
+cc -g -O0 -o crash src/crash.c
+gdb -batch -ex run -ex bt ./crash > bt.txt 2>&1 || true
+gdb -batch -ex run -ex 'generate-core-file core.crash' ./crash > /dev/null 2>&1 || true
+gdb -batch -ex bt ./crash core.crash > bt-core.txt 2>&1 || true
+python3 - <<'P'
+s = open("src/crash.c").read()
+s = s.replace('    printf("%d=%s\\n", r->id, r->name);', '    if (!r) {\n        printf("%d not found\\n", id);\n        return;\n    }\n    printf("%d=%s\\n", r->id, r->name);')
+s = s.replace('    show(9);', '    show(9);\n    free(scratch);')
+open("src/crash.c", "w").write(s)
+P
+sed -i -e 's/^crashing_function=.*/crashing_function=show/' -e 's/^signal_name=.*/signal_name=SIGSEGV/' -e 's/^batch_flag=.*/batch_flag=-batch/' -e 's/^core_creation_command=.*/core_creation_command=generate-core-file/' -e 's/^leak_check_option=.*/leak_check_option=--leak-check=full/' answers.txt
