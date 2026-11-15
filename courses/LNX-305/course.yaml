@@ -1,0 +1,184 @@
+id: LNX-305
+title: Configuration Management with Ansible
+summary: 'Describing fleets and their desired state in Ansible: inventories and variable precedence, playbooks with handlers,
+  loops and Jinja2, roles, collections and execution environments, Vault, RHEL System Roles, linting and Molecule testing,
+  idempotence and check mode, the automation controller, and Windows hosts.'
+hours: 60
+coverage: full
+outcomes:
+- Build an inventory with groups and predict, then verify, which variable value each host receives
+- Write playbooks that loop, branch, template configuration files and reload services only when something changed
+- Package content as roles and collections with a documented variable interface, and explain what an execution environment adds
+- Protect secrets with Ansible Vault under labelled vault IDs and keep them out of logs and files
+- Use RHEL System Roles through their shared conventions and judge their risks
+- Lint and test automation with ansible-lint profiles and Molecule scenarios that prove idempotence
+- Preview changes with check and diff mode and repair tasks that are not safe to repeat
+- Describe how a controller schedules and isolates jobs, and how Windows hosts are reached from a Linux control node
+certifications:
+- cert: RHCE
+  objectives:
+  - D3
+  - D4
+  - D5
+  - D7
+  - D8
+  - D9
+  - D10
+  - D11
+modules:
+- id: inventory-and-playbooks
+  title: Describing hosts and writing playbooks
+  lessons:
+  - topic: LNX-305-T01
+    title: Inventories, variable precedence
+    file: lessons/LNX-305-T01.md
+    minutes: 80
+  - topic: LNX-305-T02
+    title: Playbooks, handlers, loops, Jinja2
+    file: lessons/LNX-305-T02.md
+    minutes: 90
+- id: reuse-secrets-and-vendor-roles
+  title: Reuse, secrets and vendor roles
+  lessons:
+  - topic: LNX-305-T03
+    title: Roles, collections, execution environments
+    file: lessons/LNX-305-T03.md
+    minutes: 70
+  - topic: LNX-305-T04
+    title: Vault
+    file: lessons/LNX-305-T04.md
+    minutes: 60
+  - topic: LNX-305-T05
+    title: RHEL System Roles
+    file: lessons/LNX-305-T05.md
+    minutes: 60
+- id: quality-and-safety
+  title: Testing and safe change
+  lessons:
+  - topic: LNX-305-T06
+    title: ansible-lint and Molecule
+    file: lessons/LNX-305-T06.md
+    minutes: 80
+  - topic: LNX-305-T07
+    title: Idempotence, check mode
+    file: lessons/LNX-305-T07.md
+    minutes: 60
+- id: platform-and-windows
+  title: Running Ansible as a service and beyond Linux
+  lessons:
+  - topic: LNX-305-T08
+    title: AWX / automation controller
+    file: lessons/LNX-305-T08.md
+    minutes: 45
+  - topic: LNX-305-T09
+    title: Managing Windows hosts
+    file: lessons/LNX-305-T09.md
+    minutes: 45
+labs:
+- id: inventory-precedence
+  topic: LNX-305-T01
+  title: Make the merged variables of an inventory come out right
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - ansible-core
+- id: playbook-handlers
+  topic: LNX-305-T02
+  title: Loop, template and reload only when the file changed
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - ansible-core
+- id: role-collection
+  topic: LNX-305-T03
+  title: Write a role, package it as a collection and call it by its FQCN
+  env: C
+  license: MIT
+  minutes: 50
+  packages:
+  - ansible-core
+- id: vault-secrets
+  topic: LNX-305-T04
+  title: Encrypt a file and a value under a vault ID and keep them out of the output
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - ansible-core
+- id: system-role-interface
+  topic: LNX-305-T05
+  title: Drive a system-role style role from group variables
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - ansible-core
+- id: lint-molecule
+  topic: LNX-305-T06
+  title: Bring a role to the safety profile and test it with Molecule
+  env: C
+  license: MIT
+  minutes: 60
+  packages:
+  - ansible-core
+  - python3-pip
+  - python3-venv
+- id: idempotence-check
+  topic: LNX-305-T07
+  title: Make a playbook safe to repeat and safe to preview
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - ansible-core
+- id: awx-controller-guide
+  topic: LNX-305-T08
+  title: Run a playbook through AWX or an automation controller
+  env: S
+  license: MIT
+  minutes: 90
+- id: windows-hosts-guide
+  topic: LNX-305-T09
+  title: Manage a Windows host from a Linux control node
+  env: S
+  license: MIT
+  minutes: 90
+quizzes:
+- id: LNX-305-T01
+  topic: LNX-305-T01
+  title: 'Quiz: Inventories, variable precedence'
+  file: quizzes/LNX-305-T01.yaml
+- id: LNX-305-T02
+  topic: LNX-305-T02
+  title: 'Quiz: Playbooks, handlers, loops, Jinja2'
+  file: quizzes/LNX-305-T02.yaml
+- id: LNX-305-T03
+  topic: LNX-305-T03
+  title: 'Quiz: Roles, collections, execution environments'
+  file: quizzes/LNX-305-T03.yaml
+- id: LNX-305-T04
+  topic: LNX-305-T04
+  title: 'Quiz: Vault'
+  file: quizzes/LNX-305-T04.yaml
+- id: LNX-305-T05
+  topic: LNX-305-T05
+  title: 'Quiz: RHEL System Roles'
+  file: quizzes/LNX-305-T05.yaml
+- id: LNX-305-T06
+  topic: LNX-305-T06
+  title: 'Quiz: ansible-lint and Molecule'
+  file: quizzes/LNX-305-T06.yaml
+- id: LNX-305-T07
+  topic: LNX-305-T07
+  title: 'Quiz: Idempotence, check mode'
+  file: quizzes/LNX-305-T07.yaml
+- id: LNX-305-T08
+  topic: LNX-305-T08
+  title: 'Quiz: AWX / automation controller'
+  file: quizzes/LNX-305-T08.yaml
+- id: LNX-305-T09
+  topic: LNX-305-T09
+  title: 'Quiz: Managing Windows hosts'
+  file: quizzes/LNX-305-T09.yaml
