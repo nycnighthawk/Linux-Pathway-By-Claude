@@ -40,6 +40,10 @@ modules:
     title: Packer images
     file: lessons/LNX-306-T04.md
     minutes: 45
+  - topic: LNX-306-T05
+    title: OpenTofu with libvirt provider
+    file: lessons/LNX-306-T05.md
+    minutes: 45
 labs:
 - id: unattended-install
   topic: LNX-306-T01
@@ -71,6 +75,12 @@ labs:
   env: V
   license: MIT
   minutes: 40
+- id: tofu-libvirt
+  topic: LNX-306-T05
+  title: Write an OpenTofu configuration for libvirt
+  env: V
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-306-T01
   topic: LNX-306-T01
@@ -88,3 +98,7 @@ quizzes:
   topic: LNX-306-T04
   title: 'Quiz: Packer images'
   file: quizzes/LNX-306-T04.yaml
+- id: LNX-306-T05
+  topic: LNX-306-T05
+  title: 'Quiz: OpenTofu with libvirt provider'
+  file: quizzes/LNX-306-T05.yaml
