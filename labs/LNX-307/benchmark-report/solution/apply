@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > bench-report.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+question=Does the scratch SSD sustain 20000 random read IOPS at queue depth 16
+tool=fio
+workload=randread 4k blocks iodepth 16 one job
+cache_bypassed=yes
+cpu_governor=performance
+runs=5
+min=19800
+median=20400
+max=20650
+unit=IOPS
+limiting_resource=device
+changed_one_variable=iodepth from 16 to 32
+EOT

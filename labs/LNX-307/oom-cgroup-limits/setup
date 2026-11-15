@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a recorded kernel OOM report, the cgroup counters and a stub limits drop-in.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f oom.log memory.events limits.conf answers.txt
+cat > oom.log <<'EOT'
+Nov 14 22:30:05 app1 kernel: java invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+Nov 14 22:30:05 app1 kernel: memory: usage 4194304kB, limit 4194304kB, failcnt 8812
+Nov 14 22:30:05 app1 kernel: swap: usage 0kB, limit 0kB, failcnt 0
+Nov 14 22:30:05 app1 kernel: [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
+Nov 14 22:30:05 app1 kernel: [  2210]   996  2210  9120000  3812340     9100000        0             0 java
+Nov 14 22:30:05 app1 kernel: [  2290]   996  2290    52000     4100      120000        0             0 sidecar
+Nov 14 22:30:05 app1 kernel: oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=/,mems_allowed=0,oom_memcg=/system.slice/shop.service,task_memcg=/system.slice/shop.service,task=java,pid=2210,uid=996
+Nov 14 22:30:05 app1 kernel: Memory cgroup out of memory: Killed process 2210 (java) total-vm:36480000kB, anon-rss:3812340kB, file-rss:120kB, shmem-rss:0kB, UID:996 pgtables:9100kB oom_score_adj:0
+EOT
+cat > memory.events <<'EOT'
+low 0
+high 0
+max 8812
+oom 3
+oom_kill 3
+oom_group_kill 0
+EOT
+printf '# SPDX-License-Identifier: MIT\n# TODO: a [Service] drop-in for shop.service, see README.md\n' > limits.conf
+printf '# SPDX-License-Identifier: MIT\n# Fill in each ? from oom.log and memory.events\nscope=?\nunit=?\nvictim=?\nvictim_rss_kb=?\nkills_so_far=?\nhost_was_out_of_memory=?\n' > answers.txt

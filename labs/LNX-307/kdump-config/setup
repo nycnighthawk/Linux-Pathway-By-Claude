@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a recorded crash session, stub configuration files and an answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f crash-session.txt kdump.conf cmdline.txt answers.txt
+cat > crash-session.txt <<'EOT'
+crash> sys
+      KERNEL: /usr/lib/debug/lib/modules/6.12.0-55.el10.x86_64/vmlinux
+    DUMPFILE: /var/crash/10.0.0.5-2026-11-14-22:30:11/vmcore  [PARTIAL DUMP]
+        CPUS: 8
+        DATE: Fri Nov 14 22:30:09 UTC 2026
+      UPTIME: 41 days, 03:12:44
+       PANIC: "Kernel panic - not syncing: Fatal exception"
+crash> log | tail -n 12
+BUG: kernel NULL pointer dereference, address: 0000000000000010
+#PF: supervisor read access in kernel mode
+RIP: 0010:nfs4_run_state_manager+0x1a4/0x3c0 [nfsv4]
+Call Trace:
+ kthread+0xe3/0x110
+ ret_from_fork+0x2c/0x50
+Kernel panic - not syncing: Fatal exception
+crash> mod | grep -v -E 'xfs|nfsv4|nfs |sunrpc|virtio'
+crash> bt
+PID: 1777     TASK: ffff8881  CPU: 3   COMMAND: "nfsv4.1-svc"
+ #0 [ffffc90] machine_kexec at ffffffff81
+ #1 [ffffc91] __crash_kexec at ffffffff82
+ #2 [ffffc92] oops_end at ffffffff83
+ #3 [ffffc93] page_fault_oops at ffffffff84
+ #4 [ffffc94] nfs4_run_state_manager at ffffffffc0a1 [nfsv4]
+EOT
+printf '# SPDX-License-Identifier: MIT\n# TODO: kdump.conf, see README.md\n' > kdump.conf
+printf '# SPDX-License-Identifier: MIT\n# TODO: the kernel command line fragment that reserves memory for the capture kernel\n' > cmdline.txt
+printf '# SPDX-License-Identifier: MIT\n# Fill in each ? from crash-session.txt\npanic_class=?\nfaulting_function=?\nowner_module=?\nthird_party_modules=?\ncpu_of_panic=?\nnext_action=?\n' > answers.txt

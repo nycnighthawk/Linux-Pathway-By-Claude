@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+scope=cgroup
+unit=shop.service
+victim=java
+victim_rss_kb=3812340
+kills_so_far=3
+host_was_out_of_memory=no
+EOT
+cat > limits.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[Service]
+MemoryHigh=5G
+MemoryMax=6G
+MemorySwapMax=0
+TasksMax=2048
+OOMPolicy=stop
+EOT

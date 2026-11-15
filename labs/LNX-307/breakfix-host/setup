@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a simulated host directory with four planted faults.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf host answers.txt
+mkdir -p host/etc/systemd/system host/etc/webapp host/opt/webapp/bin host/var/log/webapp host/etc/logrotate.d host/proc
+cat > host/etc/systemd/system/webapp.service <<'EOT'
+[Unit]
+Description=Web application
+After=network.target
+
+[Service]
+User=webapp
+ExecStart=/opt/webapp/bin/webapp-server --config /etc/webapp/webapp.conf
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOT
+printf '#!/bin/sh\necho serving\n' > host/opt/webapp/bin/webapp
+chmod 644 host/opt/webapp/bin/webapp
+printf 'listen_port=8080\nlog_dir=/var/log/webapp\n' > host/etc/webapp/webapp.conf
+cat > host/proc/listeners.txt <<'EOT'
+# port  owner
+22      sshd
+8080    legacy-proxy
+5432    postgres
+EOT
+cat > host/etc/fstab <<'EOT'
+UUID=1111-aaaa  /      xfs   defaults  0 0
+UUID=2222-bbbb  /boot  xfs   defaults  0 0
+/dev/sdz1       /data  xfs   defaults  0 2
+EOT
+dd if=/dev/zero of=host/var/log/webapp/app.log bs=1k count=64 2>/dev/null
+printf '# SPDX-License-Identifier: MIT\n# Symptom: webapp is down after the last reboot. Fill in each ? as you find the causes.\nstatus_before_fix=?\nport_owner=?\nboot_hazard_device=?\nlog_problem=?\n' > answers.txt

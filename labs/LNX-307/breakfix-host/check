@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the outcome: every planted fault repaired in the simulated host, and the diagnosis recorded.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -d host ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+u=host/etc/systemd/system/webapp.service
+exe=$(sed -n 's/^ExecStart=\([^ ]*\).*/\1/p' "$u" | head -1)
+if [ -n "$exe" ] && [ -x "host$exe" ] && [ -f "host$exe" ]; then ok "ExecStart $exe exists and is executable"; else fail "fault 1: ExecStart points at a file that is missing or not executable (look at host/opt/webapp/bin and its mode)"; fi
+port=$(sed -n 's/^listen_port=\([0-9]*\).*/\1/p' host/etc/webapp/webapp.conf | head -1)
+if [ -n "$port" ] && [ "$port" -ge 1024 ] && [ "$port" -le 65535 ] && ! awk -v p="$port" '!/^#/ && $1==p{f=1} END{exit !f}' host/proc/listeners.txt; then ok "listen_port $port is free"; else fail "fault 2: the configured port is already taken (see host/proc/listeners.txt); choose a free port of 1024 or more"; fi
+line=$(grep -E '^/dev/sdz1' host/etc/fstab || true)
+if [ -z "$line" ] || printf '%s' "$line" | grep -q nofail; then ok "fstab entry for /dev/sdz1 cannot block boot"; else fail "fault 3: the /dev/sdz1 line can drop the host to emergency mode; add nofail (or remove the line if the disk is gone)"; fi
+lr=host/etc/logrotate.d/webapp
+if [ -f "$lr" ] && grep -q '/var/log/webapp/' "$lr" && grep -Eq '^\s*(daily|weekly)' "$lr" && grep -Eq '^\s*rotate\s+[0-9]+' "$lr" && grep -Eq '^\s*compress' "$lr"; then ok "logrotate stanza"; else fail "fault 4: /var/log/webapp is never rotated; write host/etc/logrotate.d/webapp (path, daily or weekly, rotate N, compress)"; fi
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get status_before_fix)" = "203/EXEC" ] && ok "exit status" || fail "status_before_fix: the systemd result code for an ExecStart that cannot be executed"
+[ "$(get port_owner)" = legacy-proxy ] && ok "port owner" || fail "port_owner: who held the configured port (host/proc/listeners.txt)"
+[ "$(get boot_hazard_device)" = /dev/sdz1 ] && ok "boot hazard" || fail "boot_hazard_device: the fstab device that can block boot"
+case "$(get log_problem)" in *rotat*) ok "log problem" ;; *) fail "log_problem: a phrase about missing rotation" ;; esac
+exit "$bad"

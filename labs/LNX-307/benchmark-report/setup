@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an empty benchmark report to fill in from your own measurements.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f bench-report.txt
+printf '# SPDX-License-Identifier: MIT\n# Benchmark report: fill in each ? from your own runs. See README.md.\nquestion=?\ntool=?\nworkload=?\ncache_bypassed=?\ncpu_governor=?\nruns=?\nmin=?\nmedian=?\nmax=?\nunit=?\nlimiting_resource=?\nchanged_one_variable=?\n' > bench-report.txt

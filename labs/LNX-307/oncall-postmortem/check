@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading of a postmortem: required sections, an ordered UTC timeline, owned and classed actions, blameless wording.
+# Judgement cannot be graded; shape and consistency can.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f postmortem.md ] && [ -f incident.txt ] || { echo "FAIL: run setup first"; exit 1; }
+f=postmortem.md
+grep -q TODO "$f" && fail "postmortem.md still has TODO" || ok "no TODO left"
+for h in 'Summary' 'Impact' 'Timeline' 'Root cause' 'Contributing factors' 'What went well' 'What went badly' 'Action items'; do
+  grep -Eqi "^#+ +$h" "$f" && ok "section $h" || fail "missing a heading for: $h"
+done
+t=$(grep -Eo '^[-* ]*[0-9]{2}:[0-9]{2}Z' "$f" | grep -Eo '[0-9]{2}:[0-9]{2}Z')
+n=$(printf '%s\n' "$t" | grep -c .)
+[ "$n" -ge 5 ] && ok "$n timeline entries" || fail "the timeline needs at least 5 lines starting with a UTC time like 02:10Z"
+[ "$(printf '%s\n' "$t" | sort -c 2>&1 | wc -l)" -eq 0 ] && ok "timeline is in order" || fail "timeline entries must be in ascending order"
+for need in 02:05Z 02:10Z 02:21Z; do printf '%s\n' "$t" | grep -q "$need" && ok "has $need" || fail "the timeline must include $need from incident.txt"; done
+m=$(grep -E '^minutes_to_mitigate=' "$f" | cut -d= -f2 | tr -d ' ')
+[ "$m" = 11 ] && ok "minutes_to_mitigate=11 (from the page at 02:10Z to recovery at 02:21Z)" || fail "add a line minutes_to_mitigate=N: minutes from the page (02:10Z) to recovery (02:21Z)"
+acts=$(grep -Ei '^[-*0-9. ]+.*owner:.*due:.*class:[ ]*(prevent|detect|mitigate)' "$f")
+na=$(printf '%s\n' "$acts" | grep -c .)
+[ "$na" -ge 3 ] && ok "$na action items with owner, due and class" || fail "at least 3 action lines of the form '- action | owner: team | due: 2026-12-01 | class: prevent'"
+nc=$(printf '%s\n' "$acts" | grep -Eoi 'class:[ ]*(prevent|detect|mitigate)' | tr 'A-Z' 'a-z' | tr -d ' ' | sort -u | wc -l)
+[ "$nc" -ge 2 ] && ok "$nc classes of action" || fail "use at least two classes of action (prevent, detect, mitigate)"
+grep -Eqi 'pool' "$f" && ok "names the cause" || fail "the root cause section should name the connection pool setting"
+grep -Eqi 'careless|stupid|negligent|idiot|lazy|incompeten|fault of|to blame' "$f" && fail "blameless wording: describe how the system allowed the error, not who is at fault" || ok "blameless wording"
+exit "$bad"

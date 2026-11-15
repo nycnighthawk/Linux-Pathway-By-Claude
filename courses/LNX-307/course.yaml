@@ -1,0 +1,174 @@
+id: LNX-307
+title: Observability, Performance & Troubleshooting
+summary: 'A method for finding what is wrong with a Linux system: USE and RED, the sysstat counters, Prometheus and Grafana,
+  central logging, strace, perf and eBPF, kdump, OOM and cgroups v2, break/fix drills, reliable benchmarks and on-call practice.'
+hours: 50
+coverage: full
+outcomes:
+- Apply the USE and RED methods and write runbooks tied to alerts
+- Read sysstat counters and name the bottleneck resource and process
+- Write Prometheus queries and alert rules and route notifications
+- Ship, store and query logs centrally with journald and rsyslog
+- Trace behaviour and performance with strace, perf and eBPF tools
+- Capture and read a kernel crash with kdump and crash
+- Diagnose OOM kills and set cgroup v2 limits
+- Benchmark reliably and run an incident as an on-call engineer
+certifications:
+- cert: LPLUS
+  objectives: []
+- cert: LPIC2
+  objectives: []
+modules:
+- id: measure-and-monitor
+  title: Methods, counters and monitoring
+  lessons:
+  - topic: LNX-307-T01
+    title: USE/RED methods, runbooks
+    file: lessons/LNX-307-T01.md
+    minutes: 55
+  - topic: LNX-307-T02
+    title: sysstat, vmstat, iostat, pidstat
+    file: lessons/LNX-307-T02.md
+    minutes: 55
+  - topic: LNX-307-T03
+    title: Prometheus, Grafana, alerting
+    file: lessons/LNX-307-T03.md
+    minutes: 60
+  - topic: LNX-307-T04
+    title: Central logging
+    file: lessons/LNX-307-T04.md
+    minutes: 55
+- id: look-inside
+  title: Tracing and crash analysis
+  lessons:
+  - topic: LNX-307-T05
+    title: strace, perf, eBPF (bcc, bpftrace)
+    file: lessons/LNX-307-T05.md
+    minutes: 60
+  - topic: LNX-307-T06
+    title: kdump and crash
+    file: lessons/LNX-307-T06.md
+    minutes: 45
+- id: limits-and-practice
+  title: Limits, drills, benchmarks and on-call
+  lessons:
+  - topic: LNX-307-T08
+    title: OOM and cgroups v2
+    file: lessons/LNX-307-T08.md
+    minutes: 55
+  - topic: LNX-307-T07
+    title: Break/fix drills
+    file: lessons/LNX-307-T07.md
+    minutes: 75
+  - topic: LNX-307-T09
+    title: Reliable benchmarking
+    file: lessons/LNX-307-T09.md
+    minutes: 50
+  - topic: LNX-307-T10
+    title: Production on-call
+    file: lessons/LNX-307-T10.md
+    minutes: 40
+labs:
+- id: use-red-runbook
+  topic: LNX-307-T01
+  title: Read a host with USE and write the runbook
+  env: C
+  license: MIT
+  minutes: 40
+- id: sysstat-readout
+  topic: LNX-307-T02
+  title: Read recorded sysstat output and find the bottleneck
+  env: V
+  license: MIT
+  minutes: 40
+- id: prometheus-rules
+  topic: LNX-307-T03
+  title: Compute a rate, write an alert rule and route it
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - python3-yaml
+- id: rsyslog-forward
+  topic: LNX-307-T04
+  title: Forward logs reliably and rotate them safely
+  env: V
+  license: MIT
+  minutes: 40
+- id: trace-reading
+  topic: LNX-307-T05
+  title: Read a system call trace and write a tracing one-liner
+  env: V
+  license: MIT
+  minutes: 40
+- id: kdump-config
+  topic: LNX-307-T06
+  title: Configure kdump and read a first crash
+  env: V
+  license: MIT
+  minutes: 40
+- id: breakfix-host
+  topic: LNX-307-T07
+  title: Repair a simulated host with four planted faults
+  env: V
+  license: MIT
+  minutes: 40
+- id: oom-cgroup-limits
+  topic: LNX-307-T08
+  title: Diagnose a cgroup OOM kill and set sensible limits
+  env: V
+  license: MIT
+  minutes: 40
+- id: benchmark-report
+  topic: LNX-307-T09
+  title: Run a repeatable benchmark and write an honest report
+  env: S
+  license: MIT
+  minutes: 45
+- id: oncall-postmortem
+  topic: LNX-307-T10
+  title: Write a blameless postmortem for a supplied incident
+  env: O
+  license: MIT
+  minutes: 45
+quizzes:
+- id: LNX-307-T01
+  topic: LNX-307-T01
+  title: 'Quiz: USE/RED methods, runbooks'
+  file: quizzes/LNX-307-T01.yaml
+- id: LNX-307-T02
+  topic: LNX-307-T02
+  title: 'Quiz: sysstat, vmstat, iostat, pidstat'
+  file: quizzes/LNX-307-T02.yaml
+- id: LNX-307-T03
+  topic: LNX-307-T03
+  title: 'Quiz: Prometheus, Grafana, alerting'
+  file: quizzes/LNX-307-T03.yaml
+- id: LNX-307-T04
+  topic: LNX-307-T04
+  title: 'Quiz: Central logging'
+  file: quizzes/LNX-307-T04.yaml
+- id: LNX-307-T05
+  topic: LNX-307-T05
+  title: 'Quiz: strace, perf, eBPF (bcc, bpftrace)'
+  file: quizzes/LNX-307-T05.yaml
+- id: LNX-307-T06
+  topic: LNX-307-T06
+  title: 'Quiz: kdump and crash'
+  file: quizzes/LNX-307-T06.yaml
+- id: LNX-307-T07
+  topic: LNX-307-T07
+  title: 'Quiz: Break/fix drills'
+  file: quizzes/LNX-307-T07.yaml
+- id: LNX-307-T08
+  topic: LNX-307-T08
+  title: 'Quiz: OOM and cgroups v2'
+  file: quizzes/LNX-307-T08.yaml
+- id: LNX-307-T09
+  topic: LNX-307-T09
+  title: 'Quiz: Reliable benchmarking'
+  file: quizzes/LNX-307-T09.yaml
+- id: LNX-307-T10
+  topic: LNX-307-T10
+  title: 'Quiz: Production on-call'
+  file: quizzes/LNX-307-T10.yaml
