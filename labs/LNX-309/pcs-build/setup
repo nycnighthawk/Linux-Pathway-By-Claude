@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f build-cluster.sh
+cat > build-cluster.sh <<'X'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Build a two-node web cluster (nodes node1 and node2, libvirt domains vm-node1 and vm-node2,
+# hypervisor 192.168.122.1). Put one pcs command per line; see README.md for the requirements.
+set -eu
+# TODO: authenticate the nodes, create and start the cluster
+# TODO: configure fencing (fence_virsh) and keep it enabled
+# TODO: virtual IP 192.168.122.50/24 and an Apache resource with a monitor
+# TODO: keep them together, start the address first, prefer node2 gently
+X
+chmod +x build-cluster.sh

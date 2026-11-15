@@ -1,0 +1,35 @@
+id: LNX-309
+title: High Availability & Clusters
+summary: 'Keep services running when machines fail: Pacemaker and Corosync with fencing, replicated and shared storage, floating
+  addresses with keepalived and HAProxy, database replication, disaster-recovery drills, and real power fencing.'
+hours: 40
+outcomes:
+- Build and operate a Pacemaker and Corosync cluster with quorum and fencing
+- Explain DRBD replication and cluster filesystems such as GFS2, and when not to use them
+- Provide a floating address and health-checked load balancing with keepalived and HAProxy
+- Set up and promote PostgreSQL streaming replication and reason about data loss
+- Plan and run disaster-recovery drills against stated recovery objectives
+- Choose and test power fencing on real hardware
+certifications:
+- cert: LPIC3-306
+  objectives: []
+modules:
+- id: clusters
+  title: Cluster foundations
+  lessons:
+  - topic: LNX-309-T01
+    title: Pacemaker/Corosync, fence_virsh
+    file: lessons/LNX-309-T01.md
+    minutes: 45
+labs:
+- id: pcs-build
+  topic: LNX-309-T01
+  title: Script a two-node Pacemaker cluster with fencing
+  env: V
+  license: GPL-2.0-only
+  minutes: 40
+quizzes:
+- id: LNX-309-T01
+  topic: LNX-309-T01
+  title: 'Quiz: Pacemaker/Corosync, fence_virsh'
+  file: quizzes/LNX-309-T01.yaml

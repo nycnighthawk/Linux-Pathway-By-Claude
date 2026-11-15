@@ -169,11 +169,11 @@ topics:
   LNX-308-T06: {course: LNX-308, title: "systemd-nspawn, LXC/Incus", depth: 2, env: V}
   LNX-308-T07: {course: LNX-308, title: "Nested virtualization, Firecracker microVMs", depth: 2, env: V}
   LNX-308-T08: {course: LNX-308, title: "Proxmox/oVirt clusters", depth: 1, env: S}
-  LNX-309-T01: {course: LNX-309, title: "Pacemaker/Corosync, fence_virsh", depth: 3, env: V}
-  LNX-309-T02: {course: LNX-309, title: "DRBD, GFS2 awareness", depth: 2, env: V}
-  LNX-309-T03: {course: LNX-309, title: "keepalived + HAProxy HA", depth: 3, env: V}
-  LNX-309-T04: {course: LNX-309, title: "PostgreSQL replication", depth: 2, env: C}
-  LNX-309-T05: {course: LNX-309, title: "DR drills", depth: 3, env: V}
+  LNX-309-T01: {course: LNX-309, title: "Pacemaker/Corosync, fence_virsh", depth: 3, env: V, query: [pacemaker, corosync, pcs, quorum, stonith, fencing, resource, constraint, cluster]}
+  LNX-309-T02: {course: LNX-309, title: "DRBD, GFS2 awareness", depth: 2, env: V, query: [drbd, gfs2, dlm, cluster-filesystem, active-active, clone, replication, block]}
+  LNX-309-T03: {course: LNX-309, title: "keepalived + HAProxy HA", depth: 3, env: V, query: [keepalived, vrrp, haproxy, virtual-ip, floating, load-balancer, failover]}
+  LNX-309-T04: {course: LNX-309, title: "PostgreSQL replication", depth: 2, env: C, query: [postgresql, replication, wal, pg_basebackup, standby, streaming, failover]}
+  LNX-309-T05: {course: LNX-309, title: "DR drills", depth: 3, env: V, query: [disaster, recovery, restore, backup, rpo, rto, contingency, failover, drill]}
   LNX-309-T06: {course: LNX-309, title: "Real power fencing", depth: 1, env: H}
   LNX-310-T01: {course: LNX-310, title: "Namespaces, cgroups v2, capabilities: a container by hand", depth: 4, env: C}
   LNX-310-T02: {course: LNX-310, title: "OCI image and runtime specs; runc, crun, containerd, CRI-O", depth: 3, env: C}
