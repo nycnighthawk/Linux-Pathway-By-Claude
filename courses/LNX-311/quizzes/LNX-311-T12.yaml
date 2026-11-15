@@ -1,0 +1,27 @@
+title: 'Quiz: Scale and long-lived clusters'
+questions:
+- id: saturate
+  prompt: A monitoring agent on every node lists all pods every few seconds. What is the usual fix?
+  choices: [Add more worker nodes, Use a watch with a field selector for the node's own pods, Increase etcd quota, Disable the API server cache]
+  answer: [1]
+  explain: 'A) wrong: more nodes means more lists. B) correct: it reduces list load by an order of magnitude. C) wrong: size is not the issue. D) wrong: the cache helps.'
+- id: apf
+  prompt: What does API priority and fairness do?
+  choices: [Encrypts requests, Classifies and queues requests so one client cannot starve others, Chooses the scheduler, Backs up etcd]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: cadence
+  prompt: Why is a regular upgrade cadence safer than rare big upgrades?
+  choices: [Fewer APIs ever change, Each step is small, skew and deprecation windows are respected, Support windows are unlimited, It is cheaper to buy licences]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong: versions leave support. D) wrong.'
+- id: fleet
+  prompt: Which are good fleet practices? (select two)
+  choices: [Create clusters from one declarative template, Roll out in canary waves with checks between waves, Hand-tune each cluster, Upgrade all clusters on the same hour]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: drift. D) wrong: no blast-radius control.'
+- id: herd
+  prompt: All kubelets restart at once after a certificate renewal and the API server saturates. Why?
+  choices: [Certificates are too long, A thundering herd of full re-lists, etcd lost quorum by design, The scheduler is single threaded]
+  answer: [1]
+  explain: 'A) wrong. B) correct: restart in batches. C) wrong. D) wrong.'

@@ -5,7 +5,7 @@ questions:
   choices: [A failed readiness probe, The memory limit was exceeded, The image could not be pulled, A DNS failure]
   answer: [1]
   explain: 'A) wrong: probes restart with other reasons. B) correct: signal 9 from the kernel memory killer. C) wrong: pull errors prevent starting. D) wrong: DNS does not kill processes.'
-- id: nodeNotReady
+- id: node-not-ready
   prompt: A node is NotReady and the kubelet log says it cannot reach the runtime socket. Where next?
   choices: [kubectl logs of the scheduler, systemctl status and journal of the container runtime on the node, kube-proxy rules, The HPA]
   answer: [1]

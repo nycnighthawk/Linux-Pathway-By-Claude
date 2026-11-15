@@ -83,6 +83,10 @@ modules:
     title: Managed Kubernetes (EKS/AKS/GKE)
     file: lessons/LNX-311-T11.md
     minutes: 40
+  - topic: LNX-311-T12
+    title: Hundreds of nodes; long-lived upgrades
+    file: lessons/LNX-311-T12.md
+    minutes: 30
 labs:
 - id: static-pod-repair
   topic: LNX-311-T01
@@ -150,6 +154,12 @@ labs:
   env: K
   license: MIT
   minutes: 40
+- id: fleet-upgrade-plan
+  topic: LNX-311-T12
+  title: Plan the upgrades for a fleet of clusters
+  env: S
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-311-T01
   topic: LNX-311-T01
@@ -195,3 +205,7 @@ quizzes:
   topic: LNX-311-T11
   title: 'Quiz: Managed Kubernetes (EKS/AKS/GKE)'
   file: quizzes/LNX-311-T11.yaml
+- id: LNX-311-T12
+  topic: LNX-311-T12
+  title: 'Quiz: Hundreds of nodes; long-lived upgrades'
+  file: quizzes/LNX-311-T12.yaml

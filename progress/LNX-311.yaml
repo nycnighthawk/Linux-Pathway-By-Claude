@@ -1,12 +1,12 @@
 item: LNX-311
 label: Kubernetes Administration
 branch: build/LNX-311
-state: in-progress
+state: done
 started: '2026-11-15'
 updated: '2026-11-15'
 phases:
   synth:
-    state: in-progress
+    state: done
     units: 12
     done:
     - LNX-311-T01
@@ -20,8 +20,9 @@ phases:
     - LNX-311-T09
     - LNX-311-T10
     - LNX-311-T11
+    - LNX-311-T12
   lessons:
-    state: in-progress
+    state: done
     units: 12
     done:
     - LNX-311-T01
@@ -35,8 +36,9 @@ phases:
     - LNX-311-T09
     - LNX-311-T10
     - LNX-311-T11
+    - LNX-311-T12
   quizzes:
-    state: in-progress
+    state: done
     units: 12
     done:
     - LNX-311-T01
@@ -50,8 +52,9 @@ phases:
     - LNX-311-T09
     - LNX-311-T10
     - LNX-311-T11
+    - LNX-311-T12
   labs:
-    state: in-progress
+    state: done
     units: 12
     done:
     - LNX-311-T01
@@ -65,8 +68,9 @@ phases:
     - LNX-311-T09
     - LNX-311-T10
     - LNX-311-T11
+    - LNX-311-T12
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -116,3 +120,10 @@ log:
 - '2026-11-15 lessons: LNX-311-T11'
 - '2026-11-15 quizzes: LNX-311-T11'
 - '2026-11-15 labs: LNX-311-T11'
+- '2026-11-15 synth: LNX-311-T12'
+- '2026-11-15 lessons: LNX-311-T12'
+- '2026-11-15 quizzes: LNX-311-T12'
+- '2026-11-15 labs: LNX-311-T12'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'
