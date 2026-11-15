@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+join_method=one-time-password
+access_provider=ad
+gpo_mode=permissive
+sudo_rule_subject=group
+ldap_tls=starttls
+keytab_enctypes=aes
+breakglass_account=yes
+stale_object_report=yes
+ntlm_dependencies_found=2
+EOT

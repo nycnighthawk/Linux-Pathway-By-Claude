@@ -1,0 +1,72 @@
+title: 'Quiz: NFSv4 with Kerberos'
+questions:
+- id: authsys
+  prompt: Why is AUTH_SYS weak?
+  choices:
+  - The server trusts the uid the client claims
+  - It uses UDP only
+  - It needs Kerberos
+  - It encrypts with DES
+  answer:
+  - 0
+  explain: Root on any client can claim any uid. RPCSEC_GSS fixes that.
+- id: flavours
+  prompt: What does krb5p add over krb5i?
+  choices:
+  - Encryption of the payload
+  - Compression
+  - Authentication
+  - Integrity
+  answer:
+  - 0
+  explain: krb5 authenticates, krb5i adds integrity checksums, krb5p adds privacy by encryption.
+- id: principals
+  prompt: Which principals does the setup need?
+  choices:
+  - krbtgt on clients
+  - nfs/ on the server and host/ on clients, with AES keys
+  - Only user principals
+  - None
+  answer:
+  - 1
+  explain: The server needs an nfs/ service key; clients need a machine principal to mount at boot.
+- id: nobody
+  prompt: Files show owner nobody although kinit succeeded. Likeliest cause?
+  choices:
+  - Signing
+  - The KDC is down
+  - Wrong port
+  - The idmap domain strings differ between client and server
+  answer:
+  - 3
+  explain: NFSv4 owner strings user@domain must match; set the same Domain and clear with nfsidmap -c.
+- id: v3
+  prompt: Why disable NFSv3 on a Kerberos-only server?
+  choices:
+  - It uses TCP
+  - It lacks locking
+  - It is slower
+  - Its auxiliary protocols remain insecure
+  answer:
+  - 3
+  explain: Kerberos covers v3 incompletely and idmapping is absent.
+- id: port
+  prompt: Which port does NFSv4 need?
+  choices:
+  - TCP 445
+  - TCP 88 only on server
+  - UDP 111 only
+  - TCP 2049
+  answer:
+  - 3
+  explain: NFSv4 folds mount, lock and status into one port; Kerberos itself uses 88 to the KDC.
+- id: expire
+  prompt: A user job loses NFS access after ten hours. Fix?
+  choices:
+  - Raise timeo
+  - Use a keytab-backed service identity or renewal tool
+  - Reboot
+  - Use sec=sys
+  answer:
+  - 1
+  explain: The ticket expired; sec=sys removes authentication.

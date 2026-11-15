@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a brief and stub configuration files.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f brief.txt smb.conf sssd.conf answers.txt
+cat > brief.txt <<'EOT'
+Domain: ACME.EXAMPLE, NetBIOS name ACME, a single domain.
+The directory has no uidNumber or gidNumber attributes.
+fileserver: Samba member serving the domain's users (winbind).
+loginhost:  interactive logins (SSSD).
+Both mount the same NFS tree and must show the same owner for the same person.
+EOT
+printf '# SPDX-License-Identifier: MIT\n# TODO: winbind member configuration, see README.md\n[global]\n    workgroup = WORKGROUP\n' > smb.conf
+printf '# SPDX-License-Identifier: MIT\n# TODO: SSSD domain configuration, see README.md\n' > sssd.conf
+chmod 644 sssd.conf
+printf '# SPDX-License-Identifier: MIT\nbackend_for_acme=?\nsame_ids_on_both_hosts=?\nrisk_of_changing_range_later=?\ncheck_trust_command=?\n' > answers.txt

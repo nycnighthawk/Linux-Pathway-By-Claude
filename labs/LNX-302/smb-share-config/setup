@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an insecure stub configuration and an answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f smb.conf answers.txt
+cat > smb.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+# TODO: see README.md. This stub is deliberately insecure.
+[global]
+    workgroup = WORKGROUP
+    server min protocol = NT1
+    server signing = auto
+EOT
+printf '# SPDX-License-Identifier: MIT\nstatus_after_good_login_but_no_permission=?\ndaemon_for_domain_ids=?\n' > answers.txt

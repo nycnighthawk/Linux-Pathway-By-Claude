@@ -1,0 +1,74 @@
+title: 'Quiz: AD DNS and time'
+questions:
+- id: srv
+  prompt: Which record type does a client use to find domain controllers?
+  choices:
+  - SRV
+  - PTR only
+  - MX
+  - TXT only
+  answer:
+  - 0
+  explain: AD publishes service locations as SRV records such as _ldap._tcp.dc._msdcs.<domain>. MX is for mail and PTR for
+    reverse lookup.
+- id: second-ns
+  prompt: Why is a router as second nameserver harmful on a member?
+  choices:
+  - It is slower
+  - It needs a licence
+  - It answers NXDOMAIN for AD SRV queries when the DC is unreachable
+  - It blocks UDP
+  answer:
+  - 2
+  explain: A resolver that knows nothing of the domain gives an authoritative-looking negative answer, and SSSD goes offline.
+    Use two DCs as the two nameservers.
+- id: skew
+  prompt: What is the default maximum Kerberos clock skew?
+  choices:
+  - 1 hour
+  - 30 seconds
+  - 10 hours
+  - 5 minutes
+  answer:
+  - 3
+  explain: Five minutes by default. Ten hours is the usual ticket lifetime, a different concept.
+- id: signd
+  prompt: What does ntpsigndsocket let a Samba DC do?
+  choices:
+  - Have chrony obtain signed time responses that Windows clients expect
+  - Encrypt DNS
+  - Sync files
+  - Create users
+  answer:
+  - 0
+  explain: The socket asks Samba to sign NTP replies for MS-SNTP. It has no relation to DNS, files or users.
+- id: owner
+  prompt: A DHCP server created a host's A record first and now the host's own update is denied. Why?
+  choices:
+  - The record has expired
+  - DHCP is read-only
+  - DNS forbids two updates
+  - Secure updates give the record to its creator, who alone may change it
+  answer:
+  - 3
+  explain: Ownership follows the identity that created the record. Use one registrar.
+- id: rename
+  prompt: Which statement about the AD DNS domain name is correct?
+  choices:
+  - Using .local is recommended
+  - It must equal the hostname
+  - It cannot be renamed in place, so choose it with care
+  - It can be changed with samba-tool rename
+  answer:
+  - 2
+  explain: Neither Windows nor Samba renames the zone or realm in place; .local collides with mDNS.
+- id: resolved
+  prompt: How do you send only the AD domain to the DCs with systemd-resolved?
+  choices:
+  - Use only nscd
+  - Disable DNS
+  - resolvectl dns and resolvectl domain with a ~ routing domain on the link
+  - Edit /etc/hosts
+  answer:
+  - 2
+  explain: A routing domain (~acme.example) sends that suffix to the link's DNS servers. /etc/hosts cannot hold SRV records.

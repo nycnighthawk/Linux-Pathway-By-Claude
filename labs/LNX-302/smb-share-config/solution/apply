@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > smb.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[global]
+    workgroup = LAB
+    server role = standalone server
+    server min protocol = SMB2_10
+    server signing = mandatory
+    smb encrypt = desired
+    map to guest = Never
+    log level = 1
+
+[projects]
+    path = /srv/samba/projects
+    read only = no
+    guest ok = no
+    valid users = @staff
+    force group = staff
+    create mask = 0660
+    directory mask = 2770
+
+[docs]
+    path = /srv/samba/docs
+    read only = no
+    vfs objects = acl_xattr
+    map acl inherit = yes
+    store dos attributes = yes
+EOT
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+status_after_good_login_but_no_permission=NT_STATUS_ACCESS_DENIED
+daemon_for_domain_ids=winbindd
+EOT

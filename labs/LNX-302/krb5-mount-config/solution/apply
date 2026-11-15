@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > fstab.line <<'EOT'
+# SPDX-License-Identifier: MIT
+//files.acme.example/projects /mnt/projects cifs sec=krb5,cruid=1001,vers=3.1.1,seal,uid=1001,gid=1001,file_mode=0640,dir_mode=0750,_netdev,noauto,x-systemd.automount 0 0
+EOT
+cat > request-key.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+create cifs.spnego * * /usr/sbin/cifs.upcall %k
+EOT
+cat > krb5.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[libdefaults]
+    default_realm = ACME.EXAMPLE
+    dns_lookup_kdc = true
+    dns_lookup_realm = false
+    rdns = false
+EOT
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+requested_principal=cifs/files.acme.example@ACME.EXAMPLE
+why_it_failed=alias-without-spn
+correct_fix=use-canonical-name
+verify_command=klist
+EOT

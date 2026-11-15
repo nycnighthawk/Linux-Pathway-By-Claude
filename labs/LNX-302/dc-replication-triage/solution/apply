@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > sysvol-sync.sh <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# One-way SYSVOL pull from the PDC emulator holder (edit policy only there).
+set -eu
+SRC=dc1.acme.example
+rsync -XAavz --delete-after "rsync://${SRC}/sysvol-ro/" /var/lib/samba/sysvol/
+samba-tool ntacl sysvolreset
+EOT
+chmod +x sysvol-sync.sh
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+failing_partition=DC=DomainDnsZones,DC=acme,DC=example
+error_number=8524
+root_cause=dns
+repair_command=samba_dnsupdate --verbose --all-names
+pdc_holder=DC1
+EOT

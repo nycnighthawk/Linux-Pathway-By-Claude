@@ -1,0 +1,198 @@
+id: LNX-302
+title: Mixed Environments
+summary: 'Linux and Windows in one estate: a Samba file server, winbind and SSSD members, Samba AD replication, Kerberos SMB
+  clients, AD DNS and time, OpenSSH and PowerShell 7 on Windows, Windows clients and printing, Ansible for Windows, NFSv4
+  with Kerberos and operating Linux inside a real AD.'
+hours: 50
+coverage: full
+outcomes:
+- Configure and harden a Samba file server with POSIX or Windows ACLs
+- Join Linux hosts to Active Directory with winbind or SSSD and choose an id-mapping strategy
+- Run and inspect additional Samba domain controllers, SYSVOL and FSMO roles
+- Mount SMB and NFSv4 shares with Kerberos and no stored password
+- Keep AD DNS and time correct for Linux members
+- Reach and automate Windows servers from Linux with OpenSSH, PowerShell 7 and Ansible
+- Serve Windows clients with mapped drives and printers
+- Operate a Linux fleet inside an existing AD estate
+certifications:
+- cert: LPIC3-300
+  objectives:
+  - '301.1'
+  - '301.2'
+  - '301.3'
+  - '301.4'
+  - '302.1'
+  - '302.2'
+  - '302.3'
+  - '302.4'
+  - '302.5'
+  - '303.1'
+  - '303.2'
+  - '303.4'
+  - '304.1'
+  - '304.2'
+  - '304.3'
+  - '305.4'
+- cert: LPIC2
+  objectives:
+  - '209.1'
+  - '209.2'
+modules:
+- id: samba-and-ad
+  title: Samba servers, members and domain controllers
+  lessons:
+  - topic: LNX-302-T01
+    title: Samba file server
+    file: lessons/LNX-302-T01.md
+    minutes: 85
+  - topic: LNX-302-T02
+    title: winbind vs SSSD members
+    file: lessons/LNX-302-T02.md
+    minutes: 70
+  - topic: LNX-302-T03
+    title: Samba AD DC replication
+    file: lessons/LNX-302-T03.md
+    minutes: 70
+- id: kerberos-and-names
+  title: Kerberos clients, DNS and time
+  lessons:
+  - topic: LNX-302-T04
+    title: SMB clients with Kerberos
+    file: lessons/LNX-302-T04.md
+    minutes: 65
+  - topic: LNX-302-T05
+    title: AD DNS and time
+    file: lessons/LNX-302-T05.md
+    minutes: 65
+  - topic: LNX-302-T09
+    title: NFSv4 with Kerberos
+    file: lessons/LNX-302-T09.md
+    minutes: 50
+- id: windows-side
+  title: Windows hosts, clients and automation
+  lessons:
+  - topic: LNX-302-T06
+    title: PowerShell 7 and OpenSSH on Windows
+    file: lessons/LNX-302-T06.md
+    minutes: 65
+  - topic: LNX-302-T07
+    title: Windows clients and printing
+    file: lessons/LNX-302-T07.md
+    minutes: 50
+  - topic: LNX-302-T08
+    title: Ansible managing Windows
+    file: lessons/LNX-302-T08.md
+    minutes: 50
+- id: estate
+  title: Linux in the enterprise
+  lessons:
+  - topic: LNX-302-T10
+    title: Linux in a genuine AD estate
+    file: lessons/LNX-302-T10.md
+    minutes: 70
+labs:
+- id: smb-share-config
+  topic: LNX-302-T01
+  title: Write and validate a hardened Samba configuration
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - samba-common-bin
+- id: member-idmap-plan
+  topic: LNX-302-T02
+  title: Plan a domain member's identity mapping
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - samba-common-bin
+- id: dc-replication-triage
+  topic: LNX-302-T03
+  title: Triage a stalled domain controller and write the SYSVOL job
+  env: C
+  license: MIT
+  minutes: 40
+- id: krb5-mount-config
+  topic: LNX-302-T04
+  title: Configure a Kerberos CIFS mount and find the broken principal
+  env: C
+  license: MIT
+  minutes: 40
+- id: ad-dns-time-check
+  topic: LNX-302-T05
+  title: Fix a member's resolver and time configuration
+  env: C
+  license: MIT
+  minutes: 40
+- id: ssh-pwsh-remoting
+  topic: LNX-302-T06
+  title: Configure OpenSSH and PowerShell 7 remoting for a Windows server
+  env: W
+  license: MIT
+  minutes: 45
+- id: windows-clients-printing-guide
+  topic: LNX-302-T07
+  title: A Windows client, a mapped drive and a shared printer
+  env: S
+  license: MIT
+  minutes: 90
+- id: ansible-windows-guide
+  topic: LNX-302-T08
+  title: Manage a Windows server from a Linux control node with Kerberos
+  env: S
+  license: MIT
+  minutes: 90
+- id: nfs-krb-exports
+  topic: LNX-302-T09
+  title: Kerberised NFSv4 exports, mount and id mapping
+  env: V
+  license: MIT
+  minutes: 40
+- id: ad-estate-guide
+  topic: LNX-302-T10
+  title: Review how a Linux fleet fits into an AD estate
+  env: S
+  license: MIT
+  minutes: 90
+quizzes:
+- id: LNX-302-T01
+  topic: LNX-302-T01
+  title: 'Quiz: Samba file server'
+  file: quizzes/LNX-302-T01.yaml
+- id: LNX-302-T02
+  topic: LNX-302-T02
+  title: 'Quiz: winbind vs SSSD members'
+  file: quizzes/LNX-302-T02.yaml
+- id: LNX-302-T03
+  topic: LNX-302-T03
+  title: 'Quiz: Samba AD DC replication'
+  file: quizzes/LNX-302-T03.yaml
+- id: LNX-302-T04
+  topic: LNX-302-T04
+  title: 'Quiz: SMB clients with Kerberos'
+  file: quizzes/LNX-302-T04.yaml
+- id: LNX-302-T05
+  topic: LNX-302-T05
+  title: 'Quiz: AD DNS and time'
+  file: quizzes/LNX-302-T05.yaml
+- id: LNX-302-T06
+  topic: LNX-302-T06
+  title: 'Quiz: PowerShell 7 and OpenSSH on Windows'
+  file: quizzes/LNX-302-T06.yaml
+- id: LNX-302-T07
+  topic: LNX-302-T07
+  title: 'Quiz: Windows clients and printing'
+  file: quizzes/LNX-302-T07.yaml
+- id: LNX-302-T08
+  topic: LNX-302-T08
+  title: 'Quiz: Ansible managing Windows'
+  file: quizzes/LNX-302-T08.yaml
+- id: LNX-302-T09
+  topic: LNX-302-T09
+  title: 'Quiz: NFSv4 with Kerberos'
+  file: quizzes/LNX-302-T09.yaml
+- id: LNX-302-T10
+  topic: LNX-302-T10
+  title: 'Quiz: Linux in a genuine AD estate'
+  file: quizzes/LNX-302-T10.yaml

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the three configuration files and the reading of the upcall log.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f upcall.log ] && [ -f answers.txt ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+fs=$(grep -v '^\s*#' fstab.line | grep -E '[[:space:]]cifs[[:space:]]' | head -1)
+if [ -z "$fs" ]; then fail "fstab.line: one entry of type cifs"
+else
+  set -- $fs
+  [ "$1" = //files.acme.example/projects ] && ok "device is the canonical name" || fail "fstab.line: device //files.acme.example/projects"
+  [ "$2" = /mnt/projects ] && ok "mount point" || fail "fstab.line: mount point /mnt/projects"
+  opts=",$4,"
+  case "$opts" in *,sec=krb5,*) ok "sec=krb5" ;; *) fail "fstab.line: option sec=krb5" ;; esac
+  case "$opts" in *,cruid=1001,*) ok "cruid=1001" ;; *) fail "fstab.line: option cruid=1001 (whose credential cache the helper reads)" ;; esac
+  case "$opts" in *,vers=3.0,*|*,vers=3.02,*|*,vers=3.1.1,*|*,vers=3,*) ok "SMB3 dialect pinned" ;; *) fail "fstab.line: pin an SMB3 dialect, for example vers=3.1.1" ;; esac
+  case "$opts" in *,seal,*) ok "seal" ;; *) fail "fstab.line: option seal (SMB3 encryption)" ;; esac
+  case "$opts" in *,_netdev,*) ok "_netdev" ;; *) fail "fstab.line: option _netdev (wait for the network)" ;; esac
+  case "$opts" in *password=*|*credentials=*|*pass=*) fail "fstab.line must not store a password or credentials file" ;; *) ok "no stored secret" ;; esac
+fi
+grep -v '^\s*#' request-key.conf | grep -Eq '^create[[:space:]]+cifs\.spnego[[:space:]]+\*[[:space:]]+\*[[:space:]]+/usr/sbin/cifs\.upcall[[:space:]]+%k' && ok "request-key rule" || fail "request-key.conf: create cifs.spnego * * /usr/sbin/cifs.upcall %k"
+k=$(grep -v '^\s*#' krb5.conf)
+printf '%s\n' "$k" | grep -Eq 'default_realm[[:space:]]*=[[:space:]]*ACME\.EXAMPLE' && ok "default_realm" || fail "krb5.conf: default_realm = ACME.EXAMPLE under [libdefaults]"
+printf '%s\n' "$k" | grep -Eq 'dns_lookup_kdc[[:space:]]*=[[:space:]]*true' && ok "dns_lookup_kdc" || fail "krb5.conf: dns_lookup_kdc = true"
+printf '%s\n' "$k" | grep -Eq 'rdns[[:space:]]*=[[:space:]]*false' && ok "rdns false" || fail "krb5.conf: rdns = false"
+[ "$(get requested_principal)" = "cifs/files.acme.example@ACME.EXAMPLE" ] && ok "principal" || fail "requested_principal: the principal printed in the 'not found in Kerberos database' line"
+[ "$(get why_it_failed)" = alias-without-spn ] && ok "cause" || fail "why_it_failed: the server only holds a key for its canonical name (alias-without-spn, clock-skew or expired-ticket)"
+[ "$(get correct_fix)" = use-canonical-name ] && ok "fix" || fail "correct_fix: use-canonical-name, trust-dns or use-ntlm (one weakens security, one hides the fault)"
+[ "$(get verify_command)" = klist ] && ok "verify" || fail "verify_command: the command that lists tickets"
+exit "$bad"

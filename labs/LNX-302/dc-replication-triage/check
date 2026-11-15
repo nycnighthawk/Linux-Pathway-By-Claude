@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the triage answers and the SYSVOL script.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f showrepl.txt ] && [ -f fsmo.txt ] && [ -f answers.txt ] && [ -f sysvol-sync.sh ] || { echo "FAIL: run setup first"; exit 1; }
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+lc() { printf '%s' "$1" | tr 'A-Z' 'a-z'; }
+part=$(grep -B4 'failed, result' showrepl.txt | grep -E '^(DC|CN)=' | head -1)
+[ "$(get failing_partition)" = "$part" ] && ok "failing partition" || fail "failing_partition: the naming context line above the failed attempt, exactly as printed"
+num=$(sed -n 's/.*failed, result \([0-9]\+\).*/\1/p' showrepl.txt | head -1)
+[ "$(get error_number)" = "$num" ] && ok "error number $num" || fail "error_number: the number after 'result'"
+[ "$(lc "$(get root_cause)")" = dns ] && ok "root cause dns" || fail "root_cause: WERR_DS_DRA_DNS_LOOKUP_FAILURE is a name-resolution failure (dns, firewall, credentials or database)"
+case "$(get repair_command)" in samba_dnsupdate*) ok "repair command" ;; *) fail "repair_command: the tool that compares the DC's expected DNS records with the zone and fixes them" ;; esac
+pdc=$(grep '^PdcEmulationMasterRole' fsmo.txt | sed -n 's/.*CN=NTDS Settings,CN=\([A-Za-z0-9-]*\),.*/\1/p' | tr 'A-Z' 'a-z')
+[ "$(lc "$(get pdc_holder)")" = "$pdc" ] && ok "PDC holder $pdc" || fail "pdc_holder: the server named in the PdcEmulationMasterRole line"
+bash -n sysvol-sync.sh 2>/dev/null && ok "script syntax" || fail "sysvol-sync.sh is not valid bash"
+body=$(grep -v '^\s*#' sysvol-sync.sh)
+rs=$(printf '%s\n' "$body" | grep -E '(^|[[:space:];])rsync[[:space:]]' | head -1)
+[ -n "$rs" ] && ok "uses rsync" || fail "sysvol-sync.sh must call rsync"
+printf '%s' "$rs" | grep -Eq -- '(^|[[:space:]])-[a-zA-Z]*X' && printf '%s' "$rs" | grep -Eq -- '(^|[[:space:]])-[a-zA-Z]*A' && ok "keeps xattrs and ACLs" || fail "rsync needs -X and -A (the NT ACLs live in extended attributes)"
+printf '%s' "$rs" | grep -q -- '--delete-after' && ok "--delete-after" || fail "rsync needs --delete-after"
+printf '%s\n' "$body" | grep -Eqi "(^|[^a-z0-9])$pdc([^a-z0-9]|$)" && ok "source is the PDC holder" || fail "the rsync source must be the PDC emulator holder ($pdc), named in the script"
+printf '%s' "$rs" | grep -q '/var/lib/samba/sysvol/' && ok "destination" || fail "the destination is /var/lib/samba/sysvol/"
+printf '%s\n' "$body" | grep -Eq 'samba-tool[[:space:]]+ntacl[[:space:]]+sysvolreset' && ok "sysvolreset" || fail "run samba-tool ntacl sysvolreset after the copy"
+exit "$bad"

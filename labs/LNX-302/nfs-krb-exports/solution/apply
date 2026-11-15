@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > exports <<'EOT'
+# SPDX-License-Identifier: MIT
+/srv/export/projects   *.example.com(rw,sync,sec=krb5p,no_subtree_check)
+EOT
+cat > fstab.line <<'EOT'
+# SPDX-License-Identifier: MIT
+nfs01.example.com:/srv/export/projects /mnt/projects nfs4 sec=krb5p,vers=4.2,_netdev,x-systemd.automount,x-systemd.mount-timeout=30 0 0
+EOT
+cat > idmapd.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[General]
+Domain = example.com
+EOT
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+server_principal=nfs/nfs01.example.com
+client_principal_prefix=host
+cause_of_nobody=idmap-domain-mismatch
+clear_cache_command=nfsidmap -c
+port=2049
+EOT

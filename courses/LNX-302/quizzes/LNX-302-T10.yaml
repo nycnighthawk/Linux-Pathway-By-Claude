@@ -1,0 +1,72 @@
+title: 'Quiz: Linux in a genuine AD estate'
+questions:
+- id: join
+  prompt: Which enrolment leaves no standing credential on the host?
+  choices:
+  - Anonymous join
+  - Shared admin password in a script
+  - Pre-staged object with a one-time password
+  - Domain admin key on every host
+  answer:
+  - 2
+  explain: realm join --one-time-password uses an object staged by the directory team and nothing lasting remains.
+- id: gpo
+  prompt: What is the safe rollout for ad_gpo_access_control?
+  choices:
+  - permissive first, read the journal, then enforcing
+  - disabled forever
+  - enforcing immediately
+  - never
+  answer:
+  - 0
+  explain: Permissive mode logs would-be denials so mistakes are found before users are locked out.
+- id: sudo
+  prompt: Why name groups rather than users in sudoers?
+  choices:
+  - Users cannot be named
+  - It is faster
+  - Offboarding and audit follow directory group membership
+  - sudo forbids users
+  answer:
+  - 2
+  explain: Group-based rules let the directory process control access.
+- id: ldap
+  prompt: Why would SSSD fail after DCs require LDAP signing?
+  choices:
+  - It used plain simple binds without TLS
+  - DNS broke
+  - Time skew
+  - SELinux
+  answer:
+  - 0
+  explain: Use ldaps or STARTTLS with trusted certificates.
+- id: tier
+  prompt: Why is a Linux host with a machine keytab a security concern for the directory?
+  choices:
+  - It uses NTLM
+  - Compromise gives a domain member credential and a foothold
+  - Linux cannot be patched
+  - Keytabs are public
+  answer:
+  - 1
+  explain: Treat Linux members in the same protection tier as Windows servers.
+- id: breakglass
+  prompt: Why keep a local break-glass account?
+  choices:
+  - Directory outages must not lock you out; its use is alarmed
+  - To bypass audit
+  - Users prefer it
+  - Required by Kerberos
+  answer:
+  - 0
+  explain: Cached credentials may not suffice; a controlled local path is needed.
+- id: rc4
+  prompt: What is the consequence of an RC4-only keytab in a domain retiring RC4?
+  choices:
+  - Authentication will fail once enforced
+  - Nothing
+  - Faster logins
+  - Larger tickets
+  answer:
+  - 0
+  explain: Keytabs need AES keys, checked with klist -ke.

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+dc_found_via=srv
+gpresult_shows_policy=yes
+drive_mechanism=gpp
+smbstatus_auth=krb5
+printer_queue_type=ipp-driverless
+driver_source=inbox-ipp
+point_and_print_restriction=enabled
+test_page_printed=yes
+EOT

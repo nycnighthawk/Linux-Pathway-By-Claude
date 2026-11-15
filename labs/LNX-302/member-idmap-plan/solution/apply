@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > smb.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[global]
+    security = ads
+    realm = ACME.EXAMPLE
+    workgroup = ACME
+    idmap config * : backend = tdb
+    idmap config * : range = 3000-7999
+    idmap config ACME : backend = rid
+    idmap config ACME : range = 10000-999999
+    winbind use default domain = yes
+    template shell = /bin/bash
+EOT
+cat > sssd.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[sssd]
+services = nss, pam
+domains = acme.example
+
+[domain/acme.example]
+id_provider = ad
+access_provider = ad
+ldap_id_mapping = True
+use_fully_qualified_names = False
+fallback_homedir = /home/%u
+EOT
+chmod 600 sssd.conf
+cat > answers.txt <<'EOT'
+# SPDX-License-Identifier: MIT
+backend_for_acme=rid
+same_ids_on_both_hosts=yes
+risk_of_changing_range_later=files are orphaned: ownership no longer matches any user
+check_trust_command=wbinfo -t
+EOT

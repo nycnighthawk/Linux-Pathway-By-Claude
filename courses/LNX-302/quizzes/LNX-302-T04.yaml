@@ -1,0 +1,77 @@
+title: 'Quiz: SMB clients with Kerberos'
+questions:
+- id: why-upcall
+  prompt: Why does mount.cifs rely on cifs.upcall for Kerberos?
+  choices:
+  - It is only used for NTLM
+  - Kerberos is not supported by SMB
+  - The kernel cannot read credential caches or contact a KDC, so a user-space helper builds the SPNEGO blob
+  - The helper encrypts the disk
+  answer:
+  - 2
+  explain: The kernel asks request-key for a cifs.spnego key and the helper does the Kerberos work. SMB supports Kerberos,
+    the helper is not about disks, and it handles Kerberos, not just NTLM.
+- id: cruid
+  prompt: What does cruid= select?
+  choices:
+  - The compression level
+  - The uid whose credential cache the helper reads
+  - The server port
+  - The file owner
+  answer:
+  - 1
+  explain: cruid names the credential owner; uid= governs apparent ownership. The other options are unrelated.
+- id: multiuser
+  prompt: What does the multiuser option change?
+  choices:
+  - It disables signing
+  - Each local user gets an SMB session with their own credentials and the server enforces access
+  - All users share one session
+  - It enables SMB1
+  answer:
+  - 1
+  explain: multiuser creates per-user sessions, implies noperm, and works only with sec= values needing no password at that
+    moment. It does not change dialect or signing.
+- id: cname
+  prompt: Mounting //files/projects where files is a CNAME fails with Required key not available. Best fix?
+  choices:
+  - Enable --trust-dns
+  - Use NTLM forever
+  - Mount by IP
+  - Use the canonical name or register the alias as a service principal on the server
+  answer:
+  - 3
+  explain: The client requests a ticket for the alias, which has no key. trust-dns lets DNS pick the server, NTLM hides the
+    fault until it is disabled, and an IP has no principal at all.
+- id: expiry
+  prompt: A cron job mounts successfully for a day then fails. Most likely cause?
+  choices:
+  - The ticket in the credential cache expired
+  - Wrong dialect
+  - SELinux
+  - The share was deleted
+  answer:
+  - 0
+  explain: Tickets last about ten hours by default and the kernel cannot renew them. Give the job a keytab-backed identity
+    or a renewal mechanism.
+- id: seal
+  prompt: Which option requests SMB3 encryption on a mount?
+  choices:
+  - nobrl
+  - actimeo=0
+  - seal
+  - fsc
+  answer:
+  - 2
+  explain: seal asks for encryption and needs SMB 3.0 or later. nobrl disables byte-range locks, actimeo sets attribute caching
+    and fsc enables local caching.
+- id: signing
+  prompt: A client sets client signing = mandatory against a server that offers none. Result?
+  choices:
+  - It works over NetBIOS
+  - Negotiation fails
+  - It encrypts instead
+  - It silently downgrades
+  answer:
+  - 1
+  explain: A mandatory-signing client refuses an unsigned session, which surfaces as a protocol negotiation error.
