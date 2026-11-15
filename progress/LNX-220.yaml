@@ -6,7 +6,7 @@ started: '2026-11-15'
 updated: '2026-11-15'
 phases:
   synth:
-    state: in-progress
+    state: done
     units: 12
     done:
     - LNX-220-T01
@@ -19,6 +19,8 @@ phases:
     - LNX-220-T08
     - LNX-220-T09
     - LNX-220-T10
+    - LNX-220-T11
+    - LNX-220-T12
   lessons:
     state: todo
     units: 12
@@ -43,3 +45,4 @@ log:
 - '2026-11-15 synth: LNX-220-T05, LNX-220-T06'
 - '2026-11-15 synth: LNX-220-T07, LNX-220-T08'
 - '2026-11-15 synth: LNX-220-T09, LNX-220-T10'
+- '2026-11-15 synth: LNX-220-T11, LNX-220-T12'

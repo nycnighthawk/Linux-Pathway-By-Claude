@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'P'
+s = open("src/app.c").read()
+s = s.replace("    (void)w;\n", "    XSetWindowBackground(dpy, w, 0xff0000);\n    XMapWindow(dpy, w);\n    XFlush(dpy);\n    sleep(4);\n")
+open("src/app.c", "w").write(s)
+P
+sed -i -e 's/^virtual_display_tool=.*/virtual_display_tool=Xvfb/' -e 's/^display_variable=.*/display_variable=DISPLAY/' -e 's/^screenshot_tool=.*/screenshot_tool=import/' -e 's/^gtk_backend_variable=.*/gtk_backend_variable=GDK_BACKEND/' -e 's/^qt_headless_platform=.*/qt_headless_platform=offscreen/' answers.txt

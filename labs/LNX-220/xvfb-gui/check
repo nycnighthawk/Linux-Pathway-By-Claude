@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade: build the program, run it under a private virtual X server, take a screenshot and read the pixel colour.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+if cc -o app src/app.c -lX11 2>/dev/null; then ok "src/app.c builds against libX11"; else fail "src/app.c must compile: cc -o app src/app.c -lX11"; fi
+if [ -x app ] && command -v xvfb-run >/dev/null && command -v import >/dev/null && command -v convert >/dev/null; then
+  rm -f shot.png
+  xvfb-run -a -s "-screen 0 320x240x24" bash -c './app & sleep 2; import -window root shot.png; wait' >/dev/null 2>&1
+  if [ -f shot.png ]; then
+    ok "screenshot taken from the virtual display"
+    px=$(convert shot.png -format '%[pixel:p{10,10}]' info: 2>/dev/null)
+    case "$px" in srgb\(255,0,0\)|red) ok "pixel (10,10) is red" ;; *) fail "pixel (10,10) is $px; the window must be mapped with a red background" ;; esac
+    out=$(convert shot.png -format '%[pixel:p{250,200}]' info: 2>/dev/null)
+    case "$out" in srgb\(255,0,0\)|red) fail "pixel outside the 200x100 window is red too: $out" ;; *) ok "pixel outside the window is not red" ;; esac
+  else fail "no screenshot: the program must keep its window up for a few seconds (XMapWindow, XFlush, sleep)"; fi
+else fail "need xvfb-run and ImageMagick (import, convert) to run this check"; fi
+get() { grep -E "^$1=" answers.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get virtual_display_tool)" in Xvfb|xvfb-run) ok "virtual X server" ;; *) fail "virtual_display_tool: the X server that renders into memory (Xvfb, started by xvfb-run)" ;; esac
+[ "$(get display_variable)" = DISPLAY ] && ok "DISPLAY" || fail "display_variable: the variable that tells a client which X server to use"
+case "$(get screenshot_tool)" in import|xwd|scrot|"import -window root") ok "screenshot tool" ;; *) fail "screenshot_tool: a command that captures the root window (import, xwd or scrot)" ;; esac
+[ "$(get gtk_backend_variable)" = GDK_BACKEND ] && ok "GDK_BACKEND" || fail "gtk_backend_variable: the variable that selects x11 or wayland for GTK"
+[ "$(get qt_headless_platform)" = offscreen ] && ok "offscreen" || fail "qt_headless_platform: the QT_QPA_PLATFORM value that renders without any display server"
+exit $bad
