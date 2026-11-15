@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f baremetal-plan.txt
+cat > baremetal-plan.txt <<'X'
+# SPDX-License-Identifier: MIT
+# Bare-metal platform plan for 400 servers in two data centres. Replace each ? (see README.md)
+inventory_key=?
+lifecycle_states=?
+prepare_tests=?
+default_boot=?
+build_mode_default=?
+build_mode_approval=?
+discovery_auto_install=?
+bmc_network=?
+bmc_default_credentials=?
+bmc_rotation_days=?
+dhcp_snooping=?
+install_source=?
+templates_in_git=?
+reinstall_role=?
+wipe_on_release=?
+platform_backup_test_months=?
+vm_ownership=?
+X

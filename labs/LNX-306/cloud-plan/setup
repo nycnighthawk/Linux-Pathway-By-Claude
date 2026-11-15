@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f cloud-plan.txt
+cat > cloud-plan.txt <<'X'
+# SPDX-License-Identifier: MIT
+# Cloud provisioning plan for a web tier of 6 instances in 3 zones. Replace each ? (see README.md)
+image_source=?
+image_selection=?
+image_build=?
+user_data_secrets=?
+secret_delivery=?
+instance_identity=?
+metadata_service=?
+metadata_pod_access=?
+admin_access=?
+public_ip=?
+zones=?
+persistent_data=?
+ephemeral_disk_use=?
+root_credentials_for_automation=?
+state_backend=?
+plan_review=?
+rollout=?
+X

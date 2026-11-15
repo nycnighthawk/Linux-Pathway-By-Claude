@@ -1,0 +1,121 @@
+item: LNX-306
+label: Provisioning & Server Lifecycle
+branch: build/LNX-306
+state: done
+started: '2026-11-15'
+updated: '2026-11-15'
+phases:
+  synth:
+    state: done
+    units: 11
+    done:
+    - LNX-306-T01
+    - LNX-306-T02
+    - LNX-306-T03
+    - LNX-306-T04
+    - LNX-306-T05
+    - LNX-306-T06
+    - LNX-306-T07
+    - LNX-306-T08
+    - LNX-306-T09
+    - LNX-306-T10
+    - LNX-306-T11
+  lessons:
+    state: done
+    units: 11
+    done:
+    - LNX-306-T01
+    - LNX-306-T02
+    - LNX-306-T03
+    - LNX-306-T04
+    - LNX-306-T05
+    - LNX-306-T06
+    - LNX-306-T07
+    - LNX-306-T08
+    - LNX-306-T09
+    - LNX-306-T10
+    - LNX-306-T11
+  quizzes:
+    state: done
+    units: 11
+    done:
+    - LNX-306-T01
+    - LNX-306-T02
+    - LNX-306-T03
+    - LNX-306-T04
+    - LNX-306-T05
+    - LNX-306-T06
+    - LNX-306-T07
+    - LNX-306-T08
+    - LNX-306-T09
+    - LNX-306-T10
+    - LNX-306-T11
+  labs:
+    state: done
+    units: 11
+    done:
+    - LNX-306-T01
+    - LNX-306-T02
+    - LNX-306-T03
+    - LNX-306-T04
+    - LNX-306-T05
+    - LNX-306-T06
+    - LNX-306-T07
+    - LNX-306-T08
+    - LNX-306-T09
+    - LNX-306-T10
+    - LNX-306-T11
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-15 started
+- '2026-11-15 synth: LNX-306-T01'
+- '2026-11-15 lessons: LNX-306-T01'
+- '2026-11-15 quizzes: LNX-306-T01'
+- '2026-11-15 labs: LNX-306-T01'
+- '2026-11-15 synth: LNX-306-T02'
+- '2026-11-15 lessons: LNX-306-T02'
+- '2026-11-15 quizzes: LNX-306-T02'
+- '2026-11-15 labs: LNX-306-T02'
+- '2026-11-15 synth: LNX-306-T03'
+- '2026-11-15 lessons: LNX-306-T03'
+- '2026-11-15 quizzes: LNX-306-T03'
+- '2026-11-15 labs: LNX-306-T03'
+- '2026-11-15 synth: LNX-306-T04'
+- '2026-11-15 lessons: LNX-306-T04'
+- '2026-11-15 quizzes: LNX-306-T04'
+- '2026-11-15 labs: LNX-306-T04'
+- '2026-11-15 synth: LNX-306-T05'
+- '2026-11-15 lessons: LNX-306-T05'
+- '2026-11-15 quizzes: LNX-306-T05'
+- '2026-11-15 labs: LNX-306-T05'
+- '2026-11-15 synth: LNX-306-T06'
+- '2026-11-15 lessons: LNX-306-T06'
+- '2026-11-15 quizzes: LNX-306-T06'
+- '2026-11-15 labs: LNX-306-T06'
+- '2026-11-15 synth: LNX-306-T07'
+- '2026-11-15 lessons: LNX-306-T07'
+- '2026-11-15 quizzes: LNX-306-T07'
+- '2026-11-15 labs: LNX-306-T07'
+- '2026-11-15 synth: LNX-306-T08'
+- '2026-11-15 lessons: LNX-306-T08'
+- '2026-11-15 quizzes: LNX-306-T08'
+- '2026-11-15 labs: LNX-306-T08'
+- '2026-11-15 synth: LNX-306-T09'
+- '2026-11-15 lessons: LNX-306-T09'
+- '2026-11-15 quizzes: LNX-306-T09'
+- '2026-11-15 labs: LNX-306-T09'
+- '2026-11-15 synth: LNX-306-T10'
+- '2026-11-15 lessons: LNX-306-T10'
+- '2026-11-15 quizzes: LNX-306-T10'
+- '2026-11-15 labs: LNX-306-T10'
+- '2026-11-15 synth: LNX-306-T11'
+- '2026-11-15 lessons: LNX-306-T11'
+- '2026-11-15 quizzes: LNX-306-T11'
+- '2026-11-15 labs: LNX-306-T11'
+- '2026-11-15 checks: done'
+- 2026-11-15 finished
+finished: '2026-11-15'

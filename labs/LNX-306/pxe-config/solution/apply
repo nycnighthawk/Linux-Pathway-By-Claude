@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p tftp
+cat > dnsmasq.conf <<X
+# SPDX-License-Identifier: MIT
+interface=lo
+bind-interfaces
+dhcp-range=192.0.2.100,192.0.2.199,12h
+enable-tftp
+tftp-root=$PWD/tftp
+dhcp-match=set:bios,option:client-arch,0
+dhcp-match=set:efi64,option:client-arch,7
+dhcp-match=set:efi64,option:client-arch,9
+dhcp-match=set:ipxe,175
+dhcp-boot=tag:bios,tag:!ipxe,undionly.kpxe
+dhcp-boot=tag:efi64,tag:!ipxe,ipxe.efi
+dhcp-boot=tag:ipxe,http://boot.example.org/boot.ipxe
+X
+cat > boot.ipxe <<'X'
+#!ipxe
+dhcp
+kernel http://boot.example.org/el9/vmlinuz inst.repo=http://repo.example.org/snapshots/2026-11-08/el9/baseos/ inst.ks=http://boot.example.org/ks/${mac}.cfg ip=dhcp
+initrd http://boot.example.org/el9/initrd.img
+boot
+X
+printf '#!ipxe\nexit\n' > default.ipxe

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+[ -f baremetal-plan.txt ] || { echo "FAIL: baremetal-plan.txt is missing; run setup"; exit 1; }
+get() { grep -E "^$1=" baremetal-plan.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+isint() { printf '%s' "$1" | grep -Eq '^[0-9]+$'; }
+eq() { [ "$(get "$1")" = "$2" ] && ok "$1=$2" || fail "$1 must be $2"; }
+case "$(get inventory_key)" in serial|bmc_mac) ok "inventory key $(get inventory_key)" ;; *) fail "inventory_key: serial or bmc_mac" ;; esac
+[ "$(get lifecycle_states)" = "racked,discovered,prepared,ready,deployed,in_service,released,retired" ] && ok "lifecycle states in order" || fail "lifecycle_states: racked,discovered,prepared,ready,deployed,in_service,released,retired"
+t=$(get prepare_tests); for k in memory disk network; do case ",$t," in *",$k,"*) ok "prepare test $k" ;; *) fail "prepare_tests must include $k" ;; esac; done
+eq default_boot disk; eq build_mode_default off; eq build_mode_approval required; eq discovery_auto_install no
+eq bmc_network isolated; eq bmc_default_credentials changed
+v=$(get bmc_rotation_days); if isint "$v" && [ "$v" -ge 30 ] && [ "$v" -le 180 ]; then ok "BMC credentials rotate every $v days"; else fail "bmc_rotation_days: 30 to 180"; fi
+eq dhcp_snooping enabled; eq install_source pinned_snapshot; eq templates_in_git yes; eq reinstall_role separate; eq wipe_on_release yes
+v=$(get platform_backup_test_months); if isint "$v" && [ "$v" -ge 1 ] && [ "$v" -le 6 ]; then ok "restore tested every $v months"; else fail "platform_backup_test_months: 1 to 6"; fi
+eq vm_ownership iac
+exit "$bad"

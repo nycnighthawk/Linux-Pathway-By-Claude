@@ -1,0 +1,62 @@
+title: 'Quiz: Foreman/MAAS bare metal'
+questions:
+- id: commission
+  prompt: What does MAAS commissioning do?
+  choices:
+  - Installs the production OS
+  - Boots an ephemeral image that gathers hardware facts and runs tests, making the machine Ready
+  - Deletes the BMC
+  - Mirrors repositories
+  answer:
+  - 1
+  explain: 'A) wrong: that is deployment. B) correct: results go in the inventory. C) wrong: unrelated. D) wrong: unrelated.'
+- id: buildmode
+  prompt: What is the purpose of build mode in Foreman?
+  choices:
+  - It compiles packages
+  - It makes the boot service give a host its installer; outside build mode it boots from disk, so a reboot cannot reinstall it
+  - It shuts the host down
+  - It changes the BMC password
+  answer:
+  - 1
+  explain: 'A) wrong: nothing is compiled. B) correct: a state protects hosts in service. C) wrong: unrelated. D) wrong: unrelated.'
+- id: smartproxy
+  prompt: What is a Foreman smart proxy?
+  choices:
+  - A web browser plugin
+  - A service near the machines that provides DHCP, DNS, TFTP, BMC control or template serving on the server's behalf
+  - A kind of firewall
+  - A DNS cache only
+  answer:
+  - 1
+  explain: 'A) wrong: unrelated. B) correct: it keeps boot services local to each site. C) wrong: unrelated. D) wrong: it does more than DNS.'
+- id: split
+  prompt: How do platforms and infrastructure as code usually divide the work?
+  choices:
+  - The platform owns physical machines and their lifecycle; IaC owns logical and virtual resources
+  - IaC owns firmware
+  - The platform owns DNS records for every cloud
+  - They cannot be combined
+  answer:
+  - 0
+  explain: 'A) correct: each calls the other through its API. B) wrong: firmware is hardware lifecycle. C) wrong: not a platform duty. D) wrong: a MAAS Terraform provider exists.'
+- id: bmc
+  prompt: Which BMC practice is correct?
+  choices:
+  - Leave default credentials for convenience
+  - Put the BMC on an isolated network, change credentials, store them in a vault and rotate them
+  - Expose it to the internet for support
+  - Share one password across the company
+  answer:
+  - 1
+  explain: 'A) wrong: BMC compromise is full machine compromise. B) correct. C) wrong: never expose. D) wrong: no per-host accountability.'
+- id: fdo
+  prompt: What problem does FIDO Device Onboard address?
+  choices:
+  - Printing
+  - Secure onboarding of devices to their owner without pre-configuration, using an ownership voucher
+  - Disk encryption
+  - Time sync
+  answer:
+  - 1
+  explain: 'A) wrong. B) correct: the device contacts a rendezvous server and then its owner. C) wrong. D) wrong.'

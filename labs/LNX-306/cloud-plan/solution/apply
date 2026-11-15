@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i -e 's/^image_source=.*/image_source=own_account/' -e 's/^image_selection=.*/image_selection=filter_by_tag/' \
+  -e 's/^image_build=.*/image_build=pipeline/' -e 's/^user_data_secrets=.*/user_data_secrets=none/' \
+  -e 's/^secret_delivery=.*/secret_delivery=secret_manager/' -e 's/^instance_identity=.*/instance_identity=role/' \
+  -e 's/^metadata_service=.*/metadata_service=token_required/' -e 's/^metadata_pod_access=.*/metadata_pod_access=blocked/' \
+  -e 's/^admin_access=.*/admin_access=federated_or_session_manager/' -e 's/^public_ip=.*/public_ip=none/' \
+  -e 's/^zones=.*/zones=3/' -e 's/^persistent_data=.*/persistent_data=separate_volume/' \
+  -e 's/^ephemeral_disk_use=.*/ephemeral_disk_use=disposable_only/' -e 's/^root_credentials_for_automation=.*/root_credentials_for_automation=never/' \
+  -e 's/^state_backend=.*/state_backend=remote_locked/' -e 's/^plan_review=.*/plan_review=required/' \
+  -e 's/^rollout=.*/rollout=rolling_replace/' cloud-plan.txt

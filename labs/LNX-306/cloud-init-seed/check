@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f user-data ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+try: import yaml
+except ImportError: print("FAIL: python3-yaml is required"); sys.exit(1)
+raw = open("user-data").read()
+ok("user-data starts with #cloud-config") if raw.startswith("#cloud-config") else fail("first line must be #cloud-config")
+try: u = yaml.safe_load(raw) or {}
+except Exception as e: fail("user-data is not valid YAML: %s" % e); u = {}
+if not isinstance(u, dict): u = {}
+ok("hostname web01") if u.get("hostname") == "web01" else fail("hostname: web01")
+ops = [x for x in u.get("users", []) if isinstance(x, dict) and x.get("name") == "ops"]
+if ops and "wheel" in (ops[0].get("groups") or []) and any(str(k).startswith("ssh-") for k in ops[0].get("ssh_authorized_keys") or []): ok("user ops with a key, in wheel")
+else: fail("users: ops in group wheel with ssh_authorized_keys")
+ok("root login disabled") if u.get("disable_root") is True else fail("disable_root: true")
+ok("password SSH disabled") if u.get("ssh_pwauth") is False else fail("ssh_pwauth: false")
+ok("chrony is installed") if "chrony" in (u.get("packages") or []) else fail("packages must include chrony")
+wf = u.get("write_files") or []
+if wf and all(isinstance(w, dict) and w.get("path") and isinstance(w.get("permissions"), str) and "content" in w for w in wf): ok("write_files has path, string permissions and content")
+else: fail("write_files: path, permissions as a quoted string like \"0644\", and content")
+rc = u.get("runcmd") or []
+ok("runcmd has a list-form entry") if any(isinstance(r, list) for r in rc) else fail("runcmd needs at least one entry in list form")
+if re.search(r"(?im)^\s*(passwd|password|plain_text_passwd|chpasswd)\s*:", raw) or "PRIVATE KEY" in raw: fail("no passwords or private keys in user-data")
+else: ok("no secrets in user-data")
+try: m = yaml.safe_load(open("meta-data")) or {}
+except Exception as e: fail("meta-data is not valid YAML: %s" % e); m = {}
+if not isinstance(m, dict): m = {}
+iid = str(m.get("instance-id", ""))
+ok("unique instance-id") if re.fullmatch(r"i-\S{6,}", iid) else fail("instance-id: i- followed by at least 6 characters")
+ok("local-hostname matches") if m.get("local-hostname") == "web01" else fail("local-hostname: web01")
+try: n = yaml.safe_load(open("network-config")) or {}
+except Exception as e: fail("network-config is not valid YAML: %s" % e); n = {}
+if not isinstance(n, dict): n = {}
+ok("network config version 2") if n.get("version") == 2 else fail("version: 2")
+eths = n.get("ethernets") if isinstance(n.get("ethernets"), dict) else {}
+good = [e for e in eths.values() if isinstance(e, dict) and isinstance(e.get("match"), dict) and e["match"].get("macaddress") and e.get("set-name") and e.get("dhcp4") is True]
+ok("an interface is matched by MAC, renamed and uses DHCP") if good else fail("ethernets: one entry with match.macaddress, set-name and dhcp4: true")
+sys.exit(bad)
+PY
+rc=$?
+if [ $rc -eq 0 ] && command -v cloud-init >/dev/null; then cloud-init schema --config-file user-data >/dev/null 2>&1 && echo "ok:   cloud-init schema accepts user-data" || { echo "FAIL: cloud-init schema rejects user-data"; rc=1; }; fi
+exit $rc

@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f ks.cfg ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+ks = [l.rstrip() for l in open("ks.cfg")]
+body = [l for l in ks if l.strip() and not l.lstrip().startswith("#")]
+text = "\n".join(body)
+def has(p): return re.search(p, text, re.M) is not None
+ok("ks.cfg: no plaintext password") if "--plaintext" not in text else fail("remove rootpw --plaintext")
+ok("root is locked") if has(r"^rootpw\s+--lock") else fail("use rootpw --lock")
+ok("ignoredisk limits the target") if has(r"^ignoredisk\s+--only-use=vda\b") else fail("add ignoredisk --only-use=vda")
+cp = [l for l in body if l.startswith("clearpart")]
+ok("clearpart names its drive") if cp and all("--drives=vda" in l for l in cp) else fail("clearpart needs --drives=vda")
+ok("ops has an SSH key") if has(r'^sshkey\s+--username=ops\s+"ssh-(ed25519|rsa) ') else fail('add sshkey --username=ops "ssh-ed25519 ..."')
+ok("ops user exists") if has(r"^user\s+--name=ops\b.*--groups=wheel") or has(r"^user\s+--groups=wheel\b.*--name=ops\b") else fail("add user --name=ops --groups=wheel")
+ok("SELinux enforcing") if has(r"^selinux\s+--enforcing") else fail("selinux --enforcing")
+ok("firewall enabled") if has(r"^firewall\s+--enabled") else fail("firewall --enabled --ssh")
+m = re.search(r"^services\s+.*--enabled=(\S+)", text, re.M)
+ok("sshd and chronyd enabled") if m and {"sshd", "chronyd"} <= set(m.group(1).split(",")) else fail("services --enabled=sshd,chronyd")
+ok("reboot at the end") if has(r"^reboot\b") else fail("add reboot")
+pk = re.search(r"^%packages[^\n]*\n(.*?)^%end", text, re.M | re.S)
+ok("minimal package set") if pk and "@core" in pk.group(1).split() and "chrony" in pk.group(1).split() else fail("%packages must list @core and chrony")
+ok("%post logs its output") if has(r"^%post\b.*--log=\S+") else fail("%post --log=/root/ks-post.log")
+opens = len(re.findall(r"^%(packages|pre|post|onerror|addon)\b", text, re.M)); ends = len(re.findall(r"^%end\b", text, re.M))
+ok("every section ends with %end") if opens == ends else fail("each %%section needs its own %%end (%d sections, %d ends)" % (opens, ends))
+try:
+    import yaml
+    d = yaml.safe_load(open("user-data")) or {}
+    a = d.get("autoinstall") if isinstance(d, dict) else None
+    raw = open("user-data").read()
+    ok("user-data starts with #cloud-config") if raw.startswith("#cloud-config") else fail("first line of user-data must be #cloud-config")
+    if not isinstance(a, dict): fail("user-data needs an autoinstall: mapping")
+    else:
+        ok("autoinstall version 1") if a.get("version") == 1 else fail("version: 1")
+        i = a.get("identity", {}) if isinstance(a.get("identity"), dict) else {}
+        ok("identity with hashed password") if i.get("hostname") and i.get("username") == "ops" and str(i.get("password", "")).startswith(("$6$", "$y$")) else fail("identity: hostname, username ops, password hash starting $6$ or $y$")
+        s = a.get("ssh", {}) if isinstance(a.get("ssh"), dict) else {}
+        ok("SSH by key only") if s.get("allow-pw") is False and s.get("authorized-keys") else fail("ssh: allow-pw: false and authorized-keys")
+        lay = (a.get("storage") or {}).get("layout") if isinstance(a.get("storage"), dict) else None
+        ok("storage layout set") if isinstance(lay, dict) and lay.get("name") in ("lvm", "direct") else fail("storage: layout: {name: lvm}")
+        ok("chrony is installed") if "chrony" in (a.get("packages") or []) else fail("packages must include chrony")
+        lc = a.get("late-commands")
+        ok("late-commands present") if isinstance(lc, list) and lc else fail("late-commands: a non-empty list")
+except ImportError:
+    fail("python3-yaml is needed for the autoinstall check")
+except Exception as e:
+    fail("user-data is not valid YAML: %s" % e)
+sys.exit(bad)
+PY
+rc=$?
+if [ $rc -eq 0 ] && command -v ksvalidator >/dev/null; then ksvalidator ks.cfg >/dev/null 2>&1 && echo "ok:   ksvalidator accepts ks.cfg" || { echo "FAIL: ksvalidator rejects ks.cfg"; rc=1; }; fi
+exit $rc

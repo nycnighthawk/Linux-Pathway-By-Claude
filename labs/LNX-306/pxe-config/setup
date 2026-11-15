@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p tftp
+cat > dnsmasq.conf <<'X'
+# SPDX-License-Identifier: MIT
+dhcp-range=192.0.2.100,192.0.2.199,12h
+X
+: > boot.ipxe
+: > default.ipxe

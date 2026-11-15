@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -d site ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+for f in baseline.sh drift.sh wipe.sh; do
+  [ -x "$f" ] && ok "$f is executable" || { fail "create an executable $f"; }
+done
+[ $bad -eq 0 ] || exit 1
+# ---- drift ----
+./baseline.sh site >/dev/null 2>&1; rc=$?
+[ $rc -eq 0 ] && [ -s baseline.sha256 ] && ok "baseline.sh writes baseline.sha256" || fail "baseline.sh site must write a non-empty baseline.sha256 and exit 0"
+out=$(./drift.sh site 2>&1); rc=$?
+[ $rc -eq 0 ] && ok "no drift: exit 0" || fail "drift.sh must exit 0 when nothing changed (got $rc)"
+cp -a site site.orig
+echo "workers 64" >> site/etc/app.conf
+rm site/etc/log.conf
+echo "debug" > site/etc/new.conf
+out=$(./drift.sh site 2>&1); rc=$?
+[ $rc -eq 1 ] && ok "drift: exit 1" || fail "drift.sh must exit 1 when something changed (got $rc)"
+echo "$out" | grep -Eq '^M[[:space:]]+(site/)?etc/app\.conf$' && ok "reports the modified file (M)" || fail "print 'M <path>' for a changed file"
+echo "$out" | grep -Eq '^D[[:space:]]+(site/)?etc/log\.conf$' && ok "reports the deleted file (D)" || fail "print 'D <path>' for a missing file"
+echo "$out" | grep -Eq '^A[[:space:]]+(site/)?etc/new\.conf$' && ok "reports the added file (A)" || fail "print 'A <path>' for a new file"
+echo "$out" | grep -Eq 'users\.txt|run\.sh' && fail "unchanged files must not be listed"
+rm -rf site; mv site.orig site
+# ---- wipe ----
+grep -q TOP-SECRET disk.img && ok "disk.img starts with the secret" || fail "setup problem: no secret in disk.img"
+size=$(stat -c %s disk.img)
+./wipe.sh /dev/null >/dev/null 2>&1; rc=$?
+[ $rc -ne 0 ] && ok "refuses a device node (/dev/null)" || fail "wipe.sh must refuse anything that is not a regular file"
+./wipe.sh /nonexistent/file >/dev/null 2>&1; rc=$?
+[ $rc -ne 0 ] && ok "refuses a missing file" || fail "wipe.sh must fail for a missing file"
+./wipe.sh disk.img >/dev/null 2>&1; rc=$?
+[ $rc -eq 0 ] && ok "wipe.sh disk.img succeeds" || fail "wipe.sh disk.img failed with $rc"
+[ "$(stat -c %s disk.img)" = "$size" ] && ok "file size unchanged" || fail "the image must keep its size ($size bytes)"
+grep -q TOP-SECRET disk.img && fail "the secret is still in disk.img" || ok "the secret is gone"
+cmp -s disk.img <(head -c "$size" /dev/zero) && ok "every byte is zero (verified)" || fail "disk.img must be all zero bytes after the wipe"
+[ $bad -eq 0 ] && echo PASS || exit 1

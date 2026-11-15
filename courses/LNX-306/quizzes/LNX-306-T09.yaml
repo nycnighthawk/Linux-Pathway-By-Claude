@@ -1,0 +1,62 @@
+title: 'Quiz: Drift detection and secure wipe'
+questions:
+- id: drift
+  prompt: What is configuration drift?
+  choices:
+  - The gap between the recorded intended state of a host and its actual state
+  - Slow network speed
+  - Clock skew between two hosts
+  - A kind of file system
+  answer:
+  - 0
+  explain: 'A) correct: hand edits and updates move a host away from its baseline. B) wrong: unrelated. C) wrong: that is time drift. D) wrong: unrelated.'
+- id: aidedb
+  prompt: After a patch window, why must the AIDE database be updated by a person who has reviewed the changes?
+  choices:
+  - Otherwise every later report is full of known, legitimate changes and real problems are hidden
+  - To make AIDE run faster
+  - Because AIDE deletes files
+  - It must never be updated
+  answer:
+  - 0
+  explain: 'A) correct: the baseline must reflect approved change. B) wrong: unrelated. C) wrong: it only reports. D) wrong: a stale baseline is noise.'
+- id: checkmode
+  prompt: What is a weakness of detecting drift with Ansible check mode?
+  choices:
+  - Tasks that do not support check mode or are not idempotent report nothing or always report change
+  - It cannot read YAML
+  - It changes the hosts
+  - It works only on Windows
+  answer:
+  - 0
+  explain: 'A) correct: the method depends on declarative, idempotent tasks. B) wrong: unrelated. C) wrong: check mode makes no changes. D) wrong: it works on Linux.'
+- id: ssd
+  prompt: Why is overwriting an SSD from the operating system an unreliable wipe?
+  choices:
+  - The drive remaps blocks and keeps spare cells, so old data may sit in places the overwrite never touches
+  - SSDs cannot be written to
+  - Overwriting is illegal
+  - SSDs have no controller
+  answer:
+  - 0
+  explain: 'A) correct: use the device sanitise or cryptographic erase. B) wrong: they can be written. C) wrong: not illegal. D) wrong: they have one.'
+- id: crypto
+  prompt: What does cryptographic erase of a LUKS volume do?
+  choices:
+  - Removes all key slots so the master key cannot be recovered, making the encrypted data unreadable
+  - Overwrites every block with zeros
+  - Compresses the volume
+  - Formats it as ext4
+  answer:
+  - 0
+  explain: 'A) correct: fast and independent of size, if no key copies survive. B) wrong: that is an overwrite. C) wrong: unrelated. D) wrong: the data would remain.'
+- id: record
+  prompt: A technician wiped 40 drives but kept no record. How does an auditor treat the work?
+  choices:
+  - As not done, because sanitisation must be tracked, documented and verified
+  - As done, since the drives are empty
+  - As done if the technician is trusted
+  - As irrelevant
+  answer:
+  - 0
+  explain: 'A) correct: the control requires evidence per asset. B) wrong: emptiness cannot be proved without a record. C) wrong: trust is not evidence. D) wrong: it is a compliance failure.'

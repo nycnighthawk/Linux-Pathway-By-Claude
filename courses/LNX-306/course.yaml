@@ -1,0 +1,191 @@
+id: LNX-306
+title: Provisioning & Server Lifecycle
+summary: 'From bare metal or cloud to decommission, as code: unattended installers, network boot, cloud-init, image building,
+  infrastructure as code, bare-metal management, BMC and Redfish, release upgrades, drift detection and secure wipe, cloud
+  provisioning, and real BMC firmware.'
+hours: 60
+outcomes:
+- Write and test unattended installation files for Kickstart, preseed and autoinstall
+- Network-boot machines with PXE, iPXE and HTTP boot and serve per-host configuration
+- Configure first boot with cloud-init and diagnose its stages
+- Build repeatable machine images with Packer and provision them with OpenTofu
+- Manage bare metal with Foreman or MAAS and talk to a BMC over IPMI and Redfish
+- Plan and run release upgrades with Leapp and detect drift on long-lived hosts
+- Decommission servers with a secure-wipe procedure
+certifications:
+- cert: RHCE
+  objectives: []
+- cert: LPIC3-305
+  objectives: []
+modules:
+- id: install
+  title: Installing machines
+  lessons:
+  - topic: LNX-306-T01
+    title: Kickstart, preseed, autoinstall
+    file: lessons/LNX-306-T01.md
+    minutes: 45
+  - topic: LNX-306-T02
+    title: PXE/iPXE/HTTP boot
+    file: lessons/LNX-306-T02.md
+    minutes: 45
+  - topic: LNX-306-T03
+    title: cloud-init
+    file: lessons/LNX-306-T03.md
+    minutes: 45
+- id: images-and-iac
+  title: Images and infrastructure as code
+  lessons:
+  - topic: LNX-306-T04
+    title: Packer images
+    file: lessons/LNX-306-T04.md
+    minutes: 45
+  - topic: LNX-306-T05
+    title: OpenTofu with libvirt provider
+    file: lessons/LNX-306-T05.md
+    minutes: 45
+  - topic: LNX-306-T06
+    title: Foreman/MAAS bare metal
+    file: lessons/LNX-306-T06.md
+    minutes: 45
+- id: lifecycle
+  title: Out-of-band management and lifecycle
+  lessons:
+  - topic: LNX-306-T07
+    title: Simulated Redfish/IPMI
+    file: lessons/LNX-306-T07.md
+    minutes: 45
+  - topic: LNX-306-T08
+    title: Leapp and release upgrades
+    file: lessons/LNX-306-T08.md
+    minutes: 45
+  - topic: LNX-306-T09
+    title: Drift detection, secure wipe
+    file: lessons/LNX-306-T09.md
+    minutes: 45
+  - topic: LNX-306-T10
+    title: Cloud provisioning
+    file: lessons/LNX-306-T10.md
+    minutes: 45
+  - topic: LNX-306-T11
+    title: Real BMC firmware
+    file: lessons/LNX-306-T11.md
+    minutes: 45
+labs:
+- id: unattended-install
+  topic: LNX-306-T01
+  title: Write Kickstart and autoinstall files
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - python3-yaml
+- id: pxe-config
+  topic: LNX-306-T02
+  title: Configure network boot
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - dnsmasq-base
+- id: cloud-init-seed
+  topic: LNX-306-T03
+  title: Write and validate a cloud-init seed
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - python3-yaml
+- id: packer-template
+  topic: LNX-306-T04
+  title: Write a safe Packer template
+  env: V
+  license: MIT
+  minutes: 40
+- id: tofu-libvirt
+  topic: LNX-306-T05
+  title: Write an OpenTofu configuration for libvirt
+  env: V
+  license: MIT
+  minutes: 40
+- id: baremetal-plan
+  topic: LNX-306-T06
+  title: Design bare-metal platform safeguards
+  env: S
+  license: MIT
+  minutes: 30
+- id: redfish-sim
+  topic: LNX-306-T07
+  title: Drive a Redfish BMC with curl
+  env: V
+  license: MIT
+  minutes: 40
+- id: leapp-triage
+  topic: LNX-306-T08
+  title: Triage a Leapp pre-upgrade report
+  env: V
+  license: MIT
+  minutes: 35
+- id: drift-wipe
+  topic: LNX-306-T09
+  title: Detect drift and wipe an image safely
+  env: V
+  license: MIT
+  minutes: 40
+- id: cloud-plan
+  topic: LNX-306-T10
+  title: Plan a safe cloud deployment
+  env: K
+  license: MIT
+  minutes: 30
+- id: firmware-campaign
+  topic: LNX-306-T11
+  title: Plan a BMC firmware campaign
+  env: H
+  license: MIT
+  minutes: 30
+quizzes:
+- id: LNX-306-T01
+  topic: LNX-306-T01
+  title: 'Quiz: Kickstart, preseed, autoinstall'
+  file: quizzes/LNX-306-T01.yaml
+- id: LNX-306-T02
+  topic: LNX-306-T02
+  title: 'Quiz: PXE/iPXE/HTTP boot'
+  file: quizzes/LNX-306-T02.yaml
+- id: LNX-306-T03
+  topic: LNX-306-T03
+  title: 'Quiz: cloud-init'
+  file: quizzes/LNX-306-T03.yaml
+- id: LNX-306-T04
+  topic: LNX-306-T04
+  title: 'Quiz: Packer images'
+  file: quizzes/LNX-306-T04.yaml
+- id: LNX-306-T05
+  topic: LNX-306-T05
+  title: 'Quiz: OpenTofu with libvirt provider'
+  file: quizzes/LNX-306-T05.yaml
+- id: LNX-306-T06
+  topic: LNX-306-T06
+  title: 'Quiz: Foreman/MAAS bare metal'
+  file: quizzes/LNX-306-T06.yaml
+- id: LNX-306-T07
+  topic: LNX-306-T07
+  title: 'Quiz: Simulated Redfish/IPMI'
+  file: quizzes/LNX-306-T07.yaml
+- id: LNX-306-T08
+  topic: LNX-306-T08
+  title: 'Quiz: Leapp and release upgrades'
+  file: quizzes/LNX-306-T08.yaml
+- id: LNX-306-T09
+  topic: LNX-306-T09
+  title: 'Quiz: Drift detection, secure wipe'
+  file: quizzes/LNX-306-T09.yaml
+- id: LNX-306-T10
+  topic: LNX-306-T10
+  title: 'Quiz: Cloud provisioning'
+  file: quizzes/LNX-306-T10.yaml
+- id: LNX-306-T11
+  topic: LNX-306-T11
+  title: 'Quiz: Real BMC firmware'
+  file: quizzes/LNX-306-T11.yaml

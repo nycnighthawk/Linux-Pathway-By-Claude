@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f firmware-campaign.txt
+cat > firmware-campaign.txt <<'X'
+# SPDX-License-Identifier: MIT
+# BMC firmware campaign for 120 servers of 3 models. Replace each ? (see README.md)
+firmware_source=?
+verify_image=?
+read_release_notes=?
+group_by=?
+first_test_target=?
+test_console_access=?
+config_backup=?
+pilot_size=?
+wave_sizes=?
+stop_rule=?
+power_protection=?
+interrupt_update=?
+preserve_config_check=?
+post_update_checks=?
+default_account_after=?
+signed_images_only=?
+record_in_inventory=?
+X

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > user-data <<'X'
+#cloud-config
+hostname: web01
+fqdn: web01.example.org
+users:
+  - name: ops
+    groups: [wheel]
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleExampleExampleExampleExampleExample ops@example.org
+disable_root: true
+ssh_pwauth: false
+packages: [chrony]
+write_files:
+  - path: /etc/site-role
+    permissions: "0644"
+    content: |
+      role=web
+runcmd:
+  - [systemctl, enable, --now, chronyd]
+X
+cat > meta-data <<'X'
+instance-id: i-web01-0001
+local-hostname: web01
+X
+cat > network-config <<'X'
+version: 2
+ethernets:
+  lan0:
+    match:
+      macaddress: "52:54:00:12:34:56"
+    set-name: lan0
+    dhcp4: true
+X
