@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+G="gpg --homedir gnupg --batch --yes"
+for n in One Two; do $G --passphrase '' --quick-generate-key "Lab Key $n <$n@example.invalid>" ed25519 sign 1y 2>/dev/null; done
+$G --armor --export "Lab Key One" > one.asc
+$G --armor --export "Lab Key Two" > two.asc
+rpmsign --define "_gpg_path $PWD/gnupg" --define "_gpg_name Lab Key One" --addsign hello-site-1.0-1.noarch.rpm >/dev/null 2>&1
+cp hello-site-1.0-1.noarch.rpm hello-site-rotated.rpm
+rpmsign --define "_gpg_path $PWD/gnupg" --define "_gpg_name Lab Key Two" --resign hello-site-rotated.rpm >/dev/null 2>&1 || \
+rpmsign --define "_gpg_path $PWD/gnupg" --define "_gpg_name Lab Key Two" --addsign hello-site-rotated.rpm >/dev/null 2>&1
+fp=$($G --list-keys --with-colons "Lab Key One" 2>/dev/null | awk -F: '/^fpr/{print $10; exit}')
+sed 's/^://' "gnupg/openpgp-revocs.d/$fp.rev" > revoke-one.asc

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: an unsigned noarch RPM and an empty GnuPG home.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf gnupg rpmbuild-tmp hello-site-*.rpm one.asc two.asc revoke-one.asc
+mkdir -m 0700 gnupg
+t=$(mktemp -d)
+mkdir -p $t/SOURCES $t/SPECS
+cat > $t/SPECS/hello-site.spec <<'X'
+Name: hello-site
+Version: 1.0
+Release: 1
+Summary: Lab package
+License: MIT
+BuildArch: noarch
+%description
+Lab package for signing.
+%install
+install -D -m 0755 /dev/null %{buildroot}/usr/bin/hello-site
+%files
+/usr/bin/hello-site
+%changelog
+* Mon Jan 01 2024 Lab <lab@example.invalid> - 1.0-1
+- lab
+X
+rpmbuild --define "_topdir $t" -bb $t/SPECS/hello-site.spec >/dev/null 2>&1
+cp $t/RPMS/noarch/hello-site-1.0-1.noarch.rpm .
+rm -rf $t

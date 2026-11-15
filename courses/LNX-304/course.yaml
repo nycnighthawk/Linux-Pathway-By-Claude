@@ -32,6 +32,13 @@ modules:
     title: 'DEB: debhelper, sbuild'
     file: lessons/LNX-304-T02.md
     minutes: 45
+- id: trust-and-repos
+  title: Signing and repositories
+  lessons:
+  - topic: LNX-304-T03
+    title: Signing and key rotation
+    file: lessons/LNX-304-T03.md
+    minutes: 45
 labs:
 - id: rpm-spec
   topic: LNX-304-T01
@@ -51,6 +58,15 @@ labs:
   - dpkg-dev
   - debhelper
   - fakeroot
+- id: sign-rpm
+  topic: LNX-304-T03
+  title: Sign an RPM and rotate the key
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - rpm
+  - gnupg
 quizzes:
 - id: LNX-304-T01
   topic: LNX-304-T01
@@ -60,3 +76,7 @@ quizzes:
   topic: LNX-304-T02
   title: 'Quiz: DEB: debhelper, sbuild'
   file: quizzes/LNX-304-T02.yaml
+- id: LNX-304-T03
+  topic: LNX-304-T03
+  title: 'Quiz: Signing and key rotation'
+  file: quizzes/LNX-304-T03.yaml
