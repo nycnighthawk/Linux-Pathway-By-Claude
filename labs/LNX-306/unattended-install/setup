@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > ks.cfg <<'X'
+# SPDX-License-Identifier: MIT
+text
+lang en_US.UTF-8
+keyboard us
+timezone UTC --utc
+network --bootproto=dhcp --hostname=node01.example.org --activate
+rootpw --plaintext changeme
+zerombr
+clearpart --all --initlabel
+autopart --type=lvm
+
+%packages
+@core
+%end
+
+%post
+echo built > /etc/site-build
+%end
+X
+: > user-data

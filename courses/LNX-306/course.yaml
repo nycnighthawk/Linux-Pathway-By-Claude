@@ -1,0 +1,41 @@
+id: LNX-306
+title: Provisioning & Server Lifecycle
+summary: 'From bare metal or cloud to decommission, as code: unattended installers, network boot, cloud-init, image building,
+  infrastructure as code, bare-metal management, BMC and Redfish, release upgrades, drift detection and secure wipe, cloud
+  provisioning, and real BMC firmware.'
+hours: 60
+outcomes:
+- Write and test unattended installation files for Kickstart, preseed and autoinstall
+- Network-boot machines with PXE, iPXE and HTTP boot and serve per-host configuration
+- Configure first boot with cloud-init and diagnose its stages
+- Build repeatable machine images with Packer and provision them with OpenTofu
+- Manage bare metal with Foreman or MAAS and talk to a BMC over IPMI and Redfish
+- Plan and run release upgrades with Leapp and detect drift on long-lived hosts
+- Decommission servers with a secure-wipe procedure
+certifications:
+- cert: LPLUS
+  objectives: []
+- cert: LPIC3-305
+  objectives: []
+modules:
+- id: install
+  title: Installing machines
+  lessons:
+  - topic: LNX-306-T01
+    title: Kickstart, preseed, autoinstall
+    file: lessons/LNX-306-T01.md
+    minutes: 45
+labs:
+- id: unattended-install
+  topic: LNX-306-T01
+  title: Write Kickstart and autoinstall files
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - python3-yaml
+quizzes:
+- id: LNX-306-T01
+  topic: LNX-306-T01
+  title: 'Quiz: Kickstart, preseed, autoinstall'
+  file: quizzes/LNX-306-T01.yaml
