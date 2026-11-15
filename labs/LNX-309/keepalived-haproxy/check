@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f haproxy.cfg ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $1"; }
+fail() { echo "FAIL: $1"; bad=1; }
+flat() { sed 's/#.*$//' "$1" | tr -s ' \t\n' ' '; }
+# ---- keepalived ----
+for n in a b; do
+  f=keepalived-$n.conf
+  [ -s $f ] || { fail "$f is empty"; continue; }
+  c=$(flat $f)
+  g() { printf '%s' "$c" | grep -Eq -- "$1"; }
+  g 'vrrp_instance [A-Za-z0-9_]+ *\{' && ok "$f: vrrp_instance" || fail "$f: add a vrrp_instance block"
+  g 'interface eth0' && ok "$f: interface eth0" || fail "$f: interface eth0"
+  g 'virtual_router_id [0-9]+' && ok "$f: virtual_router_id" || fail "$f: virtual_router_id <1-255>"
+  g 'virtual_ipaddress *\{ *192\.168\.10\.100/24' && ok "$f: virtual address 192.168.10.100/24" || fail "$f: virtual_ipaddress { 192.168.10.100/24 ... }"
+  g 'global_defs *\{[^}]*enable_script_security' && ok "$f: script security enabled" || fail "$f: global_defs { enable_script_security script_user root }"
+  g 'vrrp_script [A-Za-z0-9_]+ *\{[^}]*script [^}]*interval [0-9]+' && ok "$f: health script with an interval" || fail "$f: vrrp_script with script and interval"
+  g 'track_script *\{ *[A-Za-z0-9_]+' && ok "$f: track_script" || fail "$f: track_script { <name> }"
+  g 'unicast_peer *\{ *192\.168\.10\.1[12]' && ok "$f: unicast peer" || fail "$f: unicast_peer { <other node> }"
+  if g 'auth_type PASS'; then fail "$f: do not rely on auth_type PASS (not part of VRRP v3)"; else ok "$f: no password authentication"; fi
+  if command -v keepalived >/dev/null 2>&1; then keepalived -t -f $f >/dev/null 2>&1 && ok "$f: keepalived -t accepts it" || fail "$f: keepalived -t reports an error"; fi
+done
+if [ -s keepalived-a.conf ] && [ -s keepalived-b.conf ]; then
+  pa=$(flat keepalived-a.conf | sed -nE 's/.*priority ([0-9]+).*/\1/p' | head -1); pb=$(flat keepalived-b.conf | sed -nE 's/.*priority ([0-9]+).*/\1/p' | head -1)
+  ra=$(flat keepalived-a.conf | sed -nE 's/.*virtual_router_id ([0-9]+).*/\1/p' | head -1); rb=$(flat keepalived-b.conf | sed -nE 's/.*virtual_router_id ([0-9]+).*/\1/p' | head -1)
+  if [ -n "$pa" ] && [ -n "$pb" ] && [ "$pa" != "$pb" ]; then ok "priorities differ ($pa and $pb)"; else fail "the two nodes need different priorities"; fi
+  if [ -n "$ra" ] && [ "$ra" = "$rb" ]; then ok "same virtual_router_id on both nodes"; else fail "virtual_router_id must match on both nodes"; fi
+  flat keepalived-a.conf | grep -q 'unicast_src_ip 192\.168\.10\.11' && flat keepalived-b.conf | grep -q 'unicast_src_ip 192\.168\.10\.12' && ok "unicast source addresses" || fail "unicast_src_ip: 192.168.10.11 on A and 192.168.10.12 on B"
+fi
+# ---- haproxy ----
+h=$(flat haproxy.cfg)
+hg() { printf '%s' "$h" | grep -Eq -- "$1"; }
+hg 'frontend [A-Za-z0-9_]+ bind 192\.168\.10\.100:80' && ok "frontend binds the virtual address" || fail "frontend ... bind 192.168.10.100:80"
+hg 'default_backend [A-Za-z0-9_]+' && ok "default_backend" || fail "default_backend <name>"
+hg 'backend [A-Za-z0-9_]+ ' && ok "backend section" || fail "backend <name>"
+hg 'balance (roundrobin|leastconn)' && ok "balance algorithm" || fail "balance roundrobin or leastconn"
+hg 'option httpchk GET /' && ok "HTTP health check" || fail "option httpchk GET /healthz"
+for ip in 192.168.10.21 192.168.10.22; do
+  hg "server [A-Za-z0-9_]+ $ip:8080 .*check" && ok "server $ip with a check" || fail "server <name> $ip:8080 check ..."
+done
+hg 'fall [0-9]+' && hg 'rise [0-9]+' && ok "fall and rise set" || fail "check inter 2s fall 3 rise 2"
+hg 'timeout connect' && hg 'timeout client' && hg 'timeout server' && ok "timeouts set" || fail "timeout connect, client and server in defaults"
+hg 'option forwardfor' && ok "client address passed on" || fail "option forwardfor"
+if command -v haproxy >/dev/null 2>&1; then haproxy -c -f haproxy.cfg >/dev/null 2>&1 && ok "haproxy -c accepts the file" || fail "haproxy -c reports an error"; fi
+[ $bad -eq 0 ] && echo PASS || exit 1

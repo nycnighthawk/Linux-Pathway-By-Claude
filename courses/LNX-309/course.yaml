@@ -25,6 +25,10 @@ modules:
     title: DRBD, GFS2 awareness
     file: lessons/LNX-309-T02.md
     minutes: 45
+  - topic: LNX-309-T03
+    title: keepalived + HAProxy HA
+    file: lessons/LNX-309-T03.md
+    minutes: 45
 labs:
 - id: pcs-build
   topic: LNX-309-T01
@@ -38,6 +42,15 @@ labs:
   env: V
   license: GPL-2.0-only
   minutes: 40
+- id: keepalived-haproxy
+  topic: LNX-309-T03
+  title: Configure a keepalived and HAProxy front end
+  env: V
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - haproxy
+  - keepalived
 quizzes:
 - id: LNX-309-T01
   topic: LNX-309-T01
@@ -47,3 +60,7 @@ quizzes:
   topic: LNX-309-T02
   title: 'Quiz: DRBD, GFS2 awareness'
   file: quizzes/LNX-309-T02.yaml
+- id: LNX-309-T03
+  topic: LNX-309-T03
+  title: 'Quiz: keepalived + HAProxy HA'
+  file: quizzes/LNX-309-T03.yaml
