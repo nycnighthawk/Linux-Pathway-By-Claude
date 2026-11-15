@@ -12,6 +12,8 @@ phases:
     - LNX-204-T01
     - LNX-204-T02
     - LNX-204-T03
+    - LNX-204-T04
+    - LNX-204-T05
   lessons:
     state: todo
     units: 11
@@ -32,3 +34,4 @@ parked: null
 log:
 - 2026-11-15 started
 - '2026-11-15 synth: LNX-204-T01, LNX-204-T02, LNX-204-T03'
+- '2026-11-15 synth: LNX-204-T04, LNX-204-T05'
