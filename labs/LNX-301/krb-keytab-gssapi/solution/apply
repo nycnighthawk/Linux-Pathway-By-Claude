@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+. ./env.sh
+cat > krb5.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[libdefaults]
+ default_realm = LAB.TEST
+ dns_lookup_kdc = false
+ rdns = false
+[realms]
+ LAB.TEST = {
+  kdc = 127.0.0.1:8888
+ }
+EOT
+kadmin.local -q "addprinc -randkey host/web1.lab.test@LAB.TEST" >/dev/null
+kadmin.local -q "ktadd -k $PWD/web1.keytab host/web1.lab.test@LAB.TEST" >/dev/null
+cat > sshd_gssapi.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+GSSAPIAuthentication yes
+GSSAPICleanupCredentials yes
+GSSAPIStrictAcceptorCheck yes
+KerberosAuthentication no
+PasswordAuthentication no
+EOT
+kv=$(klist -k web1.keytab | awk '$2 ~ /^host\/web1/ {print $1; exit}')
+printf '# SPDX-License-Identifier: MIT\nkvno=%s\ndiagnosis=name-mismatch\n' "$kv" > answers.txt

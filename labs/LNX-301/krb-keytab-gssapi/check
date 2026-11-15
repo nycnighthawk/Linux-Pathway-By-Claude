@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Grade the client configuration, the keytab (against a throwaway KDC), the sshd snippet and the diagnosis.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+here=$(pwd)
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+command -v krb5kdc >/dev/null && command -v kinit >/dev/null || { echo "FAIL: krb5-kdc and krb5-user must be installed"; exit 1; }
+[ -d kdc ] && [ -f env.sh ] || { echo "FAIL: run setup first"; exit 1; }
+. ./env.sh
+conf() { grep -v '^[[:space:]]*#' krb5.conf; }
+conf | grep -Eq '^[[:space:]]*default_realm[[:space:]]*=[[:space:]]*LAB\.TEST[[:space:]]*$' && ok "default_realm" || fail "krb5.conf: default_realm = LAB.TEST"
+conf | grep -Eq '^[[:space:]]*dns_lookup_kdc[[:space:]]*=[[:space:]]*false' && ok "dns_lookup_kdc false" || fail "krb5.conf: dns_lookup_kdc = false"
+conf | grep -Eq '^[[:space:]]*rdns[[:space:]]*=[[:space:]]*false' && ok "rdns false" || fail "krb5.conf: rdns = false (the client must not build the service name from a reverse lookup)"
+conf | grep -Eq '^[[:space:]]*kdc[[:space:]]*=[[:space:]]*127\.0\.0\.1:8888' && ok "kdc address" || fail "krb5.conf: [realms] LAB.TEST with kdc = 127.0.0.1:8888"
+pf=$(mktemp); krb5kdc -n -P "$pf" >/dev/null 2>&1 &
+kpid=$!
+trap 'kill "$kpid" 2>/dev/null; rm -f "$pf"' EXIT
+sleep 1.5
+if [ -f web1.keytab ]; then
+  ent=$(klist -ke web1.keytab 2>/dev/null)
+  printf '%s' "$ent" | grep -q 'host/web1.lab.test@LAB.TEST' && ok "keytab holds host/web1.lab.test" || fail "web1.keytab has no host/web1.lab.test@LAB.TEST entry"
+  printf '%s' "$ent" | grep -q 'aes' && ! printf '%s' "$ent" | grep -Eqi 'des-|arcfour|rc4' && ok "AES keys only" || fail "keytab must hold AES keys only"
+  if kinit -k -t web1.keytab host/web1.lab.test@LAB.TEST >/dev/null 2>&1; then ok "kinit with the keytab works"; else fail "kinit -k -t web1.keytab failed: the key in the file does not match the KDC (did you run ktadd twice?)"; fi
+  kdestroy >/dev/null 2>&1
+  if echo alicepw | kinit alice@LAB.TEST >/dev/null 2>&1 && kvno host/web1.lab.test@LAB.TEST >/dev/null 2>&1; then ok "alice obtains a service ticket"; else fail "alice cannot get a ticket for host/web1.lab.test"; fi
+  kv=$(klist -k web1.keytab 2>/dev/null | awk '$2 ~ /^host\/web1/ {print $1; exit}')
+else
+  fail "web1.keytab is missing: create it with kadmin.local ktadd -k web1.keytab host/web1.lab.test"; kv=""
+fi
+get() { grep -E "^$1=" answers.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ -n "$kv" ] && [ "$(get kvno)" = "$kv" ] && ok "kvno $kv" || fail "answers.txt kvno: the number in the KVNO column of klist -k web1.keytab"
+[ "$(get diagnosis)" = name-mismatch ] && ok "diagnosis" || fail "answers.txt diagnosis: the client asked for host/www.lab.test, but the keytab holds host/web1.lab.test (clock-skew, name-mismatch, expired-ticket or wrong-realm)"
+s() { grep -v '^[[:space:]]*#' sshd_gssapi.conf | grep -Ei "^[[:space:]]*$1[[:space:]]+$2[[:space:]]*$" >/dev/null; }
+s GSSAPIAuthentication yes && ok "GSSAPIAuthentication yes" || fail "sshd_gssapi.conf: GSSAPIAuthentication yes"
+s GSSAPICleanupCredentials yes && ok "GSSAPICleanupCredentials yes" || fail "sshd_gssapi.conf: GSSAPICleanupCredentials yes"
+s GSSAPIStrictAcceptorCheck yes && ok "GSSAPIStrictAcceptorCheck yes" || fail "sshd_gssapi.conf: GSSAPIStrictAcceptorCheck yes"
+s KerberosAuthentication no && ok "KerberosAuthentication no" || fail "sshd_gssapi.conf: KerberosAuthentication no (use GSSAPI, not the legacy password check)"
+s PasswordAuthentication no && ok "PasswordAuthentication no" || fail "sshd_gssapi.conf: PasswordAuthentication no"
+exit "$bad"

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i '/^access to /d' slapd.conf
+cat >> slapd.conf <<'EOT'
+access to attrs=userPassword
+    by self write
+    by dn.exact=uid=helpdesk,ou=svc,dc=lab,dc=test write
+    by anonymous auth
+    by * none
+access to *
+    by users read
+    by * none
+index objectClass,uid,uidNumber,gidNumber,memberUid eq
+loglevel stats
+EOT
+cat > ldap.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+URI ldaps://ldap.lab.test
+BASE dc=lab,dc=test
+TLS_CACERT /etc/pki/tls/certs/lab-ca.pem
+TLS_REQCERT demand
+EOT
+echo '(&(objectClass=posixAccount)(uidNumber>=2000)(loginShell=/bin/bash)(!(shadowExpire=*)))' > filter.txt
