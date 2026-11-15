@@ -32,6 +32,10 @@ modules:
     title: LUKS2, Clevis/Tang, TPM2 (swtpm)
     file: lessons/LNX-303-T02.md
     minutes: 45
+  - topic: LNX-303-T03
+    title: Secure Boot, signed modules
+    file: lessons/LNX-303-T03.md
+    minutes: 45
 labs:
 - id: pki-two-tier
   topic: LNX-303-T01
@@ -47,6 +51,14 @@ labs:
   env: V
   license: MIT
   minutes: 35
+- id: module-signing-key
+  topic: LNX-303-T03
+  title: Create a module-signing key and diagnose a rejected module
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - openssl
 quizzes:
 - id: LNX-303-T01
   topic: LNX-303-T01
@@ -56,3 +68,7 @@ quizzes:
   topic: LNX-303-T02
   title: 'Quiz: LUKS2, Clevis/Tang, TPM2 (swtpm)'
   file: quizzes/LNX-303-T02.yaml
+- id: LNX-303-T03
+  topic: LNX-303-T03
+  title: 'Quiz: Secure Boot, signed modules'
+  file: quizzes/LNX-303-T03.yaml

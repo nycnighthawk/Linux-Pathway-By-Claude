@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > mok.cnf <<'EOF'
+[req]
+distinguished_name = dn
+prompt = no
+x509_extensions = v3
+[dn]
+CN = Local module signing key
+[v3]
+basicConstraints = critical,CA:FALSE
+keyUsage = critical,digitalSignature
+extendedKeyUsage = codeSigning
+subjectKeyIdentifier = hash
+EOF
+umask 077
+openssl req -new -x509 -newkey rsa:3072 -nodes -days 1825 -config mok.cnf -outform DER -out mok.der -keyout mok.priv 2>/dev/null
+openssl rsa -in mok.priv -out mok.priv -traditional 2>/dev/null || true
+chmod 600 mok.priv
+cat > enroll.sh <<'EOF'
+#!/usr/bin/env bash
+mokutil --import mok.der
+EOF
+cat > diagnosis.txt <<'EOF'
+cause=key-not-enrolled
+fix=mokutil-import
+keep_secure_boot=yes
+EOF
