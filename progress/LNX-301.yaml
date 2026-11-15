@@ -20,9 +20,19 @@ phases:
     - LNX-301-T09
     - LNX-301-T10
   lessons:
-    state: todo
+    state: done
     units: 10
-    done: []
+    done:
+    - LNX-301-T01
+    - LNX-301-T02
+    - LNX-301-T03
+    - LNX-301-T04
+    - LNX-301-T05
+    - LNX-301-T06
+    - LNX-301-T07
+    - LNX-301-T08
+    - LNX-301-T09
+    - LNX-301-T10
   quizzes:
     state: done
     units: 10
@@ -72,4 +82,6 @@ log:
 - '2026-11-15 labs: LNX-301-T08, LNX-301-T09'
 - '2026-11-15 labs: LNX-301-T05, LNX-301-T07, LNX-301-T10'
 - '2026-11-15 quizzes: LNX-301-T01, LNX-301-T02, LNX-301-T03, LNX-301-T04, LNX-301-T05, LNX-301-T06, LNX-301-T07,
+  LNX-301-T08, LNX-301-T09, LNX-301-T10'
+- '2026-11-15 lessons: LNX-301-T01, LNX-301-T02, LNX-301-T03, LNX-301-T04, LNX-301-T05, LNX-301-T06, LNX-301-T07,
   LNX-301-T08, LNX-301-T09, LNX-301-T10'

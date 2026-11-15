@@ -181,4 +181,3 @@ quizzes:
   topic: LNX-301-T10
   title: 'Quiz: Smart-card login'
   file: quizzes/LNX-301-T10.yaml
-coverage: partial
