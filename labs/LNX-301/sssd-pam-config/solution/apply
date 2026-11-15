@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > sssd.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[sssd]
+services = nss, pam, ssh, sudo
+domains = corp
+
+[domain/corp]
+id_provider = ldap
+auth_provider = ldap
+access_provider = simple
+simple_allow_groups = linux-users
+ldap_uri = ldaps://ldap1.example.com, ldaps://ldap2.example.com
+ldap_search_base = dc=example,dc=com
+ldap_tls_cacert = /etc/pki/tls/certs/corp-ca.pem
+ldap_tls_reqcert = demand
+cache_credentials = true
+entry_cache_timeout = 600
+offline_credentials_expiration = 1
+enumerate = false
+EOT
+chmod 600 sssd.conf
+cat > nsswitch.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+passwd:     files sss
+group:      files sss
+shadow:     files sss
+sudoers:    files sss
+hosts:      files dns
+EOT
+cat > system-auth <<'EOT'
+# SPDX-License-Identifier: MIT
+auth        required      pam_env.so
+auth        sufficient    pam_unix.so
+auth        sufficient    pam_sss.so forward_pass
+auth        required      pam_deny.so
+
+account     required      pam_unix.so
+account     [default=bad success=ok user_unknown=ignore] pam_sss.so
+
+password    requisite     pam_pwquality.so retry=3
+password    sufficient    pam_unix.so sha512 shadow use_authtok
+password    sufficient    pam_sss.so use_authtok
+
+session     required      pam_limits.so
+session     optional      pam_oddjob_mkhomedir.so
+session     required      pam_unix.so
+EOT

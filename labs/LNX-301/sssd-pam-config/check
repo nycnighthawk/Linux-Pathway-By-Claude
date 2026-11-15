@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Parse sssd.conf, nsswitch.conf and system-auth and grade each requirement.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f sssd.conf ] && [ -f nsswitch.conf ] && [ -f system-auth ] || { echo "FAIL: run setup first"; exit 1; }
+mode=$(stat -c %a sssd.conf)
+python3 - "$mode" <<'PY'
+import configparser, re, sys
+mode = sys.argv[1]
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+def chk(c, good, why):
+    ok(good) if c else fail(why)
+chk(mode == "600", "sssd.conf mode 0600", "sssd.conf must have mode 0600 (SSSD refuses to start otherwise); run chmod 600 sssd.conf")
+cp = configparser.ConfigParser(interpolation=None, strict=False)
+try:
+    cp.read("sssd.conf")
+except Exception as e:
+    fail("sssd.conf does not parse: %s" % e); sys.exit(1)
+svc = {x.strip() for x in cp.get("sssd", "services", fallback="").split(",")}
+chk({"nss", "pam", "ssh", "sudo"} <= svc, "services nss, pam, ssh, sudo", "[sssd] services must list nss, pam, ssh and sudo")
+chk(cp.get("sssd", "domains", fallback="").strip() == "corp", "domain corp", "[sssd] domains = corp")
+d = "domain/corp"
+g = lambda k: cp.get(d, k, fallback="").strip() if cp.has_section(d) else ""
+chk(g("id_provider") == "ldap" and g("auth_provider") == "ldap", "providers ldap", "id_provider and auth_provider must be ldap")
+uris = [u.strip() for u in g("ldap_uri").split(",") if u.strip()]
+chk(len(uris) >= 2 and all(u.startswith("ldaps://") for u in uris), "two ldaps:// servers", "ldap_uri needs at least two ldaps:// servers, comma separated (failover order)")
+chk(g("ldap_search_base") == "dc=example,dc=com", "search base", "ldap_search_base = dc=example,dc=com")
+chk(g("ldap_tls_cacert").startswith("/"), "CA certificate path", "ldap_tls_cacert must be an absolute path")
+chk(g("ldap_tls_reqcert").lower() == "demand", "ldap_tls_reqcert demand", "ldap_tls_reqcert = demand ('never' turns TLS into decoration)")
+chk(g("cache_credentials").lower() in ("true", "yes", "1"), "cache_credentials", "cache_credentials = true")
+t = g("entry_cache_timeout")
+chk(t.isdigit() and 0 < int(t) <= 3600, "entry_cache_timeout <= 3600", "entry_cache_timeout must be a number of seconds, at most 3600")
+chk(g("offline_credentials_expiration") == "1", "offline_credentials_expiration 1", "offline_credentials_expiration = 1 (days)")
+chk(g("enumerate").lower() in ("false", "no", "0"), "enumerate false", "enumerate = false (listing every user is slow and rarely needed)")
+chk(g("access_provider") == "simple" and "linux-users" in g("simple_allow_groups").split(","), "access via simple_allow_groups", "access_provider = simple and simple_allow_groups = linux-users")
+# nsswitch
+ns = {}
+for line in open("nsswitch.conf"):
+    line = line.split("#")[0].strip()
+    if ":" in line:
+        k, v = line.split(":", 1); ns[k.strip()] = v.split()
+for k in ("passwd", "group", "sudoers"):
+    chk(ns.get(k) == ["files", "sss"] or ns.get(k) == ["files", "sss", "systemd"], "nsswitch %s: files sss" % k, "nsswitch.conf: %s: files sss" % k)
+    chk("ldap" not in ns.get(k, []), "nsswitch %s has no ldap" % k, "nsswitch.conf: %s must not name ldap (SSSD does the lookups)" % k)
+# PAM
+stacks = {"auth": [], "account": [], "password": [], "session": []}
+for line in open("system-auth"):
+    line = line.split("#")[0].strip()
+    m = re.match(r"^(-?)(auth|account|password|session)\s+(.*)$", line)
+    if m: stacks[m.group(2)].append(m.group(3))
+auth = stacks["auth"]
+idx = lambda lst, s: next((i for i, x in enumerate(lst) if s in x), -1)
+i_sss, i_deny = idx(auth, "pam_sss.so"), idx(auth, "pam_deny.so")
+chk(i_sss >= 0 and "forward_pass" in auth[i_sss], "auth pam_sss forward_pass", "auth: add pam_sss.so with forward_pass")
+chk(i_deny >= 0 and i_deny == len(auth) - 1 and i_sss < i_deny, "pam_deny last in auth", "auth: pam_deny.so must be the last auth line, after pam_sss.so")
+chk(not any("nullok" in x for x in sum(stacks.values(), [])), "no nullok", "remove nullok everywhere (it lets accounts with empty passwords in)")
+acc = [x for x in stacks["account"] if "pam_sss.so" in x]
+chk(bool(acc) and "[default=bad success=ok user_unknown=ignore]" in acc[0], "account pam_sss control", "account: pam_sss.so with [default=bad success=ok user_unknown=ignore]")
+pw = [x for x in stacks["password"] if "pam_sss.so" in x]
+chk(bool(pw) and "use_authtok" in pw[0], "password pam_sss use_authtok", "password: pam_sss.so use_authtok")
+chk(any("pam_mkhomedir.so" in x or "pam_oddjob_mkhomedir.so" in x for x in stacks["session"]), "session creates homes", "session: pam_mkhomedir.so or pam_oddjob_mkhomedir.so")
+sys.exit(bad)
+PY

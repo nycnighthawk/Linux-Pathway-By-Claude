@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: a stub script and stand-in commands that simulate a host.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf prejoin.sh stubbin
+mkdir stubbin
+cat > stubbin/hostname <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+echo "${STUB_FQDN:-app01.lab.test}"
+EOT
+cat > stubbin/dig <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+case "$*" in
+  *SRV*|*srv*) [ "${STUB_SRV:-yes}" = yes ] && printf '0 100 389 dc1.lab.test.\n0 100 389 dc2.lab.test.\n' ;;
+  *) ;;
+esac
+exit 0
+EOT
+cat > stubbin/chronyc <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+s=${STUB_SKEW:-0.000123}
+case "$s" in -*) dir=slow; s=${s#-} ;; *) dir=fast ;; esac
+printf 'Reference ID    : C0A80001 (dc1.lab.test)\nStratum         : 3\nSystem time     : %s seconds %s of NTP time\nLeap status     : Normal\n' "$s" "$dir"
+EOT
+cat > stubbin/nc <<'EOT'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+port=${@: -1}
+for p in ${STUB_CLOSED:-}; do [ "$p" = "$port" ] && exit 1; done
+exit 0
+EOT
+chmod +x stubbin/*
+printf '#!/usr/bin/env bash\n# SPDX-License-Identifier: MIT\n# TODO: see README.md\necho "FAIL fqdn: not written yet"\nexit 1\n' > prejoin.sh
+chmod +x prejoin.sh

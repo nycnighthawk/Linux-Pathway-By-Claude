@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: three files that work for local users only and are unsafe.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f sssd.conf nsswitch.conf system-auth
+cat > sssd.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+[sssd]
+services = nss
+domains = corp
+
+[domain/corp]
+id_provider = ldap
+auth_provider = ldap
+ldap_uri = ldap://ldap1.example.com
+ldap_search_base = dc=example,dc=com
+ldap_tls_reqcert = never
+enumerate = true
+entry_cache_timeout = 86400
+EOT
+chmod 644 sssd.conf
+cat > nsswitch.conf <<'EOT'
+# SPDX-License-Identifier: MIT
+passwd:     files
+group:      files
+shadow:     files
+sudoers:    files
+hosts:      files dns
+EOT
+cat > system-auth <<'EOT'
+# SPDX-License-Identifier: MIT
+auth        required      pam_env.so
+auth        sufficient    pam_unix.so nullok
+auth        required      pam_deny.so
+
+account     required      pam_unix.so
+
+password    requisite     pam_pwquality.so retry=3
+password    sufficient    pam_unix.so sha512 shadow nullok use_authtok
+
+session     required      pam_limits.so
+session     required      pam_unix.so
+EOT
