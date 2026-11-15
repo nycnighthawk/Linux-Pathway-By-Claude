@@ -39,6 +39,10 @@ modules:
     title: CNI spec; write a minimal CNI plugin
     file: lessons/LNX-312-T02.md
     minutes: 55
+  - topic: LNX-312-T03
+    title: Flannel, Calico, Cilium compared
+    file: lessons/LNX-312-T03.md
+    minutes: 50
 - id: services-datapath
   title: Services and the data plane
   lessons:
@@ -74,6 +78,12 @@ labs:
   packages:
   - iproute2
   - iputils-ping
+- id: cni-config-trio
+  topic: LNX-312-T03
+  title: The same overlay in three configurations
+  env: C
+  license: MIT
+  minutes: 25
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -87,3 +97,7 @@ quizzes:
   topic: LNX-312-T02
   title: 'Quiz: CNI spec; write a minimal CNI plugin'
   file: quizzes/LNX-312-T02.yaml
+- id: LNX-312-T03
+  topic: LNX-312-T03
+  title: 'Quiz: Flannel, Calico, Cilium compared'
+  file: quizzes/LNX-312-T03.yaml
