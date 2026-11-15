@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+python3 - <<'PY'
+import yaml
+d = yaml.safe_load(open("gpu-job.yaml")); s = d["spec"]["template"]["spec"]
+s["tolerations"] = [{"key": "dedicated", "operator": "Equal", "value": "gpu", "effect": "NoSchedule"}]
+s["nodeSelector"] = {"pool": "gpu"}
+yaml.safe_dump(d, open("gpu-job.yaml", "w"))
+d = yaml.safe_load(open("web.yaml")); s = d["spec"]["template"]["spec"]
+s["containers"][0]["resources"] = {"requests": {"cpu": "500m", "memory": "256Mi"}, "limits": {"cpu": "500m", "memory": "256Mi"}}
+s["topologySpreadConstraints"] = [{"maxSkew": 1, "topologyKey": "topology.kubernetes.io/zone", "whenUnsatisfiable": "ScheduleAnyway", "labelSelector": {"matchLabels": {"app": "web"}}}]
+yaml.safe_dump(d, open("web.yaml", "w"))
+d = yaml.safe_load(open("hpa.yaml")); sp = d["spec"]
+sp["minReplicas"] = 3; sp["maxReplicas"] = 12
+sp["metrics"] = [{"type": "Resource", "resource": {"name": "cpu", "target": {"type": "Utilization", "averageUtilization": 70}}}]
+sp["behavior"] = {"scaleDown": {"stabilizationWindowSeconds": 300}}
+yaml.safe_dump(d, open("hpa.yaml", "w"))
+PY
+sed -i 's/^answer=.*/answer=11/' replicas.txt

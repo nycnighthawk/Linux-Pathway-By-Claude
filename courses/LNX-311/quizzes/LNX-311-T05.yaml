@@ -1,0 +1,27 @@
+title: 'Quiz: Scheduling and autoscaling'
+questions:
+- id: qos
+  prompt: A pod has requests equal to limits for CPU and memory in every container. Its QoS class is?
+  choices: [BestEffort, Burstable, Guaranteed, Critical]
+  answer: [2]
+  explain: 'A) wrong: BestEffort has no requests or limits. B) wrong: Burstable has unequal or partial settings. C) correct. D) wrong: no such class.'
+- id: hpa
+  prompt: Ten replicas run at 90 percent CPU utilisation against a 60 percent target. What does the HPA formula give?
+  choices: ['10', '12', '15', '20']
+  answer: [2]
+  explain: 'A) wrong: no change. B) wrong: too low. C) correct: ceil(10 * 90 / 60) = 15. D) wrong: too high.'
+- id: taint
+  prompt: A node is tainted dedicated=gpu:NoSchedule. What does that guarantee?
+  choices: [Only GPU pods will run there, Pods without a matching toleration are not scheduled there, Tolerating pods are forced onto that node, Existing pods are evicted]
+  answer: [1]
+  explain: 'A) wrong: tolerating non-GPU pods may still land. B) correct. C) wrong: tolerations only permit. D) wrong: NoSchedule does not evict (NoExecute does).'
+- id: pending
+  prompt: A pod is Pending. Where do you find which scheduling filters rejected the nodes?
+  choices: [kubectl describe pod, Events, The etcd log, kube-proxy rules, The node autoscaler log only]
+  answer: [0]
+  explain: 'A) correct: the FailedScheduling event lists the reasons per filter. B) wrong: not the first place. C) wrong: unrelated. D) wrong: it only reports scaling.'
+- id: limits
+  prompt: Which statements are true? (select two)
+  choices: [The scheduler uses requests when placing pods, Exceeding a memory limit can get the container OOM-killed, The scheduler uses limits to place pods, Exceeding a CPU limit kills the container]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: limits do not drive placement. D) wrong: CPU is throttled, not killed.'

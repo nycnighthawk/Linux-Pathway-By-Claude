@@ -46,6 +46,13 @@ modules:
     title: etcd backup and restore
     file: lessons/LNX-311-T04.md
     minutes: 55
+- id: workload-and-storage
+  title: Scheduling
+  lessons:
+  - topic: LNX-311-T05
+    title: 'Scheduling: affinity, taints, resources, autoscaling'
+    file: lessons/LNX-311-T05.md
+    minutes: 50
 labs:
 - id: static-pod-repair
   topic: LNX-311-T01
@@ -71,6 +78,12 @@ labs:
   env: V
   license: MIT
   minutes: 35
+- id: placement-rules
+  topic: LNX-311-T05
+  title: Complete placement rules and an HPA for three workloads
+  env: C
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-311-T01
   topic: LNX-311-T01
@@ -88,3 +101,7 @@ quizzes:
   topic: LNX-311-T04
   title: 'Quiz: etcd backup and restore'
   file: quizzes/LNX-311-T04.yaml
+- id: LNX-311-T05
+  topic: LNX-311-T05
+  title: 'Quiz: Scheduling: affinity, taints, resources, autoscaling'
+  file: quizzes/LNX-311-T05.yaml
