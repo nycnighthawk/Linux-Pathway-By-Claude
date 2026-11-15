@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -x etcd-backup.sh ] && [ -d fakebin ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+export PATH="$PWD/fakebin:$PATH" CALLS_LOG="$PWD/calls.log" BACKUP_DIR="$PWD/backups"
+: > calls.log
+./etcd-backup.sh >/dev/null 2>&1; rc=$?
+today=$(date +%F)
+f="backups/etcd-$today.db"
+[ "$rc" = 0 ] && ok "script exits 0 on success" || fail "script must exit 0 when the snapshot succeeds"
+grep -q "snapshot save" calls.log && ok "etcdctl snapshot save was called" || fail "call etcdctl snapshot save"
+[ -f "$f" ] && ok "snapshot written to $f" || fail "snapshot file must be BACKUP_DIR/etcd-$today.db"
+for o in "--endpoints=https://127.0.0.1:2379" "--cacert=/etc/kubernetes/pki/etcd/ca.crt" "--cert=/etc/kubernetes/pki/etcd/server.crt" "--key=/etc/kubernetes/pki/etcd/server.key"; do
+  grep -q -- "$o" calls.log && ok "flag $o" || fail "missing flag $o"
+done
+grep -q "etcdutl snapshot status" calls.log && ok "snapshot verified with etcdutl" || fail "verify with etcdutl snapshot status"
+[ -f "$f" ] && [ "$(stat -c %a "$f")" = 600 ] && ok "snapshot mode 600" || fail "snapshot must be mode 600"
+[ ! -e backups/etcd-old.db ] && ok "old backup removed" || fail "backups older than 7 days must be deleted"
+[ -e backups/etcd-recent.db ] && ok "recent backup kept" || fail "recent backups must be kept"
+# failure path: nothing may be deleted
+touch -d '10 days ago' backups/etcd-old2.db
+rm -f "$f"
+FAKE_FAIL=1 ./etcd-backup.sh >/dev/null 2>&1; rc=$?
+[ "$rc" != 0 ] && ok "non-zero exit when etcdctl fails" || fail "must exit non-zero when the snapshot fails"
+[ -e backups/etcd-old2.db ] && ok "nothing deleted after a failed snapshot" || fail "do not delete old backups when the new one failed"
+exit $bad

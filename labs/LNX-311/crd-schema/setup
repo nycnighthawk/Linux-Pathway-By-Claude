@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+: > widget-crd.yaml
+cat > good-widget.yaml <<'Y'
+apiVersion: example.com/v1
+kind: Widget
+metadata: {name: w1}
+spec: {size: 3}
+Y
+cat > bad-widget-size.yaml <<'Y'
+apiVersion: example.com/v1
+kind: Widget
+metadata: {name: w2}
+spec: {size: 50}
+Y
+cat > bad-widget-mode.yaml <<'Y'
+apiVersion: example.com/v1
+kind: Widget
+metadata: {name: w3}
+spec: {size: 2, mode: turbo}
+Y

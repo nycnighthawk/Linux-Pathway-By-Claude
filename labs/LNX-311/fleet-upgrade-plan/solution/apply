@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+printf 'out_of_support=legacy-batch,prod-eu\nupgrade_steps_total=13\nfirst_wave=dev-a,dev-b\nmax_steps_cluster=legacy-batch\n' > plan.txt
+printf 'Rebuild legacy-batch from code instead of five in-place upgrades. Migrate its workloads, then retire the old cluster.\n' > notes.txt

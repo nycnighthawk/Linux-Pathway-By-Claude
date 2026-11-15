@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > fleet.csv <<'F'
+name,minor,env
+dev-a,1.35,dev
+dev-b,1.36,dev
+stage-a,1.34,staging
+prod-eu,1.33,prod
+prod-us,1.34,prod
+legacy-batch,1.31,prod
+F
+: > plan.txt
+: > notes.txt

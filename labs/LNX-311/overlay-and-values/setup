@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p base chart overlays/prod
+cat > base/kustomization.yaml <<'Y'
+resources: [deployment.yaml, service.yaml]
+Y
+cat > base/deployment.yaml <<'Y'
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: web}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: web}}
+  template:
+    metadata: {labels: {app: web}}
+    spec:
+      containers:
+      - name: web
+        image: web:latest
+        resources: {limits: {memory: 128Mi}}
+Y
+cat > base/service.yaml <<'Y'
+apiVersion: v1
+kind: Service
+metadata: {name: web}
+spec:
+  selector: {app: web}
+  ports: [{port: 80}]
+Y
+cat > chart/values.yaml <<'Y'
+replicaCount: 1
+image:
+  repository: web
+  tag: latest
+ingress:
+  enabled: false
+  host: web.local
+resources:
+  limits: {memory: 128Mi}
+Y

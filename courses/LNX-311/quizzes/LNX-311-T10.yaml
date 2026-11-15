@@ -1,0 +1,27 @@
+title: 'Quiz: Troubleshooting'
+questions:
+- id: exit137
+  prompt: A container was last terminated with exit code 137 and reason OOMKilled. What is the most likely cause?
+  choices: [A failed readiness probe, The memory limit was exceeded, The image could not be pulled, A DNS failure]
+  answer: [1]
+  explain: 'A) wrong: probes restart with other reasons. B) correct: signal 9 from the kernel memory killer. C) wrong: pull errors prevent starting. D) wrong: DNS does not kill processes.'
+- id: node-not-ready
+  prompt: A node is NotReady and the kubelet log says it cannot reach the runtime socket. Where next?
+  choices: [kubectl logs of the scheduler, systemctl status and journal of the container runtime on the node, kube-proxy rules, The HPA]
+  answer: [1]
+  explain: 'A) wrong. B) correct: the runtime is down or misconfigured. C) wrong: networking rules are unrelated. D) wrong: unrelated.'
+- id: noendpoints
+  prompt: Which can leave a Service without endpoints? (select two)
+  choices: [The selector matches no pod labels, All matching pods fail readiness, The Service has a ClusterIP, CoreDNS is running]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct: only ready pods are endpoints. C) wrong: normal. D) wrong: unrelated.'
+- id: api-down
+  prompt: kubectl cannot reach the API. Which tool still works on the control-plane node?
+  choices: [kubectl get pods, crictl ps -a and crictl logs, helm list, kubectl top]
+  answer: [1]
+  explain: 'A) wrong: needs the API. B) correct: talks to the runtime socket. C) wrong: needs the API. D) wrong: needs the API.'
+- id: evidence
+  prompt: What should you do before restarting a misbehaving pod or node?
+  choices: [Nothing, restart quickly, Capture describe output, logs (including --previous) and the node journal, Delete the namespace, Upgrade the cluster]
+  answer: [1]
+  explain: 'A) wrong: evidence is lost. B) correct. C) wrong: destructive. D) wrong: adds variables.'

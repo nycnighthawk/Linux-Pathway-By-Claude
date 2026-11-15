@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f gpu-job.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml, math
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+j = yaml.safe_load(open("gpu-job.yaml"))["spec"]["template"]["spec"]
+tol = [t for t in j.get("tolerations", []) if t.get("key") == "dedicated" and t.get("value") == "gpu" and t.get("effect") == "NoSchedule"]
+if tol: ok("job tolerates the gpu taint")
+else: fail("gpu-job.yaml needs a toleration for dedicated=gpu:NoSchedule")
+if (j.get("nodeSelector") or {}).get("pool") == "gpu": ok("job selects pool=gpu")
+else: fail("gpu-job.yaml needs nodeSelector pool: gpu")
+w = yaml.safe_load(open("web.yaml"))["spec"]["template"]["spec"]
+c = w["containers"][0]["resources"]
+rq, lm = c.get("requests", {}), c.get("limits", {})
+if rq and rq == lm and "cpu" in rq and "memory" in rq: ok("web is Guaranteed QoS")
+else: fail("web requests must equal limits for both cpu and memory")
+if any(t.get("topologyKey") == "topology.kubernetes.io/zone" and t.get("maxSkew") == 1 and t.get("whenUnsatisfiable") == "ScheduleAnyway" for t in w.get("topologySpreadConstraints", [])): ok("web spreads over zones")
+else: fail("web needs a zone topologySpreadConstraint (maxSkew 1, ScheduleAnyway)")
+h = yaml.safe_load(open("hpa.yaml"))["spec"]
+if h.get("minReplicas") == 3 and h.get("maxReplicas") == 12: ok("hpa bounds 3..12")
+else: fail("hpa needs minReplicas 3 and maxReplicas 12")
+m = h.get("metrics") or []
+if any(x.get("type") == "Resource" and x["resource"].get("name") == "cpu" and x["resource"]["target"].get("averageUtilization") == 70 for x in m): ok("hpa cpu target 70")
+else: fail("hpa needs a cpu Resource metric with averageUtilization 70")
+if ((h.get("behavior") or {}).get("scaleDown") or {}).get("stabilizationWindowSeconds") == 300: ok("scale-down window 300 s")
+else: fail("set behavior.scaleDown.stabilizationWindowSeconds: 300")
+r = dict(l.strip().split("=", 1) for l in open("replicas.txt") if "=" in l)
+want = math.ceil(int(r["current_replicas"]) * int(r["current_cpu_utilisation"]) / int(r["target_cpu_utilisation"]))
+if r.get("answer", "").strip() == str(want): ok("desired replicas %d" % want)
+else: fail("answer in replicas.txt is wrong (ceil(current * current% / target%))")
+sys.exit(bad)
+PY

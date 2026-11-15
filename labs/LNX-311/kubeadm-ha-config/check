@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f plan.txt ] && [ -f kubeadm.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml, ipaddress
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+plan = dict(l.strip().split("=", 1) for l in open("plan.txt") if "=" in l)
+try:
+    docs = [d for d in yaml.safe_load_all(open("kubeadm.yaml")) if d]
+except Exception as e:
+    print("FAIL: kubeadm.yaml is not valid YAML: %s" % e); sys.exit(1)
+cc = next((d for d in docs if d.get("kind") == "ClusterConfiguration"), None)
+kc = next((d for d in docs if d.get("kind") == "KubeletConfiguration"), None)
+if not cc: print("FAIL: no ClusterConfiguration document"); sys.exit(1)
+want = "%s:%s" % (plan["endpoint"], plan["port"])
+if cc.get("controlPlaneEndpoint") == want: ok("controlPlaneEndpoint " + want)
+else: fail("controlPlaneEndpoint must be " + want)
+if cc.get("kubernetesVersion") == plan["version"]: ok("kubernetesVersion")
+else: fail("kubernetesVersion must be " + plan["version"])
+n = cc.get("networking") or {}
+if n.get("podSubnet") == plan["pod_subnet"] and n.get("serviceSubnet") == plan["service_subnet"]: ok("subnets match the plan")
+else: fail("podSubnet and serviceSubnet must match plan.txt")
+try:
+    if ipaddress.ip_network(n["podSubnet"]).overlaps(ipaddress.ip_network(n["serviceSubnet"])): fail("pod and service subnets overlap")
+    else: ok("subnets do not overlap")
+except Exception: fail("subnets unreadable")
+sans = set((cc.get("apiServer") or {}).get("certSANs") or [])
+need = {plan["endpoint"]} | set(plan["nodes"].split(","))
+if need <= sans: ok("certSANs cover the endpoint and every node")
+else: fail("certSANs missing: %s" % ", ".join(sorted(need - sans)))
+if ((cc.get("etcd") or {}).get("local") or {}).get("dataDir") == "/var/lib/etcd": ok("stacked etcd with /var/lib/etcd")
+else: fail("add etcd.local.dataDir: /var/lib/etcd")
+if kc and kc.get("cgroupDriver") == "systemd": ok("kubelet cgroupDriver systemd")
+else: fail("add a KubeletConfiguration document with cgroupDriver: systemd")
+sys.exit(bad)
+PY

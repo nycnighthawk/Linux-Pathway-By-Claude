@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -d base ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, os, yaml
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+p = "overlays/prod/kustomization.yaml"
+k = yaml.safe_load(open(p)) if os.path.exists(p) else None
+if not k: fail("overlays/prod/kustomization.yaml is missing or empty")
+else:
+    if "../../base" in (k.get("resources") or []): ok("overlay refers to the base")
+    else: fail("resources must contain ../../base")
+    if k.get("namespace") == "shop": ok("namespace shop")
+    else: fail("namespace must be shop")
+    if any(i.get("name") == "web" and str(i.get("newTag")) == "1.4.2" for i in k.get("images") or []): ok("image tag pinned")
+    else: fail("images: name web, newTag 1.4.2")
+    if any(r.get("name") == "web" and r.get("count") == 3 for r in k.get("replicas") or []): ok("replicas 3")
+    else: fail("replicas: name web, count 3")
+    g = [c for c in k.get("configMapGenerator") or [] if c.get("name") == "web-config" and "LOG_LEVEL=warn" in (c.get("literals") or [])]
+    if g: ok("config generated with a hashed name")
+    else: fail("configMapGenerator web-config with literal LOG_LEVEL=warn")
+    pt = [x for x in k.get("patches") or [] if (x.get("target") or {}).get("kind") == "Deployment" and "512Mi" in str(x.get("patch", ""))]
+    if pt: ok("memory patch targets the Deployment")
+    else: fail("patches: target Deployment web with a patch setting memory 512Mi")
+def keys(d, pre=""):
+    out = set()
+    for a, b in (d or {}).items():
+        out.add(pre + a)
+        if isinstance(b, dict): out |= keys(b, pre + a + ".")
+    return out
+v = yaml.safe_load(open("values-prod.yaml")) if os.path.exists("values-prod.yaml") else None
+if not v: fail("values-prod.yaml is missing or empty")
+else:
+    d = yaml.safe_load(open("chart/values.yaml"))
+    unknown = keys(v) - keys(d)
+    if unknown: fail("keys not in the chart defaults: " + ", ".join(sorted(unknown)))
+    else: ok("every override key exists in chart/values.yaml")
+    if v.get("replicaCount") == 3 and str((v.get("image") or {}).get("tag")) == "1.4.2" and (v.get("ingress") or {}).get("host") == "shop.example.com": ok("values set")
+    else: fail("set replicaCount 3, image.tag 1.4.2, ingress.host shop.example.com")
+sys.exit(bad)
+PY

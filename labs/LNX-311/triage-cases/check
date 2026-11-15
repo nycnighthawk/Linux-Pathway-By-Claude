@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -d cases ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+want = {"1": ("oom-killed", ("kubectl", "crictl")), "2": ("selector-mismatch", ("kubectl",)), "3": ("cgroup-driver-mismatch", ("journalctl", "systemctl")),
+        "4": ("cert-expired", ("kubeadm", "crictl")), "5": ("image-not-found", ("kubectl",))}
+got = {}
+for l in open("diagnosis.txt"):
+    m = re.match(r"\s*(\d)\s*:\s*([a-z-]+)\s*\|\s*(.+)$", l)
+    if m: got[m.group(1)] = (m.group(2), m.group(3).strip())
+for k, (cause, tools) in want.items():
+    if k not in got: fail("case %s missing (format: N: cause | command)" % k); continue
+    c, cmd = got[k]
+    if c == cause: ok("case %s cause %s" % (k, cause))
+    else: fail("case %s: cause %r is not right" % (k, c))
+    if cmd.split()[0] in tools: ok("case %s first command uses %s" % (k, cmd.split()[0]))
+    else: fail("case %s: use %s for the first command" % (k, " or ".join(tools)))
+sys.exit(bad)
+PY

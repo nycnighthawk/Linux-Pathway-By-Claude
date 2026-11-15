@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f good-widget.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml, copy
+from jsonschema import Draft202012Validator
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+try: crd = yaml.safe_load(open("widget-crd.yaml"))
+except Exception as e: crd = None
+if not crd: print("FAIL: widget-crd.yaml is empty or invalid"); sys.exit(1)
+s = crd.get("spec", {})
+n = s.get("names", {})
+if crd.get("kind") == "CustomResourceDefinition" and crd.get("metadata", {}).get("name") == "widgets.example.com" and s.get("group") == "example.com" and n.get("kind") == "Widget" and n.get("plural") == "widgets" and s.get("scope") == "Namespaced": ok("names, group and scope")
+else: fail("CRD name, group, kind, plural and scope (Namespaced) must match the task")
+v = [x for x in s.get("versions", []) if x.get("name") == "v1"]
+if not v or not (v[0].get("served") and v[0].get("storage")): fail("version v1 must be served and storage"); sys.exit(1)
+v = v[0]; ok("v1 is served and the storage version")
+if "status" in (v.get("subresources") or {}): ok("status subresource")
+else: fail("enable subresources.status")
+if any(c.get("name") == "Size" and c.get("jsonPath") == ".spec.size" for c in v.get("additionalPrinterColumns") or []): ok("printer column Size")
+else: fail("additionalPrinterColumns: name Size, jsonPath .spec.size")
+sch = (v.get("schema") or {}).get("openAPIV3Schema")
+if not sch: fail("schema.openAPIV3Schema missing"); sys.exit(1)
+props = sch.get("properties", {})
+sp = props.get("spec", {})
+if sp.get("type") == "object" and "size" in (sp.get("required") or []): ok("spec.size required")
+else: fail("spec must be an object requiring size")
+st = props.get("status", {}).get("properties", {}).get("conditions", {})
+if st.get("type") == "array" and st.get("items", {}).get("type") == "object": ok("status.conditions array of objects")
+else: fail("status.conditions must be an array of objects")
+def to_js(x):
+    x = copy.deepcopy(x)
+    def walk(d):
+        if isinstance(d, dict):
+            for k in list(d):
+                if k.startswith("x-kubernetes"): d.pop(k)
+                else: walk(d[k])
+        elif isinstance(d, list):
+            for i in d: walk(i)
+    walk(x); return x
+val = Draft202012Validator(to_js(sch))
+def valid(f): return not list(val.iter_errors(yaml.safe_load(open(f))))
+if valid("good-widget.yaml"): ok("good-widget.yaml accepted")
+else: fail("good-widget.yaml must be accepted by the schema")
+for f in ("bad-widget-size.yaml", "bad-widget-mode.yaml"):
+    if not valid(f): ok(f + " rejected")
+    else: fail(f + " must be rejected by the schema")
+m = sp.get("properties", {}).get("mode", {})
+if m.get("default") == "safe" and set(m.get("enum", [])) == {"fast", "safe"}: ok("mode enum and default")
+else: fail("spec.mode needs enum [fast, safe] and default safe")
+sys.exit(bad)
+PY

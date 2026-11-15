@@ -1,0 +1,27 @@
+title: 'Quiz: kubeadm and HA'
+questions:
+- id: two-nodes
+  prompt: A team runs a two-node stacked control plane. What failure tolerance does the datastore have?
+  choices: [One node can fail, None, Two nodes can fail, It depends on the load balancer]
+  answer: [1]
+  explain: 'A) wrong: quorum of two is two. B) correct: either node loss stops writes. C) wrong: impossible with two members. D) wrong: a load balancer cannot create quorum.'
+- id: hash
+  prompt: What does the discovery CA hash in kubeadm join protect against?
+  choices: [Token expiry, A joining node trusting an impostor API endpoint, Pod network misconfiguration, Disk corruption in etcd]
+  answer: [1]
+  explain: 'A) wrong: expiry is separate. B) correct: the node verifies the CA public key before sending its token. C) wrong: unrelated. D) wrong: unrelated.'
+- id: endpoint
+  prompt: Why set controlPlaneEndpoint at init time?
+  choices: [kube-proxy requires it, It puts a stable address into certificates and kubeconfigs so more control-plane nodes can be added later, It enables swap, It selects the container runtime]
+  answer: [1]
+  explain: 'A) wrong: it does not. B) correct: later HA needs an address that outlives any node. C) wrong: unrelated. D) wrong: the runtime is set elsewhere.'
+- id: notready
+  prompt: After kubeadm init the node is NotReady and CoreDNS is Pending. Most likely cause?
+  choices: [etcd is corrupted, No pod network plugin is installed, The token expired, Swap is enabled]
+  answer: [1]
+  explain: 'A) wrong: the API works. B) correct: without a CNI plugin pods cannot get networking. C) wrong: tokens only matter for joins. D) wrong: swap would stop the kubelet, not leave DNS pending.'
+- id: join-order
+  prompt: Which are good practice when adding control-plane nodes? (select two)
+  choices: [Join them one at a time, Verify etcd membership after each join, Join all at once to save time, Reuse a cloned VM with the same machine id]
+  answer: [0, 1]
+  explain: 'A) correct: each join changes etcd membership. B) correct: confirm the member list before the next join. C) wrong: simultaneous membership changes risk quorum trouble. D) wrong: duplicate identities collide.'

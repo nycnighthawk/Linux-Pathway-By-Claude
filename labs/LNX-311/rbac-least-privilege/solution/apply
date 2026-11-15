@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > rbac.yaml <<'Y'
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: ci, namespace: shop}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: ci-deployer, namespace: shop}
+rules:
+- {apiGroups: [apps], resources: [deployments], verbs: [get, list, patch, update]}
+- {apiGroups: [""], resources: [pods], verbs: [get, list]}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: ci-deployer, namespace: shop}
+subjects: [{kind: ServiceAccount, name: ci, namespace: shop}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: ci-deployer}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: viewer, namespace: shop}
+rules:
+- {apiGroups: [""], resources: [pods, services], verbs: [get, list, watch]}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: viewer, namespace: shop}
+subjects: [{kind: Group, name: team-a-dev, apiGroup: rbac.authorization.k8s.io}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: viewer}
+Y

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f fleet.csv ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import csv, sys
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+rows = list(csv.DictReader(open("fleet.csv")))
+minor = lambda r: int(r["minor"].split(".")[1])
+oos = ",".join(sorted(r["name"] for r in rows if minor(r) < 34))
+steps = sum(36 - minor(r) for r in rows)
+first = ",".join(sorted(r["name"] for r in rows if r["env"] == "dev"))
+mx = sorted(rows, key=lambda r: (-(36 - minor(r)), r["name"]))[0]["name"]
+plan = dict(l.strip().split("=", 1) for l in open("plan.txt") if "=" in l)
+for k, v in (("out_of_support", oos), ("upgrade_steps_total", str(steps)), ("first_wave", first), ("max_steps_cluster", mx)):
+    if plan.get(k, "").replace(" ", "") == v: ok("%s correct" % k)
+    else: fail("%s is wrong or missing" % k)
+n = [l for l in open("notes.txt").read().replace("\n", " ").split(".") if l.strip()]
+if len(n) >= 2: ok("notes.txt has two sentences")
+else: fail("notes.txt needs two sentences")
+sys.exit(bad)
+PY

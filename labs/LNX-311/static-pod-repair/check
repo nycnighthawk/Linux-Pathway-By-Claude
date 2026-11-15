@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f manifests/kube-scheduler.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+try:
+    d = yaml.safe_load(open("manifests/kube-scheduler.yaml"))
+    s = d["spec"]; c = s["containers"][0]
+except Exception as e:
+    print("FAIL: manifest unreadable: %s" % e); sys.exit(1)
+cmd = c.get("command", [])
+conf = "/etc/kubernetes/scheduler.conf"
+if s.get("hostNetwork") is True: ok("hostNetwork is true")
+else: fail("set hostNetwork: true")
+if s.get("priorityClassName") == "system-node-critical": ok("priorityClassName system-node-critical")
+else: fail("priorityClassName must be system-node-critical")
+for f in ("--kubeconfig", "--authentication-kubeconfig"):
+    if "%s=%s" % (f, conf) in cmd: ok(f + " points to scheduler.conf")
+    else: fail("%s must be %s" % (f, conf))
+if "--authorization-kubeconfig=" + conf in cmd: ok("authorization kubeconfig kept")
+else: fail("do not remove --authorization-kubeconfig")
+mounts = [m for m in c.get("volumeMounts", []) if m.get("mountPath") == conf and m.get("readOnly") is True]
+vols = [v for v in s.get("volumes", []) if v.get("hostPath", {}).get("path") == conf]
+if mounts and vols and mounts[0]["name"] == vols[0]["name"]: ok("scheduler.conf mounted read-only from the host")
+else: fail("mount /etc/kubernetes/scheduler.conf read-only through a hostPath volume of the same name")
+h = c.get("livenessProbe", {}).get("httpGet", {})
+if h.get("path") == "/livez" and h.get("port") == 10259 and str(h.get("scheme")).upper() == "HTTPS": ok("liveness probe: HTTPS /livez on 10259")
+else: fail("liveness probe must be httpGet /livez, port 10259, scheme HTTPS")
+if "--secure-port=10259" in cmd and "--leader-elect=true" in cmd and "scheduler" in c.get("image", ""): ok("other flags and image untouched")
+else: fail("image and the other flags must stay as they were")
+sys.exit(bad)
+PY

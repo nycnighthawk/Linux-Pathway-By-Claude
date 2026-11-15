@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > gpu-job.yaml <<'Y'
+apiVersion: batch/v1
+kind: Job
+metadata: {name: train}
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: train
+        image: example/train:1
+        resources: {limits: {cpu: "4", memory: 8Gi}}
+Y
+cat > web.yaml <<'Y'
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: web}
+spec:
+  replicas: 3
+  selector: {matchLabels: {app: web}}
+  template:
+    metadata: {labels: {app: web}}
+    spec:
+      containers:
+      - name: web
+        image: nginx:1.27
+        resources:
+          requests: {cpu: 100m}
+          limits: {cpu: 500m, memory: 256Mi}
+Y
+cat > hpa.yaml <<'Y'
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: {name: web}
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: web}
+  minReplicas: 1
+  maxReplicas: 5
+Y
+cat > replicas.txt <<'Y'
+current_replicas=8
+current_cpu_utilisation=95
+target_cpu_utilisation=70
+answer=
+Y

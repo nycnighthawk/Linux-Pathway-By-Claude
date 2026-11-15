@@ -1,0 +1,27 @@
+title: 'Quiz: Storage'
+questions:
+- id: binding
+  prompt: Why use WaitForFirstConsumer with zonal disks?
+  choices: [It makes the disk faster, The disk is created in the zone where the pod was scheduled, It enables ReadWriteMany, It prevents expansion]
+  answer: [1]
+  explain: 'A) wrong: speed is unchanged. B) correct: provisioning waits for a scheduling decision. C) wrong: access mode is separate. D) wrong: unrelated.'
+- id: retain
+  prompt: A claim bound to a Retain volume is deleted. What is the volume's state?
+  choices: [Available immediately for reuse, Released and not claimable until cleaned manually, Deleted along with its disk, Bound to the next claim]
+  answer: [1]
+  explain: 'A) wrong: it still references the old claim. B) correct: an administrator must clear it. C) wrong: that is Delete. D) wrong: it cannot bind again as is.'
+- id: rwx
+  prompt: Pods on several nodes must write to the same volume at the same time. Which mode is needed, and who can supply it?
+  choices: [ReadWriteOnce on any cloud block disk, ReadWriteMany from a shared filesystem or distributed back end, ReadOnlyMany from any disk, ReadWriteOncePod from NFS]
+  answer: [1]
+  explain: 'A) wrong: a block disk attaches to one node. B) correct. C) wrong: read-only. D) wrong: it restricts to a single pod.'
+- id: shrink
+  prompt: Which are true about volume expansion? (select two)
+  choices: [The class must set allowVolumeExpansion, Shrinking a claim is not supported, Expansion needs a new StorageClass, The pod must be deleted first in every driver]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: the existing class is enough. D) wrong: many drivers expand online.'
+- id: csi
+  prompt: A claim stays Pending and no volume appears. Which log do you read first?
+  choices: [The node plugin DaemonSet, The CSI controller provisioner sidecar and the claim's events, kube-proxy, The scheduler only]
+  answer: [1]
+  explain: 'A) wrong: it handles mounting. B) correct: provisioning is the controller side. C) wrong: networking. D) wrong: with immediate binding the scheduler is not involved.'

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f report.txt ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get provider)" in eks|aks|gke) ok provider ;; *) fail "provider must be eks, aks or gke" ;; esac
+case "$(get node_model)" in managed-nodes|byo-nodes|serverless|auto) ok node_model ;; *) fail "node_model must be managed-nodes, byo-nodes, serverless or auto" ;; esac
+case "$(get api_endpoint)" in public|restricted|private) ok api_endpoint ;; *) fail "api_endpoint must be public, restricted or private" ;; esac
+v=$(get workload_identity); [ -n "$v" ] && ok workload_identity || fail "workload_identity: name the mechanism or none"
+case "$(get audit_logs)" in on|off) ok audit_logs ;; *) fail "audit_logs must be on or off" ;; esac
+get k8s_minor | grep -Eq '^1\.[0-9]{2}$' && ok k8s_minor || fail "k8s_minor must look like 1.35"
+get support_end | grep -Eq '^20[0-9]{2}-[0-9]{2}-[0-9]{2}$' && ok support_end || fail "support_end must be YYYY-MM-DD"
+case "$(get metadata_blocked)" in yes|no) ok metadata_blocked ;; *) fail "metadata_blocked must be yes or no" ;; esac
+[ "$(wc -l < notes.txt)" -ge 3 ] && ok "notes.txt explains how you found the values" || fail "notes.txt needs at least three lines"
+exit $bad

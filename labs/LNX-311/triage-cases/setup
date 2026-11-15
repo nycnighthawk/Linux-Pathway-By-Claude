@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p cases
+cat > cases/1.txt <<'C'
+$ kubectl describe pod api-7d9c-xk2
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+    Limits:
+      memory:  256Mi
+C
+cat > cases/2.txt <<'C'
+$ kubectl get svc web -o wide
+NAME  TYPE       CLUSTER-IP     PORT(S)  SELECTOR
+web   ClusterIP  10.96.14.20    80/TCP   app=web
+$ kubectl get endpointslices -l kubernetes.io/service-name=web
+NAME        ADDRESSTYPE  PORTS  ENDPOINTS
+web-x7k2p   IPv4         80     <unset>
+$ kubectl get pods --show-labels
+NAME        READY  STATUS   LABELS
+web-5c4-ab  1/1    Running  app=webapp
+C
+cat > cases/3.txt <<'C'
+$ journalctl -u kubelet -e
+kubelet[812]: failed to run Kubelet: misconfiguration: kubelet cgroup driver: "systemd" is different from docker cgroup driver: "cgroupfs"
+systemd[1]: kubelet.service: Main process exited, code=exited, status=1/FAILURE
+C
+cat > cases/4.txt <<'C'
+$ kubectl get nodes
+Unable to connect to the server: x509: certificate has expired or is not yet valid: current time 2026-11-14T09:12:11Z is after 2026-11-13T09:00:02Z
+$ crictl logs 3f1a  # kube-apiserver
+x509: certificate has expired
+C
+cat > cases/5.txt <<'C'
+$ kubectl describe pod billing-0
+Events:
+  Warning  Failed   kubelet  Failed to pull image "registry.example.com/billing:v2.4.1": rpc error: code = NotFound desc = failed to pull and unpack image: not found
+  Warning  Failed   kubelet  Error: ErrImagePull
+C
+: > diagnosis.txt
