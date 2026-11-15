@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: the evidence for five cases and an empty answer sheet.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f cases.txt answers.txt sssd-fix.conf
+cat > cases.txt <<'EOT'
+=== Case A: same user, different numbers ===
+app1$ id alice@corp.example.com
+uid=886201105(alice@corp.example.com) gid=886200513(domain users@corp.example.com)
+app2$ id alice@corp.example.com
+uid=3000012(CORP\alice) gid=3000001(CORP\domain users)
+app1$ grep -E 'id_provider|ldap_id_mapping' /etc/sssd/sssd.conf
+id_provider = ad
+app2$ grep -E 'idmap config' /etc/samba/smb.conf
+idmap config * : backend = tdb
+idmap config * : range = 3000000-7999999
+
+=== Case B: a user that does not exist ===
+app3$ getent passwd bob@corp.example.com
+app3$ sssctl domain-status corp.example.com
+Online status: Online
+Active servers: LDAP: dc1.corp.example.com
+app3$ grep ldap_id_mapping /etc/sssd/sssd.conf
+ldap_id_mapping = False
+app3$ ldbsearch -H /var/lib/sss/db/cache_corp.example.com.ldb name=bob@corp.example.com
+(no entry)
+dc1$ ldapsearch -Y GSSAPI -b dc=corp,dc=example,dc=com '(sAMAccountName=bob)' uidNumber gidNumber
+dn: CN=Bob Jones,OU=Staff,DC=corp,DC=example,DC=com
+sAMAccountName: bob
+
+=== Case C: group change not visible ===
+app4$ id carol@corp.example.com
+uid=1200310(carol@corp.example.com) gid=1200000(domain users@corp.example.com) groups=1200000(domain users@corp.example.com)
+dc1$ (carol was added to the group linux-admins 12 minutes ago)
+app4$ sssctl domain-status corp.example.com
+Online status: Online
+app4$ grep entry_cache_timeout /etc/sssd/sssd.conf
+entry_cache_timeout = 5400
+app4$ ls -l --time=ctime /var/lib/sss/db/cache_corp.example.com.ldb
+-rw------- 1 root root 1310720 Nov 14 09:12 cache_corp.example.com.ldb
+
+=== Case D: the arithmetic ===
+sssd.conf: ldap_idmap_range_min = 200000, ldap_idmap_range_size = 200000
+sssd_corp.example.com.log: Adding domain [corp.example.com] to the idmap with slice 3
+(slice numbering starts at 0; the first slice begins at range_min)
+user dave has SID S-1-5-21-111-222-333-1105 (RID 1105)
+user erin has SID S-1-5-21-111-222-333-250001 (RID 250001)
+
+=== Case E: slow logins ===
+app5$ time ssh frank@corp.example.com@localhost true
+real    0m21.4s
+app5$ grep -E 'ad_server|ldap_network_timeout' /etc/sssd/sssd.conf
+(no output; SRV discovery in use)
+app5$ nc -z -w 3 dc2.corp.example.com 389; echo $?
+1
+app5$ journalctl -u sssd | tail -3
+sssd_be: Marking server 'dc2.corp.example.com' as 'not working'
+sssd_be: Trying to resolve service 'AD'
+sssd_be: Marking server 'dc3.corp.example.com' as 'working'
+
+=== Reference: what Red Hat suggests ===
+The default debug level records serious failures only. For authentication problems start at a higher level
+(not the maximum); the log analyser needs the verbose levels.
+EOT
+printf '# SPDX-License-Identifier: MIT\ncase_a_cause=?\ncase_b_cause=?\ncase_c_cause=?\ncase_c_first_command=?\ncase_d_uid=?\ncase_d_rid_250001=?\ncase_e_first_command=?\ndebug_level_for_auth=?\n' > answers.txt
+printf '# SPDX-License-Identifier: MIT\n# TODO: see README.md\n' > sssd-fix.conf
