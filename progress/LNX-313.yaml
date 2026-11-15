@@ -1,0 +1,30 @@
+item: LNX-313
+label: Kubernetes App Delivery & GitOps
+branch: build/LNX-313
+state: in-progress
+started: '2026-11-15'
+updated: '2026-11-15'
+phases:
+  synth:
+    state: todo
+    units: 10
+    done: []
+  lessons:
+    state: todo
+    units: 10
+    done: []
+  quizzes:
+    state: todo
+    units: 10
+    done: []
+  labs:
+    state: todo
+    units: 10
+    done: []
+  checks:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-15 started
