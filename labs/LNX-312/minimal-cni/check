@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -x minimal ] || { echo "FAIL: run setup first"; exit 1; }
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+cleanup() { $SUDO ip netns del cnitest 2>/dev/null; $SUDO ip link del cnibr0 2>/dev/null; true; }
+cleanup
+CFG='{"cniVersion":"1.0.0","name":"labnet","type":"minimal","bridge":"cnibr0","address":"10.22.0.5/24","gateway":"10.22.0.1"}'
+run() { echo "$CFG" | $SUDO env CNI_COMMAND="$1" CNI_CONTAINERID=abcdef0123456789 CNI_NETNS=/run/netns/cnitest CNI_IFNAME=eth0 CNI_PATH=/opt/cni/bin ./minimal; }
+v=$(run VERSION 2>/dev/null); echo "$v" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert "1.0.0" in d["supportedVersions"]' 2>/dev/null && ok "VERSION lists 1.0.0" || fail "VERSION must print supportedVersions including 1.0.0"
+$SUDO ip netns add cnitest
+out=$(run ADD 2>/dev/null); rc=$?
+[ $rc = 0 ] && ok "ADD exits 0" || fail "ADD exits non-zero"
+echo "$out" | python3 -c '
+import json, sys
+d = json.load(sys.stdin)
+assert d["cniVersion"] == "1.0.0"
+assert d["ips"][0]["address"] == "10.22.0.5/24" and d["ips"][0]["gateway"] == "10.22.0.1"
+assert d["interfaces"][0]["name"] == "eth0"' 2>/dev/null && ok "ADD prints a valid result" || fail "ADD result JSON is missing or wrong"
+$SUDO ip -n cnitest -o addr show dev eth0 2>/dev/null | grep -q "10.22.0.5/24" && ok "eth0 in the namespace has the address" || fail "eth0 in the namespace needs 10.22.0.5/24"
+$SUDO ip -n cnitest route 2>/dev/null | grep -q "default via 10.22.0.1" && ok "default route via the gateway" || fail "default route via 10.22.0.1 missing"
+$SUDO ip -o addr show dev cnibr0 2>/dev/null | grep -q "10.22.0.1/24" && ok "bridge has the gateway address" || fail "bridge cnibr0 needs 10.22.0.1/24"
+$SUDO ip -o link show 2>/dev/null | grep -q "vethabcdef01.*master cnibr0" && ok "host veth attached to the bridge" || fail "host end vethabcdef01 must be a port of cnibr0"
+$SUDO ip netns exec cnitest ping -c1 -W1 10.22.0.1 >/dev/null 2>&1 && ok "the container reaches the gateway" || fail "ping from the namespace to the gateway fails"
+run DEL >/dev/null 2>&1 && ok "DEL exits 0" || fail "DEL must exit 0"
+$SUDO ip -o link show 2>/dev/null | grep -q vethabcdef01 && fail "DEL must remove the host veth" || ok "host veth removed"
+run DEL >/dev/null 2>&1 && ok "DEL is idempotent" || fail "second DEL must also exit 0"
+o=$(run BOGUS 2>/dev/null); rc=$?
+[ $rc != 0 ] && echo "$o" | grep -q '"code"' && ok "unknown command gives an error JSON and non-zero exit" || fail "unknown commands must print error JSON and exit non-zero"
+cleanup
+exit $bad

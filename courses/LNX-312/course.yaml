@@ -35,6 +35,10 @@ modules:
     title: 'netns + veth + bridge + NAT: a container network by hand'
     file: lessons/LNX-312-T01.md
     minutes: 60
+  - topic: LNX-312-T02
+    title: CNI spec; write a minimal CNI plugin
+    file: lessons/LNX-312-T02.md
+    minutes: 55
 - id: services-datapath
   title: Services and the data plane
   lessons:
@@ -61,6 +65,15 @@ labs:
   minutes: 30
   packages:
   - nftables
+- id: minimal-cni
+  topic: LNX-312-T02
+  title: Write a minimal CNI plugin
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - iproute2
+  - iputils-ping
 quizzes:
 - id: LNX-312-T01
   topic: LNX-312-T01
@@ -70,3 +83,7 @@ quizzes:
   topic: LNX-312-T04
   title: 'Quiz: kube-proxy modes (iptables, IPVS, nftables), Service types'
   file: quizzes/LNX-312-T04.yaml
+- id: LNX-312-T02
+  topic: LNX-312-T02
+  title: 'Quiz: CNI spec; write a minimal CNI plugin'
+  file: quizzes/LNX-312-T02.yaml

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+$SUDO ip netns del cnitest 2>/dev/null || true
+$SUDO ip link del cnibr0 2>/dev/null || true
+cat > minimal <<'P'
+#!/usr/bin/env bash
+# TODO: implement VERSION, ADD and DEL
+echo '{"cniVersion":"1.0.0","code":4,"msg":"not implemented"}'
+exit 1
+P
+chmod +x minimal

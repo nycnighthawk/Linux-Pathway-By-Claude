@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > minimal <<'P'
+#!/usr/bin/env bash
+set -u
+cfg=$(cat)
+get() { printf '%s' "$cfg" | python3 -c 'import json,sys; print(json.load(sys.stdin).get(sys.argv[1], ""))' "$1"; }
+case "${CNI_COMMAND:-}" in
+  VERSION)
+    echo '{"cniVersion":"1.0.0","supportedVersions":["0.4.0","1.0.0"]}' ;;
+  ADD)
+    br=$(get bridge); addr=$(get address); gw=$(get gateway)
+    host="veth${CNI_CONTAINERID:0:8}"
+    ns=${CNI_NETNS##*/}
+    ip link show "$br" >/dev/null 2>&1 || { ip link add "$br" type bridge; ip addr add "$gw/${addr#*/}" dev "$br"; ip link set "$br" up; }
+    ip link add "$host" type veth peer name "$CNI_IFNAME" netns "$ns"
+    ip link set "$host" master "$br" up
+    ip -n "$ns" link set lo up
+    ip -n "$ns" addr add "$addr" dev "$CNI_IFNAME"
+    ip -n "$ns" link set "$CNI_IFNAME" up
+    ip -n "$ns" route add default via "$gw"
+    printf '{"cniVersion":"1.0.0","interfaces":[{"name":"%s","sandbox":"%s"}],"ips":[{"address":"%s","gateway":"%s","interface":0}]}\n' "$CNI_IFNAME" "$CNI_NETNS" "$addr" "$gw" ;;
+  DEL)
+    ip link del "veth${CNI_CONTAINERID:0:8}" 2>/dev/null || true ;;
+  *)
+    echo '{"cniVersion":"1.0.0","code":4,"msg":"unsupported command"}'; exit 1 ;;
+esac
+P
+chmod +x minimal
