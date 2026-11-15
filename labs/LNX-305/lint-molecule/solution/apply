@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+r=roles/webcfg
+cat > $r/defaults/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+webcfg_dir: /tmp/webcfg-lab
+webcfg_port: 8080
+webcfg_workers: 2
+Y
+cat > $r/tasks/main.yml <<'Y'
+# SPDX-License-Identifier: MIT
+- name: Create the output directory
+  ansible.builtin.file:
+    path: "{{ webcfg_dir }}"
+    state: directory
+    mode: "0755"
+- name: Render the configuration
+  ansible.builtin.template:
+    src: web.conf.j2
+    dest: "{{ webcfg_dir }}/web.conf"
+    mode: "0644"
+- name: Stamp the first run
+  ansible.builtin.file:
+    path: "{{ webcfg_dir }}/.stamp"
+    state: touch
+    mode: "0644"
+    modification_time: preserve
+    access_time: preserve
+- name: Record the run once
+  ansible.builtin.lineinfile:
+    path: "{{ webcfg_dir }}/run.log"
+    line: configured
+    create: true
+    mode: "0644"
+Y
+cat > $r/molecule/default/converge.yml <<'Y'
+# SPDX-License-Identifier: MIT
+- name: Converge
+  hosts: all
+  gather_facts: false
+  vars:
+    webcfg_dir: /tmp/webcfg-lab
+  roles:
+    - role: webcfg
+Y
+cat > $r/molecule/default/verify.yml <<'Y'
+# SPDX-License-Identifier: MIT
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Read the rendered configuration
+      ansible.builtin.slurp:
+        src: /tmp/webcfg-lab/web.conf
+      register: webcfg_result
+    - name: Check port and workers
+      ansible.builtin.assert:
+        that:
+          - "'port=8080' in (webcfg_result.content | b64decode)"
+          - "'workers=2' in (webcfg_result.content | b64decode)"
+Y
+sed -i -e 's/^lint_profile_order=.*/lint_profile_order=min,basic,moderate,safety,shared,production/' -e 's/^second_run_step_name=.*/second_run_step_name=idempotence/' -e 's/^ignore_file_name=.*/ignore_file_name=.ansible-lint-ignore/' -e 's/^lint_autofix_option=.*/lint_autofix_option=--fix/' answers.txt
