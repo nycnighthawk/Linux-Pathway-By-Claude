@@ -1,0 +1,79 @@
+title: 'Quiz: Falco, auditd advanced'
+questions:
+- id: auid
+  prompt: Why is the auid field valuable in audit records?
+  choices:
+  - It holds the effective user after su or sudo
+  - It keeps the uid of the original login, even after privilege changes
+  - It is the process id
+  - It names the audit rule
+  answer:
+  - 1
+  explain: 'A) wrong: the effective uid is a different field. B) correct: the login uid survives su and sudo, so a human can be
+    traced. C) wrong: the process id is pid. D) wrong: the rule name is the key, set with -k.'
+- id: b32
+  prompt: An execve audit rule exists only with arch=b64. What is the gap?
+  choices:
+  - 64-bit programs are not logged
+  - A 32-bit binary uses the other system call table and runs without a record
+  - Shell builtins are not logged
+  - Kernel modules cannot be loaded
+  answer:
+  - 1
+  explain: 'A) wrong: those are logged. B) correct: the b32 twin is needed for completeness. C) wrong: unrelated to architecture.
+    D) wrong: module rules are separate.'
+- id: immutable
+  prompt: What does -e 2 do as the last audit rule?
+  choices:
+  - Doubles the log size
+  - Makes the rule set immutable until reboot
+  - Enables remote logging
+  - Exits auditd
+  answer:
+  - 1
+  explain: 'A) wrong: it does not affect size. B) correct: even root cannot change rules, though changes then need a reboot.
+    C) wrong: forwarding is configured elsewhere. D) wrong: the daemon keeps running.'
+- id: lost
+  prompt: auditctl -s shows lost 41203. What does it mean?
+  choices:
+  - The log was rotated
+  - The kernel dropped events because its backlog overflowed, so the record has holes
+  - 41203 users logged out
+  - The rules were deleted
+  answer:
+  - 1
+  explain: 'A) wrong: rotation is a daemon action. B) correct: lost counts events that never reached the log. C) wrong: it is not
+    a session count. D) wrong: rules are reported separately.'
+- id: falco-parts
+  prompt: Which Falco objects can a rule condition reuse?
+  choices:
+  - Only other rules
+  - Lists and macros
+  - Kernel modules
+  - Audit keys
+  answer:
+  - 1
+  explain: 'A) wrong: rules do not reference each other. B) correct: lists hold strings and macros hold named conditions. C) wrong:
+    modules are drivers. D) wrong: keys belong to auditd.'
+- id: driver
+  prompt: What is the advantage of the modern eBPF driver in Falco?
+  choices:
+  - It needs no compiler or kernel headers on the host, using CO-RE, but needs a kernel with BTF
+  - It works on any kernel version
+  - It makes rules unnecessary
+  - It encrypts alerts
+  answer:
+  - 0
+  explain: 'A) correct: compile once, run everywhere. B) wrong: it needs a recent kernel with BTF. C) wrong: the rules engine
+    still decides. D) wrong: transport security is separate.'
+- id: fatigue
+  prompt: All Falco alerts at NOTICE and above go to a chat channel and people mute it. What is the best remedy?
+  choices:
+  - Lower the priority of every rule
+  - Tune by namespace, image and behaviour, and route only high-priority alerts to people
+  - Disable Falco
+  - Add more rules
+  answer:
+  - 1
+  explain: 'A) wrong: this hides real alerts as well. B) correct: exceptions for known-good behaviour restore trust. C) wrong: it
+    removes detection. D) wrong: more rules add more noise.'

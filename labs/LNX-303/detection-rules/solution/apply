@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > audit.rules <<'EOF'
+-D
+-b 8192
+-f 1
+-w /etc/passwd -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/sudoers -p wa -k scope
+-a always,exit -F arch=b64 -S execve -F auid>=1000 -F auid!=unset -k exec
+-a always,exit -F arch=b32 -S execve -F auid>=1000 -F auid!=unset -k exec
+-a always,exit -F arch=b64 -S init_module,finit_module,delete_module -k modules
+-a always,exit -F arch=b32 -S init_module,finit_module,delete_module -k modules
+-e 2
+EOF
+cat > local-falco.yaml <<'EOF'
+- list: web_server_binaries
+  items: [httpd, nginx, apache2, php-fpm]
+
+- list: shell_binaries
+  items: [bash, sh, dash, zsh]
+
+- macro: spawned_process
+  condition: evt.type in (execve, execveat) and evt.dir = <
+
+- rule: Shell spawned by a web server
+  desc: A web server process started a shell, a common sign of a webshell
+  condition: spawned_process and proc.name in (shell_binaries) and proc.pname in (web_server_binaries)
+  output: Shell from web server (user=%user.name parent=%proc.pname cmd=%proc.cmdline container=%container.name)
+  priority: CRITICAL
+  tags: [host, container, shell, mitre_execution]
+EOF

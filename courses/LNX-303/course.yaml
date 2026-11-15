@@ -40,6 +40,13 @@ modules:
     title: IMA/EVM, lockdown
     file: lessons/LNX-303-T04.md
     minutes: 45
+- id: detection
+  title: Detection and response
+  lessons:
+  - topic: LNX-303-T05
+    title: Falco, auditd advanced
+    file: lessons/LNX-303-T05.md
+    minutes: 45
 labs:
 - id: pki-two-tier
   topic: LNX-303-T01
@@ -69,6 +76,12 @@ labs:
   env: V
   license: MIT
   minutes: 35
+- id: detection-rules
+  topic: LNX-303-T05
+  title: Write audit rules and a Falco rule that catch a webshell
+  env: V
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-303-T01
   topic: LNX-303-T01
@@ -86,3 +99,7 @@ quizzes:
   topic: LNX-303-T04
   title: 'Quiz: IMA/EVM, lockdown'
   file: quizzes/LNX-303-T04.yaml
+- id: LNX-303-T05
+  topic: LNX-303-T05
+  title: 'Quiz: Falco, auditd advanced'
+  file: quizzes/LNX-303-T05.yaml
