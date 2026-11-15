@@ -1,0 +1,79 @@
+title: 'Quiz: Vault'
+questions:
+- id: header
+  prompt: In the header $ANSIBLE_VAULT;1.2;AES256;prod, what is prod?
+  choices:
+  - The cipher
+  - The environment variable that holds the password
+  - The file's owner
+  - The vault ID label that tells Ansible which password to use
+  answer:
+  - 3
+  explain: The fields are format, version, cipher and, in 1.2, the label. The cipher is AES256, the owner and variable are
+    not in the header.
+- id: encrypt-string
+  prompt: Which command makes a single encrypted value to paste into a normal YAML file?
+  choices:
+  - ansible-vault rekey
+  - ansible-vault view
+  - ansible-vault create
+  - ansible-vault encrypt_string
+  answer:
+  - 3
+  explain: encrypt_string emits a !vault block. view displays, rekey changes passwords and create makes a whole encrypted
+    file.
+- id: no-log
+  prompt: Which task keyword keeps secret arguments and results out of the output and callbacks?
+  choices:
+  - ignore_errors
+  - changed_when
+  - 'diff: false'
+  - no_log
+  answer:
+  - 3
+  explain: 'no_log: true hides the task''s arguments and results. diff: false only hides file diffs, and the other two change
+    failure and change reporting.'
+- id: rekey
+  prompt: What does ansible-vault rekey do?
+  choices:
+  - Decrypts the files permanently
+  - Rotates the secrets themselves at their source
+  - Generates a new vault ID
+  - Re-encrypts files under a new password or label
+  answer:
+  - 3
+  explain: rekey changes the key that protects the files. Old ciphertext in Git history stays readable by the old password,
+    and the secrets must still be rotated where they are used.
+- id: password-source
+  prompt: Which way of supplying the vault password avoids a password file in the repository?
+  choices:
+  - A client script that reads the password from a keyring or CI secret store
+  - A vault password file committed next to the playbook
+  - Putting the password in ansible.cfg
+  - Hard-coding it in the playbook
+  answer:
+  - 0
+  explain: An executable script, usually named *-client, can fetch the password from a secret store at run time. The other
+    options place the password where the repository exposes it.
+- id: leak
+  prompt: Which of these leaks a vaulted secret even though the file is encrypted?
+  choices:
+  - Keeping the vault in group_vars
+  - Rendering it into a file with mode 0644
+  - Encrypting with a label
+  - Using indirection via vault_ variables
+  answer:
+  - 1
+  explain: A decrypted secret in a world-readable file is visible to every local user. Labels, indirection and group_vars
+    placement are sound practices.
+- id: symmetric
+  prompt: What is the main access-control limit of Ansible Vault?
+  choices:
+  - It cannot encrypt YAML
+  - It only works with the Windows connection
+  - Anyone who can decrypt can read every secret under that password; there is no per-secret access control or audit log
+  - It limits files to 1 KB
+  answer:
+  - 2
+  explain: Vault is symmetric and has no server. That is why larger teams add a secret manager with per-secret policies and
+    audit trails.

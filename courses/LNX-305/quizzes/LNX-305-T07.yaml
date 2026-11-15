@@ -1,0 +1,76 @@
+title: 'Quiz: Idempotence, check mode'
+questions:
+- id: def
+  prompt: Which statement defines idempotence for a configuration task?
+  choices:
+  - It never fails
+  - Running it twice leaves the system in the same state as running it once
+  - It always reports changed
+  - It runs only in check mode
+  answer:
+  - 1
+  explain: Idempotence is about the resulting state. A good task reports ok on the second run because nothing needed to change.
+- id: shell-append
+  prompt: 'Why is shell: echo x >> file a problem?'
+  choices:
+  - It appends a line every run and always reports changed
+  - It needs root
+  - It is slower than copy
+  - It cannot run in a loop
+  answer:
+  - 0
+  explain: The shell module cannot know the file already has the line. lineinfile with a regexp compares first and writes
+    only when needed.
+- id: check-keyword
+  prompt: Which task keyword makes a read-only task run even during --check?
+  choices:
+  - 'ansible_check_mode: true'
+  - 'check_mode: false'
+  - 'run_once: true'
+  - 'diff: false'
+  answer:
+  - 1
+  explain: 'check_mode: false on a task makes it execute normally in a dry run, which is right for probes that gather state.
+    ansible_check_mode is a variable, not a keyword.'
+- id: skipped
+  prompt: What happens to a module that does not support check mode during --check?
+  choices:
+  - It is skipped, so the preview leaves that task out
+  - It runs normally
+  - It is replaced by a debug task
+  - It fails the play
+  answer:
+  - 0
+  explain: Unsupported modules are skipped and reported as such. That is why a clean preview can still hide the riskiest task.
+- id: timestamp
+  prompt: A template contains the current time. What is the effect on idempotence?
+  choices:
+  - Ansible ignores the time
+  - The task is skipped
+  - The file changes every run, so the task and any handler it notifies fire every run
+  - None
+  answer:
+  - 2
+  explain: A value that differs on each run makes the rendered content differ. Use ansible_managed or a fixed comment.
+- id: changed-when-false
+  prompt: 'When is changed_when: false acceptable?'
+  choices:
+  - On a read-only probe such as cat or stat-like commands
+  - On any task that fails the idempotence test
+  - Never
+  - On every command task
+  answer:
+  - 0
+  explain: It is honest for a task that does not modify anything. On a task that writes, it hides a real change and makes
+    idempotence tests meaningless.
+- id: check-limit
+  prompt: Why is a clean --check not proof that a real run will change nothing?
+  choices:
+  - Check mode uses a different inventory
+  - Check mode always reports changed
+  - Check mode only runs on Windows
+  - Dependent tasks cannot see the effects of earlier tasks that were only predicted, and some modules are skipped
+  answer:
+  - 3
+  explain: Predicted state is not real state. Combine the preview with a second real run and a test such as Molecule's idempotence
+    step.

@@ -1,0 +1,65 @@
+title: 'Quiz: RHEL System Roles'
+questions:
+- id: package
+  prompt: Which package installs the supported system roles on a RHEL control node?
+  choices:
+  - ansible-roles-rhel
+  - ansible-collection-rhel
+  - rhel-system-roles
+  - system-roles-core
+  answer:
+  - 2
+  explain: rhel-system-roles ships the collection redhat.rhel_system_roles and its documentation. The others are not package
+    names.
+- id: prefix
+  prompt: Which variable name follows the system role conventions for the timesync role?
+  choices:
+  - ntp_servers
+  - timesync_ntp_servers
+  - __timesync_servers
+  - servers
+  answer:
+  - 1
+  explain: Public variables start with the role name. The double-underscore form is internal and must not be set by callers.
+- id: internal
+  prompt: What does a variable starting with two underscores and the role name signify?
+  choices:
+  - An internal variable that is not part of the interface
+  - A variable that must be set
+  - A secret value
+  - A variable that only works on Windows
+  answer:
+  - 0
+  explain: Internal variables are implementation details and may change in any release.
+- id: storage-safe
+  prompt: Why does the storage role have a safe mode?
+  choices:
+  - To enable encryption
+  - To speed up LVM
+  - To avoid root access
+  - To refuse destructive changes to existing data unless you turn it off deliberately
+  answer:
+  - 3
+  explain: Automating disk layout can destroy data, so the default refuses removals and reformatting of existing filesystems.
+- id: lockout
+  prompt: Which change is most likely to cut the connection Ansible is using?
+  choices:
+  - A timesync server list
+  - A network or firewall change that removes the SSH path
+  - A kdump setting
+  - A selinux boolean
+  answer:
+  - 1
+  explain: Network and firewall roles can remove the route or the port the management session uses. Test with console access
+    and a staged rollout.
+- id: two-writers
+  prompt: A system role sets a setting and a hand edit later changes the same file. What happens on the next run?
+  choices:
+  - The role refuses to run
+  - The role overwrites the edit to match its variables
+  - The role deletes the file
+  - The edit is merged automatically
+  answer:
+  - 1
+  explain: The role is the declared owner of the setting, so it restores it. Choose a single authority for each setting, such
+    as the role or a compliance remediation, not both.

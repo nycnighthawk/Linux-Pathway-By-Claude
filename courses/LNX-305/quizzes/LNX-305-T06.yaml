@@ -1,0 +1,78 @@
+title: 'Quiz: ansible-lint and Molecule'
+questions:
+- id: profiles
+  prompt: Which list is the ansible-lint profile order from weakest to strongest?
+  choices:
+  - min, moderate, basic, shared, safety, production
+  - basic, min, safety, moderate, production, shared
+  - min, basic, moderate, safety, shared, production
+  - safety, basic, min, shared, moderate, production
+  answer:
+  - 2
+  explain: 'Each profile extends the previous one: min, basic, moderate, safety, shared, production.'
+- id: ignore
+  prompt: Why prefer .ansible-lint-ignore to skip_list for accepted violations?
+  choices:
+  - It fixes the violations
+  - It runs faster
+  - Ignored items stay visible as warnings, while skipped rules disappear from the output
+  - skip_list is removed in new versions
+  answer:
+  - 2
+  explain: The ignore file records exceptions but keeps them in the report, so they are not forgotten. skip_list silences
+    the rule completely.
+- id: idempotence-step
+  prompt: Which Molecule step runs converge a second time and fails if anything changed?
+  choices:
+  - side_effect
+  - idempotence
+  - prepare
+  - verify
+  answer:
+  - 1
+  explain: The idempotence step is the automatic second run. verify runs assertions, side_effect simulates an event and prepare
+    sets up the instance.
+- id: no-changed-when
+  prompt: ansible-lint reports no-changed-when. What is the correct fix?
+  choices:
+  - Add changed_when with a real condition, or use a module that reports change itself
+  - 'Add ignore_errors: true'
+  - Rename the task
+  - Delete the task name
+  answer:
+  - 0
+  explain: A command or shell task always reports changed unless you say how to decide. A module with a state is better. Hiding
+    the problem with ignore_errors changes nothing about reporting.
+- id: container-limit
+  prompt: What can a plain container scenario not prove well?
+  choices:
+  - That a template renders
+  - That a variable is defined
+  - That a package name is correct
+  - Behaviour that depends on the kernel, a real init, SELinux enforcing or network interfaces
+  answer:
+  - 3
+  explain: A container shares the host kernel and usually lacks a full init, so those behaviours need a VM scenario or a different
+    test.
+- id: weak-verify
+  prompt: A verify playbook only checks that a package is installed. Why is that a weak test?
+  choices:
+  - It would pass even if the configuration the role writes were wrong
+  - It is too slow
+  - It makes the idempotence step fail
+  - Package checks are not supported
+  answer:
+  - 0
+  explain: A test that cannot fail on a wrong result proves little. Assert on the content that matters, and damage the output
+    once to see the test fail.
+- id: drivers
+  prompt: In current Molecule, where do the Docker and Podman drivers come from?
+  choices:
+  - The separate molecule-plugins package
+  - They are built into ansible-core
+  - The ansible-lint package
+  - They no longer exist
+  answer:
+  - 0
+  explain: Container drivers moved into the community molecule-plugins package, and the default driver relies on your create
+    and destroy playbooks.
