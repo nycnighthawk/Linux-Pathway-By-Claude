@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+python3 - <<'PY'
+import yaml
+p = "manifests/kube-scheduler.yaml"
+d = yaml.safe_load(open(p)); s = d["spec"]; c = s["containers"][0]
+conf = "/etc/kubernetes/scheduler.conf"
+s["hostNetwork"] = True
+s["priorityClassName"] = "system-node-critical"
+c["command"] = [x.replace("sched.conf", "scheduler.conf") for x in c["command"]]
+c["volumeMounts"][0]["mountPath"] = conf
+s["volumes"][0]["hostPath"]["path"] = conf
+c["livenessProbe"]["httpGet"] = {"host": "127.0.0.1", "path": "/livez", "port": 10259, "scheme": "HTTPS"}
+yaml.safe_dump(d, open(p, "w"))
+PY

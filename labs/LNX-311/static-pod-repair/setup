@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p manifests
+cat > manifests/kube-scheduler.yaml <<'Y'
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-scheduler
+  namespace: kube-system
+spec:
+  containers:
+  - name: kube-scheduler
+    image: registry.k8s.io/kube-scheduler:v1.35.0
+    command:
+    - kube-scheduler
+    - --authentication-kubeconfig=/etc/kubernetes/sched.conf
+    - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
+    - --bind-address=127.0.0.1
+    - --kubeconfig=/etc/kubernetes/sched.conf
+    - --leader-elect=true
+    - --secure-port=10259
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10251
+        scheme: HTTP
+    volumeMounts:
+    - mountPath: /etc/kubernetes/sched.conf
+      name: kubeconfig
+      readOnly: true
+  priorityClassName: system-cluster-critical
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/sched.conf
+      type: FileOrCreate
+    name: kubeconfig

@@ -1,0 +1,48 @@
+id: LNX-311
+title: Kubernetes Administration
+summary: 'Running a cluster: control-plane architecture, kubeadm installs and HA, upgrades, etcd backup and restore, scheduling,
+  storage, RBAC and certificates, Helm and Kustomize, CRDs and operators, troubleshooting and managed services.'
+hours: 70
+coverage: full
+outcomes:
+- Explain how the API server, etcd, scheduler, controllers, kubelet and runtime cooperate and which failure each can cause
+- Install and upgrade a kubeadm cluster and design a highly available control plane
+- Back up and restore etcd and rehearse recovery
+- Control placement with requests, affinity, taints and autoscaling
+- Provision storage with PersistentVolumes, StorageClasses and CSI
+- Grant least privilege with RBAC and manage cluster certificates
+- Package and customise applications with Helm and Kustomize and extend the API with CRDs
+- Troubleshoot nodes, the control plane and applications systematically
+certifications:
+- cert: CKA
+  objectives:
+  - D1
+  - D2
+  - D4
+  - D5
+- cert: KCNA
+  objectives:
+  - D1
+  - D2
+  - D3
+  - D4
+modules:
+- id: architecture-install
+  title: Architecture
+  lessons:
+  - topic: LNX-311-T01
+    title: 'Architecture: API server, etcd, scheduler, kubelet, CRI'
+    file: lessons/LNX-311-T01.md
+    minutes: 55
+labs:
+- id: static-pod-repair
+  topic: LNX-311-T01
+  title: Repair a broken kube-scheduler static pod
+  env: C
+  license: MIT
+  minutes: 30
+quizzes:
+- id: LNX-311-T01
+  topic: LNX-311-T01
+  title: 'Quiz: Architecture: API server, etcd, scheduler, kubelet, CRI'
+  file: quizzes/LNX-311-T01.yaml

@@ -1,0 +1,32 @@
+title: 'Quiz: Architecture'
+questions:
+- id: etcd-access
+  prompt: Which component is the only one that should read and write etcd directly?
+  choices: [kube-scheduler, kube-apiserver, kubelet, kube-controller-manager]
+  answer: [1]
+  explain: 'A) wrong: it reads and writes through the API. B) correct: the API server is the single gateway to the store. C) wrong: the kubelet is an API client. D) wrong: controllers also use the API.'
+- id: control-plane-down
+  prompt: The whole control plane is stopped. What happens to pods already running on workers?
+  choices: [They are killed at once, They keep running but nothing can change them, They are rescheduled to the control-plane nodes, They stay running and are still replaced if they crash through the control plane]
+  answer: [1]
+  explain: 'A) wrong: the kubelet and runtime keep containers alive. B) correct: existing containers run on, but no new scheduling or reconciling occurs. C) wrong: nothing schedules without the scheduler. D) wrong: crash replacement across nodes needs controllers; only the kubelet restarts containers in place.'
+- id: scheduler-output
+  prompt: What is the scheduler's only output?
+  choices: [A running container, A binding of a pod to a node written through the API, A new ReplicaSet, A kubelet configuration file]
+  answer: [1]
+  explain: 'A) wrong: only the kubelet and runtime start containers. B) correct: it names the node and the kubelet acts. C) wrong: the Deployment controller does that. D) wrong: it does not touch node config.'
+- id: static-pods
+  prompt: Which statements about kubeadm static pods are true? (select two)
+  choices: [The kubelet reads their manifests from a directory on the node, Editing a manifest restarts that component without any API call, They are created with kubectl apply and stored only in etcd, They are scheduled by kube-scheduler to a chosen node]
+  answer: [0, 1]
+  explain: 'A) correct: the kubelet watches /etc/kubernetes/manifests. B) correct: a file change restarts the pod and leaves no API audit trail. C) wrong: the manifests are files; the API only shows mirror pods. D) wrong: the kubelet runs them on its own node, no scheduler is involved.'
+- id: etcd-members
+  prompt: Why is a four-member etcd cluster usually a poor choice compared with three?
+  choices: [Raft needs an odd number to start, Four members tolerate only one failure, the same as three, but add cost and write latency, etcd refuses even sizes, Four members tolerate two failures]
+  answer: [1]
+  explain: 'A) wrong: it can start. B) correct: quorum for four is three, so one failure is tolerated, exactly as with three. C) wrong: it is allowed. D) wrong: two failures leave two of four, below quorum.'
+- id: cri
+  prompt: A newly joined node stays NotReady and the kubelet log says the runtime socket cannot be reached. Which check is most direct?
+  choices: [kubectl get events on the default namespace, crictl info against the configured socket and the runtime service status, Restart kube-scheduler, Delete the node object and rejoin]
+  answer: [1]
+  explain: 'A) wrong: the symptom is on the node, not in the default namespace. B) correct: crictl uses the same CRI socket as the kubelet and shows whether the runtime answers. C) wrong: unrelated component. D) wrong: it hides the cause and will recur.'
