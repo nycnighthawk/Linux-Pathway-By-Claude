@@ -1,0 +1,79 @@
+title: 'Quiz: Linux forensics basics'
+questions:
+- id: volatility
+  prompt: In which order should evidence be collected from a live suspect host?
+  choices:
+  - Disk image, then memory, then network state
+  - Memory and network state first, then disk, then backups and off-host logs
+  - Backups first, because they are safest
+  - Whatever is easiest
+  answer:
+  - 1
+  explain: 'A) wrong: memory and connections vanish at shutdown. B) correct: the most volatile data go first. C) wrong: backups are
+    durable and can wait. D) wrong: order matters.'
+- id: contain
+  prompt: How should you contain a suspected compromise while preserving evidence?
+  choices:
+  - Power the machine off
+  - Cut the network connection and leave the machine running
+  - Reboot into single-user mode
+  - Delete the attacker's files
+  answer:
+  - 1
+  explain: 'A) wrong: memory and processes are lost. B) correct: it stops exfiltration and keeps volatile state. C) wrong: a reboot
+    destroys memory. D) wrong: it alters the evidence.'
+- id: deleted
+  prompt: lsof +L1 shows a running process whose binary file was deleted. How do you recover the binary?
+  choices:
+  - It cannot be recovered
+  - Copy /proc/PID/exe, which still refers to the running image
+  - Search the trash
+  - Run strings on the disk
+  answer:
+  - 1
+  explain: 'A) wrong: the kernel still holds it. B) correct: /proc/PID/exe gives access to the deleted file. C) wrong: unlinking is
+    not trash. D) wrong: the data may be gone from the disk but not from the process.'
+- id: mount
+  prompt: Why mount an evidence image with ro,noload,nodev,noexec,noatime?
+  choices:
+  - To speed up analysis
+  - To prevent writes, journal replay, device nodes, execution of attacker programs and access-time changes
+  - To encrypt the image
+  - To compress the image
+  answer:
+  - 1
+  explain: 'A) wrong: speed is not the aim. B) correct: each option removes a way to change the evidence or run malware. C) wrong:
+    mount options do not encrypt. D) wrong: they do not compress.'
+- id: ctime
+  prompt: Why is ctime more useful than mtime when timestamps may be forged?
+  choices:
+  - ctime records file creation
+  - ordinary user-space tools cannot set ctime, so a mismatch with mtime suggests timestomping
+  - ctime is stored off the host
+  - mtime is never recorded
+  answer:
+  - 1
+  explain: 'A) wrong: ctime is inode change time; birth time is separate. B) correct: touch sets mtime and atime but ctime updates
+    to the real change time. C) wrong: it is on the file system. D) wrong: mtime is recorded.'
+- id: rootkit
+  prompt: Why prefer analysing a memory dump and a disk image to running commands on the live host?
+  choices:
+  - Live commands are always slower
+  - The host's tools and kernel may be compromised, so their output can be filtered or falsified
+  - Memory dumps are smaller
+  - Images are encrypted
+  answer:
+  - 1
+  explain: 'A) wrong: speed is not the reason. B) correct: rootkits hide processes, connections and files from live tools. C) wrong:
+    dumps are large. D) wrong: encryption is not implied.'
+- id: hash
+  prompt: Why hash the source device and the image at acquisition?
+  choices:
+  - To make the copy smaller
+  - To show later that the copy is faithful and unchanged
+  - To speed up the copy
+  - To erase the source
+  answer:
+  - 1
+  explain: 'A) wrong: hashing does not reduce size. B) correct: matching hashes support integrity and chain of custody. C) wrong:
+    it does not speed up the copy. D) wrong: it never erases anything.'

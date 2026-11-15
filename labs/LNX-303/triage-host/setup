@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Starting state: evidence collected from a suspect host. Work on it read-only.
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf evidence findings.json evidence-hashes.txt
+mkdir -p evidence
+{
+for i in 1 2 3 4 5 6; do echo "2026-11-14T03:0$i:1$i+00:00 web01 sshd[1201]: Failed password for root from 203.0.113.9 port 4$i""22 ssh2"; done
+echo "2026-11-14T03:08:02+00:00 web01 sshd[1250]: Failed password for invalid user admin from 203.0.113.9 port 40111 ssh2"
+echo "2026-11-14T03:12:44+00:00 web01 sshd[1290]: Accepted password for deploy from 203.0.113.9 port 51234 ssh2"
+echo "2026-11-14T03:13:02+00:00 web01 sudo:   deploy : TTY=pts/0 ; PWD=/home/deploy ; USER=root ; COMMAND=/bin/bash"
+echo "2026-11-14T08:30:10+00:00 web01 sshd[1500]: Accepted publickey for deploy from 10.0.0.5 port 50000 ssh2"
+} > evidence/auth.log
+cat > evidence/crontab-deploy.txt <<'EOF'
+# /var/spool/cron/crontabs/deploy
+*/5 * * * * /usr/local/bin/backup.sh
+* * * * * /dev/shm/.k/loader >/dev/null 2>&1
+EOF
+cat > evidence/authorized_keys-deploy.txt <<'EOF'
+# /home/deploy/.ssh/authorized_keys
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDeployKeyLegit deploy@bastion
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAttackerKeyXyz root@kali
+EOF
+printf '# /etc/ld.so.preload\n/usr/lib/libsys.so\n' > evidence/ld.so.preload.txt
+cat > evidence/lsof-deleted.txt <<'EOF'
+COMMAND  PID   USER   FD  TYPE DEVICE SIZE/OFF NLINK NODE NAME
+.x      4242 deploy  txt   REG    8,1   912344     0 5521 /tmp/.x (deleted)
+EOF
+cat > evidence/ss.txt <<'EOF'
+State  Recv-Q Send-Q Local Address:Port  Peer Address:Port  Process
+LISTEN 0      128    0.0.0.0:22          0.0.0.0:*          users:(("sshd",pid=900,fd=3))
+ESTAB  0      0      10.0.0.21:44872     198.51.100.77:4444 users:((".x",pid=4242,fd=3))
+ESTAB  0      0      10.0.0.21:22        10.0.0.5:50000     users:(("sshd",pid=1500,fd=4))
+EOF

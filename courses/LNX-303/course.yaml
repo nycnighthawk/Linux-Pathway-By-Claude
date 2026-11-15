@@ -51,6 +51,10 @@ modules:
     title: Suricata, fail2ban
     file: lessons/LNX-303-T06.md
     minutes: 45
+  - topic: LNX-303-T10
+    title: Linux forensics basics
+    file: lessons/LNX-303-T10.md
+    minutes: 45
 - id: supply-and-compliance
   title: Supply chain
   lessons:
@@ -127,6 +131,12 @@ labs:
   minutes: 35
   packages:
   - age
+- id: triage-host
+  topic: LNX-303-T10
+  title: Triage a compromised host from collected evidence
+  env: V
+  license: MIT
+  minutes: 45
 quizzes:
 - id: LNX-303-T01
   topic: LNX-303-T01
@@ -164,3 +174,7 @@ quizzes:
   topic: LNX-303-T09
   title: 'Quiz: OpenBao/Vault, sops'
   file: quizzes/LNX-303-T09.yaml
+- id: LNX-303-T10
+  topic: LNX-303-T10
+  title: 'Quiz: Linux forensics basics'
+  file: quizzes/LNX-303-T10.yaml
