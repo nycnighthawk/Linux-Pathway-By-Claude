@@ -44,6 +44,10 @@ modules:
     title: OpenTofu with libvirt provider
     file: lessons/LNX-306-T05.md
     minutes: 45
+  - topic: LNX-306-T06
+    title: Foreman/MAAS bare metal
+    file: lessons/LNX-306-T06.md
+    minutes: 45
 labs:
 - id: unattended-install
   topic: LNX-306-T01
@@ -81,6 +85,12 @@ labs:
   env: V
   license: MIT
   minutes: 40
+- id: baremetal-plan
+  topic: LNX-306-T06
+  title: Design bare-metal platform safeguards
+  env: S
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-306-T01
   topic: LNX-306-T01
@@ -102,3 +112,7 @@ quizzes:
   topic: LNX-306-T05
   title: 'Quiz: OpenTofu with libvirt provider'
   file: quizzes/LNX-306-T05.yaml
+- id: LNX-306-T06
+  topic: LNX-306-T06
+  title: 'Quiz: Foreman/MAAS bare metal'
+  file: quizzes/LNX-306-T06.yaml

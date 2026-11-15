@@ -145,10 +145,10 @@ topics:
   LNX-306-T03: {course: LNX-306, title: "cloud-init", depth: 4, env: V}
   LNX-306-T04: {course: LNX-306, title: "Packer images", depth: 3, env: V, query: [packer, image, template, builder, provisioner]}
   LNX-306-T05: {course: LNX-306, title: "OpenTofu with libvirt provider", depth: 3, env: V}
-  LNX-306-T06: {course: LNX-306, title: "Foreman/MAAS bare metal", depth: 2, env: S}
+  LNX-306-T06: {course: LNX-306, title: "Foreman/MAAS bare metal", depth: 2, env: S, query: [foreman, maas, ironic, provisioning, discovery, bare-metal, smart-proxy]}
   LNX-306-T07: {course: LNX-306, title: "Simulated Redfish/IPMI", depth: 2, env: V, query: [redfish, ipmi, bmc, ipmitool, openbmc, baseboard]}
   LNX-306-T08: {course: LNX-306, title: "Leapp and release upgrades", depth: 3, env: V}
-  LNX-306-T09: {course: LNX-306, title: "Drift detection, secure wipe", depth: 2, env: V}
+  LNX-306-T09: {course: LNX-306, title: "Drift detection, secure wipe", depth: 2, env: V, query: [drift, wipe, sanitize, decommission, nvme, shred, cryptographic-erase]}
   LNX-306-T10: {course: LNX-306, title: "Cloud provisioning", depth: 3, env: K}
   LNX-306-T11: {course: LNX-306, title: "Real BMC firmware", depth: 1, env: H}
   LNX-307-T01: {course: LNX-307, title: "USE/RED methods, runbooks", depth: 3, env: C}
