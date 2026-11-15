@@ -14,6 +14,7 @@ phases:
     - LNX-303-T03
     - LNX-303-T04
     - LNX-303-T05
+    - LNX-303-T06
   lessons:
     state: in-progress
     units: 11
@@ -23,6 +24,7 @@ phases:
     - LNX-303-T03
     - LNX-303-T04
     - LNX-303-T05
+    - LNX-303-T06
   quizzes:
     state: in-progress
     units: 11
@@ -32,6 +34,7 @@ phases:
     - LNX-303-T03
     - LNX-303-T04
     - LNX-303-T05
+    - LNX-303-T06
   labs:
     state: in-progress
     units: 11
@@ -41,6 +44,7 @@ phases:
     - LNX-303-T03
     - LNX-303-T04
     - LNX-303-T05
+    - LNX-303-T06
   checks:
     state: todo
     units: 0
@@ -68,3 +72,7 @@ log:
 - '2026-11-15 lessons: LNX-303-T05'
 - '2026-11-15 quizzes: LNX-303-T05'
 - '2026-11-15 labs: LNX-303-T05'
+- '2026-11-15 synth: LNX-303-T06'
+- '2026-11-15 lessons: LNX-303-T06'
+- '2026-11-15 quizzes: LNX-303-T06'
+- '2026-11-15 labs: LNX-303-T06'
