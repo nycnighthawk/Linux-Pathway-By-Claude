@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $1"; bad=1; }
+mkdir -p mut
+cat > mut/head.c <<'N'
+#include <limits.h>
+#include "../sat.h"
+N
+w() { { cat mut/head.c; cat; } > "mut/$1.c"; }
+w m1 <<'N'
+int saturating_add(int a, int b) {
+	if (b < 0 && a < INT_MIN - b) return INT_MIN;
+	return (int)((unsigned)a + (unsigned)b);
+}
+N
+w m2 <<'N'
+int saturating_add(int a, int b) {
+	if (b > 0 && a > INT_MAX - b) return INT_MAX;
+	return (int)((unsigned)a + (unsigned)b);
+}
+N
+w m3 <<'N'
+int saturating_add(int a, int b) {
+	if (b > 0 && a > INT_MAX - b - 2) return INT_MAX;
+	if (b < 0 && a < INT_MIN - b) return INT_MIN;
+	return a + b;
+}
+N
+w m4 <<'N'
+int saturating_add(int a, int b) {
+	if (b > 0 && a > INT_MAX - b) return INT_MAX;
+	if (b < 0 && a < INT_MIN - b) return INT_MIN + 1;
+	return a + b;
+}
+N
+build() { cc -std=gnu99 -Wall -I. -o "$1" test_sat.c "$2" 2>cc.log || { cat cc.log; return 2; }; }
+build real sat.c || { fail "suite does not compile"; exit 1; }
+./real >real.out && echo "ok:   suite passes on the real code" || { cat real.out; fail "suite fails on the correct implementation"; }
+for m in m1 m2 m3 m4; do
+  build "t_$m" "mut/$m.c" || { fail "suite does not compile with $m"; continue; }
+  if ./"t_$m" >/dev/null; then fail "suite did not catch mutant $m"; else echo "ok:   mutant $m caught"; fi
+done
+exit $bad

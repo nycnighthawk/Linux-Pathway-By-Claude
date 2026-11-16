@@ -15,6 +15,7 @@ phases:
     - LNX-330-T04
     - LNX-330-T05
     - LNX-330-T06
+    - LNX-330-T07
   lessons:
     state: in-progress
     units: 11
@@ -25,6 +26,7 @@ phases:
     - LNX-330-T04
     - LNX-330-T05
     - LNX-330-T06
+    - LNX-330-T07
   quizzes:
     state: in-progress
     units: 11
@@ -35,6 +37,7 @@ phases:
     - LNX-330-T04
     - LNX-330-T05
     - LNX-330-T06
+    - LNX-330-T07
   labs:
     state: in-progress
     units: 11
@@ -45,6 +48,7 @@ phases:
     - LNX-330-T04
     - LNX-330-T05
     - LNX-330-T06
+    - LNX-330-T07
   checks:
     state: todo
     units: 0
@@ -76,3 +80,7 @@ log:
 - '2026-11-16 lessons: LNX-330-T06'
 - '2026-11-16 quizzes: LNX-330-T06'
 - '2026-11-16 labs: LNX-330-T06'
+- '2026-11-16 synth: LNX-330-T07'
+- '2026-11-16 lessons: LNX-330-T07'
+- '2026-11-16 quizzes: LNX-330-T07'
+- '2026-11-16 labs: LNX-330-T07'
