@@ -1,7 +1,7 @@
 item: LNX-315
 label: Virtualization Engineering
 branch: build/LNX-315
-state: in-progress
+state: done
 started: '2026-11-16'
 updated: '2026-11-16'
 phases:
@@ -66,7 +66,7 @@ phases:
     - LNX-315-T10
     - LNX-315-T11
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -116,3 +116,6 @@ log:
 - '2026-11-16 lessons: LNX-315-T11'
 - '2026-11-16 quizzes: LNX-315-T11'
 - '2026-11-16 labs: LNX-315-T11'
+- '2026-11-16 checks: done'
+- 2026-11-16 finished
+finished: '2026-11-16'
