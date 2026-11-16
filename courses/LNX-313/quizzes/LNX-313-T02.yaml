@@ -1,0 +1,27 @@
+title: 'Quiz: config, Secrets, security, limits'
+questions:
+- id: env-update
+  prompt: A ConfigMap used as an environment variable is edited. What happens to running Pods?
+  choices: [Nothing until they restart, The variable updates in seconds, The Pod is rescheduled, The container is killed]
+  answer: [0]
+  explain: 'A) correct: env is resolved at container start. B) wrong. C) wrong. D) wrong.'
+- id: base64
+  prompt: What does base64 in a Secret give you?
+  choices: [Representation of arbitrary bytes, Encryption, Access control, Integrity checking]
+  answer: [0]
+  explain: 'A) correct. B) wrong: encryption at rest is configured separately. C) wrong. D) wrong.'
+- id: restricted
+  prompt: Which fields are required by the restricted level? (select two)
+  choices: [allowPrivilegeEscalation false, capabilities drop ALL, privileged true, hostNetwork true]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: qos
+  prompt: A Pod has a memory request of 256Mi, a limit of 512Mi and a CPU request only. Which class?
+  choices: [Burstable, Guaranteed, BestEffort, Critical]
+  answer: [0]
+  explain: 'A) correct. B) wrong: Guaranteed needs equal request and limit. C) wrong. D) wrong.'
+- id: throttle
+  prompt: A service shows tail latency spikes while average CPU is below its limit. What is the likely cause?
+  choices: [CFS quota throttling in bursty periods, Memory pressure, Image pull, DNS]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

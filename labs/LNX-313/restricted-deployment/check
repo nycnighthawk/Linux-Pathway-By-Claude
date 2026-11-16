@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def g(d, *k):
+    for x in k:
+        if isinstance(x, int):
+            d = d[x] if isinstance(d, list) and len(d) > x else None
+        else:
+            d = d.get(x) if isinstance(d, dict) else None
+    return d
+try:
+    d = yaml.safe_load(open("deploy.yaml"))
+    chk(d["kind"] == "Deployment" and d["metadata"]["name"] == "api" and d["metadata"]["namespace"] == "shop", "Deployment shop/api")
+    t = d["spec"]["template"]; s = t["spec"]
+    chk(bool(g(t, "metadata", "annotations", "checksum/config")), "checksum/config annotation on the Pod template")
+    chk(s.get("automountServiceAccountToken") is False, "service account token not mounted")
+    sc = s.get("securityContext") or {}
+    chk(sc.get("runAsNonRoot") is True and sc.get("runAsUser") == 10001 and g(sc, "seccompProfile", "type") == "RuntimeDefault", "Pod security context")
+    cs = s.get("containers") or []
+    c = cs[0] if cs else {}
+    chk(len(cs) == 1 and c.get("name") == "api" and c.get("image") == "registry.example/api:2.1", "one container api")
+    cc = c.get("securityContext") or {}
+    chk(cc.get("allowPrivilegeEscalation") is False and cc.get("readOnlyRootFilesystem") is True and not cc.get("privileged"), "container security context")
+    chk(g(cc, "capabilities", "drop") == ["ALL"], "capabilities dropped")
+    env = {e["name"]: e for e in c.get("env", [])}
+    ref = g(env.get("LOG_LEVEL", {}), "valueFrom", "configMapKeyRef") or {}
+    chk(ref.get("name") == "api-config" and ref.get("key") == "log-level", "LOG_LEVEL from ConfigMap api-config")
+    vols = {v["name"]: v for v in s.get("volumes", [])}
+    mounts = {m["mountPath"]: m for m in c.get("volumeMounts", [])}
+    sm = mounts.get("/etc/secrets", {}); sv = vols.get(sm.get("name"), {})
+    chk(sm.get("readOnly") is True and g(sv, "secret", "secretName") == "api-db" and g(sv, "secret", "defaultMode") == 256, "Secret api-db mounted read-only with mode 0400")
+    tm = mounts.get("/tmp", {})
+    chk("emptyDir" in vols.get(tm.get("name"), {}), "emptyDir at /tmp")
+    r = c.get("resources") or {}
+    chk(g(r, "requests", "cpu") == "250m" and g(r, "requests", "memory") == "256Mi", "requests cpu 250m memory 256Mi")
+    chk(g(r, "limits", "memory") == "256Mi" and "cpu" not in (r.get("limits") or {}), "memory limit set, no CPU limit")
+    a = dict(l.split("=", 1) for l in open("answer.txt").read().split() if "=" in l)
+    chk(a.get("qos") == "Burstable", "QoS class is Burstable")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY

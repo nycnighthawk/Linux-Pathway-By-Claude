@@ -3,28 +3,32 @@ label: Kubernetes App Delivery & GitOps
 branch: build/LNX-313
 state: in-progress
 started: '2026-11-15'
-updated: '2026-11-15'
+updated: '2026-11-16'
 phases:
   synth:
     state: in-progress
     units: 10
     done:
     - LNX-313-T01
+    - LNX-313-T02
   lessons:
     state: in-progress
     units: 10
     done:
     - LNX-313-T01
+    - LNX-313-T02
   quizzes:
     state: in-progress
     units: 10
     done:
     - LNX-313-T01
+    - LNX-313-T02
   labs:
     state: in-progress
     units: 10
     done:
     - LNX-313-T01
+    - LNX-313-T02
   checks:
     state: todo
     units: 0
@@ -36,3 +40,7 @@ log:
 - '2026-11-15 lessons: LNX-313-T01'
 - '2026-11-15 quizzes: LNX-313-T01'
 - '2026-11-15 labs: LNX-313-T01'
+- '2026-11-16 synth: LNX-313-T02'
+- '2026-11-16 lessons: LNX-313-T02'
+- '2026-11-16 quizzes: LNX-313-T02'
+- '2026-11-16 labs: LNX-313-T02'

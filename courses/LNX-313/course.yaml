@@ -29,6 +29,10 @@ modules:
     title: 'Pod design: init and sidecar containers'
     file: lessons/LNX-313-T01.md
     minutes: 55
+  - topic: LNX-313-T02
+    title: Config, Secrets, SecurityContext, limits
+    file: lessons/LNX-313-T02.md
+    minutes: 60
 labs:
 - id: pod-with-sidecar
   topic: LNX-313-T01
@@ -36,8 +40,18 @@ labs:
   env: C
   license: MIT
   minutes: 30
+- id: restricted-deployment
+  topic: LNX-313-T02
+  title: A Deployment that passes the restricted level
+  env: C
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-313-T01
   topic: LNX-313-T01
   title: 'Quiz: Pod design: init and sidecar containers'
   file: quizzes/LNX-313-T01.yaml
+- id: LNX-313-T02
+  topic: LNX-313-T02
+  title: 'Quiz: Config, Secrets, SecurityContext, limits'
+  file: quizzes/LNX-313-T02.yaml
