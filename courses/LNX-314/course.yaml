@@ -52,6 +52,10 @@ modules:
     title: Pod Security Admission, Kyverno/Gatekeeper
     file: lessons/LNX-314-T04.md
     minutes: 60
+  - topic: LNX-314-T05
+    title: Secrets encryption at rest
+    file: lessons/LNX-314-T05.md
+    minutes: 55
 labs:
 - id: metadata-guard
   topic: LNX-314-T01
@@ -84,6 +88,15 @@ labs:
   env: C
   license: MIT
   minutes: 35
+- id: encryption-at-rest
+  topic: LNX-314-T05
+  title: Read an etcd value by hand and rotate the key
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - openssl
+  - python3-yaml
 quizzes:
 - id: LNX-314-T01
   topic: LNX-314-T01
@@ -101,3 +114,7 @@ quizzes:
   topic: LNX-314-T04
   title: 'Quiz: Pod Security Admission, Kyverno/Gatekeeper'
   file: quizzes/LNX-314-T04.yaml
+- id: LNX-314-T05
+  topic: LNX-314-T05
+  title: 'Quiz: Secrets encryption at rest'
+  file: quizzes/LNX-314-T05.yaml

@@ -1,0 +1,27 @@
+title: 'Quiz: Secrets encryption at rest'
+questions:
+- id: first-provider
+  prompt: A resources entry lists providers in the order identity, aescbc. How are new Secrets stored?
+  choices: [Encrypted with aescbc, In plaintext through the identity provider, Rejected, Encrypted twice]
+  answer: [1]
+  explain: 'A) wrong: only the first provider writes. B) correct: this is the common misconfiguration that appears to work. C) wrong. D) wrong.'
+- id: read-path
+  prompt: How does the API server choose how to decrypt a stored value?
+  choices: [It tries every key until one works, It reads the provider and key name from the prefix stored in front of the value, It asks the client, It always uses the first provider]
+  answer: [1]
+  explain: 'A) wrong: the prefix names the provider and key. B) correct: and unprefixed values are treated as plaintext. C) wrong. D) wrong: that would break reads of old data.'
+- id: rotation-order
+  prompt: What is the first step when rotating a local key on a multi-server control plane?
+  choices: [Remove the old key, Add the new key as a trailing key on every server, Move the new key to first place on one server, Rewrite all Secrets]
+  answer: [1]
+  explain: 'A) wrong: it would make old data unreadable. B) correct: every server must be able to read the new key before any server writes with it. C) wrong: peers could not read its writes. D) wrong: premature.'
+- id: kms-benefit
+  prompt: What is the main benefit of a KMS v2 provider over secretbox with a key in a file? (select two)
+  choices: [The key encryption key never sits on the control plane host, Data keys are cached so the KMS is not called on every read, It makes etcd faster than unencrypted, It removes the need for RBAC on Secrets]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct: that is the point of v2. C) wrong. D) wrong: the API server decrypts for authorised callers.'
+- id: verify
+  prompt: How do you prove that Secrets are encrypted at rest?
+  choices: [kubectl get secret shows base64, Read the stored value directly from etcd and check for the encryption prefix and unreadable bytes, Check that the API server started, Read the Secret from a Pod]
+  answer: [1]
+  explain: 'A) wrong: base64 is always shown. B) correct: only the stored bytes tell. C) wrong: it starts either way. D) wrong: Pods see decrypted data.'
