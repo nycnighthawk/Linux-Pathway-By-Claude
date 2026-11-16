@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > Kconfig.mini <<'N'
+# A miniature Kconfig. A symbol with no prompt can only be set by select or default.
+config X86_64
+	bool
+	default y
+
+config PCI
+	bool
+	default y
+
+config NET
+	bool
+	default y
+
+config BLOCK
+	bool
+	default y
+
+config VIRTUALIZATION
+	bool "Virtualization support"
+
+config KVM
+	bool "Kernel-based Virtual Machine"
+	depends on VIRTUALIZATION && X86_64
+
+config KVM_INTEL
+	bool "KVM for Intel"
+	depends on KVM
+
+config VHOST
+	bool
+
+config VHOST_NET
+	bool "vhost net accelerator"
+	depends on KVM && NET
+	select VHOST
+
+config VIRTIO
+	bool
+
+config VIRTIO_PCI
+	bool "virtio over PCI"
+	depends on PCI
+	select VIRTIO
+
+config VIRTIO_BLK
+	bool "virtio block driver"
+	depends on BLOCK && VIRTIO
+
+config VIRTIO_NET
+	bool "virtio network driver"
+	depends on NET && VIRTIO
+
+config SERIAL_8250
+	bool "8250 serial driver"
+	depends on PCI
+
+config SERIAL_8250_CONSOLE
+	bool "Console on 8250"
+	depends on SERIAL_8250
+
+config DEBUG_INFO
+	bool "Debug information"
+	default y
+
+config KASAN
+	bool "Kernel address sanitizer"
+	depends on DEBUG_INFO
+N
+[ -f guest.config ] || printf '# SPDX-License-Identifier: MIT\n# CONFIG_X=y or # CONFIG_X is not set, one per line\n' > guest.config

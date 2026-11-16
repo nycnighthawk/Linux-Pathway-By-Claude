@@ -1,0 +1,32 @@
+title: 'Quiz: Kconfig, defconfig, localmodconfig, cross-compiling'
+questions:
+- id: dropped
+  prompt: A fragment requests CONFIG_KVM_INTEL=y but KVM is not enabled. What does the final .config contain?
+  choices: ['CONFIG_KVM_INTEL=y', '# CONFIG_KVM_INTEL is not set, with only a warning', 'A build error', 'CONFIG_KVM_INTEL=m']
+  answer: [1]
+  explain: 'A) wrong. B) correct: unmet dependencies drop the symbol silently. C) wrong. D) wrong.'
+- id: select
+  prompt: What is the hazard of select?
+  choices: [It is slow, It forces a symbol on while ignoring that symbol's own dependencies, It disables modules, It needs root]
+  answer: [1]
+  explain: 'A) wrong. B) correct: the build can fail at link time. C) wrong. D) wrong.'
+- id: savedefconfig
+  prompt: What does make savedefconfig produce?
+  choices: [A copy of the full .config, A minimal config listing only symbols that differ from Kconfig defaults, A list of modules, A kernel image]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: cross
+  prompt: Which are needed for an arm64 cross build with a gcc cross toolchain? (select two)
+  choices: [ARCH=arm64, CROSS_COMPILE=aarch64-linux-gnu-, A running arm64 machine, CONFIG_ARM64=y typed by hand in a fragment]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: localmod
+  prompt: A kernel from localmodconfig lacks Wi-Fi after you plug in a new adapter. Why?
+  choices: [Wi-Fi is not supported on Linux, Only modules loaded at the time of generation were kept, The config is corrupt, Cross-compilation was used]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: stale
+  prompt: You switch ARCH in the same tree without cleaning and the build fails with relocation errors. What avoids it?
+  choices: [Higher -j, A separate O= directory per target or make mrproper, Disabling modules, Using allyesconfig]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
