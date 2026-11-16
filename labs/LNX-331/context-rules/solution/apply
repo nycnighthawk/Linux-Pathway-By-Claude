@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+atomic = {"hardirq", "softirq", "timer"}
+out = ["# solution"]
+for c in ["hardirq", "softirq", "timer", "workqueue", "threaded_irq", "syscall"]:
+    for o in ["msleep", "mutex_lock", "kmalloc_GFP_KERNEL", "kmalloc_GFP_ATOMIC", "spin_lock_irqsave", "copy_to_user"]:
+        if o in ("msleep", "mutex_lock", "kmalloc_GFP_KERNEL"): y = c not in atomic
+        elif o == "copy_to_user": y = c == "syscall"
+        else: y = True
+        out.append("%s %s = %s" % (c, o, "yes" if y else "no"))
+open("allowed.txt", "w").write("\n".join(out) + "\n")
+open("choices.txt", "w").write("s1: x = hardirq\ns2: x = softirq\ns3: x = workqueue\ns4: x = timer\n")
+N

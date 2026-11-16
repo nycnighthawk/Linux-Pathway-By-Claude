@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+ctxs = ["hardirq", "softirq", "timer", "workqueue", "threaded_irq", "syscall"]
+ops = ["msleep", "mutex_lock", "kmalloc_GFP_KERNEL", "kmalloc_GFP_ATOMIC", "spin_lock_irqsave", "copy_to_user"]
+with open("allowed.txt", "w") as f:
+    f.write("# Fill in yes or no for every line: <context> <operation> = <yes|no>\n")
+    f.write("# yes means the operation is legal in that context.\n")
+    for c in ctxs:
+        for o in ops:
+            f.write("%s %s = \n" % (c, o))
+with open("choices.txt", "w") as f:
+    f.write("""# Pick one mechanism per scenario: hardirq | softirq | timer | workqueue | threaded_irq
+s1: acknowledge a device interrupt within microseconds =
+s2: process packets at a very high rate, may never sleep =
+s3: after an interrupt, take a mutex and talk to the device over I2C =
+s4: run a short non-sleeping check 50 ms from now without a dedicated thread =
+""")
+N

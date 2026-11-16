@@ -1,0 +1,56 @@
+title: 'Quiz: Interrupts, softirqs, workqueues, timers'
+questions:
+- id: sleepirq
+  prompt: Which call is illegal inside a hard interrupt handler?
+  choices:
+  - spin_lock_irqsave
+  - mutex_lock
+  - kmalloc with GFP_ATOMIC
+  - readl
+  answer: [1]
+  explain: 'A) wrong, legal. B) correct: it can sleep. C) wrong, legal. D) wrong, legal.'
+- id: none
+  prompt: When must a shared-line handler return IRQ_NONE?
+  choices:
+  - When its device did not raise the interrupt
+  - Always
+  - When memory is low
+  - When it uses a workqueue
+  answer: [0]
+  explain: 'A) correct: lets the kernel detect spurious or stuck lines. B) wrong. C) wrong. D) wrong.'
+- id: irqsave
+  prompt: Process context and a hard handler share a spinlock. How should process context take it?
+  choices:
+  - spin_lock
+  - spin_lock_irqsave
+  - mutex_lock
+  - No lock needed
+  answer: [1]
+  explain: 'A) wrong, an interrupt on the same CPU could deadlock. B) correct. C) wrong. D) wrong.'
+- id: timerctx
+  prompt: In what context does a classic kernel timer callback run?
+  choices:
+  - Process context
+  - Softirq context, so it cannot sleep
+  - A user thread
+  - Hard interrupt with all interrupts disabled forever
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: cancel
+  prompt: Before freeing a structure that contains a work item, you should
+  choices:
+  - Do nothing
+  - Call cancel_work_sync or flush_work so the work cannot run on freed memory
+  - Call msleep
+  - Lower the log level
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: oneshot
+  prompt: What does IRQF_ONESHOT do for a threaded handler?
+  choices:
+  - It limits the driver to one interrupt ever
+  - It keeps the line masked until the thread function finishes
+  - It makes the handler run on one CPU only
+  - It disables the thread
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
