@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f watcher
+cat > watcher.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/inotify.h>
+#include <unistd.h>
+
+int main(int argc, char **argv)
+{
+    (void)argc; (void)argv;
+    /* TODO: inotify_init1, inotify_add_watch, read loop over the buffer, print lines. */
+    return 1;
+}
+N

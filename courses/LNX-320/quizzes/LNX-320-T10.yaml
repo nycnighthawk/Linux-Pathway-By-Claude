@@ -1,0 +1,32 @@
+title: 'Quiz: inotify/fanotify, netlink'
+questions:
+- id: batch
+  prompt: A read on an inotify descriptor returns 200 bytes. What do you do?
+  choices: [Treat it as one event, Walk the buffer: each record is the header plus len name bytes, Discard it, Call read again before parsing]
+  answer: [1]
+  explain: 'A) wrong: several events can be packed. B) correct. C) wrong. D) wrong.'
+- id: rename
+  prompt: How do you recognise the two halves of a rename in inotify?
+  choices: [The same watch descriptor only, IN_MOVED_FROM and IN_MOVED_TO events with the same cookie, They arrive as IN_MODIFY, You cannot]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: overflow
+  prompt: Which are correct after IN_Q_OVERFLOW? (select two)
+  choices: [Events were lost, Rescan the watched tree to resynchronise, The kernel replays them, Increase the watch count]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: atomic
+  prompt: An editor saves by writing a temp file and renaming it over the original. Why does a watch on the original file stop working?
+  choices: [The editor disables inotify, The watch follows the old inode which was replaced, Renames are not reported, The file is locked]
+  answer: [1]
+  explain: 'A) wrong. B) correct: watch the parent directory. C) wrong. D) wrong.'
+- id: enobufs
+  prompt: A netlink listener gets ENOBUFS. What should it do?
+  choices: [Ignore it, Treat notifications as lost and re-dump the current state, Close the socket forever, Switch to polling /proc only]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: perm
+  prompt: Why is a fanotify permission listener dangerous?
+  choices: [It uses too much CPU always, While it does not answer, the operation that triggered the event stays blocked, It cannot read files, It needs no privilege]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong: it needs privilege.'
