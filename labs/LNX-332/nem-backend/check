@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from nem import REQUIRED_OPS, missing_ops, map_exit
+f = lambda *a: None
+full = {op: f for op in REQUIRED_OPS}
+res = []
+res.append(("complete backend", missing_ops(full) == []))
+b = dict(full); del b["cancel_run"]; b["map_memory"] = None
+res.append(("absent and None both missing, sorted", missing_ops(b) == ["cancel_run", "map_memory"]))
+res.append(("empty backend lists all", missing_ops({}) == sorted(REQUIRED_OPS)))
+res.append(("extra ops are fine", missing_ops(dict(full, debug_regs=f)) == []))
+res.append(("io", map_exit("KVM_EXIT_IO") == "IOPORT"))
+res.append(("mmio", map_exit("KVM_EXIT_MMIO") == "MMIO"))
+res.append(("hlt and intr", map_exit("KVM_EXIT_HLT") == "HALT" and map_exit("KVM_EXIT_INTR") == "CHECK_REQUESTS"))
+res.append(("shutdown", map_exit("KVM_EXIT_SHUTDOWN") == "TRIPLE_FAULT"))
+res.append(("both error exits are fatal", map_exit("KVM_EXIT_INTERNAL_ERROR") == "FATAL" == map_exit("KVM_EXIT_FAIL_ENTRY")))
+try:
+    map_exit("KVM_EXIT_XEN")
+    ok = False
+except ValueError as e:
+    ok = "KVM_EXIT_XEN" in str(e)
+res.append(("unmapped exit raises and names it", ok))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n)
+    bad |= (not ok)
+sys.exit(bad)
+N

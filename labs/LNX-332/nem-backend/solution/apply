@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("nem.py").read()
+a = s.index("def missing_ops")
+s = s[:a] + '''def missing_ops(backend):
+    return sorted(op for op in REQUIRED_OPS if backend.get(op) is None)
+
+
+_MAP = {
+    "KVM_EXIT_IO": "IOPORT",
+    "KVM_EXIT_MMIO": "MMIO",
+    "KVM_EXIT_HLT": "HALT",
+    "KVM_EXIT_SHUTDOWN": "TRIPLE_FAULT",
+    "KVM_EXIT_INTR": "CHECK_REQUESTS",
+    "KVM_EXIT_INTERNAL_ERROR": "FATAL",
+    "KVM_EXIT_FAIL_ENTRY": "FATAL",
+}
+
+
+def map_exit(exit_name):
+    try:
+        return _MAP[exit_name]
+    except KeyError:
+        raise ValueError("unmapped KVM exit: %s" % exit_name)
+'''
+open("nem.py", "w").write(s)
+N

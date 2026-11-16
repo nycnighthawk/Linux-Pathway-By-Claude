@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > nem.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A toy execution-backend contract and a KVM exit mapping.
+
+REQUIRED_OPS lists the operations every backend must provide.
+A backend is a dict {op_name: callable or None}.
+
+missing_ops(backend) -> sorted list of op names that are absent from the
+dict or set to None.
+
+map_exit(exit_name) -> the VMM event name for a KVM exit:
+    KVM_EXIT_IO             -> "IOPORT"
+    KVM_EXIT_MMIO           -> "MMIO"
+    KVM_EXIT_HLT            -> "HALT"
+    KVM_EXIT_SHUTDOWN       -> "TRIPLE_FAULT"
+    KVM_EXIT_INTR           -> "CHECK_REQUESTS"
+    KVM_EXIT_INTERNAL_ERROR -> "FATAL"
+    KVM_EXIT_FAIL_ENTRY     -> "FATAL"
+Any other name must raise ValueError mentioning the name: an unmapped exit is a
+bug to report, never to ignore.
+"""
+
+REQUIRED_OPS = [
+    "init", "term", "create_vm", "create_vcpu", "destroy_vcpu", "map_memory",
+    "unmap_memory", "get_state", "set_state", "run", "inject_interrupt",
+    "cancel_run", "query_caps",
+]
+
+
+def missing_ops(backend):
+    # TODO
+    return []
+
+
+def map_exit(exit_name):
+    # TODO
+    return None
+N
