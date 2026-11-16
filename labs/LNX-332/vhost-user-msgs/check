@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import struct, sys
+from vhostmsg import parse, negotiate
+def m(req, flags=1, payload=b""):
+    return struct.pack("<III", req, flags, len(payload)) + payload
+def fails(b):
+    try:
+        parse(b)
+    except ValueError:
+        return True
+    return False
+res = []
+res.append(("empty stream", parse(b"") == []))
+s = m(1) + m(3) + m(8, 1, struct.pack("<II", 0, 256)) + m(1, 1 | 4, struct.pack("<Q", 1 << 30))
+r = parse(s)
+res.append(("four messages parsed", [x["name"] for x in r] == ["GET_FEATURES", "SET_OWNER", "SET_VRING_NUM", "GET_FEATURES"]))
+res.append(("sizes", [x["size"] for x in r] == [0, 0, 8, 8]))
+res.append(("reply flag", [x["reply"] for x in r] == [False, False, False, True]))
+res.append(("need_reply flag", parse(m(2, 1 | 8, b"\0" * 8))[0]["need_reply"] is True))
+res.append(("truncated header", fails(m(1)[:7])))
+res.append(("truncated payload", fails(m(5, 1, b"\0" * 40)[:-3])))
+res.append(("wrong version", fails(m(1, 2))))
+res.append(("oversize payload", fails(struct.pack("<III", 5, 1, 5000) + b"\0" * 5000)))
+res.append(("unknown request", fails(m(99))))
+c, ok = negotiate((1 << 30) | 0x5, (1 << 30) | 0x6)
+res.append(("negotiate intersects and sees bit 30", c == (1 << 30) | 0x4 and ok is True))
+c, ok = negotiate(0x5, (1 << 30) | 0x5)
+res.append(("bit 30 missing on one side", c == 0x5 and ok is False))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n)
+    bad |= (not ok)
+sys.exit(bad)
+N

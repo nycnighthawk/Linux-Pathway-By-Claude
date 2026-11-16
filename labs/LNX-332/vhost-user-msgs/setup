@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > vhostmsg.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""Parse a vhost-user message stream (the bytes only; file descriptors travel
+out of band and are not modelled).
+
+Header, 12 bytes, little-endian: request u32, flags u32, size u32.
+  flags bits 0-1: protocol version, must be 1
+  flags bit 2:    this message is a reply
+  flags bit 3:    sender needs a reply
+size is the number of payload bytes that follow the header (at most 4096).
+
+REQUESTS maps request numbers to names.  Parse a whole stream into a list of
+dicts {"name", "reply", "need_reply", "size"}.
+Raise ValueError (with a short reason) for: a header cut short, a payload cut
+short, a version other than 1, a size above 4096, an unknown request number.
+"""
+import struct
+
+REQUESTS = {
+    1: "GET_FEATURES", 2: "SET_FEATURES", 3: "SET_OWNER", 4: "RESET_OWNER",
+    5: "SET_MEM_TABLE", 6: "SET_LOG_BASE", 7: "SET_LOG_FD",
+    8: "SET_VRING_NUM", 9: "SET_VRING_ADDR", 10: "SET_VRING_BASE",
+    11: "GET_VRING_BASE", 12: "SET_VRING_KICK", 13: "SET_VRING_CALL",
+    14: "SET_VRING_ERR", 15: "GET_PROTOCOL_FEATURES",
+    16: "SET_PROTOCOL_FEATURES",
+}
+PROTOCOL_FEATURES_BIT = 30     # VHOST_USER_F_PROTOCOL_FEATURES
+
+
+def parse(stream):
+    out = []
+    # TODO
+    return out
+
+
+def negotiate(backend, frontend):
+    """Features both sides support.  Return (common, protocol_features_ok)
+    where protocol_features_ok is True if bit 30 is in the common set."""
+    # TODO
+    return 0, False
+N

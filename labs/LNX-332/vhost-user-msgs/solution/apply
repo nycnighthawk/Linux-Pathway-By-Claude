@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("vhostmsg.py").read()
+a = s.index("def parse")
+s = s[:a] + '''def parse(stream):
+    out = []
+    pos = 0
+    while pos < len(stream):
+        if len(stream) - pos < 12:
+            raise ValueError("short header")
+        req, flags, size = struct.unpack_from("<III", stream, pos)
+        pos += 12
+        if flags & 3 != 1:
+            raise ValueError("bad version")
+        if size > 4096:
+            raise ValueError("payload too large")
+        if req not in REQUESTS:
+            raise ValueError("unknown request")
+        if len(stream) - pos < size:
+            raise ValueError("short payload")
+        pos += size
+        out.append({"name": REQUESTS[req], "reply": bool(flags & 4),
+                    "need_reply": bool(flags & 8), "size": size})
+    return out
+
+
+def negotiate(backend, frontend):
+    common = backend & frontend
+    return common, bool(common >> PROTOCOL_FEATURES_BIT & 1)
+'''
+open("vhostmsg.py", "w").write(s)
+N
