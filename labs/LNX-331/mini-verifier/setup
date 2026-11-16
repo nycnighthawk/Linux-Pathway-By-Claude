@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > miniverifier.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A toy eBPF-style verifier.
+
+Registers r0..r5. At entry r1 holds a pointer to the context (24 bytes) and
+r0, r2..r5 are uninitialised. Instructions (a program is a list of tuples):
+
+  ("mov_imm", d, imm)     d = imm                      (d becomes a scalar)
+  ("mov", d, s)           d = s                        (d gets s's type)
+  ("add_imm", d, imm)     d += imm                     (d must be a scalar)
+  ("ld", d, p, off)       d = *(u64 *)(p + off)        p must be ctx or map value
+  ("call_lookup",)        r0 = map lookup result: a map value pointer or NULL;
+                          r1..r5 become uninitialised
+  ("jeq_null", r, t)      if r == NULL goto t          (t must be a forward jump)
+  ("jmp", t)              goto t                       (t must be a forward jump)
+  ("exit",)               return r0
+
+A map value is 16 bytes. Every load reads 8 bytes, so it needs
+0 <= off and off + 8 <= size (ctx: 24 bytes, map value: 16 bytes).
+
+verify(prog) returns None if the program is safe, else a short message that
+contains one of these words: "uninit" (reading a register that was never set),
+"loop" (a backward jump), "oob" (load outside the object), "null" (using a
+pointer that may be NULL), "leak" (returning a pointer in r0), "exit"
+(a path that runs off the end of the program).
+"""
+
+CTX_SIZE = 24
+MAP_VALUE_SIZE = 16
+
+
+def verify(prog):
+    # TODO: walk every path through the program, tracking a type per register:
+    # "uninit", "scalar", "ctx", "mapval", "mapval_or_null".
+    return None
+N

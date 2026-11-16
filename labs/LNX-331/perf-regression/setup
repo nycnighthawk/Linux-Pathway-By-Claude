@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > before.txt <<'N'
+# samples per function from `perf report --stdio` on the good kernel (same workload, 30 s)
+tcp_sendmsg_locked 4100
+__alloc_skb 2300
+copy_user_enhanced_fast_string 1900
+ip_finish_output2 1400
+tcp_ack 1200
+_raw_spin_lock 700
+native_queued_spin_lock_slowpath 150
+__dev_queue_xmit 950
+mlx5e_xmit 800
+kmem_cache_free 500
+N
+cat > after.txt <<'N'
+# the same workload on the bad kernel
+tcp_sendmsg_locked 4000
+__alloc_skb 2250
+copy_user_enhanced_fast_string 1850
+ip_finish_output2 1380
+tcp_ack 1190
+_raw_spin_lock 720
+native_queued_spin_lock_slowpath 2950
+__dev_queue_xmit 940
+mlx5e_xmit 790
+kmem_cache_free 495
+N
+cat > symbols.txt <<'N'
+# function  source file
+tcp_sendmsg_locked net/ipv4/tcp.c
+__alloc_skb net/core/skbuff.c
+copy_user_enhanced_fast_string arch/x86/lib/copy_user_64.S
+ip_finish_output2 net/ipv4/ip_output.c
+tcp_ack net/ipv4/tcp_input.c
+_raw_spin_lock kernel/locking/spinlock.c
+native_queued_spin_lock_slowpath kernel/locking/qspinlock.c
+__dev_queue_xmit net/core/dev.c
+mlx5e_xmit drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+kmem_cache_free mm/slub.c
+N
+cat > commits.txt <<'N'
+# commits in the bisected range, oldest first: hash file subject
+a1b2c3d1 net/ipv4/tcp_output.c tcp: tweak pacing timer rounding
+b2c3d4e2 mm/slub.c slub: fix a comment
+c3d4e5f3 drivers/net/ethernet/mellanox/mlx5/core/en_main.c mlx5: add a debug counter
+d4e5f6a4 kernel/locking/qspinlock.c locking/qspinlock: restructure the slow path wait loop
+e5f6a7b5 net/core/dev.c net: dev: fix a typo in a message
+f6a7b8c6 arch/x86/lib/copy_user_64.S x86: add a comment about alignment
+N
+cat > report.txt <<'N'
+# Fill in after reading before.txt and after.txt. One key=value per line.
+# regressed_function: the function whose share of all samples grew the most
+# share_before_pct / share_after_pct: its share of total samples in each profile, one decimal
+# culprit_commit: the commit from commits.txt that touched that function's source file
+# first_tool: the next tool you would reach for to see who is calling it (perf-callgraph | strace | iostat | tcpdump)
+regressed_function=
+share_before_pct=
+share_after_pct=
+culprit_commit=
+first_tool=
+N

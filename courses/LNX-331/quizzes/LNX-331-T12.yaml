@@ -1,0 +1,56 @@
+title: 'Quiz: Bring-up on a real board'
+questions:
+- id: first
+  prompt: What should be established first when bringing up a new board?
+  choices:
+  - A graphical desktop
+  - A reliable serial console
+  - Wi-Fi
+  - A package manager
+  answer: [1]
+  explain: 'A) wrong. B) correct: nothing else can be debugged without visibility. C) wrong. D) wrong.'
+- id: level
+  prompt: What must be checked before connecting a USB-serial adapter to a board?
+  choices:
+  - The adapter colour
+  - The logic voltage level of the board and the adapter
+  - The baud rate of the monitor
+  - The kernel version
+  answer: [1]
+  explain: 'A) wrong. B) correct: a wrong level can damage hardware. C) wrong. D) wrong.'
+- id: silent
+  prompt: The kernel prints Starting kernel and then nothing. What is a likely fix?
+  choices:
+  - Add earlycon and check the console argument and device tree
+  - Reformat the SD card
+  - Enable swap
+  - Install a desktop
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: tftp
+  prompt: Why boot over TFTP and NFS during bring-up?
+  choices:
+  - It is more secure
+  - Each build and test iteration takes seconds, with no card flashing
+  - It is required by U-Boot
+  - It replaces the device tree
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: deferred
+  prompt: A driver never probes. Which file names devices waiting for a missing resource?
+  choices:
+  - /sys/kernel/debug/devices_deferred
+  - /etc/fstab
+  - /proc/cpuinfo
+  - /var/log/lastlog
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: dtbug
+  prompt: Which is a typical device tree bring-up bug?
+  choices:
+  - A missing regulator node for a peripheral
+  - Too many comments
+  - A long file name
+  - Using tabs
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

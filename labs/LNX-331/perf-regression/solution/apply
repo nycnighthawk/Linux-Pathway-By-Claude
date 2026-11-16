@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+def load(p):
+    d = {}
+    for l in open(p):
+        l = l.strip()
+        if l and not l.startswith("#"):
+            f, n = l.split(); d[f] = int(n)
+    return d
+b, a = load("before.txt"), load("after.txt")
+tb, ta = sum(b.values()), sum(a.values())
+top = max(b, key=lambda f: 100.0 * a[f] / ta - 100.0 * b[f] / tb)
+files = dict(l.split() for l in open("symbols.txt") if l.strip() and not l.startswith("#"))
+c = [l.split()[0] for l in open("commits.txt") if l.strip() and not l.startswith("#") and l.split()[1] == files[top]][0]
+open("report.txt", "w").write("regressed_function=%s\nshare_before_pct=%.1f\nshare_after_pct=%.1f\nculprit_commit=%s\nfirst_tool=perf-callgraph\n" % (top, 100.0 * b[top] / tb, 100.0 * a[top] / ta, c))
+N

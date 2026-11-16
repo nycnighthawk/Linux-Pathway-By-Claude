@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > board.dts <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+/dts-v1/;
+/ {
+	compatible = "acme,tinyboard";
+	soc {
+		uart0: serial@10000000 {
+			compatible = "acme,uart-v2", "ns16550a";
+			reg = <0x10000000 0x100>;
+			interrupts = <5>;
+		};
+		uart1: serial@10001000 {
+			compatible = "acme,uart-v3", "ns16550a";
+			reg = <0x10001000 0x100>;
+			status = "disabled";
+		};
+		gpio0: gpio@10002000 {
+			compatible = "acme,gpio-v1";
+			reg = <0x10002000 0x40>;
+		};
+		eth0: ethernet@10003000 {
+			compatible = "acme,mac-v9", "acme,mac-v2";
+			reg = <0x10003000 0x1000>;
+			status = "okay";
+		};
+		rtc0: rtc@10004000 {
+			compatible = "acme,rtc-v1", "dallas,ds1307";
+			reg = <0x10004000 0x20>;
+		};
+		crypto@10005000 {
+			compatible = "acme,crypto-v4";
+			reg = <0x10005000 0x400>;
+		};
+	};
+};
+N
+cat > drivers.txt <<'N'
+# driver name : compatible strings it can bind (its of_match_table), separated by ;
+ns16550     : ns16550a ; ns16550
+acme_uart   : acme,uart-v1 ; acme,uart-v2
+acme_gpio   : acme,gpio-v1
+acme_mac    : acme,mac-v2 ; acme,mac-v3
+ds1307_rtc  : dallas,ds1307
+N
+cat > bindings.txt <<'N'
+# One line per node that appears in board.dts, in file order:
+#   <node@unit-address> <driver or none> <first reg cell, as written>
+# Rules: see README.md
+N

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+atomic = {"hardirq", "softirq", "timer"}
+def truth(c, o):
+    if o == "msleep" or o == "mutex_lock" or o == "kmalloc_GFP_KERNEL":
+        return c not in atomic
+    if o == "copy_to_user":
+        return c == "syscall"
+    return True            # GFP_ATOMIC and spin_lock_irqsave are legal everywhere
+bad = 0; n = 0
+for line in open("allowed.txt"):
+    if line.startswith("#") or "=" not in line: continue
+    left, val = line.split("=", 1)
+    c, o = left.split()
+    n += 1
+    if val.strip() != ("yes" if truth(c, o) else "no"):
+        print("FAIL: %s %s" % (c, o)); bad = 1
+print("ok:   %d context/operation answers checked" % n if not bad else "")
+ok = {"s1": {"hardirq"}, "s2": {"softirq"}, "s3": {"workqueue", "threaded_irq"}, "s4": {"timer"}}
+seen = {}
+for line in open("choices.txt"):
+    if line.startswith("s") and ":" in line and "=" in line:
+        k = line.split(":")[0]; seen[k] = line.rsplit("=", 1)[1].strip()
+for k, v in ok.items():
+    if seen.get(k) in v: print("ok:   " + k)
+    else: print("FAIL: " + k); bad = 1
+sys.exit(bad)
+N

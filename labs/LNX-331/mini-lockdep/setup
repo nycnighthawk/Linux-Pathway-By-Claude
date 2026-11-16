@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > minilockdep.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A tiny lock-order validator, in the spirit of the kernel's lockdep.
+
+A trace is a list of events (task, op, lock) with op in {"lock", "unlock"}.
+Lockdep does not wait for a deadlock to happen. It records, every time a task
+takes lock B while holding lock A, the ordering edge A -> B, and complains as
+soon as the edges contain a cycle (or a task takes a lock it already holds).
+"""
+
+
+def check(trace):
+    """Return None if the lock ordering is safe, otherwise a list of lock names
+    that form a cycle, e.g. ["A", "B"] for an A->B and B->A inversion, or
+    ["A"] for taking A twice in the same task."""
+    # TODO: keep `held` per task and a graph of edges held -> new lock;
+    # report a self-deadlock at once, and detect a cycle after adding an edge.
+    return None
+N

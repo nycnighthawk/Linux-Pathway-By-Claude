@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("minilockdep.py").read()
+a = s.index("    # TODO")
+s = s[:a] + '''    held = {}
+    edges = {}
+
+    def path(src, dst, seen=None):
+        seen = seen or set()
+        if src == dst:
+            return [src]
+        seen.add(src)
+        for n in edges.get(src, ()):
+            if n not in seen:
+                p = path(n, dst, seen)
+                if p:
+                    return [src] + p
+        return None
+
+    for task, op, lock in trace:
+        h = held.setdefault(task, [])
+        if op == "lock":
+            if lock in h:
+                return [lock]
+            for a in h:
+                # adding a -> lock closes a cycle if lock already leads to a
+                p = path(lock, a)
+                if p:
+                    return p
+                edges.setdefault(a, set()).add(lock)
+            h.append(lock)
+        else:
+            h.remove(lock)
+    return None
+'''
+open("minilockdep.py", "w").write(s)
+N

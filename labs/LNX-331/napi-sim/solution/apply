@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("nicsim.py").read()
+s = s.replace("        # TODO\n        pass", "        self.irq_enabled = False\n        self.napi_scheduled = True", 1)
+s = s.replace("        # TODO\n        return 0", '''        done = 0
+        while done < budget and self.ring:
+            self.delivered.append(self.ring.pop(0))
+            done += 1
+        if done < budget:
+            self.napi_scheduled = False
+            self.irq_enabled = True
+        return done''', 1)
+open("nicsim.py", "w").write(s)
+N

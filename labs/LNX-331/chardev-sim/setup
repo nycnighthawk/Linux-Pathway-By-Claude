@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > kshim.h <<'N'
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* A user-space stand-in for the few kernel pieces a character driver uses. */
+#ifndef KSHIM_H
+#define KSHIM_H
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#include <errno.h>
+#include <stddef.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+struct file { long long f_pos; };
+
+/* returns the number of bytes NOT copied, like the kernel's copy_to_user */
+static inline unsigned long copy_to_user(void *to, const void *from, unsigned long n)
+{ if (!to) return n; memcpy(to, from, n); return 0; }
+static inline unsigned long copy_from_user(void *to, const void *from, unsigned long n)
+{ if (!from) return n; memcpy(to, from, n); return 0; }
+#endif
+N
+cat > mydev.h <<'N'
+/* SPDX-License-Identifier: GPL-2.0-only */
+#ifndef MYDEV_H
+#define MYDEV_H
+#include "kshim.h"
+#define MY_GET_LEN  _IOR('k', 1, int)   /* store the stored length at *arg */
+#define MY_RESET    _IO('k', 2)         /* forget the contents */
+#define MY_SET_MAX  _IOW('k', 3, int)   /* limit the device size, 1..64 */
+#define MY_BUFSZ    64
+ssize_t my_read(struct file *f, char *ubuf, size_t count, loff_t *ppos);
+ssize_t my_write(struct file *f, const char *ubuf, size_t count, loff_t *ppos);
+long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
+void my_init(void);
+#endif
+N
+cat > mydev.c <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+#include "mydev.h"
+
+static char buf[MY_BUFSZ];
+static size_t len;          /* bytes stored */
+static size_t max = MY_BUFSZ; /* current limit */
+
+void my_init(void) { len = 0; max = MY_BUFSZ; }
+
+/* read: return bytes copied, 0 at end of data, negative errno on error.
+ * Advance *ppos. Never read past len. A failed copy is -EFAULT. */
+ssize_t my_read(struct file *f, char *ubuf, size_t count, loff_t *ppos)
+{
+	(void)f; (void)ubuf; (void)count; (void)ppos;
+	return -ENOSYS; /* TODO */
+}
+
+/* write: store at *ppos, truncating to the limit `max`. If *ppos is already
+ * at or past the limit return -ENOSPC. Advance *ppos, grow len. */
+ssize_t my_write(struct file *f, const char *ubuf, size_t count, loff_t *ppos)
+{
+	(void)f; (void)ubuf; (void)count; (void)ppos;
+	return -ENOSYS; /* TODO */
+}
+
+/* ioctl: MY_GET_LEN copies len (an int) to the user pointer in arg,
+ * MY_RESET empties the device, MY_SET_MAX sets max (1..MY_BUFSZ, else -EINVAL).
+ * Unknown commands return -ENOTTY. */
+long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+{
+	(void)f; (void)cmd; (void)arg;
+	return -ENOSYS; /* TODO */
+}
+N

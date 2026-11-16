@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+cat > harness.c <<'N'
+#include <stdio.h>
+#include "mydev.h"
+static int bad;
+#define T(cond, msg) do { if (!(cond)) { printf("FAIL: %s\n", msg); bad = 1; } } while (0)
+int main(void)
+{
+	struct file f = {0};
+	loff_t pos = 0;
+	char out[80];
+	int v = -1;
+
+	my_init();
+	T(my_write(&f, "hello", 5, &pos) == 5 && pos == 5, "write returns the byte count and advances *ppos");
+	pos = 0;
+	T(my_read(&f, out, 3, &pos) == 3 && pos == 3 && !memcmp(out, "hel", 3), "short read returns count and advances *ppos");
+	T(my_read(&f, out, 10, &pos) == 2 && pos == 5 && !memcmp(out, "lo", 2), "read stops at the stored length");
+	T(my_read(&f, out, 10, &pos) == 0, "read at end of data returns 0");
+	T(my_ioctl(&f, MY_GET_LEN, (unsigned long)&v) == 0 && v == 5, "MY_GET_LEN reports 5");
+	T(my_ioctl(&f, MY_SET_MAX, 8) == 0, "MY_SET_MAX 8 is accepted");
+	pos = 5;
+	T(my_write(&f, "abcdef", 6, &pos) == 3 && pos == 8, "write is truncated at the limit");
+	T(my_write(&f, "z", 1, &pos) == -ENOSPC, "write at the limit returns -ENOSPC");
+	T(my_ioctl(&f, MY_SET_MAX, 0) == -EINVAL && my_ioctl(&f, MY_SET_MAX, 65) == -EINVAL, "MY_SET_MAX rejects 0 and 65");
+	T(my_ioctl(&f, 0x1234, 0) == -ENOTTY, "unknown command is -ENOTTY");
+	T(my_ioctl(&f, MY_GET_LEN, 0) == -EFAULT, "bad user pointer is -EFAULT");
+	T(my_ioctl(&f, MY_RESET, 0) == 0, "MY_RESET succeeds");
+	my_ioctl(&f, MY_GET_LEN, (unsigned long)&v);
+	T(v == 0, "length is 0 after reset");
+	pos = 0;
+	T(my_read(&f, out, 4, &pos) == 0, "read after reset returns 0");
+	T(_IOC_DIR(MY_GET_LEN) == _IOC_READ && _IOC_SIZE(MY_GET_LEN) == sizeof(int) && _IOC_NR(MY_GET_LEN) == 1, "ioctl number encoding");
+	if (!bad) printf("ok:   all behaviours match\n");
+	return bad;
+}
+N
+cc -Wall -Wno-unused-function -o harness harness.c mydev.c 2>cc.log || { cat cc.log; echo "FAIL: does not compile"; exit 1; }
+./harness

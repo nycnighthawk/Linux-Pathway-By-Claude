@@ -1,0 +1,56 @@
+title: 'Quiz: VFS: write a simple filesystem'
+questions:
+- id: dentry
+  prompt: What does a dentry represent?
+  choices:
+  - A block on disk
+  - A name in a directory, pointing to an inode or marked negative
+  - An open file with a position
+  - A mounted filesystem
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong, that is struct file. D) wrong, that is the super_block.'
+- id: lookup
+  prompt: What does a filesystem lookup operation do?
+  choices:
+  - Reads file data
+  - Finds a name in a directory and attaches the matching inode to the dentry
+  - Mounts the device
+  - Writes back dirty pages
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: errors
+  prompt: Reading a path whose middle component is a regular file should fail with
+  choices:
+  - ENOENT
+  - ENOTDIR
+  - EISDIR
+  - EPERM
+  answer: [1]
+  explain: 'A) wrong, that is for a missing name. B) correct. C) wrong. D) wrong.'
+- id: pagecache
+  prompt: Why are repeated reads of a file fast?
+  choices:
+  - The disk is fast
+  - The page cache keeps file data in memory
+  - Dentries hold the data
+  - The superblock caches it
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong, they hold names. D) wrong.'
+- id: fuse
+  prompt: What is the main trade-off of FUSE?
+  choices:
+  - It needs a kernel module for each filesystem
+  - It is easier and safer to write but slower than an in-kernel filesystem
+  - It cannot be mounted
+  - It only works for read-only data
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: hostile
+  prompt: Why must a filesystem driver validate on-disk block numbers and lengths?
+  choices:
+  - For speed
+  - Because an untrusted or corrupted image can otherwise cause out-of-bounds access or crashes
+  - The VFS requires a log message
+  - To save memory
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'

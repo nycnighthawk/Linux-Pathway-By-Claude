@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > mmio.h <<'N'
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Memory-mapped I/O shim: readl and writel go to a simulated "edu" device. */
+#ifndef MMIO_H
+#define MMIO_H
+#include <errno.h>
+#include <stdint.h>
+typedef uint32_t u32;
+u32 readl(const volatile void *addr);
+void writel(u32 val, volatile void *addr);
+/* register offsets of the QEMU edu device (check the QEMU edu documentation; to verify) */
+#define EDU_REG_ID        0x00  /* identification: major<<24 | minor<<16 | 0xed */
+#define EDU_REG_LIVE      0x04  /* write x, read back ~x */
+#define EDU_REG_FACT      0x08  /* write n to start n!, read the result when done */
+#define EDU_REG_STATUS    0x20  /* bit 0: busy computing */
+#define EDU_STATUS_BUSY   0x01
+#define EDU_MAX_POLLS     1000
+int edu_check_id(volatile void *regs);
+int edu_liveness(volatile void *regs);
+int edu_factorial(volatile void *regs, u32 n, u32 *out);
+#endif
+N
+cat > edu_drv.c <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+#include "mmio.h"
+
+/* The device is present if the low byte of the ID register is 0xed and the
+ * major version (top byte) is 1. Otherwise return -ENODEV. */
+int edu_check_id(volatile void *regs)
+{
+	(void)regs;
+	return -ENOSYS; /* TODO */
+}
+
+/* Write a test pattern to the liveness register and read it back: the card
+ * returns the bitwise complement. Try two different patterns. -EIO on mismatch. */
+int edu_liveness(volatile void *regs)
+{
+	(void)regs;
+	return -ENOSYS; /* TODO */
+}
+
+/* Start n! by writing n, poll the status register until the busy bit clears
+ * (give up after EDU_MAX_POLLS reads with -ETIMEDOUT), then read the result
+ * from the same register into *out. */
+int edu_factorial(volatile void *regs, u32 n, u32 *out)
+{
+	(void)regs; (void)n; (void)out;
+	return -ENOSYS; /* TODO */
+}
+N

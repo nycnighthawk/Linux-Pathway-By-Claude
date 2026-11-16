@@ -1,0 +1,47 @@
+title: 'Quiz: Kernel performance regressions'
+questions:
+- id: shares
+  prompt: Why compare shares of samples between two profiles instead of raw counts?
+  choices:
+  - Raw counts cannot be printed
+  - Total sample counts differ with run length, so shares are comparable
+  - Shares are always larger
+  - perf only reports shares
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: noise
+  prompt: Two runs differ by 4% and the standard deviation over many runs is 3%. What is the sound conclusion?
+  choices:
+  - A confirmed 4% regression
+  - No significant difference; do not bisect yet
+  - The hardware is broken
+  - The benchmark must be discarded
+  answer: [1]
+  explain: 'A) wrong. B) correct: the difference is within the spread. C) wrong. D) wrong.'
+- id: falsereg
+  prompt: Which is a very common source of false regressions?
+  choices:
+  - A different kernel configuration or mitigation default
+  - The terminal font
+  - The git version
+  - The number of tabs open
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: offcpu
+  prompt: The workload is slower but CPU use dropped. What do you examine next?
+  choices:
+  - Off-CPU time, such as waits on locks or I/O
+  - Only the hottest function by cycles
+  - The compiler version only
+  - Nothing, it is normal
+  answer: [0]
+  explain: 'A) correct: threads are waiting. B) wrong. C) wrong. D) wrong.'
+- id: bisect
+  prompt: How is git bisect used for a performance regression?
+  choices:
+  - It cannot be used
+  - With a benchmark script as oracle and a threshold based on measured noise
+  - With a single run per step
+  - By reading commit messages only
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong: one run is unreliable. D) wrong.'

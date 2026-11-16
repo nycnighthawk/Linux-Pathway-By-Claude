@@ -1,0 +1,56 @@
+title: 'Quiz: Character devices, file_operations, ioctl'
+questions:
+- id: eof
+  prompt: What must read return when there is no more data to give on a regular buffer device?
+  choices:
+  - '-1'
+  - '0'
+  - '-EOF'
+  - The buffer size
+  answer: [1]
+  explain: 'A) wrong. B) correct: zero means end of data. C) wrong, there is no such errno. D) wrong.'
+- id: copyret
+  prompt: What does copy_to_user return?
+  choices:
+  - The number of bytes copied
+  - The number of bytes not copied
+  - A negative errno
+  - Always zero
+  answer: [1]
+  explain: 'A) wrong. B) correct: non-zero means a fault, so return -EFAULT. C) wrong. D) wrong.'
+- id: enotty
+  prompt: What should an ioctl handler return for a command it does not recognise?
+  choices:
+  - -EINVAL
+  - -ENOTTY
+  - '0'
+  - -ENOENT
+  answer: [1]
+  explain: 'A) wrong, used for a bad argument. B) correct. C) wrong. D) wrong.'
+- id: poll
+  prompt: A driver blocks readers correctly but has no poll handler. What goes wrong?
+  choices:
+  - Nothing
+  - epoll and select based programs may never learn the device is readable
+  - The module fails to load
+  - Reads return 0
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: iocmacro
+  prompt: What does _IOR(k, 1, int) encode?
+  choices:
+  - A read direction, the size of int, type k and number 1
+  - A write command
+  - A random number
+  - A file descriptor
+  answer: [0]
+  explain: 'A) correct: the direction is from the kernel to user space. B) wrong. C) wrong. D) wrong.'
+- id: compat
+  prompt: Why avoid long in an ioctl argument structure?
+  choices:
+  - It is slower
+  - Its size differs between 32-bit and 64-bit callers
+  - It cannot be copied
+  - It is deprecated syntax
+  answer: [1]
+  explain: 'A) wrong. B) correct: use fixed-width types such as __u32. C) wrong. D) wrong.'

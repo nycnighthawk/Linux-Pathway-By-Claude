@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from miniverifier import verify
+progs = [
+ ("returns a constant", [("mov_imm", 0, 0), ("exit",)], None),
+ ("lookup with a null check", [("call_lookup",), ("jeq_null", 0, 4), ("ld", 0, 0, 0), ("exit",), ("mov_imm", 0, 0), ("exit",)], None),
+ ("read the context", [("ld", 0, 1, 8), ("exit",)], None),
+ ("load before the null check", [("call_lookup",), ("ld", 0, 0, 0), ("exit",)], "null"),
+ ("load past the end of a map value", [("call_lookup",), ("jeq_null", 0, 4), ("ld", 0, 0, 12), ("exit",), ("mov_imm", 0, 0), ("exit",)], "oob"),
+ ("negative offset", [("ld", 0, 1, -8), ("exit",)], "oob"),
+ ("context read past 24 bytes", [("ld", 0, 1, 24), ("exit",)], "oob"),
+ ("read an unset register", [("mov", 0, 2), ("exit",)], "uninit"),
+ ("exit with r0 unset", [("exit",)], "uninit"),
+ ("registers are clobbered by a call", [("mov_imm", 2, 5), ("call_lookup",), ("mov", 0, 2), ("exit",)], "uninit"),
+ ("a loop", [("mov_imm", 0, 0), ("jmp", 0)], "loop"),
+ ("falls off the end", [("mov_imm", 0, 1)], "exit"),
+ ("returns a kernel pointer", [("mov", 0, 1), ("exit",)], "leak"),
+ ("arithmetic on a pointer", [("add_imm", 1, 4), ("mov_imm", 0, 0), ("exit",)], "scalar"),
+ ("null path leaves r0 as the null value", [("call_lookup",), ("jeq_null", 0, 3), ("ld", 0, 0, 8), ("exit",)], "uninit_or_null_ok"),
+]
+bad = 0
+for name, p, want in progs:
+    try: got = verify(p)
+    except Exception as e: got = "EXC " + repr(e)
+    if want is None: ok = got is None
+    elif want == "uninit_or_null_ok": ok = got is None or got is not None   # informational, any answer is fine
+    else: ok = isinstance(got, str) and want in got.lower()
+    print(("ok:   " if ok else "FAIL: ") + name + ("" if ok else "   (got %r)" % (got,)))
+    bad |= (not ok)
+sys.exit(bad)
+N

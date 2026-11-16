@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > edu_drv.c <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+#include "mmio.h"
+
+int edu_check_id(volatile void *regs)
+{
+	u32 id = readl((volatile char *)regs + EDU_REG_ID);
+
+	if ((id & 0xff) != 0xed || (id >> 24) != 1)
+		return -ENODEV;
+	return 0;
+}
+
+int edu_liveness(volatile void *regs)
+{
+	static const u32 pat[] = { 0x12345678, 0xdeadbeef };
+	int i;
+
+	for (i = 0; i < 2; i++) {
+		writel(pat[i], (volatile char *)regs + EDU_REG_LIVE);
+		if (readl((volatile char *)regs + EDU_REG_LIVE) != ~pat[i])
+			return -EIO;
+	}
+	return 0;
+}
+
+int edu_factorial(volatile void *regs, u32 n, u32 *out)
+{
+	int i;
+
+	writel(n, (volatile char *)regs + EDU_REG_FACT);
+	for (i = 0; i < EDU_MAX_POLLS; i++) {
+		if (!(readl((volatile char *)regs + EDU_REG_STATUS) & EDU_STATUS_BUSY)) {
+			*out = readl((volatile char *)regs + EDU_REG_FACT);
+			return 0;
+		}
+	}
+	return -ETIMEDOUT;
+}
+N

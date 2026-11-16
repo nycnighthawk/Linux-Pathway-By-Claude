@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("miniverifier.py").read()
+a = s.index("def verify(prog):")
+s = s[:a] + '''def verify(prog):
+    stack = [(0, ("uninit", "ctx", "uninit", "uninit", "uninit", "uninit"))]
+    seen = set()
+    while stack:
+        pc, regs = stack.pop()
+        if (pc, regs) in seen:
+            continue
+        seen.add((pc, regs))
+        if pc >= len(prog):
+            return "exit: path runs off the end of the program"
+        ins = prog[pc]
+        op = ins[0]
+        regs = list(regs)
+
+        def need(r):
+            if regs[r] == "uninit":
+                return "uninit: r%d read before it was set at pc %d" % (r, pc)
+            return None
+
+        if op == "mov_imm":
+            regs[ins[1]] = "scalar"
+        elif op == "mov":
+            e = need(ins[2])
+            if e:
+                return e
+            regs[ins[1]] = regs[ins[2]]
+        elif op == "add_imm":
+            e = need(ins[1])
+            if e:
+                return e
+            if regs[ins[1]] != "scalar":
+                return "scalar: arithmetic on a pointer at pc %d" % pc
+        elif op == "ld":
+            _, d, p, off = ins
+            e = need(p)
+            if e:
+                return e
+            t = regs[p]
+            if t == "mapval_or_null":
+                return "null: pointer may be NULL at pc %d" % pc
+            if t not in ("ctx", "mapval"):
+                return "scalar: load through a non-pointer at pc %d" % pc
+            size = CTX_SIZE if t == "ctx" else MAP_VALUE_SIZE
+            if off < 0 or off + 8 > size:
+                return "oob: offset %d outside the object at pc %d" % (off, pc)
+            regs[d] = "scalar"
+        elif op == "call_lookup":
+            regs = ["mapval_or_null"] + ["uninit"] * 5
+        elif op == "jeq_null":
+            _, r, t = ins
+            e = need(r)
+            if e:
+                return e
+            if t <= pc:
+                return "loop: backward jump at pc %d" % pc
+            if regs[r] == "mapval_or_null":
+                isnull = list(regs); isnull[r] = "scalar"
+                notnull = list(regs); notnull[r] = "mapval"
+                stack.append((t, tuple(isnull)))
+                stack.append((pc + 1, tuple(notnull)))
+            else:
+                stack.append((t, tuple(regs)))
+                stack.append((pc + 1, tuple(regs)))
+            continue
+        elif op == "jmp":
+            if ins[1] <= pc:
+                return "loop: backward jump at pc %d" % pc
+            stack.append((ins[1], tuple(regs)))
+            continue
+        elif op == "exit":
+            if regs[0] == "uninit":
+                return "uninit: r0 not set at exit, pc %d" % pc
+            if regs[0] != "scalar":
+                return "leak: returning a pointer at pc %d" % pc
+            continue
+        stack.append((pc + 1, tuple(regs)))
+    return None
+'''
+open("miniverifier.py", "w").write(s)
+N

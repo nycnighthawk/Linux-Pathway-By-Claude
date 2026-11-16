@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+import struct
+BS = 512
+NB = 32
+img = bytearray(NB * BS)
+INODE_TABLE, DATA_START, NINODES = 1, 2, 16
+img[0:20] = struct.pack("<4sIIII", b"TFS1", NB, NINODES, INODE_TABLE, DATA_START)
+blocks = {}
+nxt = [DATA_START]
+def alloc(data):
+    nums = []
+    for i in range(0, max(len(data), 1), BS):
+        n = nxt[0]; nxt[0] += 1
+        img[n * BS:n * BS + len(data[i:i + BS])] = data[i:i + BS]
+        nums.append(n)
+    return nums
+def inode(num, mode, size, nums):
+    d = (list(nums) + [0] * 6)[:6]
+    off = INODE_TABLE * BS + (num - 1) * 32
+    img[off:off + 32] = struct.pack("<HHI6I", mode, 1, size, *d) + b"\0" * 0
+def dirdata(entries):
+    return b"".join(struct.pack("<I28s", i, n.encode()) for i, n in entries)
+big = bytes((i * 7 + 3) % 251 for i in range(1300))
+small = b"hello from tinyfs\n"
+inode(1, 2, 0, [])     # placeholder, rewritten below
+f2 = alloc(small); inode(2, 1, len(small), f2)
+f3 = alloc(big); inode(3, 1, len(big), f3)
+sub = dirdata([(1, "."), (1, ".."), (3, "data.bin")])
+d4 = alloc(sub); inode(4, 2, len(sub), d4)
+root = dirdata([(1, "."), (1, ".."), (2, "hello.txt"), (4, "docs")])
+d1 = alloc(root); inode(1, 2, len(root), d1)
+open("tiny.img", "wb").write(img)
+open("expected_big.bin", "wb").write(big)
+N
+cat > tfs.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""Read-only driver for the TinyFS image format (the VFS operations a filesystem provides).
+
+Layout (little endian, 512-byte blocks):
+  block 0   superblock: magic b"TFS1", u32 nblocks, u32 ninodes, u32 inode_table_block, u32 data_start
+  inodes    32 bytes each, numbered from 1, 16 per block, starting at inode_table_block:
+            u16 mode (1 file, 2 directory), u16 nlink, u32 size, u32 direct[6] (block numbers, 0 = unused)
+  directory a file whose data is an array of 32-byte entries: u32 inode, 28-byte NUL-padded name
+  root      is inode 1
+"""
+import struct
+
+BS = 512
+
+
+class TinyFS:
+    def __init__(self, path):
+        self.img = open(path, "rb").read()
+        magic, self.nblocks, self.ninodes, self.itable, self.dstart = struct.unpack_from("<4sIIII", self.img, 0)
+        if magic != b"TFS1":
+            raise ValueError("bad magic")
+
+    def inode(self, num):
+        """Return (mode, size, [direct block numbers in use])."""
+        raise NotImplementedError   # TODO
+
+    def data(self, num):
+        """Return the full contents of inode num (a file or a directory)."""
+        raise NotImplementedError   # TODO
+
+    def lookup(self, path):
+        """Resolve an absolute path such as "/docs/data.bin" to an inode number.
+        Raise FileNotFoundError if a component is missing and NotADirectoryError
+        if a non-final component is not a directory."""
+        raise NotImplementedError   # TODO
+
+    def listdir(self, path):
+        """Names in a directory, without "." and "..", sorted.
+        NotADirectoryError for a file."""
+        raise NotImplementedError   # TODO
+
+    def read(self, path):
+        """File contents. IsADirectoryError for a directory."""
+        raise NotImplementedError   # TODO
+N

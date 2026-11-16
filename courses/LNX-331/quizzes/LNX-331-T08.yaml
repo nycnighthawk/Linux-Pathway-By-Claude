@@ -1,0 +1,56 @@
+title: 'Quiz: Network drivers and NAPI'
+questions:
+- id: livelock
+  prompt: What problem does NAPI mainly address?
+  choices:
+  - Slow DNS
+  - Receive livelock from one interrupt per packet at high rates
+  - Missing checksums
+  - IP address exhaustion
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: budget
+  prompt: A poll function handled exactly its budget of packets. What should it do?
+  choices:
+  - Complete NAPI and re-enable the interrupt
+  - Return the budget and stay scheduled
+  - Return more than the budget
+  - Reset the device
+  answer: [1]
+  explain: 'A) wrong, there may be more work. B) correct. C) wrong, a bug. D) wrong.'
+- id: complete
+  prompt: When may the poll function re-enable the device interrupt?
+  choices:
+  - Always at the start
+  - When it processed fewer packets than the budget, so the ring is drained
+  - Never
+  - After every packet
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: txstop
+  prompt: The transmit ring is almost full. What does ndo_start_xmit do?
+  choices:
+  - Drops silently
+  - Stops the queue, and the completion path wakes it later
+  - Sleeps until space is free
+  - Returns an error to user space
+  answer: [1]
+  explain: 'A) wrong. B) correct: backpressure to the stack. C) wrong, it is atomic context. D) wrong.'
+- id: rss
+  prompt: What does RSS provide?
+  choices:
+  - Encryption
+  - Hashing of flows to separate hardware queues, interrupts and CPUs
+  - Packet capture
+  - Name resolution
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: xdp
+  prompt: Where does an XDP program run?
+  choices:
+  - In user space after the socket
+  - In the driver receive path before an sk_buff is allocated
+  - In the filesystem layer
+  - Only on the transmit path
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'

@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from nicsim import Nic
+bad = 0
+def t(name, ok):
+    global bad
+    print(("ok:   " if ok else "FAIL: ") + name); bad |= (not ok)
+
+n = Nic()
+n.rx("a")
+t("an interrupt masks itself and schedules polling", n.napi_scheduled and not n.irq_enabled)
+t("the poll returns the work done", n.poll(16) == 1 and n.delivered == ["a"])
+t("an idle ring completes polling and re-enables the interrupt", n.irq_enabled and not n.napi_scheduled)
+
+n = Nic()
+for i in range(100): n.rx(i)
+t("a burst raises only one interrupt", n.irq_count == 1)
+r = n.poll(16)
+t("a full budget keeps polling scheduled", r == 16 and n.napi_scheduled and not n.irq_enabled)
+n.run_scheduler()
+t("all 100 packets are delivered in order", n.delivered == list(range(100)))
+t("polling ends with the interrupt back on", n.irq_enabled and not n.napi_scheduled)
+
+n = Nic()
+for i in range(32): n.rx(i)
+t("exactly two budgets of packets", n.poll(16) == 16 and n.poll(16) == 16 and n.napi_scheduled)
+t("an empty poll then completes", n.poll(16) == 0 and n.irq_enabled and not n.napi_scheduled)
+
+n = Nic()
+n.rx(1); n.run_scheduler(); n.rx(2); n.run_scheduler()
+t("after completing, the next packet interrupts again", n.irq_count == 2 and n.delivered == [1, 2])
+sys.exit(bad)
+N

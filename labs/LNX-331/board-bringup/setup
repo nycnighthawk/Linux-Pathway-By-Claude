@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+# Bring-up field report. Replace every ? with a value you observed. One key=value per line.
+board=?
+soc=?
+boot_source=?
+uart_settings=?
+bootloader=?
+dtb_file=?
+kernel_console=?
+iteration_method=?
+first_failure_stage=?
+N

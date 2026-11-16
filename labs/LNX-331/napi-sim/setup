@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > nicsim.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A network card with a receive ring, and the NAPI contract, in miniature.
+
+The NIC raises an interrupt when a packet arrives and interrupts are enabled.
+NAPI: the interrupt handler masks the interrupt and schedules polling; the poll
+function handles at most `budget` packets and returns how many it handled.
+If it handled fewer than the budget, the ring is empty: complete polling and
+unmask the interrupt. If it used the whole budget, return budget and stay
+scheduled, because there may be more work.
+"""
+
+
+class Nic:
+    def __init__(self):
+        self.ring = []
+        self.irq_enabled = True
+        self.napi_scheduled = False
+        self.delivered = []        # packets handed to the network stack
+        self.irq_count = 0
+
+    # --- hardware side (do not change) ---
+    def rx(self, pkt):
+        self.ring.append(pkt)
+        if self.irq_enabled:
+            self.irq_count += 1
+            self.isr()
+
+    # --- driver side: implement these two ---
+    def isr(self):
+        """Interrupt handler: mask the NIC interrupt and schedule polling."""
+        # TODO
+        pass
+
+    def poll(self, budget):
+        """Process at most `budget` packets from the ring into self.delivered.
+        Return the number processed. When fewer than `budget` were processed,
+        mark polling complete (napi_scheduled = False) and re-enable the interrupt."""
+        # TODO
+        return 0
+
+    def run_scheduler(self, rounds=1000):
+        """The kernel's softirq side: call poll while polling is scheduled."""
+        n = 0
+        while self.napi_scheduled and n < rounds:
+            self.poll(16)
+            n += 1
+N

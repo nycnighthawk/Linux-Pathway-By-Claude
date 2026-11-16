@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+def load(p):
+    d = {}
+    for l in open(p):
+        l = l.strip()
+        if l and not l.startswith("#"):
+            f, n = l.split(); d[f] = int(n)
+    return d
+b, a = load("before.txt"), load("after.txt")
+tb, ta = sum(b.values()), sum(a.values())
+share = lambda d, t, f: 100.0 * d[f] / t
+top = max(b, key=lambda f: share(a, ta, f) - share(b, tb, f))
+files = {}
+for l in open("symbols.txt"):
+    if l.strip() and not l.startswith("#"): f, p = l.split(); files[f] = p
+culprit = [l.split()[0] for l in open("commits.txt") if l.strip() and not l.startswith("#") and l.split()[1] == files[top]][0]
+kv = {}
+for l in open("report.txt"):
+    l = l.strip()
+    if l and not l.startswith("#") and "=" in l:
+        k, v = l.split("=", 1); kv[k.strip()] = v.strip()
+bad = 0
+def chk(name, ok, hint):
+    global bad
+    print(("ok:   " if ok else "FAIL: ") + name + ("" if ok else "  (" + hint + ")")); bad |= (not ok)
+chk("regressed_function", kv.get("regressed_function") == top, "compare shares, not raw counts")
+def near(k, want):
+    try: return abs(float(kv.get(k, "x")) - want) <= 0.11
+    except ValueError: return False
+chk("share_before_pct", near("share_before_pct", share(b, tb, top)), "samples / total samples * 100")
+chk("share_after_pct", near("share_after_pct", share(a, ta, top)), "use the total of the after profile")
+chk("culprit_commit", kv.get("culprit_commit") == culprit, "which commit changed the function's file?")
+chk("first_tool", kv.get("first_tool") == "perf-callgraph", "you need the callers: record with call graphs")
+sys.exit(bad)
+N

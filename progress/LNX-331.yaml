@@ -1,0 +1,136 @@
+item: LNX-331
+label: Kernel Internals & Device Drivers
+branch: build/LNX-331
+state: done
+started: '2026-11-16'
+updated: '2026-11-16'
+phases:
+  synth:
+    state: done
+    units: 13
+    done:
+    - LNX-331-T01
+    - LNX-331-T02
+    - LNX-331-T03
+    - LNX-331-T04
+    - LNX-331-T05
+    - LNX-331-T06
+    - LNX-331-T07
+    - LNX-331-T08
+    - LNX-331-T09
+    - LNX-331-T10
+    - LNX-331-T11
+    - LNX-331-T12
+    - LNX-331-T13
+  lessons:
+    state: done
+    units: 13
+    done:
+    - LNX-331-T01
+    - LNX-331-T02
+    - LNX-331-T03
+    - LNX-331-T04
+    - LNX-331-T05
+    - LNX-331-T06
+    - LNX-331-T07
+    - LNX-331-T08
+    - LNX-331-T09
+    - LNX-331-T10
+    - LNX-331-T11
+    - LNX-331-T12
+    - LNX-331-T13
+  quizzes:
+    state: done
+    units: 13
+    done:
+    - LNX-331-T01
+    - LNX-331-T02
+    - LNX-331-T03
+    - LNX-331-T04
+    - LNX-331-T05
+    - LNX-331-T06
+    - LNX-331-T07
+    - LNX-331-T08
+    - LNX-331-T09
+    - LNX-331-T10
+    - LNX-331-T11
+    - LNX-331-T12
+    - LNX-331-T13
+  labs:
+    state: done
+    units: 13
+    done:
+    - LNX-331-T01
+    - LNX-331-T02
+    - LNX-331-T03
+    - LNX-331-T04
+    - LNX-331-T05
+    - LNX-331-T06
+    - LNX-331-T07
+    - LNX-331-T08
+    - LNX-331-T09
+    - LNX-331-T10
+    - LNX-331-T11
+    - LNX-331-T12
+    - LNX-331-T13
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-16 started
+- '2026-11-16 synth: LNX-331-T01'
+- '2026-11-16 lessons: LNX-331-T01'
+- '2026-11-16 quizzes: LNX-331-T01'
+- '2026-11-16 labs: LNX-331-T01'
+- '2026-11-16 synth: LNX-331-T02'
+- '2026-11-16 lessons: LNX-331-T02'
+- '2026-11-16 quizzes: LNX-331-T02'
+- '2026-11-16 labs: LNX-331-T02'
+- '2026-11-16 synth: LNX-331-T03'
+- '2026-11-16 lessons: LNX-331-T03'
+- '2026-11-16 quizzes: LNX-331-T03'
+- '2026-11-16 labs: LNX-331-T03'
+- '2026-11-16 synth: LNX-331-T04'
+- '2026-11-16 lessons: LNX-331-T04'
+- '2026-11-16 quizzes: LNX-331-T04'
+- '2026-11-16 labs: LNX-331-T04'
+- '2026-11-16 lessons: LNX-331-T05'
+- '2026-11-16 quizzes: LNX-331-T05'
+- '2026-11-16 labs: LNX-331-T05'
+- '2026-11-16 synth: LNX-331-T06'
+- '2026-11-16 lessons: LNX-331-T06'
+- '2026-11-16 quizzes: LNX-331-T06'
+- '2026-11-16 labs: LNX-331-T06'
+- '2026-11-16 synth: LNX-331-T07'
+- '2026-11-16 lessons: LNX-331-T07'
+- '2026-11-16 quizzes: LNX-331-T07'
+- '2026-11-16 labs: LNX-331-T07'
+- '2026-11-16 synth: LNX-331-T08'
+- '2026-11-16 lessons: LNX-331-T08'
+- '2026-11-16 quizzes: LNX-331-T08'
+- '2026-11-16 labs: LNX-331-T08'
+- '2026-11-16 synth: LNX-331-T09'
+- '2026-11-16 lessons: LNX-331-T09'
+- '2026-11-16 quizzes: LNX-331-T09'
+- '2026-11-16 labs: LNX-331-T09'
+- '2026-11-16 synth: LNX-331-T10'
+- '2026-11-16 lessons: LNX-331-T10'
+- '2026-11-16 quizzes: LNX-331-T10'
+- '2026-11-16 labs: LNX-331-T10'
+- '2026-11-16 synth: LNX-331-T11'
+- '2026-11-16 lessons: LNX-331-T11'
+- '2026-11-16 quizzes: LNX-331-T11'
+- '2026-11-16 labs: LNX-331-T11'
+- '2026-11-16 synth: LNX-331-T12'
+- '2026-11-16 lessons: LNX-331-T12'
+- '2026-11-16 quizzes: LNX-331-T12'
+- '2026-11-16 labs: LNX-331-T12'
+- '2026-11-16 synth: LNX-331-T13'
+- '2026-11-16 lessons: LNX-331-T13'
+- '2026-11-16 quizzes: LNX-331-T13'
+- '2026-11-16 labs: LNX-331-T13'
+- '2026-11-16 checks: done'
+- 2026-11-16 finished
+finished: '2026-11-16'

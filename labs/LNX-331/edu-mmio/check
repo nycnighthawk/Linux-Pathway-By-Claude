@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+cat > sim.c <<'N'
+#include <stdio.h>
+#include <string.h>
+#include "mmio.h"
+static unsigned char mem[0x100];
+static u32 id = 0x010000ed, live, result, busy_polls;
+static int mode;          /* 0 good, 1 wrong id, 2 stuck busy, 3 broken liveness */
+static int busy_left;
+static long reads;
+static u32 fact(u32 n) { u32 r = 1; while (n > 1) r *= n--; return r; }
+u32 readl(const volatile void *a)
+{
+	unsigned off = (const volatile unsigned char *)a - mem;
+	reads++;
+	switch (off) {
+	case EDU_REG_ID: return mode == 1 ? 0x0100ffff : id;
+	case EDU_REG_LIVE: return mode == 3 ? live : ~live;
+	case EDU_REG_FACT: return result;
+	case EDU_REG_STATUS:
+		if (mode == 2) return EDU_STATUS_BUSY;
+		if (busy_left > 0) { busy_left--; return EDU_STATUS_BUSY; }
+		return 0;
+	}
+	return 0xffffffff;
+}
+void writel(u32 v, volatile void *a)
+{
+	unsigned off = (volatile unsigned char *)a - mem;
+	if (off == EDU_REG_LIVE) live = v;
+	if (off == EDU_REG_FACT) { result = fact(v); busy_left = 5; }
+}
+static int bad;
+#define T(c, m) do { if (!(c)) { printf("FAIL: %s\n", m); bad = 1; } } while (0)
+int main(void)
+{
+	u32 out = 0;
+	mode = 0;
+	T(edu_check_id(mem) == 0, "good ID is accepted");
+	T(edu_liveness(mem) == 0, "liveness passes on a working card");
+	T(edu_factorial(mem, 5, &out) == 0 && out == 120, "5! is 120");
+	T(edu_factorial(mem, 10, &out) == 0 && out == 3628800, "10! is 3628800");
+	mode = 1; T(edu_check_id(mem) == -ENODEV, "wrong ID gives -ENODEV");
+	mode = 3; T(edu_liveness(mem) == -EIO, "broken liveness gives -EIO");
+	mode = 2; reads = 0;
+	T(edu_factorial(mem, 5, &out) == -ETIMEDOUT, "a stuck card gives -ETIMEDOUT");
+	T(reads <= EDU_MAX_POLLS + 5, "polling is bounded");
+	if (!bad) printf("ok:   edu driver logic behaves\n");
+	return bad;
+}
+N
+cc -Wall -o sim sim.c edu_drv.c 2>cc.log || { cat cc.log; echo "FAIL: does not compile"; exit 1; }
+./sim

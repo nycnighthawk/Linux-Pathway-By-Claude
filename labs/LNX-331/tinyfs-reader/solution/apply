@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("tfs.py").read()
+a = s.index("    def inode(self, num):")
+s = s[:a] + '''    def inode(self, num):
+        off = self.itable * BS + (num - 1) * 32
+        mode, _nlink, size, *direct = struct.unpack_from("<HHI6I", self.img, off)
+        return mode, size, [b for b in direct if b]
+
+    def data(self, num):
+        mode, size, blocks = self.inode(num)
+        raw = b"".join(self.img[b * BS:(b + 1) * BS] for b in blocks)
+        return raw[:size]
+
+    def lookup(self, path):
+        num = 1
+        parts = [p for p in path.split("/") if p]
+        for i, name in enumerate(parts):
+            mode, _size, _b = self.inode(num)
+            if mode != 2:
+                raise NotADirectoryError(name)
+            raw = self.data(num)
+            found = None
+            for j in range(0, len(raw), 32):
+                ino, nm = struct.unpack_from("<I28s", raw, j)
+                if ino and nm.rstrip(b"\\0").decode() == name:
+                    found = ino
+                    break
+            if found is None:
+                raise FileNotFoundError(path)
+            num = found
+        return num
+
+    def listdir(self, path):
+        num = self.lookup(path)
+        if self.inode(num)[0] != 2:
+            raise NotADirectoryError(path)
+        raw = self.data(num)
+        names = []
+        for j in range(0, len(raw), 32):
+            ino, nm = struct.unpack_from("<I28s", raw, j)
+            n = nm.rstrip(b"\\0").decode()
+            if ino and n not in (".", ".."):
+                names.append(n)
+        return sorted(names)
+
+    def read(self, path):
+        num = self.lookup(path)
+        if self.inode(num)[0] == 2:
+            raise IsADirectoryError(path)
+        return self.data(num)
+'''
+open("tfs.py", "w").write(s)
+N

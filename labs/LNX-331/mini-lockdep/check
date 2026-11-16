@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from minilockdep import check
+def tr(s):
+    out = []
+    for item in s.split(";"):
+        t, op, l = item.split()
+        out.append((t, op, l))
+    return out
+cases = [
+ ("one task nests A then B, releases", "t1 lock A;t1 lock B;t1 unlock B;t1 unlock A", None),
+ ("two tasks use the same order", "t1 lock A;t1 lock B;t1 unlock B;t1 unlock A;t2 lock A;t2 lock B;t2 unlock B;t2 unlock A", None),
+ ("AB then BA, run serially so no deadlock occurs", "t1 lock A;t1 lock B;t1 unlock B;t1 unlock A;t2 lock B;t2 lock A;t2 unlock A;t2 unlock B", {"A", "B"}),
+ ("three-lock cycle", "t1 lock A;t1 lock B;t1 unlock B;t1 unlock A;t2 lock B;t2 lock C;t2 unlock C;t2 unlock B;t3 lock C;t3 lock A;t3 unlock A;t3 unlock C", {"A", "B", "C"}),
+ ("same task takes A twice", "t1 lock A;t1 lock A", {"A"}),
+ ("sequential use without nesting", "t1 lock A;t1 unlock A;t1 lock B;t1 unlock B;t2 lock B;t2 unlock B;t2 lock A;t2 unlock A", None),
+ ("different tasks hold different locks, no nesting", "t1 lock A;t2 lock B;t1 unlock A;t2 unlock B", None),
+ ("release in a different order than acquire", "t1 lock A;t1 lock B;t1 unlock A;t1 unlock B;t2 lock B;t2 lock A", {"A", "B"}),
+]
+bad = 0
+for name, s, want in cases:
+    got = check(tr(s))
+    ok = (got is None) if want is None else (got is not None and set(got) == want)
+    print(("ok:   " if ok else "FAIL: ") + name)
+    bad |= (not ok)
+sys.exit(bad)
+N
