@@ -45,6 +45,13 @@ modules:
     title: AppArmor, seccomp, kernel attack surface
     file: lessons/LNX-314-T03.md
     minutes: 60
+- id: policy
+  title: Policy
+  lessons:
+  - topic: LNX-314-T04
+    title: Pod Security Admission, Kyverno/Gatekeeper
+    file: lessons/LNX-314-T04.md
+    minutes: 60
 labs:
 - id: metadata-guard
   topic: LNX-314-T01
@@ -71,6 +78,12 @@ labs:
   minutes: 35
   packages:
   - python3-yaml
+- id: psa-and-vap
+  topic: LNX-314-T04
+  title: Pod Security labels
+  env: C
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-314-T01
   topic: LNX-314-T01
@@ -84,3 +97,7 @@ quizzes:
   topic: LNX-314-T03
   title: 'Quiz: AppArmor, seccomp, kernel attack surface'
   file: quizzes/LNX-314-T03.yaml
+- id: LNX-314-T04
+  topic: LNX-314-T04
+  title: 'Quiz: Pod Security Admission, Kyverno/Gatekeeper'
+  file: quizzes/LNX-314-T04.yaml

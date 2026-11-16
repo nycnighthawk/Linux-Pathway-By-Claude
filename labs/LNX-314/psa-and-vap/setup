@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+[ -f pod.yaml ] || cat > pod.yaml <<'N'
+# SPDX-License-Identifier: MIT
+# This Pod would be rejected by the restricted level. Fix it without changing its purpose.
+apiVersion: v1
+kind: Pod
+metadata: {name: agent, namespace: prod}
+spec:
+  hostNetwork: true
+  volumes:
+    - {name: logs, hostPath: {path: /var/log/agent}}
+    - {name: tmp, emptyDir: {}}
+  containers:
+    - name: agent
+      image: registry.example/agent:4.2
+      securityContext:
+        privileged: true
+        capabilities: {add: [SYS_ADMIN, NET_BIND_SERVICE]}
+      volumeMounts:
+        - {name: logs, mountPath: /logs}
+        - {name: tmp, mountPath: /tmp}
+N
+[ -f namespaces.yaml ] || cat > namespaces.yaml <<'N'
+# SPDX-License-Identifier: MIT
+# TODO: label namespaces prod and staging for Pod Security Admission
+apiVersion: v1
+kind: Namespace
+metadata: {name: prod}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: staging}
+N
+[ -f vap.yaml ] || echo "# TODO: ValidatingAdmissionPolicy and ValidatingAdmissionPolicyBinding" > vap.yaml
