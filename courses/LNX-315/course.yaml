@@ -87,6 +87,10 @@ modules:
     title: 'Migrating from VMware: virt-v2v, migration toolkits'
     file: lessons/LNX-315-T10.md
     minutes: 60
+  - topic: LNX-315-T11
+    title: 'Live migration tuning: post-copy, auto-converge, dirty-rate limits'
+    file: lessons/LNX-315-T11.md
+    minutes: 45
 labs:
 - id: vfio-plan-guide
   topic: LNX-315-T01
@@ -161,6 +165,12 @@ labs:
   packages:
   - qemu-utils
   - python3
+- id: migration-tuning-guide
+  topic: LNX-315-T11
+  title: Diagnose a stuck live migration
+  env: S
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-315-T01
   topic: LNX-315-T01
@@ -202,3 +212,7 @@ quizzes:
   topic: LNX-315-T10
   title: 'Quiz: Migrating from VMware: virt-v2v, migration toolkits'
   file: quizzes/LNX-315-T10.yaml
+- id: LNX-315-T11
+  topic: LNX-315-T11
+  title: 'Quiz: Live migration tuning: post-copy, auto-converge, dirty-rate limits'
+  file: quizzes/LNX-315-T11.yaml
