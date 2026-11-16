@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -x chain.sh ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+rm -f base.qcow2 mid.qcow2 top.qcow2 flat.qcow2
+if ./chain.sh >/dev/null 2>&1; then ok "chain.sh runs"; else fail "chain.sh exits non-zero"; exit 1; fi
+for f in base mid top flat; do [ -f $f.qcow2 ] && ok "$f.qcow2 exists" || fail "$f.qcow2 is missing"; done
+[ $bad -eq 0 ] || exit 1
+j() { qemu-img info --output=json "$@" 2>/dev/null; }
+py() { python3 -c "import json,sys; d=json.load(sys.stdin); print($1)"; }
+[ "$(j -U base.qcow2 | py "d['format'] + ' ' + str(d['virtual-size']) + ' ' + str(d['cluster-size'])")" = "qcow2 33554432 65536" ] && ok "base: qcow2, 32 MiB, 64 KiB clusters" || fail "base must be qcow2 of 32M with cluster_size=64k"
+[ "$(j -U mid.qcow2 | py "d.get('backing-filename','') + ' ' + d.get('backing-filename-format','')")" = "base.qcow2 qcow2" ] && ok "mid is backed by base.qcow2 with the format recorded" || fail "mid needs backing file base.qcow2 and an explicit backing format qcow2 (-F)"
+[ "$(j -U top.qcow2 | py "d.get('backing-filename','') + ' ' + d.get('backing-filename-format','')")" = "mid.qcow2 qcow2" ] && ok "top is backed by mid.qcow2 with the format recorded" || fail "top needs backing file mid.qcow2 and backing format qcow2"
+[ "$(j -U flat.qcow2 | py "'backing-filename' in d")" = False ] && ok "flat.qcow2 has no backing file" || fail "flat.qcow2 must be standalone"
+rd() { out=$(qemu-io -r -U -c "read -P $2 $3 64k" "$1" 2>&1); echo "$out" | grep -q "read 65536/65536" && ! echo "$out" | grep -q "verification failed"; }
+rd flat.qcow2 0xaa 0 && rd flat.qcow2 0xbb 1M && rd flat.qcow2 0xcc 2M && ok "flat.qcow2 holds data A, B and C" || fail "flat.qcow2 must read 0xaa at 0, 0xbb at 1M and 0xcc at 2M"
+rd base.qcow2 0xaa 0 && ok "base still holds A" || fail "base must hold 0xaa at offset 0"
+! rd base.qcow2 0xcc 2M && ok "base was not modified by the commit" || fail "the commit must stop at mid: base must not contain C"
+rd mid.qcow2 0xcc 2M && ok "after the commit mid holds C" || fail "run qemu-img commit on top so mid contains 0xcc at 2M"
+alloc=$(qemu-img map --output=json -U top.qcow2 2>/dev/null | python3 -c "import json,sys; print(sum(e['length'] for e in json.load(sys.stdin) if e.get('data') and e.get('depth')==0))")
+[ "$alloc" = 0 ] && ok "top holds no data after the commit" || fail "top still has data of its own after the commit"
+for f in base mid top flat; do qemu-img check -U $f.qcow2 >/dev/null 2>&1 && ok "qemu-img check $f clean" || fail "qemu-img check reports problems in $f"; done
+exit $bad

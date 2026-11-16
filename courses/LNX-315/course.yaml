@@ -50,6 +50,13 @@ modules:
     title: 'Performance: NUMA, CPU pinning, hugepages, IOThreads, virtio-blk vs virtio-scsi'
     file: lessons/LNX-315-T03.md
     minutes: 65
+- id: storage-firmware
+  title: Storage and firmware
+  lessons:
+  - topic: LNX-315-T04
+    title: 'Disk images: qcow2 internals, backing chains, block jobs'
+    file: lessons/LNX-315-T04.md
+    minutes: 55
 labs:
 - id: vfio-plan-guide
   topic: LNX-315-T01
@@ -69,6 +76,15 @@ labs:
   env: S
   license: MIT
   minutes: 40
+- id: qcow2-chain
+  topic: LNX-315-T04
+  title: Build
+  env: V
+  license: MIT
+  minutes: 30
+  packages:
+  - qemu-utils
+  - python3
 quizzes:
 - id: LNX-315-T01
   topic: LNX-315-T01
@@ -82,3 +98,7 @@ quizzes:
   topic: LNX-315-T03
   title: 'Quiz: Performance: NUMA, CPU pinning, hugepages, IOThreads, virtio-blk vs virtio-scsi'
   file: quizzes/LNX-315-T03.yaml
+- id: LNX-315-T04
+  topic: LNX-315-T04
+  title: 'Quiz: Disk images: qcow2 internals, backing chains, block jobs'
+  file: quizzes/LNX-315-T04.yaml

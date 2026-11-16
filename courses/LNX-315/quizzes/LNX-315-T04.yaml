@@ -1,0 +1,27 @@
+title: 'Quiz: qcow2, backing chains and block jobs'
+questions:
+- id: tiny
+  prompt: Why is a new 100 GiB qcow2 image small on disk?
+  choices: [It is compressed, Tables and clusters are allocated on demand, It is a sparse raw file, It stores only the header forever]
+  answer: [1]
+  explain: 'A) wrong. B) correct: unallocated clusters read as zeros or from the backing file. C) wrong. D) wrong: data clusters are added on write.'
+- id: rebase-u
+  prompt: When is qemu-img rebase -u (unsafe) the right choice?
+  choices: [The new base has different content, The base file was moved or renamed and its content is identical, The overlay is corrupted, You want to flatten the chain]
+  answer: [1]
+  explain: 'A) wrong: use safe rebase so data is copied. B) correct: only the stored path changes. C) wrong. D) wrong: use convert.'
+- id: commit-pull
+  prompt: Which is a block pull?
+  choices: [Merge the overlay into the base, Stream data from the backing files into the overlay so the dependency can be removed, Copy the disk to new storage, Create an external snapshot]
+  answer: [1]
+  explain: 'A) wrong: that is commit. B) correct. C) wrong: that is blockcopy (mirror). D) wrong.'
+- id: format-flag
+  prompt: Why should an overlay always record its backing file format?
+  choices: [It makes the overlay smaller, Probing the format of an untrusted backing file can be abused to read host files, It enables compression, Libvirt requires gzip]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: backup
+  prompt: What does an incremental restore need? (select two)
+  choices: [The full backup, Each increment since the full in order, Only the latest increment, The original base image path]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: an increment holds only changed clusters. D) wrong.'
