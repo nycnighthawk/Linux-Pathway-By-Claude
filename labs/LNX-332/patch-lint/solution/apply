@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("lint.py").read()
+a = s.index("def lint")
+s = s[:a] + '''import re
+
+
+def lint(text, project):
+    issues = set()
+    lines = text.splitlines()
+    subject = None
+    i = 0
+    while i < len(lines) and lines[i].strip():
+        if lines[i].startswith("Subject:"):
+            subject = lines[i][len("Subject:"):].strip()
+        i += 1
+    msg = []
+    j = i + 1
+    while j < len(lines) and lines[j] != "---":
+        msg.append(lines[j])
+        j += 1
+    diff = lines[j + 1:]
+    if subject is not None:
+        subject = re.sub(r"^\\[PATCH[^\\]]*\\]\\s*", "", subject)
+        if not re.match(r"^[\\w./+-]+(: [\\w./+-]+)*: \\S", subject):
+            issues.add("no-prefix")
+        if len(subject) > 75:
+            issues.add("subject-long")
+    if not any(m.startswith("Signed-off-by: ") for m in msg):
+        issues.add("no-sob")
+    for m in msg:
+        if len(m) > 75 and not (m.startswith("Link:") or m.startswith("http")):
+            issues.add("body-long")
+    for d in diff:
+        if d.startswith("+") and not d.startswith("+++"):
+            body = d[1:]
+            if d != d.rstrip():
+                issues.add("trailing-ws")
+            indent = body[: len(body) - len(body.lstrip(" \\t"))]
+            if project == "qemu" and "\\t" in indent:
+                issues.add("tab-in-qemu")
+            if project == "kernel" and body.startswith(" " * 8):
+                issues.add("space-in-kernel")
+    return sorted(issues)
+'''
+open("lint.py", "w").write(s)
+N

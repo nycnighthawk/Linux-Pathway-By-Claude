@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > lint.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A small patch linter for mailed KVM and QEMU patches.
+
+lint(text, project) -> sorted list of issue codes (each at most once).
+`text` is an email-style patch: headers, a blank line, the commit message,
+a line "---", and the diff.  `project` is "kernel" or "qemu".
+
+Codes:
+  no-prefix       the subject has no "<subsystem>: " prefix, like
+                  "KVM: x86: ..." or "hw/virtio: ..."
+  subject-long    the subject (after "Subject: " and an optional "[PATCH ...] ")
+                  is longer than 75 characters
+  no-sob          no line starting with "Signed-off-by: "
+  body-long       a commit-message line longer than 75 characters
+                  (lines starting with "Link:" or "http" are exempt)
+  trailing-ws     an added diff line (starts with "+" but not "+++") ends in
+                  a space or tab
+  tab-in-qemu     project is "qemu" and an added diff line has a tab in its
+                  indentation (QEMU style uses spaces)
+  space-in-kernel project is "kernel" and an added diff line, after the '+',
+                  starts with 8 or more spaces (kernel style uses tabs)
+"""
+
+
+def lint(text, project):
+    # TODO
+    return []
+N

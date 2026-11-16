@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from lint import lint
+def patch(subject="[PATCH] KVM: x86: check the index in foo", body=("Explain the problem.", "", "Signed-off-by: A Dev <a@example.org>"), diff=("+\treturn 0;",)):
+    return "From: A Dev <a@example.org>\nSubject: %s\n\n%s\n---\n %s\n%s\n" % (subject, "\n".join(body), "file | 1 +", "\n".join(diff))
+res = []
+res.append(("a clean kernel patch", lint(patch(), "kernel") == []))
+res.append(("a clean qemu patch", lint(patch("[PATCH v2 3/5] hw/virtio: fix bounds", diff=("+    return 0;",)), "qemu") == []))
+res.append(("no prefix", lint(patch("[PATCH] fix a thing"), "kernel") == ["no-prefix"]))
+res.append(("subject too long", lint(patch("[PATCH] KVM: x86: " + "x" * 70), "kernel") == ["subject-long"]))
+res.append(("missing sign-off", lint(patch(body=("Explain.",)), "kernel") == ["no-sob"]))
+res.append(("long body line", lint(patch(body=("w " * 40, "", "Signed-off-by: A <a@b.c>")), "kernel") == ["body-long"]))
+res.append(("long Link line exempt", lint(patch(body=("Link: https://example.org/" + "a" * 80, "", "Signed-off-by: A <a@b.c>")), "kernel") == []))
+res.append(("trailing whitespace", lint(patch(diff=("+\treturn 0; ",)), "kernel") == ["trailing-ws"]))
+res.append(("+++ header is not an added line", lint(patch(diff=("+++ b/file.c ",)), "kernel") == []))
+res.append(("tab in qemu", lint(patch(diff=("+\treturn 0;",)), "qemu") == ["tab-in-qemu"]))
+res.append(("spaces in kernel", lint(patch(diff=("+        return 0;",)), "kernel") == ["space-in-kernel"]))
+res.append(("two problems, sorted", lint(patch("[PATCH] no prefix here", body=("x",)), "kernel") == ["no-prefix", "no-sob"]))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n)
+    bad |= (not ok)
+sys.exit(bad)
+N

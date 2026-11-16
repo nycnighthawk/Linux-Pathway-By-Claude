@@ -1,0 +1,47 @@
+title: 'Quiz: Upstreaming to KVM and QEMU'
+questions:
+- id: sob
+  prompt: What does a Signed-off-by line certify?
+  choices:
+  - The author's right to submit the work under the project's terms
+  - That the patch is bug free
+  - That the maintainer approved it
+  - The build passed
+  answer: [0]
+  explain: 'A) correct: the Developer Certificate of Origin. B) wrong. C) wrong. D) wrong.'
+- id: small
+  prompt: How should a large change be submitted?
+  choices:
+  - As one huge patch
+  - As an ordered series of small patches, each building and working
+  - As a zip file
+  - Directly to the main branch
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: fixes
+  prompt: Which trailer links a bug fix to the commit that introduced the bug?
+  choices:
+  - 'Fixes:'
+  - 'Thanks:'
+  - 'Cc-me:'
+  - 'Bug-report-from:'
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: v2
+  prompt: Where does the changelog between versions of a patch go?
+  choices:
+  - After the three dashes, below the commit message
+  - In the commit message body
+  - In the subject
+  - Nowhere
+  answer: [0]
+  explain: 'A) correct: it is not part of the commit. B) wrong. C) wrong. D) wrong.'
+- id: test
+  prompt: What test would you attach to a KVM ioctl bug fix?
+  choices:
+  - A KVM selftest that reproduces the failing input
+  - A screenshot
+  - A benchmark of the GUI
+  - A spreadsheet
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
