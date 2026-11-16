@@ -71,6 +71,10 @@ modules:
     title: gVisor/Kata RuntimeClass
     file: lessons/LNX-314-T08.md
     minutes: 45
+  - topic: LNX-314-T09
+    title: mTLS and segmentation
+    file: lessons/LNX-314-T09.md
+    minutes: 55
 labs:
 - id: metadata-guard
   topic: LNX-314-T01
@@ -134,6 +138,12 @@ labs:
   minutes: 25
   packages:
   - python3-yaml
+- id: mesh-identity-policy
+  topic: LNX-314-T09
+  title: Identities
+  env: C
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-314-T01
   topic: LNX-314-T01
@@ -167,3 +177,7 @@ quizzes:
   topic: LNX-314-T08
   title: 'Quiz: gVisor/Kata RuntimeClass'
   file: quizzes/LNX-314-T08.yaml
+- id: LNX-314-T09
+  topic: LNX-314-T09
+  title: 'Quiz: mTLS and segmentation'
+  file: quizzes/LNX-314-T09.yaml
