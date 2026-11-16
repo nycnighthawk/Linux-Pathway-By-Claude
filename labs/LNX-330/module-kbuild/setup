@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p fakek mod/include
+cat > fakek/Makefile <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+# A stand-in for a configured kernel build directory. It mimics the part of
+# kbuild this lab cares about: it includes the module's Makefile with
+# KERNELRELEASE set, then reports what a real build would compile.
+ifneq ($(M),)
+KERNELRELEASE := 6.99.0-fake
+src := $(M)
+obj := $(M)
+include $(M)/Makefile
+mods := $(patsubst %.o,%,$(obj-m))
+objs_of = $(strip $(if $($(1)-y)$($(1)-objs),$($(1)-y) $($(1)-objs),$(1).o))
+modules:
+	@echo "KBUILD: building external modules in $(M) for $(KERNELRELEASE)"
+	@$(foreach m,$(mods),echo "MODULE $(m) objs=$(call objs_of,$(m))";)
+	@echo "CCFLAGS $(ccflags-y)"
+	@for f in $(foreach m,$(mods),$(call objs_of,$(m))); do c=$(M)/$${f%.o}.c; \
+	  [ -f $$c ] || echo "ERROR: no source $$c"; done
+	@$(foreach m,$(mods),cat $(foreach o,$(call objs_of,$(m)),$(M)/$(o:.o=.c)) 2>/dev/null | grep -q MODULE_LICENSE || echo 'WARNING: modpost: missing MODULE_LICENSE in $(m)';)
+clean:
+	@echo "KBUILD: clean $(M)"
+else
+$(error run with M=<module dir>)
+endif
+N
+cat > mod/main.c <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+#include <linux/module.h>
+#include "util.h"
+
+static int __init hello_init(void) { return hello_helper(); }
+static void __exit hello_exit(void) { }
+module_init(hello_init);
+module_exit(hello_exit);
+N
+cat > mod/util.c <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+#include <linux/printk.h>
+int hello_helper(void) { pr_debug("hello\n"); return 0; }
+N
+echo 'int hello_helper(void);' > mod/include/util.h
+cat > mod/Makefile <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+ifneq ($(KERNELRELEASE),)
+# kbuild part: TODO build ONE module named hello from main.c and util.c,
+# compile with -DDEBUG and the local include/ directory on the include path.
+obj-m := main.o util.o
+else
+KDIR ?= /lib/modules/$(shell uname -r)/build
+all:
+	$(MAKE) -C $(KDIR) M=$(CURDIR) modules
+clean:
+	$(MAKE) -C $(KDIR) M=$(CURDIR) clean
+endif
+N
