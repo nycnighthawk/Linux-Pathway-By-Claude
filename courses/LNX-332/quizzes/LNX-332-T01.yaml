@@ -12,10 +12,10 @@ questions:
 - id: walk
   prompt: With four-level guest tables and four-level nested tables, how many memory references can one TLB-miss walk need in the worst case?
   choices:
-  - 4
-  - 8
-  - 24
-  - 64
+  - '4'
+  - '8'
+  - '24'
+  - '64'
   answer: [2]
   explain: 'A) wrong. B) wrong. C) correct: (4+1) x (4+1) - 1. D) wrong.'
 - id: violation
