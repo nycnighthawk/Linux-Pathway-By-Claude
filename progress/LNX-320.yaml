@@ -1,0 +1,31 @@
+item: LNX-320
+label: Linux System Programming
+branch: build/LNX-320
+state: in-progress
+started: '2026-11-16'
+updated: '2026-11-16'
+phases:
+  synth:
+    state: in-progress
+    units: 13
+    done:
+    - LNX-320-T03
+  lessons:
+    state: todo
+    units: 13
+    done: []
+  quizzes:
+    state: todo
+    units: 13
+    done: []
+  labs:
+    state: todo
+    units: 13
+    done: []
+  checks:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-16 started
