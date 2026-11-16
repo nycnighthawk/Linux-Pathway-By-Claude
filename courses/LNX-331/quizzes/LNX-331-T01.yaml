@@ -15,7 +15,7 @@ questions:
   - The number of bytes copied
   - The number of bytes not copied
   - A negative errno
-  - Always 0
+  - Always zero
   answer: [1]
   explain: 'A) wrong. B) correct: non-zero means a fault, so return -EFAULT. C) wrong. D) wrong.'
 - id: enotty
@@ -23,7 +23,7 @@ questions:
   choices:
   - -EINVAL
   - -ENOTTY
-  - 0
+  - '0'
   - -ENOENT
   answer: [1]
   explain: 'A) wrong, used for a bad argument. B) correct. C) wrong. D) wrong.'
