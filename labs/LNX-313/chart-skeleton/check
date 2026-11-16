@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import json, re, sys, yaml
+from jsonschema import Draft7Validator
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+try:
+    c = yaml.safe_load(open("web/Chart.yaml"))
+    chk(c.get("apiVersion") == "v2" and c.get("name") == "web" and c.get("type") == "application", "Chart.yaml v2 application web")
+    chk(re.fullmatch(r"\d+\.\d+\.\d+", str(c.get("version"))) is not None and c.get("version") == "0.1.0" and c.get("appVersion") == "1.4.2", "version 0.1.0, appVersion 1.4.2")
+    v = yaml.safe_load(open("web/values.yaml"))
+    chk(v.get("replicaCount") == 2 and v["image"]["repository"] == "registry.example/web" and v["image"]["tag"] == "" and v["image"]["pullPolicy"] == "IfNotPresent", "values: replicas and image")
+    chk(v["autoscaling"]["enabled"] is False, "autoscaling off by default")
+    r = v.get("resources", {})
+    chk(r.get("requests") == {"cpu": "100m", "memory": "128Mi"} and r.get("limits") == {"memory": "128Mi"}, "resources: requests cpu and memory, memory limit only")
+    chk(v.get("podSecurityContext", {}).get("runAsNonRoot") is True, "runAsNonRoot")
+    sch = json.load(open("web/values.schema.json"))
+    Draft7Validator.check_schema(sch)
+    val = Draft7Validator(sch)
+    chk(not list(val.iter_errors(v)), "default values satisfy the schema")
+    bad_cases = [dict(v, replicaCount=0), dict(v, replicaCount="2"), {k: x for k, x in v.items() if k != "image"},
+                 dict(v, image=dict(v["image"], repository="")), dict(v, image=dict(v["image"], extra=1))]
+    chk(all(list(val.iter_errors(b)) for b in bad_cases), "schema rejects zero or string replicas, missing image, empty repository, unknown image key")
+    t = open("web/templates/deployment.yaml").read()
+    chk('include "web.fullname" .' in t, "deployment uses the fullname helper")
+    chk(re.search(r"if not \.Values\.autoscaling\.enabled", t) is not None and ".Values.replicaCount" in t, "replicas omitted when autoscaling is enabled")
+    chk(re.search(r"toYaml \.Values\.resources \| nindent", t) is not None, "resources through toYaml | nindent")
+    chk(re.search(r"required\s+\"[^\"]+\"\s+\.Values\.image\.repository", t) is not None, "required image.repository")
+    chk(re.search(r"\.Values\.image\.tag \| default \.Chart\.AppVersion", t) is not None, "image tag defaults to appVersion")
+    h = open("web/templates/_helpers.tpl").read()
+    chk('define "web.fullname"' in h and 'define "web.selectorLabels"' in h, "helpers define fullname and selectorLabels")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY

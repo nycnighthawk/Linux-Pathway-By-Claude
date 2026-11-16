@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cp "$(dirname "$0")/fakeapi.py" fakeapi.py
+cat > reconciler.py <<'J'
+# SPDX-License-Identifier: MIT
+FINALIZER = "webapp.example/cleanup"
+
+
+def reconcile(api, ns, name):
+    """Drive the cluster toward the WebApp's spec. Must be idempotent."""
+    app = api.get("WebApp", ns, name)
+    if app is None:
+        return
+    # TODO: deletion, finalizer, children with owner references, status
+J

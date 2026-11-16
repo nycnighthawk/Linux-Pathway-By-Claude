@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > pod.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shop
+spec:
+  containers:
+    - name: app
+      image: registry.example/shop:1.0
+J
+echo "effective_cpu_m=0" > answer.txt

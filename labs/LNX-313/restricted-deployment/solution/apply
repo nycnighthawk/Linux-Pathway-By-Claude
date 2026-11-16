@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > deploy.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: api, namespace: shop}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: api}}
+  template:
+    metadata:
+      labels: {app: api}
+      annotations: {checksum/config: "3f2a9c"}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: api
+          image: registry.example/api:2.1
+          env:
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef: {name: api-config, key: log-level}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: ["ALL"]}
+          volumeMounts:
+            - {name: db, mountPath: /etc/secrets, readOnly: true}
+            - {name: tmp, mountPath: /tmp}
+          resources:
+            requests: {cpu: 250m, memory: 256Mi}
+            limits: {memory: 256Mi}
+      volumes:
+        - name: db
+          secret: {secretName: api-db, defaultMode: 256}
+        - name: tmp
+          emptyDir: {}
+J
+echo "qos=Burstable" > answer.txt

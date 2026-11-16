@@ -1,0 +1,27 @@
+title: 'Quiz: GitOps'
+questions:
+- id: pull
+  prompt: What is the main security gain of the pull model?
+  choices: [CI needs no write credentials to the clusters, Faster builds, Smaller images, No need for RBAC]
+  answer: [0]
+  explain: 'A) correct: agents hold the credentials inside the cluster. B) wrong. C) wrong. D) wrong.'
+- id: prune
+  prompt: What does prune do?
+  choices: [Deletes live objects that are no longer in Git, Compresses manifests, Removes old images, Clears Git history]
+  answer: [0]
+  explain: 'A) correct, which is why it needs care for stateful objects. B) wrong. C) wrong. D) wrong.'
+- id: selfheal
+  prompt: An operator scales a Deployment by hand and the replica count reverts. Which setting caused it?
+  choices: [selfHeal, retry, CreateNamespace, ignoreDifferences]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong: that would prevent the revert.'
+- id: layout
+  prompt: Which layout choices help promotion? (select two)
+  choices: [Directories per environment in the configuration repository, A separate repository for configuration and application code, Long-lived branches per environment, Editing the cluster by hand]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: merge conflicts and unreviewable diffs. D) wrong.'
+- id: drift
+  prompt: A field written by the autoscaler shows permanent drift. What is the fix?
+  choices: [Exclude that field from comparison, Disable the autoscaler, Delete the Application, Lower the interval]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

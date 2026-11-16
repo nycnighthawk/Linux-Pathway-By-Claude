@@ -1,0 +1,27 @@
+title: 'Quiz: Jobs and CronJobs'
+questions:
+- id: restart
+  prompt: Which restartPolicy values may a Job Pod template use?
+  choices: [Never or OnFailure, Always only, Any value, None of them]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: forbid
+  prompt: concurrencyPolicy Forbid and the previous run is still active. What happens at the next schedule time?
+  choices: [The new run is skipped, The old run is killed, Both run, The CronJob is suspended]
+  answer: [0]
+  explain: 'A) correct. B) wrong: that is Replace. C) wrong: that is Allow. D) wrong.'
+- id: semantics
+  prompt: What delivery guarantee should you assume for CronJob runs?
+  choices: [At least once in practice, so tasks must be idempotent, Exactly once, At most once, None, they are random]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: ttl
+  prompt: What does ttlSecondsAfterFinished do?
+  choices: [Deletes the finished Job and its Pods after the delay, Limits run time, Limits retries, Sets the schedule]
+  answer: [0]
+  explain: 'A) correct. B) wrong: that is activeDeadlineSeconds. C) wrong: backoffLimit. D) wrong.'
+- id: failure-policy
+  prompt: Which uses fit a Pod failure policy? (select two)
+  choices: [Ignore failures caused by node disruption, Fail the Job at once on a known permanent exit code, Change the cron schedule, Resize the node]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'

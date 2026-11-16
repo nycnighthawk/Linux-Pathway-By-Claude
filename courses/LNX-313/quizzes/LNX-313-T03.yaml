@@ -1,0 +1,27 @@
+title: 'Quiz: probes and debugging'
+questions:
+- id: readiness
+  prompt: What does a failing readiness probe do?
+  choices: [Removes the Pod from Service endpoints without restarting it, Restarts the container, Deletes the Pod, Stops the node]
+  answer: [0]
+  explain: 'A) correct. B) wrong: that is liveness. C) wrong. D) wrong.'
+- id: startup
+  prompt: Why add a startup probe?
+  choices: [Let a slow start finish while keeping a tight liveness check afterwards, To replace readiness, To change the restart policy, To speed up image pulls]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: dependency
+  prompt: What goes wrong if the liveness probe checks the database?
+  choices: [A database blip restarts every application Pod, Nothing, Probes stop running, The kubelet crashes]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: previous
+  prompt: A container crash-loops and the current log is empty. Which command shows the evidence?
+  choices: [kubectl logs --previous, kubectl top, kubectl cordon, kubectl get nodes]
+  answer: [0]
+  explain: 'A) correct: it reads the last terminated instance. B) wrong. C) wrong. D) wrong.'
+- id: ephemeral
+  prompt: Which are true of ephemeral containers? (select two)
+  choices: [They cannot be removed from the Pod once added, They can join the process namespace of a target container, They can define liveness probes, They survive Pod deletion]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'

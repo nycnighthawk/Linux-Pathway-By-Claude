@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > reconciler.py <<'J'
+# SPDX-License-Identifier: MIT
+FINALIZER = "webapp.example/cleanup"
+
+
+def _owner(app):
+    return [{"kind": "WebApp", "name": app["metadata"]["name"], "uid": app["metadata"]["uid"]}]
+
+
+def _child(kind, app, spec):
+    return {"kind": kind,
+            "metadata": {"name": app["metadata"]["name"], "namespace": app["metadata"]["namespace"], "ownerReferences": _owner(app)},
+            "spec": spec}
+
+
+def _ensure(api, kind, app, spec):
+    ns, name = app["metadata"]["namespace"], app["metadata"]["name"]
+    cur = api.get(kind, ns, name)
+    if cur is None:
+        api.create(_child(kind, app, spec))
+    elif cur.get("spec") != spec or cur["metadata"].get("ownerReferences") != _owner(app):
+        cur["spec"] = spec
+        cur["metadata"]["ownerReferences"] = _owner(app)
+        api.update(cur)
+
+
+def reconcile(api, ns, name):
+    app = api.get("WebApp", ns, name)
+    if app is None:
+        return
+    uid = app["metadata"]["uid"]
+    fins = app["metadata"].get("finalizers", [])
+    if app["metadata"].get("deletionTimestamp"):
+        api.external.discard(uid)
+        if FINALIZER in fins:
+            app["metadata"]["finalizers"] = [f for f in fins if f != FINALIZER]
+            api.update(app)
+        return
+    if FINALIZER not in fins:
+        app["metadata"]["finalizers"] = fins + [FINALIZER]
+        app = api.update(app)
+    api.external.add(uid)
+    spec = app["spec"]
+    _ensure(api, "Deployment", app, {"replicas": spec["replicas"], "image": spec["image"]})
+    _ensure(api, "Service", app, {"port": 80})
+    if spec.get("host"):
+        _ensure(api, "Ingress", app, {"host": spec["host"]})
+    elif api.get("Ingress", ns, name) is not None:
+        api.delete("Ingress", ns, name)
+    dep = api.get("Deployment", ns, name)
+    ready = (dep.get("status") or {}).get("readyReplicas", 0)
+    status = {"readyReplicas": ready, "observedGeneration": app["metadata"]["generation"],
+              "conditions": [{"type": "Available", "status": "True" if ready == spec["replicas"] else "False"}]}
+    if app.get("status") != status:
+        app["status"] = status
+        api.update_status(app)
+J

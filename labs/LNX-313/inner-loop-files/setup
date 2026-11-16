@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p .devcontainer
+printf '%s\n' '# SPDX-License-Identifier: MIT' 'apiVersion: skaffold/v4beta11' 'kind: Config' > skaffold.yaml
+printf '%s\n' '# SPDX-License-Identifier: MIT' > Tiltfile
+echo '{}' > .devcontainer/devcontainer.json

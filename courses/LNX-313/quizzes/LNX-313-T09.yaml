@@ -1,0 +1,27 @@
+title: 'Quiz: metrics and OpenTelemetry'
+questions:
+- id: counter
+  prompt: How should you read a counter?
+  choices: [Through rate() over a window, As an instantaneous value, With avg(), It cannot be queried]
+  answer: [0]
+  explain: 'A) correct. B) wrong: totals reset on restart. C) wrong. D) wrong.'
+- id: histogram
+  prompt: Why are histograms preferred for latency?
+  choices: [Buckets can be summed across instances to estimate quantiles, They are smaller, They need no labels, They are push based]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: labels
+  prompt: Which label is safe on a request counter? (select two)
+  choices: [Route template such as /users/:id, Status class such as 2xx, Customer ID, Raw URL with query string]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: unbounded. D) wrong: unbounded.'
+- id: propagation
+  prompt: What carries trace context between services?
+  choices: [The traceparent header, The node name, A Kubernetes label, The Pod IP]
+  answer: [0]
+  explain: 'A) correct: W3C Trace Context. B) wrong. C) wrong. D) wrong.'
+- id: sampling
+  prompt: Why does tail sampling need a gateway Collector?
+  choices: [It must see whole traces before deciding, It encrypts spans, It is faster at the agent, It uses less memory]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

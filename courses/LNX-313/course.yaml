@@ -1,0 +1,178 @@
+id: LNX-313
+title: Kubernetes App Delivery & GitOps
+summary: 'Designing, shipping and operating applications on Kubernetes: Pod design with init containers and native sidecars,
+  configuration, Secrets, security contexts and limits, probes and debugging, rollout strategies, Jobs and CronJobs, Helm
+  chart authoring, GitOps with Argo CD and Flux, a first operator, metrics and tracing, and the developer inner loop.'
+hours: 50
+coverage: full
+outcomes:
+- Design Pods with init containers and native sidecars and reason about start and stop ordering
+- Configure applications with ConfigMaps, Secrets, security contexts and resource limits
+- Write probes that tell the truth and debug running Pods with logs and ephemeral containers
+- Choose and implement rolling, blue/green and canary releases
+- Run batch work with Jobs and CronJobs without duplicates or silent failures
+- Author, test and release Helm charts, and deliver them with Argo CD or Flux
+- Explain the controller pattern by building a small operator
+- Instrument applications with Prometheus metrics and OpenTelemetry, and set up a fast inner loop
+certifications:
+- cert: CKAD
+  objectives:
+  - D1
+  - D2
+  - D3
+  - D4
+modules:
+- id: workload-design
+  title: Designing workloads
+  lessons:
+  - topic: LNX-313-T01
+    title: 'Pod design: init and sidecar containers'
+    file: lessons/LNX-313-T01.md
+    minutes: 55
+  - topic: LNX-313-T02
+    title: Config, Secrets, SecurityContext, limits
+    file: lessons/LNX-313-T02.md
+    minutes: 60
+  - topic: LNX-313-T03
+    title: Probes, logs, kubectl debug
+    file: lessons/LNX-313-T03.md
+    minutes: 60
+- id: release-batch
+  title: Releases and batch
+  lessons:
+  - topic: LNX-313-T04
+    title: Rolling, blue/green, canary
+    file: lessons/LNX-313-T04.md
+    minutes: 50
+  - topic: LNX-313-T05
+    title: Jobs and CronJobs
+    file: lessons/LNX-313-T05.md
+    minutes: 50
+- id: packaging-gitops
+  title: Packaging and GitOps
+  lessons:
+  - topic: LNX-313-T06
+    title: Helm chart authoring and testing
+    file: lessons/LNX-313-T06.md
+    minutes: 55
+  - topic: LNX-313-T07
+    title: GitOps with Argo CD or Flux
+    file: lessons/LNX-313-T07.md
+    minutes: 55
+  - topic: LNX-313-T08
+    title: An operator with kubebuilder
+    file: lessons/LNX-313-T08.md
+    minutes: 60
+- id: observe-develop
+  title: Observability and the inner loop
+  lessons:
+  - topic: LNX-313-T09
+    title: Prometheus metrics, OpenTelemetry
+    file: lessons/LNX-313-T09.md
+    minutes: 55
+  - topic: LNX-313-T10
+    title: 'Inner loop: Tilt/Skaffold, devcontainers'
+    file: lessons/LNX-313-T10.md
+    minutes: 40
+labs:
+- id: pod-with-sidecar
+  topic: LNX-313-T01
+  title: A Pod with an init container
+  env: C
+  license: MIT
+  minutes: 30
+- id: restricted-deployment
+  topic: LNX-313-T02
+  title: A Deployment that passes the restricted level
+  env: C
+  license: MIT
+  minutes: 35
+- id: probe-design
+  topic: LNX-313-T03
+  title: Probes for a slow-starting service
+  env: C
+  license: MIT
+  minutes: 30
+- id: rollout-strategies
+  topic: LNX-313-T04
+  title: Three release strategies
+  env: C
+  license: MIT
+  minutes: 30
+- id: batch-manifests
+  topic: LNX-313-T05
+  title: A safe CronJob and an indexed Job
+  env: C
+  license: MIT
+  minutes: 30
+- id: chart-skeleton
+  topic: LNX-313-T06
+  title: A chart that lints
+  env: C
+  license: MIT
+  minutes: 35
+- id: gitops-resources
+  topic: LNX-313-T07
+  title: Connect a repository to a cluster two ways
+  env: C
+  license: MIT
+  minutes: 35
+- id: reconcile-loop
+  topic: LNX-313-T08
+  title: Write the reconcile function of a WebApp operator
+  env: C
+  license: MIT
+  minutes: 40
+- id: telemetry-config
+  topic: LNX-313-T09
+  title: Scrape
+  env: C
+  license: MIT
+  minutes: 35
+- id: inner-loop-files
+  topic: LNX-313-T10
+  title: The three files of a fast inner loop
+  env: C
+  license: MIT
+  minutes: 25
+quizzes:
+- id: LNX-313-T01
+  topic: LNX-313-T01
+  title: 'Quiz: Pod design: init and sidecar containers'
+  file: quizzes/LNX-313-T01.yaml
+- id: LNX-313-T02
+  topic: LNX-313-T02
+  title: 'Quiz: Config, Secrets, SecurityContext, limits'
+  file: quizzes/LNX-313-T02.yaml
+- id: LNX-313-T03
+  topic: LNX-313-T03
+  title: 'Quiz: Probes, logs, kubectl debug'
+  file: quizzes/LNX-313-T03.yaml
+- id: LNX-313-T04
+  topic: LNX-313-T04
+  title: 'Quiz: Rolling, blue/green, canary'
+  file: quizzes/LNX-313-T04.yaml
+- id: LNX-313-T05
+  topic: LNX-313-T05
+  title: 'Quiz: Jobs and CronJobs'
+  file: quizzes/LNX-313-T05.yaml
+- id: LNX-313-T06
+  topic: LNX-313-T06
+  title: 'Quiz: Helm chart authoring and testing'
+  file: quizzes/LNX-313-T06.yaml
+- id: LNX-313-T07
+  topic: LNX-313-T07
+  title: 'Quiz: GitOps with Argo CD or Flux'
+  file: quizzes/LNX-313-T07.yaml
+- id: LNX-313-T08
+  topic: LNX-313-T08
+  title: 'Quiz: An operator with kubebuilder'
+  file: quizzes/LNX-313-T08.yaml
+- id: LNX-313-T09
+  topic: LNX-313-T09
+  title: 'Quiz: Prometheus metrics, OpenTelemetry'
+  file: quizzes/LNX-313-T09.yaml
+- id: LNX-313-T10
+  topic: LNX-313-T10
+  title: 'Quiz: Inner loop: Tilt/Skaffold, devcontainers'
+  file: quizzes/LNX-313-T10.yaml

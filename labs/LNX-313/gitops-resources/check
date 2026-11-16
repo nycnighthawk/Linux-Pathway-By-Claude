@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+REPO = "https://git.example/shop/config.git"
+try:
+    a = [d for d in yaml.safe_load_all(open("argocd.yaml")) if d]
+    proj = next((d for d in a if d["kind"] == "AppProject" and d["metadata"]["name"] == "shop"), None)
+    chk(bool(proj), "AppProject shop")
+    ps = (proj or {}).get("spec", {})
+    chk(ps.get("sourceRepos") == [REPO], "project allows only the configuration repository")
+    chk(ps.get("destinations") == [{"server": "https://kubernetes.default.svc", "namespace": "shop"}], "project allows only shop on the local cluster")
+    app = next((d for d in a if d["kind"] == "Application" and d["metadata"]["name"] == "shop-api"), None)
+    s = (app or {}).get("spec", {})
+    chk(bool(app) and app["metadata"]["namespace"] == "argocd" and s.get("project") == "shop", "Application shop-api in project shop")
+    src = s.get("source", {})
+    chk(src.get("repoURL") == REPO and src.get("path") == "apps/api/overlays/prod" and src.get("targetRevision") == "main", "source repo, path and branch")
+    chk(s.get("destination", {}).get("namespace") == "shop", "destination namespace shop")
+    sp = s.get("syncPolicy", {})
+    chk(sp.get("automated") == {"prune": True, "selfHeal": True}, "automated sync with prune and selfHeal")
+    chk("CreateNamespace=true" in (sp.get("syncOptions") or []), "CreateNamespace=true")
+    idf = s.get("ignoreDifferences") or []
+    chk(any(i.get("group") == "apps" and i.get("kind") == "Deployment" and "/spec/replicas" in i.get("jsonPointers", []) for i in idf), "replicas ignored on Deployments")
+    f = [d for d in yaml.safe_load_all(open("flux.yaml")) if d]
+    gr = next((d for d in f if d["kind"] == "GitRepository" and d["metadata"]["name"] == "config"), None)
+    chk(bool(gr) and gr["metadata"]["namespace"] == "flux-system" and gr["spec"].get("url") == REPO and gr["spec"].get("interval") == "1m" and gr["spec"].get("ref", {}).get("branch") == "main", "GitRepository config")
+    ks = {d["metadata"]["name"]: d["spec"] for d in f if d["kind"] == "Kustomization"}
+    inf, ap = ks.get("infra", {}), ks.get("apps", {})
+    chk(inf.get("path") == "./infrastructure" and inf.get("interval") == "10m" and inf.get("prune") is True and inf.get("sourceRef", {}).get("name") == "config", "Kustomization infra")
+    chk(ap.get("path") == "./apps/prod" and ap.get("interval") == "5m" and ap.get("prune") is True and ap.get("sourceRef", {}).get("name") == "config", "Kustomization apps")
+    chk([d.get("name") for d in ap.get("dependsOn", [])] == ["infra"], "apps depends on infra")
+    chk(any(h.get("kind") == "Deployment" and h.get("name") == "api" and h.get("namespace") == "shop" for h in ap.get("healthChecks", [])), "health check on Deployment api")
+    chk(ap.get("decryption", {}).get("provider") == "sops" and ap["decryption"].get("secretRef", {}).get("name") == "sops-age", "SOPS decryption with sops-age")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY

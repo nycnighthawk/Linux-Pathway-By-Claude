@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > batch.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: batch/v1
+kind: CronJob
+metadata: {name: report, namespace: ops}
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Always
+          containers:
+            - {name: report, image: registry.example/report:1}
+J
+echo "runs_per_weekday=0" > answer.txt

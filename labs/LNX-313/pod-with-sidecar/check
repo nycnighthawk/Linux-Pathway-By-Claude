@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def cpu(c):
+    v = str(((c.get("resources") or {}).get("requests") or {}).get("cpu", "0"))
+    return int(v[:-1]) if v.endswith("m") else int(float(v) * 1000)
+try:
+    p = yaml.safe_load(open("pod.yaml"))
+    s = p["spec"]
+    inits = s.get("initContainers") or []
+    chk([i["name"] for i in inits] == ["wait-db", "log-agent", "migrate"], "init list order: wait-db, log-agent, migrate")
+    by = {i["name"]: i for i in inits}
+    chk("restartPolicy" not in by.get("wait-db", {}) and "restartPolicy" not in by.get("migrate", {}), "wait-db and migrate are ordinary init containers")
+    la = by.get("log-agent", {})
+    chk(la.get("restartPolicy") == "Always", "log-agent is a native sidecar")
+    chk("startupProbe" in la, "log-agent has a startup probe")
+    vm = [m for m in la.get("volumeMounts", []) if m.get("name") == "logs"]
+    chk(bool(vm) and vm[0].get("mountPath") == "/logs" and vm[0].get("readOnly") is True, "log-agent mounts logs read-only at /logs")
+    app = [c for c in s.get("containers", []) if c["name"] == "app"]
+    chk(len(app) == 1 and len(s["containers"]) == 1, "app is the only application container")
+    am = [m for m in (app[0].get("volumeMounts", []) if app else []) if m.get("name") == "logs"]
+    chk(bool(am) and am[0].get("mountPath") == "/logs" and not am[0].get("readOnly"), "app mounts logs read-write at /logs")
+    chk([cpu(by[n]) for n in ("wait-db", "log-agent", "migrate")] == [50, 100, 1000] and app and cpu(app[0]) == 500, "CPU requests as specified")
+    chk(any(v.get("name") == "logs" and "emptyDir" in v for v in s.get("volumes", [])), "emptyDir volume logs")
+    a = dict(l.split("=", 1) for l in open("answer.txt").read().split() if "=" in l)
+    chk(a.get("effective_cpu_m") == "1100", "effective request is 1100m")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY
