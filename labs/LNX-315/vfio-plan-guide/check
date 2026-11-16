@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f iommu-groups.txt ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get gpu_group)" = 14 ] && ok "the GPU is in group 14" || fail "gpu_group must be 14"
+[ "$(get gpu_viable)" = yes ] && ok "the GPU group is viable (both functions, nothing else)" || fail "gpu_viable must be yes"
+[ "$(get nic_port1_group)" = 12 ] && ok "NIC port 1 is in group 12" || fail "nic_port1_group must be 12"
+[ "$(get nic_port1_viable)" = no ] && ok "NIC port 1 cannot be assigned alone" || fail "nic_port1_viable must be no: the host still uses port 0 in the same group"
+get nic_port1_reason | grep -Eqi 'group|port 0|management|shared|acs' && ok "reason names the shared group" || fail "nic_port1_reason must mention the shared group, port 0 or the management NIC"
+get kernel_cmdline_add | grep -q 'intel_iommu=on' && ok "kernel command line enables the Intel IOMMU" || fail "kernel_cmdline_add must contain intel_iommu=on"
+get kernel_cmdline_add | grep -q 'iommu=pt' && ok "iommu=pt (passthrough for host devices)" || fail "kernel_cmdline_add should include iommu=pt"
+ids=$(get vfio_ids)
+echo "$ids" | grep -q '10de:2484' && echo "$ids" | grep -q '10de:228b' && ok "vfio ids cover both GPU functions" || fail "vfio_ids must list 10de:2484 and 10de:228b"
+[ "$(get guest_firmware)" = ovmf ] && ok "UEFI (OVMF) firmware" || fail "guest_firmware must be ovmf"
+[ "$(get guest_machine)" = q35 ] && ok "q35 machine type" || fail "guest_machine must be q35"
+python3 - <<'PY' || bad=1
+import re, sys
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+t = open("hostdev.xml").read()
+hd = re.findall(r"<hostdev\b[^>]*type=['\"]pci['\"][^>]*>.*?</hostdev>", t, re.S)
+chk(len(hd) == 2, "two PCI hostdev elements")
+funcs = [(re.search(r"bus=['\"]0x01['\"]", h) is not None and re.search(r"slot=['\"]0x00['\"]", h) is not None, re.search(r"function=['\"](0x[0-9a-f]+)['\"]", h)) for h in hd]
+chk(all(f[0] for f in funcs) and sorted(int(f[1].group(1), 16) for f in funcs if f[1]) == [0, 1], "both functions of 01:00 (function 0 and function 1)")
+chk(all("managed='yes'" in h or 'managed="yes"' in h for h in hd), "managed=yes so libvirt binds and unbinds the driver")
+sys.exit(bad)
+PY
+exit $bad

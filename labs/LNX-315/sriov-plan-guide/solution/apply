@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+printf 'vfs_to_enable=12\nmax_vfs_with_8_queues=16\nqueues_per_vf=8\n' > report.txt
+cat > vf-setup.sh <<'N'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+echo 0 > /sys/class/net/ens1f0/device/sriov_numvfs
+echo 12 > /sys/class/net/ens1f0/device/sriov_numvfs
+ip link set ens1f0 vf 0 mac 52:54:00:aa:00:00 vlan 120 max_tx_rate 10000 spoofchk on trust off state auto
+N
+cat > pool-network.xml <<'N'
+<network>
+  <name>sriov-pool</name>
+  <forward mode='hostdev' managed='yes'>
+    <pf dev='ens1f0'/>
+  </forward>
+</network>
+N

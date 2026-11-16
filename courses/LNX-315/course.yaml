@@ -1,0 +1,218 @@
+id: LNX-315
+title: Virtualization Engineering
+summary: 'Running virtualization as a platform: PCI passthrough with VFIO and IOMMU groups, SR-IOV, performance tuning with
+  NUMA, pinning, hugepages and IOThreads, qcow2 internals and block jobs, firmware and confidential VMs, VirtualBox administration
+  and coexistence with KVM, image pipelines with Packer and cloud-init, KubeVirt, migration from VMware and live migration
+  tuning.'
+hours: 60
+coverage: full
+outcomes:
+- Plan and verify PCI passthrough and SR-IOV, including IOMMU group constraints
+- Tune guests for NUMA, CPU pinning, hugepages and disk I/O and measure the effect
+- Explain qcow2 internals and operate backing chains and block jobs safely
+- Choose firmware, Secure Boot, vTPM and confidential VM options for a workload
+- Administer VirtualBox headless and reason about running it beside QEMU/KVM
+- Build repeatable VM images with Packer, virt-builder and cloud-init
+- Run virtual machines on Kubernetes with KubeVirt, and plan a migration from VMware
+- Tune live migration for convergence and bounded downtime
+certifications:
+- cert: LPIC3-305
+  objectives:
+  - '351.5'
+  - '353.2'
+- cert: EX316
+  objectives:
+  - D1
+  - D2
+  - D3
+  - D4
+  - D6
+  - D8
+  - D9
+  - D10
+  - D12
+  - D13
+- cert: LPLUS
+  objectives: []
+modules:
+- id: devices-performance
+  title: Devices and performance
+  lessons:
+  - topic: LNX-315-T01
+    title: VFIO PCI passthrough and IOMMU groups
+    file: lessons/LNX-315-T01.md
+    minutes: 55
+  - topic: LNX-315-T02
+    title: SR-IOV virtual functions for NICs and GPUs
+    file: lessons/LNX-315-T02.md
+    minutes: 45
+  - topic: LNX-315-T03
+    title: 'Performance: NUMA, CPU pinning, hugepages, IOThreads, virtio-blk vs virtio-scsi'
+    file: lessons/LNX-315-T03.md
+    minutes: 65
+- id: storage-firmware
+  title: Storage and firmware
+  lessons:
+  - topic: LNX-315-T04
+    title: 'Disk images: qcow2 internals, backing chains, block jobs'
+    file: lessons/LNX-315-T04.md
+    minutes: 55
+  - topic: LNX-315-T05
+    title: 'Firmware and confidential VMs: OVMF, Secure Boot, vTPM, SEV-SNP, TDX'
+    file: lessons/LNX-315-T05.md
+    minutes: 45
+- id: virtualbox-images
+  title: VirtualBox and images
+  lessons:
+  - topic: LNX-315-T06
+    title: 'VirtualBox administration: VBoxManage, headless VMs, Guest Additions, networking'
+    file: lessons/LNX-315-T06.md
+    minutes: 50
+  - topic: LNX-315-T07
+    title: VirtualBox on the KVM backend; coexisting with QEMU/KVM
+    file: lessons/LNX-315-T07.md
+    minutes: 40
+  - topic: LNX-315-T08
+    title: 'Image pipelines: Packer, virt-builder, cloud-init for KVM and VirtualBox'
+    file: lessons/LNX-315-T08.md
+    minutes: 55
+- id: platform-migration
+  title: Platform and migration
+  lessons:
+  - topic: LNX-315-T09
+    title: 'KubeVirt and OpenShift Virtualization: VMs on Kubernetes'
+    file: lessons/LNX-315-T09.md
+    minutes: 60
+  - topic: LNX-315-T10
+    title: 'Migrating from VMware: virt-v2v, migration toolkits'
+    file: lessons/LNX-315-T10.md
+    minutes: 60
+  - topic: LNX-315-T11
+    title: 'Live migration tuning: post-copy, auto-converge, dirty-rate limits'
+    file: lessons/LNX-315-T11.md
+    minutes: 45
+labs:
+- id: vfio-plan-guide
+  topic: LNX-315-T01
+  title: Plan a GPU passthrough from an IOMMU group listing
+  env: H
+  license: MIT
+  minutes: 40
+- id: sriov-plan-guide
+  topic: LNX-315-T02
+  title: Size an SR-IOV deployment and write its host configuration
+  env: H
+  license: MIT
+  minutes: 35
+- id: pinning-xml-guide
+  topic: LNX-315-T03
+  title: Write the pinning and NUMA XML for a database guest
+  env: S
+  license: MIT
+  minutes: 40
+- id: qcow2-chain
+  topic: LNX-315-T04
+  title: Build
+  env: V
+  license: MIT
+  minutes: 30
+  packages:
+  - qemu-utils
+  - python3
+- id: firmware-trust-guide
+  topic: LNX-315-T05
+  title: Plan firmware, vTPM and a confidential guest
+  env: H
+  license: MIT
+  minutes: 35
+- id: vbox-build-guide
+  topic: LNX-315-T06
+  title: Script a headless VirtualBox build
+  env: S
+  license: MIT
+  minutes: 40
+- id: hypervisor-coexist-guide
+  topic: LNX-315-T07
+  title: Diagnose a VirtualBox and KVM conflict
+  env: S
+  license: MIT
+  minutes: 30
+- id: image-seed-pipeline
+  topic: LNX-315-T08
+  title: Build a pinned image and cloud-init seed
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - qemu-utils
+  - python3
+  - python3-yaml
+- id: kubevirt-vm-manifest
+  topic: LNX-315-T09
+  title: Write and check KubeVirt manifests
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - python3
+  - python3-yaml
+- id: vmware-migration-plan
+  topic: LNX-315-T10
+  title: Plan a VMware migration wave and convert a disk
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - qemu-utils
+  - python3
+- id: migration-tuning-guide
+  topic: LNX-315-T11
+  title: Diagnose a stuck live migration
+  env: S
+  license: MIT
+  minutes: 35
+quizzes:
+- id: LNX-315-T01
+  topic: LNX-315-T01
+  title: 'Quiz: VFIO PCI passthrough and IOMMU groups'
+  file: quizzes/LNX-315-T01.yaml
+- id: LNX-315-T02
+  topic: LNX-315-T02
+  title: 'Quiz: SR-IOV virtual functions for NICs and GPUs'
+  file: quizzes/LNX-315-T02.yaml
+- id: LNX-315-T03
+  topic: LNX-315-T03
+  title: 'Quiz: Performance: NUMA, CPU pinning, hugepages, IOThreads, virtio-blk vs virtio-scsi'
+  file: quizzes/LNX-315-T03.yaml
+- id: LNX-315-T04
+  topic: LNX-315-T04
+  title: 'Quiz: Disk images: qcow2 internals, backing chains, block jobs'
+  file: quizzes/LNX-315-T04.yaml
+- id: LNX-315-T05
+  topic: LNX-315-T05
+  title: 'Quiz: Firmware and confidential VMs: OVMF, Secure Boot, vTPM, SEV-SNP, TDX'
+  file: quizzes/LNX-315-T05.yaml
+- id: LNX-315-T06
+  topic: LNX-315-T06
+  title: 'Quiz: VirtualBox administration: VBoxManage, headless VMs, Guest Additions, networking'
+  file: quizzes/LNX-315-T06.yaml
+- id: LNX-315-T07
+  topic: LNX-315-T07
+  title: 'Quiz: VirtualBox on the KVM backend; coexisting with QEMU/KVM'
+  file: quizzes/LNX-315-T07.yaml
+- id: LNX-315-T08
+  topic: LNX-315-T08
+  title: 'Quiz: Image pipelines: Packer, virt-builder, cloud-init for KVM and VirtualBox'
+  file: quizzes/LNX-315-T08.yaml
+- id: LNX-315-T09
+  topic: LNX-315-T09
+  title: 'Quiz: KubeVirt and OpenShift Virtualization: VMs on Kubernetes'
+  file: quizzes/LNX-315-T09.yaml
+- id: LNX-315-T10
+  topic: LNX-315-T10
+  title: 'Quiz: Migrating from VMware: virt-v2v, migration toolkits'
+  file: quizzes/LNX-315-T10.yaml
+- id: LNX-315-T11
+  topic: LNX-315-T11
+  title: 'Quiz: Live migration tuning: post-copy, auto-converge, dirty-rate limits'
+  file: quizzes/LNX-315-T11.yaml

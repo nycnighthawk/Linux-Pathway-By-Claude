@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+web01=rebuild
+web02=rebuild
+db01=app-level
+fs01=convert
+app01=convert
+clu01=individual
+lic01=individual
+gpu01=individual
+collapse_first=web02,app01
+recovery_key_needed=fs01
+fastest_vmware_input_needs_proprietary_library=yes
+N
+cat > convert.sh <<'N'
+#!/usr/bin/env bash
+set -eu
+qemu-img convert -f vmdk -O qcow2 guest.vmdk guest.qcow2
+N

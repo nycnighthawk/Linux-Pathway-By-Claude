@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f domjobinfo.log ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get converging)" = no ] && ok "not converging (remaining data grows)" || fail "converging must be no"
+[ "$(get limiting_factor)" = dirty-rate ] && ok "the dirty rate exceeds the throughput" || fail "limiting_factor must be dirty-rate (about 1100 MiB/s dirtied against 380 MiB/s sent)"
+get first_fix | grep -Eqi 'multifd|parallel' && ok "first fix: parallel connections (multifd)" || fail "first_fix must mention multifd or parallel connections: the 25 Gbit link is mostly idle"
+[ "$(get autoconverge_allowed)" = no ] && ok "auto-converge is not allowed by policy" || fail "autoconverge_allowed must be no (it slows every vCPU)"
+get dirty_limit_helps_with_guest_slowdown_policy | grep -Eqi '^(partly|limited|no)' && ok "dirty limit still throttles, so it does not satisfy a no-slowdown rule" || fail "dirty_limit_helps_with_guest_slowdown_policy: it also throttles busy vCPUs, so answer partly, limited or no"
+[ "$(get last_resort_strategy)" = post-copy ] && ok "post-copy as last resort" || fail "last_resort_strategy must be post-copy"
+get last_resort_risk | grep -Eqi 'split|network|target|fail|lose|recover' && ok "risk: state split between hosts" || fail "last_resort_risk must mention the split state or failure losing the guest"
+[ "$(get downtime_ms)" = 500 ] && ok "downtime target 500 ms" || fail "downtime_ms must be 500"
+f=migrate.sh
+n=$(grep -c '^[[:space:]]*virsh migrate\b' $f 2>/dev/null || true)
+[ "${n:-0}" -ge 1 ] && ok "virsh migrate used" || fail "migrate.sh needs a virsh migrate command"
+grep -q -- '--live' $f && ok "--live" || fail "--live"
+grep -q -- '--parallel' $f && ok "--parallel (multifd)" || fail "--parallel"
+grep -q -- '--postcopy' $f && ok "--postcopy enabled" || fail "--postcopy"
+grep -q -- '--auto-converge' $f && fail "do not use --auto-converge: policy forbids slowing the guest" || ok "no --auto-converge"
+grep -Eq -- '--timeout[ =][0-9]+' $f && ok "a timeout" || fail "--timeout N"
+grep -Eq -- '--bandwidth[ =][0-9]+' $f && ok "explicit bandwidth cap" || fail "--bandwidth N (MiB/s)"
+grep -Eq 'qemu(\+ssh|\+tls)?://' $f && ok "destination URI" || fail "a qemu+ssh:// or qemu+tls:// destination"
+grep -Eq '(^|[[:space:]])db01([[:space:]]|$)' $f && ok "domain db01" || fail "domain db01"
+exit $bad

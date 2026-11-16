@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f requirements.txt ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+has() { grep -Eq "$1" build.sh; }
+has '^VBoxManage createvm .*--name +node1' && has 'createvm .*--register' && ok "createvm node1 with --register" || fail "createvm --name node1 --register"
+has 'createvm .*--ostype +Debian_64' && ok "OS type Debian_64" || fail "createvm needs --ostype Debian_64"
+has 'modifyvm +node1 .*--memory +2048' && has 'modifyvm +node1 .*--cpus +2' && ok "memory and CPUs" || fail "modifyvm needs --memory 2048 and --cpus 2"
+has 'modifyvm +node1 .*--firmware +efi' && ok "EFI firmware" || fail "modifyvm needs --firmware efi"
+has 'modifyvm +node1 .*--ioapic +on' && ok "I/O APIC on" || fail "modifyvm needs --ioapic on"
+has 'createmedium +disk .*--size +20480' && has 'createmedium +disk .*\.vdi' && ok "20 GB VDI" || fail "createmedium disk .vdi --size 20480"
+has 'storagectl +node1 .*--name +"?SATA"? .*--add +sata' && ok "SATA controller named SATA" || fail "storagectl --name SATA --add sata"
+has 'storageattach +node1 .*--type +hdd' && ok "disk attached" || fail "storageattach --type hdd"
+has 'storageattach +node1 .*--type +dvddrive .*/isos/debian\.iso' && ok "installer ISO attached" || fail "storageattach --type dvddrive --medium /isos/debian.iso"
+has 'nic1 +nat' && ok "adapter 1 is NAT" || fail "adapter 1 must be --nic1 nat"
+has 'nic2 +hostonly' && has 'hostonlyadapter2' && ok "adapter 2 is host-only" || fail "adapter 2 must be --nic2 hostonly with --hostonlyadapter2"
+has 'natpf1 +"?[a-z]+,tcp,,2222,,22"?' && ok "port forward 2222 to 22" || fail "--natpf1 \"ssh,tcp,,2222,,22\""
+has 'startvm +node1 .*--type +headless' && ok "started headless" || fail "startvm node1 --type headless"
+has 'snapshot +node1 +take +base' && ok "snapshot base" || fail "snapshot node1 take base"
+grep -Eq '(^|[[:space:]])nic[0-9] +bridged' build.sh && fail "no adapter should be bridged" || ok "nothing bridged"
+[ "$(get adapter1_mode)" = nat ] && ok "adapter1_mode=nat" || fail "adapter1_mode must be nat"
+[ "$(get adapter2_mode)" = hostonly ] && ok "adapter2_mode=hostonly" || fail "adapter2_mode must be hostonly"
+[ "$(get bridged_would_expose_guest_to_lan)" = yes ] && ok "bridged exposes the guest" || fail "bridged_would_expose_guest_to_lan must be yes"
+[ "$(get clone_needs_new_machine_id)" = yes ] && ok "clones need a new machine-id" || fail "clone_needs_new_machine_id must be yes"
+[ "$(get snapshot_is_a_backup)" = no ] && ok "a snapshot is not a backup" || fail "snapshot_is_a_backup must be no"
+get address_discovery_method | grep -Eqi 'guestproperty|guest property' && ok "address through the guest-property service" || fail "address_discovery_method must name guestproperty"
+get headless_console_without_extension | grep -Eqi 'serial|ssh' && ok "serial console or SSH without the extension" || fail "headless_console_without_extension must mention serial or ssh"
+exit $bad

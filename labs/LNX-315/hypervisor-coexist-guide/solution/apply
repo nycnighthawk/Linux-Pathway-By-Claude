@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+root_cause_owner_of_vmx=kvm
+secure_boot_issue=vboxdrv is an out-of-tree module whose signature fails verification, so a MOK key must sign it
+fix_modprobe_option=enable_virt_at_load
+fix_modprobe_value=0
+fix_allows_simultaneous_guests=no
+simultaneous_option=qualify the KVM backend for VirtualBox so both stacks use /dev/kvm
+same_disk_image_in_both=no
+verify_before_production=test guests and benchmark against the native driver, keep a rollback to it
+N
+echo 'options kvm enable_virt_at_load=0' > kvm-lazy.conf

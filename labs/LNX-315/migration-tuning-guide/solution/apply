@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+converging=no
+limiting_factor=dirty-rate
+first_fix=enable multifd (parallel connections) so the idle 25 Gbit link carries more than the single-stream 380 MiB/s
+autoconverge_allowed=no
+dirty_limit_helps_with_guest_slowdown_policy=partly: it throttles only busy vCPUs but still slows the guest
+last_resort_strategy=post-copy
+last_resort_risk=state is split between hosts, so a network or target failure during post-copy can lose the guest
+downtime_ms=500
+N
+cat > migrate.sh <<'N'
+#!/usr/bin/env bash
+virsh migrate --live --persistent --undefinesource --parallel --parallel-connections 4 --bandwidth 2500 --postcopy --postcopy-after-precopy --timeout 600 --timeout-postcopy db01 qemu+ssh://dest.example.org/system
+virsh migrate-setmaxdowntime db01 500
+N

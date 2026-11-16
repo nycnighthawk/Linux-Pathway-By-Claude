@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f requirements.txt ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def get(d, *path):
+    for p in path:
+        if isinstance(d, list):
+            d = d[p] if isinstance(p, int) and p < len(d) else None
+        elif isinstance(d, dict):
+            d = d.get(p)
+        else:
+            return None
+    return d
+try:
+    vm = yaml.safe_load(open("vm.yaml"))
+    mg = yaml.safe_load(open("migrate.yaml"))
+    rep = {}
+    for l in open("report.txt"):
+        if "=" in l and not l.startswith("#"):
+            k, v = l.split("=", 1); rep[k.strip()] = v.strip()
+except Exception as e:
+    print("FAIL: cannot parse:", e); sys.exit(1)
+vm = vm if isinstance(vm, dict) else {}
+mg = mg if isinstance(mg, dict) else {}
+chk(vm.get("kind") == "VirtualMachine" and str(vm.get("apiVersion", "")).startswith("kubevirt.io/"), "vm.yaml is a kubevirt.io VirtualMachine")
+chk(get(vm, "metadata", "name") == "web1" and get(vm, "metadata", "namespace") == "demo", "name web1, namespace demo")
+spec = vm.get("spec") or {}
+chk(spec.get("runStrategy") == "Always" and "running" not in spec, "runStrategy Always, no old running field")
+it = spec.get("instancetype") or {}; pf = spec.get("preference") or {}
+chk(it.get("name") == "u1.medium" and pf.get("name") == "debian", "instancetype u1.medium and preference debian")
+dom = get(spec, "template", "spec", "domain") or {}
+chk("cpu" not in dom and "memory" not in dom.get("resources", {}) and not (dom.get("resources") or {}).get("requests"), "no hand-copied cpu or memory")
+dvt = get(spec, "dataVolumeTemplates", 0) or {}
+chk(get(dvt, "metadata", "name") == "web1-root", "dataVolumeTemplate web1-root")
+chk(get(dvt, "spec", "source", "http", "url") == "https://images.example.org/debian-12.qcow2", "http source URL")
+st = get(dvt, "spec", "storage") or get(dvt, "spec", "pvc") or {}
+chk(get(st, "resources", "requests", "storage") == "20Gi", "20Gi")
+chk("ReadWriteMany" in (st.get("accessModes") or []), "ReadWriteMany access mode")
+vols = get(spec, "template", "spec", "volumes") or []
+chk(any(isinstance(v, dict) and v.get("name") == "root" and get(v, "dataVolume", "name") == "web1-root" for v in vols), "volume root uses the data volume")
+disks = get(dom, "devices", "disks") or []
+chk(any(isinstance(d, dict) and d.get("name") == "root" and get(d, "disk", "bus") == "virtio" for d in disks), "disk root on virtio")
+seed = [v for v in vols if isinstance(v, dict) and v.get("name") == "seed" and "cloudInitNoCloud" in v]
+ud = get(seed[0], "cloudInitNoCloud", "userData") if seed else None
+chk(isinstance(ud, str) and ud.startswith("#cloud-config"), "seed volume with #cloud-config user data")
+chk(isinstance(ud, str) and "password" not in ud.lower() and "passwd" not in ud.lower(), "no password in user data")
+ifs = get(dom, "devices", "interfaces") or []
+nets = get(spec, "template", "spec", "networks") or []
+chk(any(isinstance(i, dict) and "masquerade" in i for i in ifs) and any(isinstance(n, dict) and "pod" in n for n in nets), "pod network with masquerade binding")
+chk(get(spec, "template", "metadata", "labels", "app") == "web", "template label app=web")
+chk(mg.get("kind") == "VirtualMachineInstanceMigration" and get(mg, "spec", "vmiName") == "web1" and get(mg, "metadata", "namespace") == "demo", "migration object for web1 in demo")
+chk(rep.get("vm_object_vs_vmi_durable") == "vm", "the VirtualMachine is the durable object")
+chk("qemu" in rep.get("launcher_pod_holds", "").lower() or "libvirt" in rep.get("launcher_pod_holds", "").lower(), "launcher pod holds libvirt and QEMU")
+chk(rep.get("migration_needs_shared_storage") == "yes", "migration needs shared storage")
+chk(rep.get("passthrough_pci_blocks_migration") == "yes", "PCI passthrough blocks live migration")
+chk("rbac" in rep.get("console_access_controlled_by", "").lower() or "kubernetes" in rep.get("console_access_controlled_by", "").lower(), "console access is Kubernetes RBAC")
+sys.exit(bad)
+PY

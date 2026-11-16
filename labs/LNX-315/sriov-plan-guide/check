@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f device-info.txt ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get vfs_to_enable)" = 12 ] && ok "enable 12 VFs (only what the workload needs)" || fail "vfs_to_enable must be 12"
+[ "$(get max_vfs_with_8_queues)" = 16 ] && ok "128 queue pairs / 8 = 16 VFs at most" || fail "max_vfs_with_8_queues must be 16 (128 / 8)"
+[ "$(get queues_per_vf)" = 8 ] && ok "8 queue pairs per VF" || fail "queues_per_vf must be 8"
+s=$(cat vf-setup.sh)
+echo "$s" | grep -q 'sriov_numvfs' && ok "uses sriov_numvfs" || fail "write the count to sriov_numvfs"
+echo "$s" | grep -Eq 'echo 0 *> *[^ ]*sriov_numvfs' && ok "resets the count to 0 first" || fail "write 0 to sriov_numvfs before the new count"
+echo "$s" | grep -Eq 'echo 12 *> *[^ ]*sriov_numvfs' && ok "sets 12 VFs" || fail "write 12 to sriov_numvfs"
+echo "$s" | grep -Eq 'ip link set (dev )?ens1f0 vf 0' && ok "configures VF 0 on the PF" || fail "use ip link set ens1f0 vf 0 ..."
+echo "$s" | grep -q '52:54:00:aa:00:00' && ok "MAC" || fail "set the MAC 52:54:00:aa:00:00"
+echo "$s" | grep -Eq 'vlan 120' && ok "VLAN 120" || fail "set vlan 120"
+echo "$s" | grep -Eq 'max_tx_rate 10000' && ok "max_tx_rate 10000" || fail "set max_tx_rate 10000"
+echo "$s" | grep -Eq 'spoofchk on' && ok "spoofchk on" || fail "set spoofchk on"
+echo "$s" | grep -Eq 'trust off' && ok "trust off" || fail "set trust off"
+echo "$s" | grep -Eq 'state auto' && ok "link state auto" || fail "set state auto"
+x=$(cat pool-network.xml)
+echo "$x" | grep -Eq "<forward[^>]*mode=['\"]hostdev['\"]" && ok "forward mode hostdev" || fail "network needs <forward mode='hostdev' managed='yes'>"
+echo "$x" | grep -Eq "managed=['\"]yes['\"]" && ok "managed yes" || fail "managed='yes' on the forward element"
+echo "$x" | grep -Eq "<pf dev=['\"]ens1f0['\"]" && ok "pf dev ens1f0" || fail "name the PF with <pf dev='ens1f0'/>"
+exit $bad

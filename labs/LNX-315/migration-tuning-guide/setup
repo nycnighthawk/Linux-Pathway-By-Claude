@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > domjobinfo.log <<'N'
+# virsh domjobinfo db01, sampled every 60 s during a stuck migration (128 GiB guest, 25 Gbit link, no migration options set)
+t=0m    data_remaining=124 GiB  throughput=380 MiB/s  dirty_rate=1100 MiB/s  iteration=1
+t=1m    data_remaining=131 GiB  throughput=390 MiB/s  dirty_rate=1150 MiB/s  iteration=2
+t=2m    data_remaining=133 GiB  throughput=385 MiB/s  dirty_rate=1120 MiB/s  iteration=3
+t=3m    data_remaining=134 GiB  throughput=388 MiB/s  dirty_rate=1130 MiB/s  iteration=4
+N
+cat > context.txt <<'N'
+- The migration network is 25 Gbit/s; nothing else uses it.
+- The cluster policy forbids slowing the database guest's CPUs (a service level applies), but a pause of up to 500 ms is acceptable.
+- The network between the hosts is reliable (redundant links, tested).
+- db01 must finish migrating tonight; the only alternative is an outage.
+N
+[ -f report.txt ] || cat > report.txt <<'N'
+# Fill every key (key=value).
+converging=
+limiting_factor=
+first_fix=
+autoconverge_allowed=
+dirty_limit_helps_with_guest_slowdown_policy=
+last_resort_strategy=
+last_resort_risk=
+downtime_ms=
+N
+[ -f migrate.sh ] || printf '#!/usr/bin/env bash\n# one virsh migrate command\n' > migrate.sh

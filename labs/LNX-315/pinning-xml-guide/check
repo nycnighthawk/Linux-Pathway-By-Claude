@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f host-topology.txt ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, sys
+import xml.etree.ElementTree as ET
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+try:
+    root = ET.fromstring("<d>" + re.sub(r"<!--.*?-->", "", open("db01.xml").read(), flags=re.S) + "</d>")
+except Exception as e:
+    print("FAIL: db01.xml is not well-formed XML fragments:", e); sys.exit(1)
+if root.tag == "d" and len(root) == 1 and root[0].tag == "domain": root = root[0]
+def f(p): return root.find(p)
+v = f("vcpu"); chk(v is not None and v.text.strip() == "8", "8 vCPUs")
+ct = f("cputune"); pins = {}
+if ct is not None:
+    for p in ct.findall("vcpupin"): pins[int(p.get("vcpu"))] = p.get("cpuset")
+want = {0: "8", 1: "24", 2: "9", 3: "25", 4: "10", 5: "26", 6: "11", 7: "27"}
+chk(pins == want, "vCPUs pinned to cores 8-11 with their siblings 24-27, siblings adjacent (got %s)" % pins)
+ep = ct.find("emulatorpin").get("cpuset") if ct is not None and ct.find("emulatorpin") is not None else ""
+chk(ep.replace(" ", "") in ("15,31", "15-15,31-31", "31,15"), "emulatorpin on the housekeeping CPUs 15,31")
+ip = ct.find("iothreadpin") if ct is not None else None
+chk(ip is not None and ip.get("iothread") == "1" and ip.get("cpuset", "").replace(" ", "") in ("15,31", "31,15"), "IOThread 1 pinned to 15,31")
+it = f("iothreads"); chk(it is not None and it.text.strip() == "1", "one IOThread")
+nt = f("numatune/memory"); chk(nt is not None and nt.get("mode") == "strict" and nt.get("nodeset") == "1", "numatune memory strict on node 1")
+mb = f("memoryBacking/hugepages/page"); chk(mb is not None and mb.get("size") == "1" and mb.get("unit") in ("G", "GiB"), "1 GiB hugepages")
+mem = f("memory"); chk(mem is not None and ((mem.get("unit", "KiB") == "GiB" and mem.text.strip() == "32") or (mem.get("unit", "KiB") == "KiB" and mem.text.strip() == str(32 * 1024 * 1024)) or (mem.get("unit") == "MiB" and mem.text.strip() == "32768")), "32 GiB of memory")
+cpu = f("cpu"); chk(cpu is not None and cpu.get("mode") == "host-passthrough", "cpu mode host-passthrough")
+tp = f("cpu/topology"); chk(tp is not None and (tp.get("sockets"), tp.get("cores"), tp.get("threads")) == ("1", "4", "2"), "topology 1 socket, 4 cores, 2 threads")
+d = f("devices/disk/driver"); s = f("devices/disk/target")
+chk(d is not None and d.get("cache") == "none" and d.get("io") == "native", "disk cache none, io native")
+chk(d is not None and d.get("queues") == "8" and d.get("iothread") == "1", "disk with 8 queues on IOThread 1")
+chk(s is not None and s.get("bus") == "virtio", "bus virtio (virtio-blk)")
+sys.exit(bad)
+PY

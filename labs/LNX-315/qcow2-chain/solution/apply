@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > chain.sh <<'N'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+rm -f base.qcow2 mid.qcow2 top.qcow2 flat.qcow2
+qemu-img create -q -f qcow2 -o cluster_size=64k base.qcow2 32M
+qemu-io -c "write -P 0xaa 0 64k" base.qcow2 >/dev/null
+qemu-img create -q -f qcow2 -b base.qcow2 -F qcow2 mid.qcow2
+qemu-io -c "write -P 0xbb 1M 64k" mid.qcow2 >/dev/null
+qemu-img create -q -f qcow2 -b mid.qcow2 -F qcow2 top.qcow2
+qemu-io -c "write -P 0xcc 2M 64k" top.qcow2 >/dev/null
+qemu-img convert -O qcow2 top.qcow2 flat.qcow2
+qemu-img commit -q top.qcow2
+N

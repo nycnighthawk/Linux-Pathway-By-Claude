@@ -1,0 +1,27 @@
+title: 'Quiz: VirtualBox and KVM coexistence'
+questions:
+- id: conflict
+  prompt: Why does the native VirtualBox driver fail to start a guest while KVM is active?
+  choices: [Both want exclusive use of the CPU virtualization feature, KVM blocks all kernel modules, VirtualBox needs a GPU, The guest disk is locked]
+  answer: [0]
+  explain: 'A) correct: VMX or SVM operation has one owner per core. B) wrong. C) wrong. D) wrong.'
+- id: lazy
+  prompt: What does options kvm enable_virt_at_load=0 do?
+  choices: [Disables KVM permanently, Delays enabling hardware virtualization until a KVM guest starts, Lets both stacks run guests at the same moment, Signs the vboxdrv module]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong: only the KVM backend allows that. D) wrong.'
+- id: backend
+  prompt: What lets a VirtualBox guest and a QEMU guest run at the same time?
+  choices: [Giving each its own disk, Running VirtualBox on the KVM backend so both use /dev/kvm, Using NAT networking, Disabling Secure Boot]
+  answer: [1]
+  explain: 'A) wrong. B) correct: KVM owns the feature and shares it. C) wrong. D) wrong.'
+- id: image
+  prompt: Why must one disk image not be opened in both stacks at once?
+  choices: [Formats differ, No shared locking exists so the image can be corrupted, It uses more RAM, It voids support]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: caution
+  prompt: Which steps belong in a plan to adopt the KVM backend? (select two)
+  choices: [Qualify your guests and compare performance with the native driver, Keep a rollback to the native driver, Assume saved states are interchangeable, Delete the native driver first]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: not broadly validated. D) wrong.'

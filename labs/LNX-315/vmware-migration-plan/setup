@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f guest.qcow2
+[ -f guest.vmdk ] || qemu-img create -q -f vmdk guest.vmdk 32M
+cat > inventory.csv <<'N'
+name,os,role,features,snapshots
+web01,linux,web-stateless,none,no
+web02,linux,web-stateless,none,yes
+db01,linux,database,none,no
+fs01,windows,file-server,bitlocker,no
+app01,linux,app,none,yes
+clu01,linux,cluster-node,shared-disk,no
+lic01,windows,licence-server,usb-dongle,no
+gpu01,linux,compute,pci-passthrough,no
+N
+cat > requirements.txt <<'N'
+Planning rules for the wave plan (report.txt):
+- features shared-disk, usb-dongle, pci-passthrough, raw-device-map -> action individual (no tool converts these)
+- role web-stateless -> action rebuild (redeploy from an image)
+- role database -> action app-level (replicate at the application layer)
+- everything else -> action convert (virt-v2v, guest shut down cleanly)
+- snapshots=yes machines must have their snapshots collapsed before an SSH or VMX-file input; list them in collapse_first (comma separated, may overlap with rebuild machines)
+- windows machines with BitLocker or any features that change on virtual hardware: put them in recovery_key_needed
+Also write convert.sh: convert guest.vmdk to guest.qcow2 with qemu-img (the stand-in for the disk-format step). The check runs it and compares the two images.
+N
+[ -f report.txt ] || cat > report.txt <<'N'
+# one line per machine: name=action  (convert | rebuild | app-level | individual)
+web01=
+web02=
+db01=
+fs01=
+app01=
+clu01=
+lic01=
+gpu01=
+collapse_first=
+recovery_key_needed=
+fastest_vmware_input_needs_proprietary_library=
+N
+[ -f convert.sh ] || printf '#!/usr/bin/env bash\nset -eu\n# TODO\n' > convert.sh

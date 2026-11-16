@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+gpu_group=14
+gpu_viable=yes
+nic_port1_group=12
+nic_port1_viable=no
+nic_port1_reason=group 12 also holds port 0, the management NIC the host uses, behind a chipset root port without ACS
+kernel_cmdline_add=intel_iommu=on iommu=pt
+vfio_ids=10de:2484,10de:228b
+guest_firmware=ovmf
+guest_machine=q35
+N
+cat > hostdev.xml <<'N'
+<hostdev mode='subsystem' type='pci' managed='yes'>
+  <source><address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/></source>
+</hostdev>
+<hostdev mode='subsystem' type='pci' managed='yes'>
+  <source><address domain='0x0000' bus='0x01' slot='0x00' function='0x1'/></source>
+</hostdev>
+N

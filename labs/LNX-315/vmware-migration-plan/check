@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f inventory.csv ] || { echo "FAIL: run setup first"; exit 1; }
+command -v qemu-img >/dev/null || { echo "FAIL: qemu-img is needed (package qemu-utils)"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+setof() { echo "$1" | tr ',' '\n' | sed 's/^ *//;s/ *$//' | sed '/^$/d' | sort | tr '\n' ' '; }
+while IFS=, read -r name os role feat snap; do
+  [ "$name" = name ] && continue
+  case "$feat" in shared-disk|usb-dongle|pci-passthrough|raw-device-map) want=individual;; *) case "$role" in web-stateless) want=rebuild;; database) want=app-level;; *) want=convert;; esac;; esac
+  [ "$(get "$name")" = "$want" ] && ok "$name -> $want" || fail "$name should be $want"
+done < inventory.csv
+[ "$(setof "$(get collapse_first)")" = "app01 web02 " ] && ok "collapse_first lists web02 and app01" || fail "collapse_first must list exactly the machines with snapshots=yes"
+[ "$(setof "$(get recovery_key_needed)")" = "fs01 " ] && ok "recovery key for fs01" || fail "recovery_key_needed must list the BitLocker machine fs01 only"
+[ "$(get fastest_vmware_input_needs_proprietary_library)" = yes ] && ok "VDDK is proprietary" || fail "fastest_vmware_input_needs_proprietary_library must be yes"
+rm -f guest.qcow2
+if bash convert.sh >convert.log 2>&1; then ok "convert.sh ran"; else fail "convert.sh failed (see convert.log)"; fi
+if [ -f guest.qcow2 ]; then
+  fmt=$(qemu-img info --output=json guest.qcow2 | python3 -c 'import sys,json;print(json.load(sys.stdin)["format"])')
+  [ "$fmt" = qcow2 ] && ok "guest.qcow2 is qcow2" || fail "guest.qcow2 must be qcow2"
+  qemu-img compare -f vmdk guest.vmdk -F qcow2 guest.qcow2 >/dev/null 2>&1 && ok "contents identical to the VMDK" || fail "guest.qcow2 must hold the same data as guest.vmdk"
+else fail "guest.qcow2 was not created"; fi
+exit $bad

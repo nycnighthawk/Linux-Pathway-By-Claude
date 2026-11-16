@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f requirements.txt ] || { echo "FAIL: run setup first"; exit 1; }
+command -v qemu-img >/dev/null || { echo "FAIL: qemu-img is needed (package qemu-utils)"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+head -1 user-data | grep -qx '#cloud-config' && ok "user-data starts with #cloud-config" || fail "first line of user-data must be #cloud-config"
+python3 - <<'PY' || bad=1
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+try:
+    ud = yaml.safe_load(open("user-data")) or {}
+    md = yaml.safe_load(open("meta-data")) or {}
+except Exception as e:
+    print("FAIL: YAML does not parse:", e); sys.exit(1)
+chk(isinstance(ud, dict), "user-data is a YAML mapping")
+users = ud.get("users") if isinstance(ud, dict) else None
+ops = [u for u in (users or []) if isinstance(u, dict) and u.get("name") == "ops"]
+chk(len(ops) == 1, "user ops exists")
+chk(bool(ops) and bool(ops[0].get("ssh_authorized_keys")), "ops has ssh_authorized_keys")
+def has_pw(o):
+    if isinstance(o, dict):
+        return any(k in ("password", "passwd", "plain_text_passwd", "chpasswd") or has_pw(v) for k, v in o.items())
+    if isinstance(o, list):
+        return any(has_pw(v) for v in o)
+    return False
+chk(not has_pw(ud), "no password keys in user-data")
+chk(ud.get("ssh_pwauth") is False, "ssh_pwauth is false")
+chk("qemu-guest-agent" in (ud.get("packages") or []), "package qemu-guest-agent")
+chk(isinstance(md, dict) and md.get("instance-id") == "web-001", "meta-data instance-id web-001")
+chk(isinstance(md, dict) and md.get("local-hostname") == "web-001", "meta-data local-hostname web-001")
+sys.exit(bad)
+PY
+want=$(sha256sum base.qcow2 | cut -d' ' -f1)
+rm -rf seed test1.qcow2 manifest.txt
+if bash build.sh >build.log 2>&1; then ok "build.sh ran"; else fail "build.sh failed (see build.log)"; cat build.log | head -5; fi
+grep -Eq "^sha256 $want base\.qcow2\$" manifest.txt 2>/dev/null && ok "manifest pins the base sha256" || fail "manifest.txt must contain: sha256 <hash of base.qcow2> base.qcow2"
+if [ -f test1.qcow2 ]; then
+  info=$(qemu-img info --output=json test1.qcow2 2>/dev/null)
+  echo "$info" | python3 -c 'import sys,json;d=json.load(sys.stdin);sys.exit(0 if d.get("format")=="qcow2" and d.get("backing-filename","").endswith("base.qcow2") and d.get("backing-filename-format")=="qcow2" else 1)' && ok "test1.qcow2 is a qcow2 overlay on base.qcow2" || fail "test1.qcow2 must be qcow2 with backing file base.qcow2 (format qcow2)"
+else fail "test1.qcow2 was not created"; fi
+[ -f seed/user-data ] && [ -f seed/meta-data ] && cmp -s seed/user-data user-data && cmp -s seed/meta-data meta-data && ok "seed/ holds user-data and meta-data" || fail "seed/ must contain copies of user-data and meta-data"
+[ "$(sha256sum base.qcow2 | cut -d' ' -f1)" = "$want" ] && ok "base image untouched" || fail "base.qcow2 must not be modified"
+exit $bad

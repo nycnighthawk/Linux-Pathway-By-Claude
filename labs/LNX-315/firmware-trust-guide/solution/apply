@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+a_firmware=ovmf
+a_machine=q35
+a_smm=on
+a_vtpm_backend=emulator
+a_vtpm_version=2.0
+a_vtpm_state_persistent=yes
+b_technology=sev-snp
+b_needs_ovmf_snp_build=yes
+b_live_migration_normal=no
+b_host_admin_can_read_guest_ram=no
+b_attestation_step=the guest fetches a signed report with the launch measurement and a nonce; the relying party verifies the chain and releases secrets only if it matches
+N
+cat > guest-a.xml <<'N'
+<os firmware='efi'>
+  <type arch='x86_64' machine='q35'>hvm</type>
+  <firmware><feature enabled='yes' name='secure-boot'/><feature enabled='yes' name='enrolled-keys'/></firmware>
+</os>
+<features><acpi/><smm state='on'/></features>
+<devices>
+  <tpm model='tpm-crb'><backend type='emulator' version='2.0' persistent_state='yes'/></tpm>
+</devices>
+N
+cat > guest-b.xml <<'N'
+<os firmware='efi'>
+  <type arch='x86_64' machine='q35'>hvm</type>
+</os>
+<launchSecurity type='sev-snp'>
+  <cbitpos>51</cbitpos>
+  <reducedPhysBits>1</reducedPhysBits>
+  <policy>0x30000</policy>
+</launchSecurity>
+N

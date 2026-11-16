@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > user-data <<'N'
+#cloud-config
+users:
+  - name: ops
+    groups: [sudo]
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyOnlyForTheLab ops@example
+ssh_pwauth: false
+packages:
+  - qemu-guest-agent
+N
+cat > meta-data <<'N'
+instance-id: web-001
+local-hostname: web-001
+N
+cat > build.sh <<'N'
+#!/usr/bin/env bash
+set -eu
+echo "sha256 $(sha256sum base.qcow2 | cut -d' ' -f1) base.qcow2" > manifest.txt
+qemu-img create -q -f qcow2 -b base.qcow2 -F qcow2 test1.qcow2
+mkdir -p seed
+cp user-data meta-data seed/
+N

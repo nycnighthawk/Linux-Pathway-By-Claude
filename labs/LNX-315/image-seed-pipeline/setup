@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f test1.qcow2 manifest.txt
+[ -f base.qcow2 ] || qemu-img create -q -f qcow2 base.qcow2 64M
+cat > requirements.txt <<'N'
+Pipeline rules for instance web-001 (the 64 MB base.qcow2 stands in for a generalised cloud image):
+1. user-data: starts with #cloud-config; one user "ops" with an ssh_authorized_keys entry; ssh_pwauth false; package qemu-guest-agent; no password or passwd keys at all.
+2. meta-data: instance-id web-001 and local-hostname web-001.
+3. build.sh: pins the base by writing its sha256 to manifest.txt as "sha256 <hash> base.qcow2" BEFORE building;
+   creates test1.qcow2 as a qcow2 overlay with base.qcow2 as backing file (-b and -F qcow2);
+   copies user-data and meta-data into a directory named seed/ (the future cidata volume).
+4. The check runs build.sh itself and then inspects the result with qemu-img.
+N
+[ -f user-data ] || echo "# TODO" > user-data
+[ -f meta-data ] || echo "# TODO" > meta-data
+[ -f build.sh ] || printf '#!/usr/bin/env bash\nset -eu\n# TODO\n' > build.sh

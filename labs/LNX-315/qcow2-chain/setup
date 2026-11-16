@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+command -v qemu-img >/dev/null && command -v qemu-io >/dev/null || { echo "qemu-img and qemu-io are required (package qemu-utils)"; exit 1; }
+rm -f base.qcow2 mid.qcow2 top.qcow2 flat.qcow2
+[ -f chain.sh ] || cat > chain.sh <<'N'
+#!/usr/bin/env bash
+# TODO: build the chain and the flattened copy described in README.md
+set -eu
+N
+chmod +x chain.sh
