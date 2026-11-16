@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "subsystem", "type": "text", "min": 3, "hint": "name the subsystem", "sample": "example-subsystem"}, {"key": "lists_in_cc", "type": "int", "min": 1, "max": 10, "hint": "integer, at least 1", "sample": "2"}, {"key": "maintainers_in_to", "type": "int", "min": 1, "max": 10, "hint": "integer, at least 1", "sample": "2"}, {"key": "patches_in_series", "type": "int", "min": 1, "max": 50, "hint": "integer", "sample": "1"}, {"key": "checkpatch_errors", "type": "int", "min": 0, "max": 100, "hint": "integer", "sample": "0"}, {"key": "signed_off", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "versions_sent", "type": "int", "min": 1, "max": 30, "hint": "integer", "sample": "2"}, {"key": "review_comments", "type": "int", "min": 0, "max": 500, "hint": "integer", "sample": "3"}, {"key": "comments_addressed", "type": "int", "min": 0, "max": 500, "hint": "integer", "sample": "3"}, {"key": "days_waiting_longest", "type": "int", "min": 0, "max": 365, "hint": "integer", "sample": "9"}, {"key": "outcome", "type": "enum", "values": ["applied", "reviewed", "changes-requested", "no-reply", "rejected"], "hint": "applied, reviewed, changes-requested, no-reply or rejected", "sample": "applied"}, {"key": "archive_link_recorded", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}], "rules": [{"name": "no checkpatch errors on the final version", "needs": ["checkpatch_errors"], "expr": "v['checkpatch_errors'] == 0", "msg": "fix style errors before sending"}, {"name": "comments addressed do not exceed comments", "needs": ["review_comments", "comments_addressed"], "expr": "v['comments_addressed'] <= v['review_comments']", "msg": "cannot address more than were made"}, {"name": "every comment is addressed or the outcome says why not", "needs": ["review_comments", "comments_addressed", "outcome"], "expr": "v['comments_addressed'] == v['review_comments'] or v['outcome'] in ('no-reply','changes-requested')", "msg": "answer every comment"}, {"name": "a revised series has more than one version", "needs": ["review_comments", "versions_sent"], "expr": "v['review_comments'] == 0 or v['versions_sent'] >= 1", "msg": "record the versions you sent"}, {"name": "an applied patch had at least one version", "needs": ["outcome", "versions_sent"], "expr": "v['outcome'] != 'applied' or v['versions_sent'] >= 1", "msg": "record the versions sent"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N

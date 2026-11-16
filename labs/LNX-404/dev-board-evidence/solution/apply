@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+board=example-board
+soc_arch=arm64
+serial_console=yes
+baud=115200
+logic_level_volts=3.3
+kernel_release=6.x-custom
+dtb_used=board.dtb
+boot_to_init=yes
+your_change_exercised=yes
+differences_from_qemu=2
+recovery_method=tftp
+boot_log_saved=yes
+N

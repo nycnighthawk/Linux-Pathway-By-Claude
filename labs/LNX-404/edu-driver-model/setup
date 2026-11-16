@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > fakedev.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A fake register file in the style of QEMU's edu teaching device (layout to verify against QEMU docs/specs/edu.rst).
+
+ 0x00 ID        read-only, 0x010000ed
+ 0x04 LIVENESS  write x, read back ~x (32-bit)
+ 0x08 FACT      write n to start computing n!; read the result when STATUS busy bit is clear
+ 0x20 STATUS    bit 0 = computing (busy)
+The fake finishes after `delay` status reads; `stuck=True` never finishes.
+"""
+class FakeDev:
+    def __init__(self, ident=0x010000ed, delay=2, stuck=False):
+        self.ident, self.delay, self.stuck = ident, delay, stuck
+        self.live = 0; self.fact = 0; self.pending = 0; self.active = False; self.busy_reads = 0
+    def read(self, off):
+        if off == 0x00: return self.ident
+        if off == 0x04: return (~self.live) & 0xFFFFFFFF
+        if off == 0x08: return self.fact
+        if off == 0x20:
+            if self.active:
+                if self.stuck: return 1
+                self.busy_reads += 1
+                if self.busy_reads >= self.delay:
+                    r = 1
+                    for i in range(2, self.pending + 1): r = (r * i) & 0xFFFFFFFF
+                    self.fact, self.active = r, False
+                    return 0
+                return 1
+            return 0
+        return 0
+    def write(self, off, val):
+        if off == 0x04: self.live = val & 0xFFFFFFFF
+        elif off == 0x08: self.pending, self.active, self.busy_reads = val & 0xFFFFFFFF, True, 0
+N
+cat > driver.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""Implement the driver logic against any object with read(off) and write(off, val).
+
+Errors are returned as negative errno values, as in the kernel: ENODEV=19, EINVAL=22, ETIMEDOUT=110.
+
+probe(dev)            -> 0 if dev.read(0x00) == 0x010000ed, else -ENODEV
+liveness(dev, x)      -> write x to 0x04, read it back from 0x04; return 0 if the read equals ~x (32-bit), else -ENODEV
+factorial(dev, n, max_polls=100)
+                      -> -EINVAL if n is not in 0..12 (12! is the largest that fits in 32 bits)
+                         write n to 0x08, then poll 0x20 up to max_polls times until bit 0 is clear;
+                         if it never clears return -ETIMEDOUT; otherwise return the value read from 0x08.
+                         (Results are non-negative and fit 32 bits, so errors and results do not collide.)
+"""
+ENODEV, EINVAL, ETIMEDOUT = 19, 22, 110
+
+def probe(dev):
+    raise NotImplementedError
+
+def liveness(dev, x):
+    raise NotImplementedError
+
+def factorial(dev, n, max_polls=100):
+    raise NotImplementedError
+N

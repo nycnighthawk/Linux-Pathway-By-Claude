@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "kernel_release", "type": "text", "min": 4, "hint": "the release string", "sample": "6.12-syz"}, {"key": "kasan_enabled", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "kcov_enabled", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "vm_count", "type": "int", "min": 1, "max": 512, "hint": "integer", "sample": "4"}, {"key": "run_hours", "type": "num", "min": 1, "max": 10000, "hint": "hours, at least 48 to pass the rule below", "sample": "72"}, {"key": "enabled_syscalls_scope", "type": "enum", "values": ["all", "subsystem", "single-driver"], "hint": "all, subsystem or single-driver", "sample": "subsystem"}, {"key": "coverage_blocks_final", "type": "int", "min": 0, "max": 100000000, "hint": "integer", "sample": "84000"}, {"key": "coverage_blocks_day1", "type": "int", "min": 0, "max": 100000000, "hint": "integer", "sample": "61000"}, {"key": "crash_reports", "type": "int", "min": 0, "max": 100000, "hint": "integer", "sample": "11"}, {"key": "already_known", "type": "int", "min": 0, "max": 100000, "hint": "integer", "sample": "7"}, {"key": "with_reproducer", "type": "int", "min": 0, "max": 100000, "hint": "integer", "sample": "3"}, {"key": "reported_upstream", "type": "int", "min": 0, "max": 1000, "hint": "integer", "sample": "1"}], "rules": [{"name": "a multi-day campaign", "needs": ["run_hours"], "expr": "v['run_hours'] >= 48", "msg": "run at least 48 hours"}, {"name": "coverage grew", "needs": ["coverage_blocks_final", "coverage_blocks_day1"], "expr": "v['coverage_blocks_final'] >= v['coverage_blocks_day1']", "msg": "no growth means a configuration problem"}, {"name": "already-known crashes do not exceed crashes", "needs": ["crash_reports", "already_known"], "expr": "v['already_known'] <= v['crash_reports']", "msg": "known cannot exceed total"}, {"name": "reproducers do not exceed crashes", "needs": ["crash_reports", "with_reproducer"], "expr": "v['with_reproducer'] <= v['crash_reports']", "msg": "reproducers cannot exceed crashes"}, {"name": "new reports are a subset of new crashes", "needs": ["crash_reports", "already_known", "reported_upstream"], "expr": "v['reported_upstream'] <= v['crash_reports'] - v['already_known']", "msg": "you can only report crashes that were not already known"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N

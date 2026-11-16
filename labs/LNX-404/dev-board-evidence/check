@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "board", "type": "text", "min": 4, "hint": "name the board", "sample": "example-board"}, {"key": "soc_arch", "type": "enum", "values": ["arm64", "armv7", "riscv64", "x86_64", "other"], "hint": "arm64, armv7, riscv64, x86_64 or other", "sample": "arm64"}, {"key": "serial_console", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "baud", "type": "int", "min": 1200, "max": 4000000, "hint": "integer baud rate", "sample": "115200"}, {"key": "logic_level_volts", "type": "num", "min": 1.0, "max": 5.5, "hint": "volts between 1 and 5.5", "sample": "3.3"}, {"key": "kernel_release", "type": "text", "min": 4, "hint": "the release string", "sample": "6.x-custom"}, {"key": "dtb_used", "type": "text", "min": 4, "hint": "name the dtb", "sample": "board.dtb"}, {"key": "boot_to_init", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "your_change_exercised", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "differences_from_qemu", "type": "int", "min": 0, "max": 100, "hint": "integer", "sample": "2"}, {"key": "recovery_method", "type": "enum", "values": ["sd-card", "tftp", "usb", "other"], "hint": "sd-card, tftp, usb or other", "sample": "tftp"}, {"key": "boot_log_saved", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}], "rules": [{"name": "the signal level matches common 3.3 V or 1.8 V boards (check the manual if not)", "needs": ["logic_level_volts"], "expr": "v['logic_level_volts'] in (1.8, 3.3, 5.0)", "msg": "use 1.8, 3.3 or 5.0 as documented for your board; a wrong level can damage hardware"}, {"name": "a normal baud rate", "needs": ["baud"], "expr": "v['baud'] in (9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600, 1500000)", "msg": "use the speed from the board documentation"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N
