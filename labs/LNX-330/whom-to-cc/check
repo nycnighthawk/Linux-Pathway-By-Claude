@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import re, sys
+files = re.findall(r"^diff --git a/(\S+) b/", open("patch.diff").read(), re.M)
+secs, cur = [], None
+for line in open("MAINTAINERS.mini"):
+    line = line.rstrip("\n")
+    if not line.strip():
+        cur = None; continue
+    m = re.match(r"([A-Z]):\t(.*)$", line)
+    if m and cur is not None:
+        cur.setdefault(m.group(1), []).append(m.group(2))
+    else:
+        cur = {"name": line}; secs.append(cur)
+def match(pat, f):
+    if pat.endswith("/"): return f.startswith(pat)
+    if "*" in pat:
+        return re.fullmatch(re.escape(pat).replace(r"\*", "[^/]*"), f) is not None
+    return pat == f
+want = set()
+for f in files:
+    for s in secs:
+        if any(match(p, f) for p in s.get("X", [])): continue
+        if not any(match(p, f) for p in s.get("F", [])): continue
+        for k, role in (("M", "maintainer"), ("R", "reviewer"), ("L", "list")):
+            for v in s.get(k, []):
+                addr = re.search(r"<([^>]+)>", v)
+                want.add((role, addr.group(1) if addr else v.strip()))
+got = set()
+for raw in open("recipients.txt"):
+    raw = raw.split("#")[0].strip()
+    if raw:
+        p = raw.split()
+        if len(p) == 2: got.add((p[0], p[1]))
+        else: print("FAIL: malformed line: " + raw)
+bad = 0
+for r in sorted(want - got): print("FAIL: missing %s %s" % r); bad = 1
+for r in sorted(got - want): print("FAIL: should not be listed: %s %s" % r); bad = 1
+if not bad: print("ok:   recipient list matches the MAINTAINERS rules")
+sys.exit(bad)
+N

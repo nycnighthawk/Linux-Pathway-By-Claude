@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > MAINTAINERS.mini <<'N'
+FOO NETWORK DRIVER
+M:	Ada Lovelace <ada@example.org>
+R:	Grace Hopper <grace@example.org>
+L:	netdev@example.org
+S:	Maintained
+F:	drivers/net/foo/
+F:	include/linux/foo.h
+F:	Documentation/networking/foo.rst
+X:	drivers/net/foo/legacy/
+
+NETWORKING DRIVERS
+M:	Linus Net <net@example.org>
+L:	netdev@example.org
+S:	Maintained
+F:	drivers/net/*
+F:	Documentation/networking/
+
+DOCUMENTATION
+M:	Doc Person <docs@example.org>
+L:	linux-doc@example.org
+S:	Maintained
+F:	Documentation/
+
+LEGACY FOO CODE
+L:	legacy@example.org
+S:	Orphan
+F:	drivers/net/foo/legacy/
+N
+cat > patch.diff <<'N'
+diff --git a/drivers/net/foo/core.c b/drivers/net/foo/core.c
+--- a/drivers/net/foo/core.c
++++ b/drivers/net/foo/core.c
+@@ -1,3 +1,4 @@
+ int foo_core(void);
++int foo_new(void);
+diff --git a/drivers/net/foo/legacy/old.c b/drivers/net/foo/legacy/old.c
+--- a/drivers/net/foo/legacy/old.c
++++ b/drivers/net/foo/legacy/old.c
+@@ -1,2 +1,3 @@
+ int old(void);
++int old2(void);
+diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
+@@ -1 +1,2 @@
+ obj-y += foo/
++obj-y += bar/
+diff --git a/Documentation/networking/foo.rst b/Documentation/networking/foo.rst
+--- a/Documentation/networking/foo.rst
++++ b/Documentation/networking/foo.rst
+@@ -1 +1,2 @@
+ Foo
++New text.
+N
+cat > recipients.txt <<'N'
+# One recipient per line: <role> <address>, role = maintainer | reviewer | list
+maintainer ada@example.org
+N
