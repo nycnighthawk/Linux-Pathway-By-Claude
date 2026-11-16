@@ -1,7 +1,7 @@
 item: LNX-314
 label: Kubernetes & Cloud-Native Security
 branch: build/LNX-314
-state: in-progress
+state: done
 started: '2026-11-16'
 updated: '2026-11-16'
 phases:
@@ -62,7 +62,7 @@ phases:
     - LNX-314-T09
     - LNX-314-T10
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -108,3 +108,6 @@ log:
 - '2026-11-16 lessons: LNX-314-T10'
 - '2026-11-16 quizzes: LNX-314-T10'
 - '2026-11-16 labs: LNX-314-T10'
+- '2026-11-16 checks: done'
+- 2026-11-16 finished
+finished: '2026-11-16'
