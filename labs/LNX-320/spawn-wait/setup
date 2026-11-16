@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f spawn_test
+cat > spawn.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+/* Run argv[0] with argv, wait for it, return its exit code (128+sig if killed),
+ * or -1 with errno set if the program could not be executed. */
+int spawn_wait(char *const argv[])
+{
+    (void)argv;
+    errno = ENOSYS;
+    return -1;
+}
+N

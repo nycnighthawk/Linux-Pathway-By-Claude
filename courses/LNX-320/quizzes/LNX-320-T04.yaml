@@ -1,0 +1,32 @@
+title: 'Quiz: fork/exec/wait, sessions, daemons'
+questions:
+- id: zombie
+  prompt: What is a zombie process?
+  choices: [A process stuck in an infinite loop, A finished child whose exit status the parent has not collected, A process without a parent, A stopped job]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong: that is an orphan, re-parented to init or a subreaper. D) wrong.'
+- id: execpipe
+  prompt: How does a parent learn that exec failed in the child, using a close-on-exec pipe?
+  choices: [The child exits with code 127 always, It reads errno from the pipe; end of file with no data means exec succeeded, It calls wait with WNOHANG, It checks the PID file]
+  answer: [1]
+  explain: 'A) wrong: a program can also exit with 127. B) correct. C) wrong. D) wrong.'
+- id: status
+  prompt: A child died with WIFSIGNALED true and WTERMSIG 9. What does a shell report as the status?
+  choices: ['9', '137', '0', '255']
+  answer: [1]
+  explain: 'A) wrong. B) correct: 128 + 9. C) wrong. D) wrong.'
+- id: leaks
+  prompt: Which are inherited across exec unless prevented? (select two)
+  choices: [Open descriptors without close-on-exec, The signal mask, Signal handler functions, The heap contents]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: handlers reset to default. D) wrong: the image is replaced.'
+- id: doublefork
+  prompt: Why does the traditional daemon recipe fork a second time after setsid?
+  choices: [To double the speed, So the process is not a session leader and cannot reacquire a controlling terminal, To get a new PID file, To drop root]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: threadfork
+  prompt: In a multithreaded program, what is safe in the child between fork and exec?
+  choices: [Any library call, Only async-signal-safe functions, Calling malloc and printf freely, Locking a mutex held by another thread]
+  answer: [1]
+  explain: 'A) wrong: another thread may have held a lock that is never released in the child. B) correct. C) wrong. D) wrong: it would block forever.'
