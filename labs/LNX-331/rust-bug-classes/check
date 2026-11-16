@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+want = {"1": "drop", "2": "guard", "3": "option", "4": "lock_data", "5": "borrow", "6": "result", "7": "checked", "8": "unsafe"}
+got = {}
+for line in open("answers.txt"):
+    line = line.strip()
+    if line and not line.startswith("#") and "=" in line:
+        k, v = line.split("=", 1); got[k.strip()] = v.strip()
+bad = 0
+for k, v in want.items():
+    if got.get(k) == v: print("ok:   fragment " + k)
+    else: print("FAIL: fragment %s" % k); bad = 1
+sys.exit(bad)
+N

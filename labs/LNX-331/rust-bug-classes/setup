@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > snippets.c <<'N'
+/* Eight fragments from imaginary C drivers. Each has one bug. */
+
+/* 1 */
+int probe(struct dev *d) {
+	d->buf = kmalloc(256, GFP_KERNEL);
+	if (setup_irq(d) < 0)
+		return -EIO;            /* d->buf is never freed */
+	return 0;
+}
+
+/* 2 */
+int update(struct dev *d, int v) {
+	mutex_lock(&d->lock);
+	if (v < 0)
+		return -EINVAL;         /* returns with the lock held */
+	d->val = v;
+	mutex_unlock(&d->lock);
+	return 0;
+}
+
+/* 3 */
+int show(struct dev *d, int id) {
+	struct entry *e = table_lookup(d, id);   /* may return NULL */
+	return e->value;
+}
+
+/* 4 */
+struct counter { spinlock_t lock; int n; };   /* nothing stops a caller touching n without the lock */
+void bump(struct counter *c) { c->n++; }
+
+/* 5 */
+char *name_of(struct dev *d) {
+	char *tmp = kstrdup(d->name, GFP_KERNEL);
+	char *p = tmp;
+	kfree(tmp);
+	return p;                       /* p now dangles */
+}
+
+/* 6 */
+void start(struct dev *d) {
+	clk_prepare_enable(d->clk);     /* returns a negative errno on failure; ignored */
+	d->running = 1;
+}
+
+/* 7 */
+int *make_table(size_t n) {
+	return kmalloc(n * sizeof(int), GFP_KERNEL);   /* n * 4 can overflow */
+}
+
+/* 8 */
+u32 read_status(void __iomem *base) {
+	return readl(base + 0x20);     /* arbitrary address arithmetic on a raw pointer */
+}
+N
+cat > answers.txt <<'N'
+# For each fragment, the Rust mechanism that prevents (or confines) the bug class:
+#   drop      RAII: Drop frees or releases the resource on every path
+#   guard     a lock guard releases the lock when it goes out of scope
+#   option    Option<T>: absence is a type, so it must be handled before use
+#   lock_data the lock owns the data (Mutex<T>); no access without holding it
+#   borrow    the borrow checker and lifetimes reject references that outlive the owner
+#   result    Result<T, E> with the ? operator: errors cannot be silently dropped
+#   checked   checked or saturating arithmetic: overflow is explicit
+#   unsafe    cannot be eliminated by the language: needs unsafe, so confine it behind a safe abstraction
+1=
+2=
+3=
+4=
+5=
+6=
+7=
+8=
+N
