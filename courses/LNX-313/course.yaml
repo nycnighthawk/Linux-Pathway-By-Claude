@@ -55,6 +55,10 @@ modules:
     title: Helm chart authoring and testing
     file: lessons/LNX-313-T06.md
     minutes: 55
+  - topic: LNX-313-T07
+    title: GitOps with Argo CD or Flux
+    file: lessons/LNX-313-T07.md
+    minutes: 55
 labs:
 - id: pod-with-sidecar
   topic: LNX-313-T01
@@ -92,6 +96,12 @@ labs:
   env: C
   license: MIT
   minutes: 35
+- id: gitops-resources
+  topic: LNX-313-T07
+  title: Connect a repository to a cluster two ways
+  env: C
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-313-T01
   topic: LNX-313-T01
@@ -117,3 +127,7 @@ quizzes:
   topic: LNX-313-T06
   title: 'Quiz: Helm chart authoring and testing'
   file: quizzes/LNX-313-T06.yaml
+- id: LNX-313-T07
+  topic: LNX-313-T07
+  title: 'Quiz: GitOps with Argo CD or Flux'
+  file: quizzes/LNX-313-T07.yaml

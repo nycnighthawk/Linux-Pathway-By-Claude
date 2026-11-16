@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > argocd.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata: {name: shop, namespace: argocd}
+spec:
+  sourceRepos: ["https://git.example/shop/config.git"]
+  destinations:
+    - {server: "https://kubernetes.default.svc", namespace: shop}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: shop-api, namespace: argocd}
+spec:
+  project: shop
+  source:
+    repoURL: "https://git.example/shop/config.git"
+    path: apps/api/overlays/prod
+    targetRevision: main
+  destination: {server: "https://kubernetes.default.svc", namespace: shop}
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    syncOptions: ["CreateNamespace=true"]
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers: ["/spec/replicas"]
+J
+cat > flux.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata: {name: config, namespace: flux-system}
+spec:
+  url: "https://git.example/shop/config.git"
+  interval: 1m
+  ref: {branch: main}
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata: {name: infra, namespace: flux-system}
+spec:
+  interval: 10m
+  path: ./infrastructure
+  prune: true
+  sourceRef: {kind: GitRepository, name: config}
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata: {name: apps, namespace: flux-system}
+spec:
+  interval: 5m
+  path: ./apps/prod
+  prune: true
+  dependsOn:
+    - name: infra
+  sourceRef: {kind: GitRepository, name: config}
+  healthChecks:
+    - {apiVersion: apps/v1, kind: Deployment, name: api, namespace: shop}
+  decryption:
+    provider: sops
+    secretRef: {name: sops-age}
+J
