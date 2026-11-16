@@ -1,0 +1,27 @@
+title: 'Quiz: RBAC minimisation and API access'
+questions:
+- id: list-secrets
+  prompt: A role grants only "list" on Secrets. What can the holder do?
+  choices: [Only see the names of Secrets, Read the full content of all Secrets in scope, Nothing; list is harmless, Delete Secrets]
+  answer: [1]
+  explain: 'A) wrong: list returns the objects including their data. B) correct: list and watch expose content like get. C) wrong. D) wrong: delete is a separate verb.'
+- id: pod-create
+  prompt: Why is "create pods" in a namespace treated as a powerful permission? (select two)
+  choices: [The Pod can mount any Secret in the namespace, The Pod can mount any service account token in the namespace, Pods always run as root, Pods bypass RBAC for their own requests]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct: the creator borrows other identities. C) wrong: depends on security settings. D) wrong: requests from Pods are still authorised.'
+- id: resourcenames
+  prompt: Which request is NOT constrained by resourceNames in a rule?
+  choices: [get on a named ConfigMap, patch on a named Deployment, create of any object, delete of a named object]
+  answer: [2]
+  explain: 'A) wrong: named gets are restricted. B) wrong: restricted. C) correct: the name is not known when the object is created, and list or watch return everything the rule allows. D) wrong: restricted.'
+- id: scope
+  prompt: A ClusterRole is bound with a RoleBinding in namespace shop. Where do its rules apply?
+  choices: [All namespaces, Only namespace shop, Only cluster-scoped resources, Nowhere until a ClusterRoleBinding exists]
+  answer: [1]
+  explain: 'A) wrong: that needs a ClusterRoleBinding. B) correct: the binding limits it to its own namespace. C) wrong: cluster-scoped resources are not reachable this way. D) wrong.'
+- id: automount
+  prompt: A web application never calls the Kubernetes API. What should its Pod spec say?
+  choices: [Keep the default token mount, automountServiceAccountToken false, Bind it to view, Create a long-lived token Secret]
+  answer: [1]
+  explain: 'A) wrong: an unused credential is only exposure. B) correct: no credential, nothing to steal. C) wrong: still grants read rights. D) wrong: worse than the default.'

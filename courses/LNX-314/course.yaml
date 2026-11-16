@@ -37,6 +37,10 @@ modules:
     title: 'Cluster setup: kube-bench, metadata protection'
     file: lessons/LNX-314-T01.md
     minutes: 55
+  - topic: LNX-314-T02
+    title: RBAC minimisation, API access
+    file: lessons/LNX-314-T02.md
+    minutes: 55
 labs:
 - id: metadata-guard
   topic: LNX-314-T01
@@ -49,8 +53,18 @@ labs:
   - nftables
   - curl
   - python3-yaml
+- id: rbac-minimiser
+  topic: LNX-314-T02
+  title: A minimal role for a deployment pipeline
+  env: C
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-314-T01
   topic: LNX-314-T01
   title: 'Quiz: Cluster setup: kube-bench, metadata protection'
   file: quizzes/LNX-314-T01.yaml
+- id: LNX-314-T02
+  topic: LNX-314-T02
+  title: 'Quiz: RBAC minimisation, API access'
+  file: quizzes/LNX-314-T02.yaml

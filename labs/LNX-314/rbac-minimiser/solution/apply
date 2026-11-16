@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > rbac.yaml <<'N'
+# SPDX-License-Identifier: MIT
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: web-deployer, namespace: shop}
+rules:
+  - apiGroups: [apps]
+    resources: [deployments]
+    resourceNames: [web]
+    verbs: [get, patch]
+  - apiGroups: [apps]
+    resources: [replicasets]
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [pods]
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [configmaps]
+    resourceNames: [app-config]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: web-deployer, namespace: shop}
+subjects:
+  - {kind: ServiceAccount, name: deployer, namespace: shop}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: web-deployer}
+N

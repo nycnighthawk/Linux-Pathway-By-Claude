@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+[ -f rbac.yaml ] || cat > rbac.yaml <<'N'
+# SPDX-License-Identifier: MIT
+# Starting point: the pipeline account is a cluster administrator. Replace this with the narrowest working grant.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: {name: pipeline-admin}
+subjects:
+  - {kind: ServiceAccount, name: deployer, namespace: shop}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: cluster-admin}
+N
