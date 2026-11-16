@@ -22,6 +22,7 @@ phases:
     - LNX-331-T02
     - LNX-331-T03
     - LNX-331-T04
+    - LNX-331-T05
   quizzes:
     state: in-progress
     units: 13
@@ -30,6 +31,7 @@ phases:
     - LNX-331-T02
     - LNX-331-T03
     - LNX-331-T04
+    - LNX-331-T05
   labs:
     state: in-progress
     units: 13
@@ -38,6 +40,7 @@ phases:
     - LNX-331-T02
     - LNX-331-T03
     - LNX-331-T04
+    - LNX-331-T05
   checks:
     state: todo
     units: 0
@@ -61,3 +64,6 @@ log:
 - '2026-11-16 lessons: LNX-331-T04'
 - '2026-11-16 quizzes: LNX-331-T04'
 - '2026-11-16 labs: LNX-331-T04'
+- '2026-11-16 lessons: LNX-331-T05'
+- '2026-11-16 quizzes: LNX-331-T05'
+- '2026-11-16 labs: LNX-331-T05'
