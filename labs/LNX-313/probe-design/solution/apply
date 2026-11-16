@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > pod.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: v1
+kind: Pod
+metadata: {name: slow}
+spec:
+  terminationGracePeriodSeconds: 30
+  containers:
+    - name: app
+      image: registry.example/slow:3
+      ports: [{containerPort: 8080}]
+      startupProbe:
+        httpGet: {path: /healthz, port: 8080}
+        periodSeconds: 5
+        failureThreshold: 30
+      readinessProbe:
+        httpGet: {path: /ready, port: 8080}
+        periodSeconds: 5
+        failureThreshold: 2
+        timeoutSeconds: 2
+      livenessProbe:
+        httpGet: {path: /live, port: 8080}
+        periodSeconds: 10
+        failureThreshold: 3
+        timeoutSeconds: 2
+      lifecycle:
+        preStop:
+          exec: {command: ["sh", "-c", "sleep 5"]}
+J
+printf 'max_start_s=150\nliveness_detect_s=30\n' > answer.txt

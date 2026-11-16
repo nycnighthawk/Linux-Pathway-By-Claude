@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > pod.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: v1
+kind: Pod
+metadata: {name: slow}
+spec:
+  containers:
+    - name: app
+      image: registry.example/slow:3
+      livenessProbe:
+        httpGet: {path: /ready, port: 8080}
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        failureThreshold: 1
+J
+printf 'max_start_s=0\nliveness_detect_s=0\n' > answer.txt

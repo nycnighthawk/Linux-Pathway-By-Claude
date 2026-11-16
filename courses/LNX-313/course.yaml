@@ -33,6 +33,10 @@ modules:
     title: Config, Secrets, SecurityContext, limits
     file: lessons/LNX-313-T02.md
     minutes: 60
+  - topic: LNX-313-T03
+    title: Probes, logs, kubectl debug
+    file: lessons/LNX-313-T03.md
+    minutes: 60
 labs:
 - id: pod-with-sidecar
   topic: LNX-313-T01
@@ -46,6 +50,12 @@ labs:
   env: C
   license: MIT
   minutes: 35
+- id: probe-design
+  topic: LNX-313-T03
+  title: Probes for a slow-starting service
+  env: C
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-313-T01
   topic: LNX-313-T01
@@ -55,3 +65,7 @@ quizzes:
   topic: LNX-313-T02
   title: 'Quiz: Config, Secrets, SecurityContext, limits'
   file: quizzes/LNX-313-T02.yaml
+- id: LNX-313-T03
+  topic: LNX-313-T03
+  title: 'Quiz: Probes, logs, kubectl debug'
+  file: quizzes/LNX-313-T03.yaml
