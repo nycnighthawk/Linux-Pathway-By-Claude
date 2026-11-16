@@ -1,0 +1,243 @@
+id: LNX-331
+title: Kernel Internals & Device Drivers
+summary: 'How the kernel is built from the inside: character, platform, PCI and network drivers, interrupt and locking rules,
+  memory allocators, a small filesystem, eBPF and Rust modules, cross-building and bring-up on arm64, and the method for finding
+  performance regressions. Labs use user-space simulations so every exercise runs in CI.'
+hours: 60
+coverage: full
+outcomes:
+- Write the file operations of a character driver and explain ioctl design
+- Match drivers to devices through the device model and device tree
+- Drive a PCI device through its registers, interrupts and DMA
+- Choose the right execution context for deferred work and apply the locking rules
+- Explain the page allocator, slab and DMA API and implement a buddy allocator
+- Describe what a filesystem implements for the VFS
+- Explain the NAPI contract and the eBPF verifier's job
+- Compare Rust and C driver bug classes
+- Cross-build and boot an arm64 kernel and plan a board bring-up
+- Locate a performance regression from two profiles
+modules:
+- id: drivers
+  title: Drivers and the device model
+  lessons:
+  - topic: LNX-331-T01
+    title: Character devices, file_operations, ioctl
+    file: lessons/LNX-331-T01.md
+    minutes: 60
+  - topic: LNX-331-T02
+    title: Device model, sysfs, platform drivers, device tree
+    file: lessons/LNX-331-T02.md
+    minutes: 55
+  - topic: LNX-331-T03
+    title: PCI driver for the QEMU 'edu' device
+    file: lessons/LNX-331-T03.md
+    minutes: 65
+- id: rules
+  title: Contexts, locking and memory
+  lessons:
+  - topic: LNX-331-T04
+    title: Interrupts, softirqs, workqueues, timers
+    file: lessons/LNX-331-T04.md
+    minutes: 50
+  - topic: LNX-331-T05
+    title: Spinlocks, mutexes, RCU, lockdep
+    file: lessons/LNX-331-T05.md
+    minutes: 70
+  - topic: LNX-331-T06
+    title: Page allocator, slab, vmalloc, DMA API
+    file: lessons/LNX-331-T06.md
+    minutes: 60
+- id: subsystems
+  title: Filesystems, networking, eBPF and Rust
+  lessons:
+  - topic: LNX-331-T07
+    title: 'VFS: write a simple filesystem'
+    file: lessons/LNX-331-T07.md
+    minutes: 65
+  - topic: LNX-331-T08
+    title: Network drivers and NAPI
+    file: lessons/LNX-331-T08.md
+    minutes: 55
+  - topic: LNX-331-T09
+    title: eBPF internals, sched_ext schedulers
+    file: lessons/LNX-331-T09.md
+    minutes: 65
+  - topic: LNX-331-T10
+    title: Rust for Linux modules
+    file: lessons/LNX-331-T10.md
+    minutes: 45
+- id: platforms
+  title: arm64, bring-up and performance
+  lessons:
+  - topic: LNX-331-T11
+    title: arm64 cross-build, boot on QEMU virt
+    file: lessons/LNX-331-T11.md
+    minutes: 50
+  - topic: LNX-331-T12
+    title: Bring-up on a real board
+    file: lessons/LNX-331-T12.md
+    minutes: 45
+  - topic: LNX-331-T13
+    title: Kernel performance regressions
+    file: lessons/LNX-331-T13.md
+    minutes: 45
+labs:
+- id: chardev-sim
+  topic: LNX-331-T01
+  title: A character driver's file operations in user space
+  env: C
+  license: GPL-2.0-only
+  minutes: 50
+  packages:
+  - gcc
+  - libc6-dev
+- id: dt-binding
+  topic: LNX-331-T02
+  title: Match drivers to device tree nodes
+  env: C
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - python3
+- id: edu-mmio
+  topic: LNX-331-T03
+  title: Drive the edu device registers in simulation
+  env: C
+  license: GPL-2.0-only
+  minutes: 50
+  packages:
+  - gcc
+  - libc6-dev
+- id: context-rules
+  topic: LNX-331-T04
+  title: What may run in which context
+  env: C
+  license: MIT
+  minutes: 35
+  packages:
+  - python3
+- id: mini-lockdep
+  topic: LNX-331-T05
+  title: Write a tiny lockdep
+  env: C
+  license: GPL-2.0-only
+  minutes: 55
+  packages:
+  - python3
+- id: buddy-sim
+  topic: LNX-331-T06
+  title: Write a buddy allocator
+  env: C
+  license: GPL-2.0-only
+  minutes: 55
+  packages:
+  - python3
+- id: tinyfs-reader
+  topic: LNX-331-T07
+  title: Read a filesystem image
+  env: C
+  license: GPL-2.0-only
+  minutes: 50
+  packages:
+  - python3
+- id: napi-sim
+  topic: LNX-331-T08
+  title: The NAPI contract in a simulated NIC
+  env: C
+  license: GPL-2.0-only
+  minutes: 45
+  packages:
+  - python3
+- id: mini-verifier
+  topic: LNX-331-T09
+  title: Write a toy eBPF verifier
+  env: C
+  license: GPL-2.0-only
+  minutes: 55
+  packages:
+  - python3
+- id: rust-bug-classes
+  topic: LNX-331-T10
+  title: Which bug class does Rust remove
+  env: C
+  license: MIT
+  minutes: 30
+  packages:
+  - python3
+- id: arm64-image
+  topic: LNX-331-T11
+  title: Read an arm64 kernel Image header
+  env: C
+  license: GPL-2.0-only
+  minutes: 35
+  packages:
+  - python3
+- id: board-bringup
+  topic: LNX-331-T12
+  title: A bring-up field report
+  env: H
+  license: MIT
+  minutes: 35
+  packages:
+  - python3
+- id: perf-regression
+  topic: LNX-331-T13
+  title: Find a performance regression in two profiles
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - python3
+quizzes:
+- id: LNX-331-T01
+  topic: LNX-331-T01
+  title: 'Quiz: Character devices, file_operations, ioctl'
+  file: quizzes/LNX-331-T01.yaml
+- id: LNX-331-T02
+  topic: LNX-331-T02
+  title: 'Quiz: Device model, sysfs, platform drivers, device tree'
+  file: quizzes/LNX-331-T02.yaml
+- id: LNX-331-T03
+  topic: LNX-331-T03
+  title: 'Quiz: PCI driver for the QEMU edu device'
+  file: quizzes/LNX-331-T03.yaml
+- id: LNX-331-T04
+  topic: LNX-331-T04
+  title: 'Quiz: Interrupts, softirqs, workqueues, timers'
+  file: quizzes/LNX-331-T04.yaml
+- id: LNX-331-T05
+  topic: LNX-331-T05
+  title: 'Quiz: Spinlocks, mutexes, RCU, lockdep'
+  file: quizzes/LNX-331-T05.yaml
+- id: LNX-331-T06
+  topic: LNX-331-T06
+  title: 'Quiz: Page allocator, slab, vmalloc, DMA API'
+  file: quizzes/LNX-331-T06.yaml
+- id: LNX-331-T07
+  topic: LNX-331-T07
+  title: 'Quiz: VFS: write a simple filesystem'
+  file: quizzes/LNX-331-T07.yaml
+- id: LNX-331-T08
+  topic: LNX-331-T08
+  title: 'Quiz: Network drivers and NAPI'
+  file: quizzes/LNX-331-T08.yaml
+- id: LNX-331-T09
+  topic: LNX-331-T09
+  title: 'Quiz: eBPF internals, sched_ext schedulers'
+  file: quizzes/LNX-331-T09.yaml
+- id: LNX-331-T10
+  topic: LNX-331-T10
+  title: 'Quiz: Rust for Linux modules'
+  file: quizzes/LNX-331-T10.yaml
+- id: LNX-331-T11
+  topic: LNX-331-T11
+  title: 'Quiz: arm64 cross-build, boot on QEMU virt'
+  file: quizzes/LNX-331-T11.yaml
+- id: LNX-331-T12
+  topic: LNX-331-T12
+  title: 'Quiz: Bring-up on a real board'
+  file: quizzes/LNX-331-T12.yaml
+- id: LNX-331-T13
+  topic: LNX-331-T13
+  title: 'Quiz: Kernel performance regressions'
+  file: quizzes/LNX-331-T13.yaml
