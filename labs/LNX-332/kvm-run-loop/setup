@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > vmm.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A minimal VMM run loop over a scripted guest.
+
+`guest` is a list of exits the guest will cause, in order, like the records
+KVM_RUN would leave in struct kvm_run:
+
+  ("io_out", port, byte)      KVM_EXIT_IO, direction out
+  ("io_in", port)             KVM_EXIT_IO, direction in
+  ("mmio_write", addr, val)   KVM_EXIT_MMIO
+  ("hlt",)                    KVM_EXIT_HLT
+  ("shutdown",)               KVM_EXIT_SHUTDOWN
+  ("fail_entry", code)        KVM_EXIT_FAIL_ENTRY
+  ("internal_error",)         KVM_EXIT_INTERNAL_ERROR
+  anything else               an exit this VMM does not know
+
+Rules:
+  * io_out to port 0x3f8 appends chr(byte) to the serial output; other
+    output ports are ignored.
+  * io_in from port 0x3fd (line status) returns 0x20; other ports return 0xff.
+    Collect every value returned, in order.
+  * mmio_write to address 0xd0000000 sets the VM's exit code to val and ends the
+    run with status "exit"; a write to any other address is ignored.
+  * hlt ends the run with status "halted"; shutdown with "shutdown".
+  * fail_entry, internal_error and unknown exits end the run with "error".
+  * Nothing after the run has ended is processed.
+Return (serial_output, status, in_values, exit_code); exit_code is None unless
+the status is "exit". If the script ends with no terminal exit, status is
+"running".
+"""
+
+SERIAL = 0x3F8
+LSR = 0x3FD
+EXIT_ADDR = 0xD0000000
+
+
+def run_vm(guest):
+    out, ins = "", []
+    # TODO: loop over the exits and apply the rules above.
+    return out, "running", ins, None
+N
