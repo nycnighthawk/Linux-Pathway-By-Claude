@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from memmap import ram_regions, overlaps, GIB
+M = 1 << 20
+cases = [
+ ("no RAM", ram_regions(0) == []),
+ ("512 MiB", ram_regions(512 * M) == [(0, 512 * M)]),
+ ("exactly 3 GiB", ram_regions(3 * GIB) == [(0, 3 * GIB)]),
+ ("4 GiB splits around the hole", ram_regions(4 * GIB) == [(0, 3 * GIB), (4 * GIB, GIB)]),
+ ("8 GiB", ram_regions(8 * GIB) == [(0, 3 * GIB), (4 * GIB, 5 * GIB)]),
+ ("no overlap, touching", overlaps([("ram", 0, 0x1000), ("virtio", 0x1000, 0x200)]) == []),
+ ("one overlap", overlaps([("ram", 0, 0x2000), ("virtio", 0x1000, 0x200)]) == [("ram", "virtio")]),
+ ("order by start address", overlaps([("b", 0x500, 0x100), ("a", 0x0, 0x600)]) == [("a", "b")]),
+ ("three regions two overlaps", overlaps([("a", 0, 10), ("b", 5, 10), ("c", 12, 4)]) == [("a", "b"), ("b", "c")]),
+ ("device window inside the hole is fine", overlaps([("ram", 0, 3 * GIB), ("dev", 3 * GIB, 0x1000)]) == []),
+]
+bad = 0
+for n, ok in cases:
+    print(("ok:   " if ok else "FAIL: ") + n)
+    bad |= (not ok)
+sys.exit(bad)
+N
