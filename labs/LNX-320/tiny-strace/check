@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f tstrace.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+cat > helper.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <fcntl.h>
+#include <string.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+int main(void)
+{
+    syscall(SYS_write, 1, "from helper\n", 12);
+    syscall(SYS_getpid);
+    syscall(SYS_openat, AT_FDCWD, "/nonexistent/file", O_RDONLY);
+    syscall(SYS_exit_group, 3);
+    return 0;
+}
+N
+gcc -static -Wall -o helper helper.c 2>cc.log || { fail "helper does not compile"; exit 1; }
+gcc -Wall -o tstrace tstrace.c 2>cc.log || { fail "does not compile: $(head -3 cc.log)"; exit 1; }
+ok "compiles"
+timeout 20 ./tstrace ./helper >out.txt 2>err.txt; rc=$?
+if [ $rc -eq 3 ]; then ok "exit status of the traced program (3) is returned"; else fail "expected exit status 3, got $rc"; fi
+grep -qx 'from helper' out.txt && ok "traced program output still appears" || fail "the helper's output is missing"
+grep -v '^$' err.txt > lines.txt
+sed -n '1p' lines.txt | grep -qx 'write = 12' && ok "write = 12" || fail "first line must be 'write = 12' (saw: $(sed -n 1p lines.txt))"
+sed -n '2p' lines.txt | grep -Eqx 'getpid = [0-9]+' && ok "getpid = <pid>" || fail "second line must be 'getpid = <pid>' (saw: $(sed -n 2p lines.txt))"
+sed -n '3p' lines.txt | grep -qx 'openat = -1 ENOENT' && ok "openat = -1 ENOENT" || fail "third line must be 'openat = -1 ENOENT' (saw: $(sed -n 3p lines.txt))"
+sed -n '4p' lines.txt | grep -qx 'exit_group = ?' && ok "exit_group = ?" || fail "fourth line must be 'exit_group = ?' (saw: $(sed -n 4p lines.txt))"
+[ "$(wc -l < lines.txt)" = 4 ] && ok "exactly four lines" || fail "expected exactly 4 lines on stderr, got $(wc -l < lines.txt)"
+exit $bad

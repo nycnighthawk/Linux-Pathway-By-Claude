@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f tstrace
+cat > tstrace.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <linux/ptrace.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/syscall.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+/* The kernel header and glibc'"'"'s <sys/ptrace.h> clash, so this lab uses the raw call:
+ * pt(PTRACE_SYSCALL, pid, 0, sig) behaves like ptrace(PTRACE_SYSCALL, pid, 0, sig). */
+static long pt(long req, pid_t pid, long addr, long data)
+{
+    return syscall(SYS_ptrace, req, pid, addr, data);
+}
+
+/* Returns the name of a call we print, or NULL for everything else. */
+static const char *name_of(long nr)
+{
+    switch (nr) {
+    case SYS_write: return "write";
+    case SYS_getpid: return "getpid";
+    case SYS_openat: return "openat";
+    case SYS_close: return "close";
+    case SYS_exit_group: return "exit_group";
+    case SYS_read: return "read";
+    default: return NULL;
+    }
+}
+
+/* Prints "name = value", or "name = -1 ERRNO" when is_error is set. */
+static void print_result(const char *name, long long val, int is_error)
+{
+    if (is_error)
+        fprintf(stderr, "%s = -1 %s\n", name, strerrorname_np((int)-val));
+    else
+        fprintf(stderr, "%s = %lld\n", name, val);
+}
+
+/* TODO: run argv under ptrace, print the calls, return the exit status of the child. */
+static int run(char **argv)
+{
+    (void)argv;
+    return 1;
+}
+
+int main(int argc, char **argv)
+{
+    if (argc < 2)
+        return 2;
+    return run(argv + 1);
+}
+N
