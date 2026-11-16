@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > virtq.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""The device side of a split virtqueue.
+
+desc:   list of dicts {"len": int, "flags": int, "next": int}
+        flags: NEXT (1) means the chain continues at "next",
+               WRITE (2) means the device writes into this buffer.
+avail:  list (ring) of head indices; its length is the queue size.
+avail_idx: free-running 16-bit counter of entries the driver has published.
+last_avail: the counter value the device has consumed up to.
+
+process() consumes entries last_avail .. avail_idx - 1 (mod 65536), the entry
+for counter value n sits at avail[n % len(avail)].  For each head follow the
+chain; "readable" is the total length of buffers without WRITE, "writable"
+the total length of buffers with WRITE.  Call handler(readable, writable)
+which returns how many bytes the device wants to write; the used length is
+min(that, writable).  Append (head, used_len) to the used list.
+
+A chain is malformed if "next" is outside the table or the chain has more
+descriptors than the table has entries (a loop).  On a malformed chain stop at
+once and report broken=True; entries already processed stay in `used`, and
+last_avail is advanced only past the entries completed.
+Return (used, last_avail, broken).
+"""
+
+NEXT = 1
+WRITE = 2
+
+
+def process(desc, avail, avail_idx, last_avail, handler):
+    used = []
+    # TODO
+    return used, last_avail, False
+N

@@ -1,0 +1,47 @@
+title: 'Quiz: Virtio'
+questions:
+- id: areas
+  prompt: Which three areas make up a split virtqueue?
+  choices:
+  - Descriptor table, available ring, used ring
+  - Header, body, footer
+  - Read queue, write queue, error queue
+  - Page table, TLB, cache
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: write
+  prompt: What does the WRITE flag on a descriptor mean?
+  choices:
+  - The driver writes into it
+  - The device writes into the buffer
+  - The buffer is encrypted
+  - The buffer is read-only for everyone
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: loop
+  prompt: A descriptor chain loops back to its first entry. What must the back end do?
+  choices:
+  - Follow it forever
+  - Stop after at most the table size and treat the device as broken
+  - Ignore the flags
+  - Reboot the host
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: supp
+  prompt: What does notification suppression achieve?
+  choices:
+  - Fewer exits and interrupts under load
+  - Larger packets
+  - Encryption
+  - Faster disks
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: trust
+  prompt: Why must a virtio back end validate descriptor values?
+  choices:
+  - The guest controls them and may be hostile
+  - The values are random
+  - The kernel forbids reading them
+  - They are always valid
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
