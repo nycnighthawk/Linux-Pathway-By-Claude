@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural grading: every key present and of the right kind. The values come from the board you worked on.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $*"; bad=1; }
+ok() { echo "ok:   $*"; }
+get() { grep -E "^$1=" report.txt 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+v=$(get board); case "$v" in ''|'?') fail "board: the board name or revision you used" ;; *) ok "board" ;; esac
+v=$(get soc); case "$v" in ''|'?') fail "soc: the SoC part name" ;; *) ok "soc" ;; esac
+case "$(get boot_source)" in sd|emmc|spi-nor|usb|network|nand) ok "boot_source" ;; *) fail "boot_source must be one of sd, emmc, spi-nor, usb, network, nand (where the boot ROM found the next stage)" ;; esac
+case "$(get uart_settings)" in [0-9]*[NEOneo][12]) ok "uart_settings" ;; *) fail "uart_settings must look like 115200-8N1 (baud, data bits, parity, stop bits)" ;; esac
+case "$(get bootloader)" in u-boot|barebox|edk2|grub|other) ok "bootloader" ;; *) fail "bootloader must be u-boot, barebox, edk2, grub or other" ;; esac
+case "$(get dtb_file)" in *.dtb) ok "dtb_file" ;; *) fail "dtb_file must end in .dtb (the blob the bootloader passed to the kernel)" ;; esac
+case "$(get kernel_console)" in tty*|ttyS*|ttyAMA*|ttymxc*|ttyUSB*|hvc*) ok "kernel_console" ;; *) fail "kernel_console must look like ttyS0 or ttyAMA0 (the console= argument you used)" ;; esac
+case "$(get iteration_method)" in tftp-nfsroot|tftp-initramfs|sd-card|usb-gadget|jtag|other) ok "iteration_method" ;; *) fail "iteration_method must be tftp-nfsroot, tftp-initramfs, sd-card, usb-gadget, jtag or other" ;; esac
+case "$(get first_failure_stage)" in rom|spl|bootloader|kernel-early|kernel-late|userspace|none) ok "first_failure_stage" ;; *) fail "first_failure_stage must be rom, spl, bootloader, kernel-early, kernel-late, userspace or none (where it first failed)" ;; esac
+exit $bad

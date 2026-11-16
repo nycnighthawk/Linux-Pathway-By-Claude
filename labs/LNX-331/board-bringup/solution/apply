@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+board=example-board-rev-b
+soc=example-soc-a53
+boot_source=sd
+uart_settings=115200-8N1
+bootloader=u-boot
+dtb_file=example-board.dtb
+kernel_console=ttyS0
+iteration_method=tftp-nfsroot
+first_failure_stage=kernel-early
+N
