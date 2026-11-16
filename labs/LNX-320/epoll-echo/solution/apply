@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("echo.c").read()
+old = s[s.index("/* TODO: use epoll."):s.index("int main")]
+new = '''static int run_loop(int lfd)
+{
+    int ep = epoll_create1(0);
+    struct epoll_event ev = {.events = EPOLLIN | EPOLLET, .data.fd = lfd}, out[64];
+    if (ep < 0 || epoll_ctl(ep, EPOLL_CTL_ADD, lfd, &ev) < 0)
+        return 1;
+    for (;;) {
+        int n = epoll_wait(ep, out, 64, -1);
+        if (n < 0) {
+            if (errno == EINTR)
+                continue;
+            return 1;
+        }
+        for (int i = 0; i < n; i++) {
+            int fd = out[i].data.fd;
+            if (fd == lfd) {
+                for (;;) {
+                    int c = accept4(lfd, NULL, NULL, SOCK_NONBLOCK);
+                    if (c < 0)
+                        break;
+                    struct epoll_event ce = {.events = EPOLLIN | EPOLLET, .data.fd = c};
+                    epoll_ctl(ep, EPOLL_CTL_ADD, c, &ce);
+                }
+            } else if (handle_client(fd)) {
+                epoll_ctl(ep, EPOLL_CTL_DEL, fd, NULL);
+                close(fd);
+            }
+        }
+    }
+}
+
+'''
+open("echo.c", "w").write(s.replace(old, new))
+N

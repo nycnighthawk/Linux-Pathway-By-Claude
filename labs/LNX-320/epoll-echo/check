@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f echo.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+gcc -Wall -O1 -o echo echo.c 2>cc.log || { fail "does not compile: $(head -3 cc.log)"; exit 1; }
+ok "compiles"
+grep -q epoll_create echo.c && grep -q epoll_wait echo.c && grep -q EPOLLET echo.c && ok "uses epoll with EPOLLET" || fail "run_loop must use epoll_create1, epoll_wait and EPOLLET"
+port=$((20000 + $$ % 20000))
+./echo $port >server.log 2>&1 &
+pid=$!
+trap 'kill $pid 2>/dev/null' EXIT
+for i in $(seq 50); do (exec 3<>/dev/tcp/127.0.0.1/$port) 2>/dev/null && break; sleep 0.1; done
+if python3 - $port <<'N'
+import socket, sys, threading, os
+port = int(sys.argv[1])
+idle = []
+for _ in range(200):
+    s = socket.create_connection(("127.0.0.1", port), timeout=5)
+    idle.append(s)
+errs = []
+def work(i):
+    try:
+        s = socket.create_connection(("127.0.0.1", port), timeout=10)
+        data = os.urandom(300000)
+        def send():
+            s.sendall(data)
+            s.shutdown(socket.SHUT_WR)
+        t = threading.Thread(target=send); t.start()
+        got = b""
+        while len(got) < len(data):
+            c = s.recv(65536)
+            if not c:
+                break
+            got += c
+        t.join()
+        if got != data:
+            errs.append(i)
+    except Exception as e:
+        errs.append((i, repr(e)))
+ts = [threading.Thread(target=work, args=(i,)) for i in range(20)]
+[t.start() for t in ts]; [t.join(30) for t in ts]
+sys.exit(1 if errs else 0)
+N
+then ok "200 idle plus 20 concurrent echoes of 300 kB"; else fail "echo test failed (is the server serving all clients in one loop?)"; fi
+exit $bad

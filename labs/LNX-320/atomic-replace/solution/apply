@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > replace.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <fcntl.h>
+#include <libgen.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+int replace_file(const char *path, const char *data, size_t len)
+{
+    char *dup1 = strdup(path), *dup2 = strdup(path);
+    char *dir = dirname(dup1);
+    char tmp[4096];
+    snprintf(tmp, sizeof tmp, "%s/.tmp.XXXXXX", dir);
+    int fd = mkstemp(tmp);
+    int rc = -1, e = 0;
+    if (fd < 0) { e = errno; goto out; }
+    const char *p = data;
+    size_t left = len;
+    while (left) {
+        ssize_t w = write(fd, p, left);
+        if (w < 0) { if (errno == EINTR) continue; e = errno; goto fail; }
+        p += w; left -= (size_t)w;
+    }
+    if (fchmod(fd, 0644) < 0 || fsync(fd) < 0) { e = errno; goto fail; }
+    if (close(fd) < 0) { fd = -1; e = errno; goto fail; }
+    fd = -1;
+    if (rename(tmp, path) < 0) { e = errno; goto fail; }
+    int dfd = open(dir, O_RDONLY | O_DIRECTORY);
+    if (dfd < 0) { e = errno; goto out; }
+    if (fsync(dfd) < 0) e = errno; else rc = 0;
+    close(dfd);
+    goto out;
+fail:
+    if (fd >= 0) close(fd);
+    unlink(tmp);
+out:
+    free(dup1); free(dup2);
+    if (rc < 0) errno = e;
+    return rc;
+}
+N
