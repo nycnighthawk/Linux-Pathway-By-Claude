@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import json, re, sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def g(d, *k):
+    for x in k:
+        if isinstance(x, int): d = d[x] if isinstance(d, list) and len(d) > x else None
+        else: d = d.get(x) if isinstance(d, dict) else None
+    return d
+try:
+    s = yaml.safe_load(open("skaffold.yaml"))
+    chk(s.get("apiVersion") == "skaffold/v4beta11" and s.get("kind") == "Config", "skaffold Config v4beta11")
+    a = g(s, "build", "artifacts", 0) or {}
+    chk(a.get("image") == "registry.example/api" and a.get("context") == ".", "artifact registry.example/api, context .")
+    chk(g(a, "docker", "dockerfile") == "Dockerfile", "Docker build with Dockerfile")
+    man = (g(a, "sync", "manual") or [])
+    chk(any(m.get("src") == "src/**/*.py" and m.get("dest") == "/app/src" for m in man), "sync src/**/*.py to /app/src")
+    chk(g(s, "manifests", "kustomize", "paths") == ["k8s/overlays/dev"], "Kustomize path k8s/overlays/dev")
+    chk("kubectl" in (s.get("deploy") or {}), "kubectl deployer")
+    chk(any(p.get("resourceType") == "service" and p.get("resourceName") == "api" and p.get("port") == 8080 and p.get("localPort") == 8080 for p in s.get("portForward", [])), "port forward service api 8080")
+    t = open("Tiltfile").read()
+    chk(re.search(r"docker_build\(\s*'registry\.example/api'\s*,\s*'\.'", t) is not None, "docker_build of registry.example/api")
+    chk("sync('./src', '/app/src')" in t, "live update sync")
+    chk(re.search(r"run\(\s*'pip install -r requirements\.txt'\s*,\s*trigger=\['\./requirements\.txt'\]\s*\)", t) is not None, "live update run on requirements change")
+    chk("k8s_yaml(kustomize('k8s/overlays/dev'))" in t, "k8s_yaml from Kustomize")
+    chk("k8s_resource('api', port_forwards=8080)" in t, "port forward")
+    chk(re.search(r"local_resource\(\s*'unit-tests'\s*,\s*'pytest -q'\s*,\s*deps=\['\./src'\]\s*\)", t) is not None, "local resource unit-tests")
+    raw = open(".devcontainer/devcontainer.json").read()
+    raw = "\n".join(l for l in raw.splitlines() if not l.strip().startswith("//"))
+    d = json.loads(raw)
+    chk(d.get("image") == "mcr.microsoft.com/devcontainers/python:3.12", "dev container image")
+    f = d.get("features", {})
+    chk("ghcr.io/devcontainers/features/docker-outside-of-docker:1" in f and "ghcr.io/devcontainers/features/kubectl-helm-minikube:1" in f, "features docker-outside-of-docker and kubectl-helm-minikube")
+    chk(d.get("forwardPorts") == [8080] and d.get("postCreateCommand") == "pip install -r requirements.txt" and d.get("remoteUser") == "vscode", "ports, post-create command and user")
+    chk("ms-python.python" in (g(d, "customizations", "vscode", "extensions") or []), "VS Code Python extension")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY

@@ -70,6 +70,10 @@ modules:
     title: Prometheus metrics, OpenTelemetry
     file: lessons/LNX-313-T09.md
     minutes: 55
+  - topic: LNX-313-T10
+    title: 'Inner loop: Tilt/Skaffold, devcontainers'
+    file: lessons/LNX-313-T10.md
+    minutes: 40
 labs:
 - id: pod-with-sidecar
   topic: LNX-313-T01
@@ -125,6 +129,12 @@ labs:
   env: C
   license: MIT
   minutes: 35
+- id: inner-loop-files
+  topic: LNX-313-T10
+  title: The three files of a fast inner loop
+  env: C
+  license: MIT
+  minutes: 25
 quizzes:
 - id: LNX-313-T01
   topic: LNX-313-T01
@@ -162,3 +172,7 @@ quizzes:
   topic: LNX-313-T09
   title: 'Quiz: Prometheus metrics, OpenTelemetry'
   file: quizzes/LNX-313-T09.yaml
+- id: LNX-313-T10
+  topic: LNX-313-T10
+  title: 'Quiz: Inner loop: Tilt/Skaffold, devcontainers'
+  file: quizzes/LNX-313-T10.yaml

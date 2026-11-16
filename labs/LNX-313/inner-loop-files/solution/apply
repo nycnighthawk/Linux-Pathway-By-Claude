@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p .devcontainer
+cat > skaffold.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: skaffold/v4beta11
+kind: Config
+build:
+  artifacts:
+    - image: registry.example/api
+      context: .
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.py"
+            dest: /app/src
+manifests:
+  kustomize:
+    paths: [k8s/overlays/dev]
+deploy:
+  kubectl: {}
+portForward:
+  - resourceType: service
+    resourceName: api
+    port: 8080
+    localPort: 8080
+J
+cat > Tiltfile <<'J'
+# SPDX-License-Identifier: MIT
+docker_build('registry.example/api', '.',
+  live_update=[
+    sync('./src', '/app/src'),
+    run('pip install -r requirements.txt', trigger=['./requirements.txt']),
+  ])
+k8s_yaml(kustomize('k8s/overlays/dev'))
+k8s_resource('api', port_forwards=8080)
+local_resource('unit-tests', 'pytest -q', deps=['./src'])
+J
+cat > .devcontainer/devcontainer.json <<'J'
+{
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
+  },
+  "forwardPorts": [8080],
+  "postCreateCommand": "pip install -r requirements.txt",
+  "customizations": {"vscode": {"extensions": ["ms-python.python"]}},
+  "remoteUser": "vscode"
+}
+J
