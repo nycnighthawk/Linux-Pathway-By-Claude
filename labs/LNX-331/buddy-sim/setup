@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > buddy.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A buddy page allocator for a zone of 64 pages (orders 0 to 6)."""
+MAX_ORDER = 6
+
+
+class Zone:
+    def __init__(self):
+        # free[o] is the set of start page numbers of free blocks of 2**o pages
+        self.free = {o: set() for o in range(MAX_ORDER + 1)}
+        self.free[MAX_ORDER].add(0)          # the whole zone is one free block
+
+    def alloc(self, order):
+        """Return the first page number of a block of 2**order pages, or None.
+        Take the smallest free block that is big enough (lowest page number
+        first). While it is larger than requested, split it: the lower half
+        is kept, the upper half (the buddy) goes onto the free list one order
+        down."""
+        # TODO
+        return None
+
+    def free_block(self, pfn, order):
+        """Return a block. While its buddy (pfn ^ (1 << order)) is also free
+        at the same order, merge them into one block of the next order."""
+        # TODO
+        pass
+
+    def snapshot(self):
+        return {o: sorted(s) for o, s in self.free.items() if s}
+N

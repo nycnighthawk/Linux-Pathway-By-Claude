@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from buddy import Zone, MAX_ORDER
+
+class Ref:
+    def __init__(self):
+        self.f = {o: set() for o in range(MAX_ORDER + 1)}; self.f[MAX_ORDER].add(0)
+    def alloc(self, order):
+        for o in range(order, MAX_ORDER + 1):
+            if self.f[o]:
+                p = min(self.f[o]); self.f[o].remove(p)
+                while o > order:
+                    o -= 1; self.f[o].add(p + (1 << o))
+                return p
+        return None
+    def free(self, p, order):
+        while order < MAX_ORDER:
+            b = p ^ (1 << order)
+            if b in self.f[order]:
+                self.f[order].remove(b); p = min(p, b); order += 1
+            else: break
+        self.f[order].add(p)
+    def snap(self): return {o: sorted(s) for o, s in self.f.items() if s}
+
+script = [("a", 0), ("a", 0), ("a", 3), ("a", 1), ("f", 0), ("a", 2), ("f", 1), ("f", 2), ("a", 6), ("a", 4),
+          ("a", 5), ("f", 3), ("f", 0), ("a", 3), ("a", 6), ("f", 4)]
+z, r = Zone(), Ref()
+blocks = []
+bad = 0
+for i, (op, arg) in enumerate(script):
+    if op == "a":
+        pz, pr = z.alloc(arg), r.alloc(arg)
+        if pz != pr: print("FAIL: step %d alloc(order %d) returned %s, expected %s" % (i, arg, pz, pr)); bad = 1
+        blocks.append((pr, arg) if pr is not None else None)
+    else:
+        b = blocks[arg]
+        if b is not None:
+            z.free_block(*b); r.free(*b)
+    if z.snapshot() != r.snap():
+        print("FAIL: step %d free lists differ:\n   yours:    %s\n   expected: %s" % (i, z.snapshot(), r.snap())); bad = 1; break
+if not bad: print("ok:   all %d steps match the expected buddy behaviour" % len(script))
+# freeing everything must give back one order-6 block
+for b in blocks:
+    if b is not None:
+        try: z.free_block(*b); r.free(*b)
+        except Exception: pass
+sys.exit(bad)
+N
