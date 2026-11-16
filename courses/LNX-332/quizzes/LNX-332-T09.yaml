@@ -1,0 +1,47 @@
+title: 'Quiz: Interrupt and timer virtualization'
+questions:
+- id: posted
+  prompt: What does a posted interrupt allow?
+  choices:
+  - Delivering an interrupt to a running vCPU without a VM exit
+  - Sending email
+  - Disabling the timer
+  - Encrypting interrupts
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: msi
+  prompt: In an x86 MSI message, what does the address select?
+  choices:
+  - The vector
+  - The destination CPU (and mode), with a fixed 0xFEE prefix
+  - The device name
+  - The priority class only
+  answer: [1]
+  explain: 'A) wrong: the data holds the vector. B) correct. C) wrong. D) wrong.'
+- id: irqfd
+  prompt: What does an irqfd do?
+  choices:
+  - Turns a write to an eventfd into a guest interrupt on a routed GSI
+  - Reads a disk
+  - Creates a vCPU
+  - Allocates memory
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: apicv
+  prompt: Which exits does APICv mainly remove?
+  choices:
+  - Page faults
+  - Many APIC register accesses, EOIs and interrupt delivery to running vCPUs
+  - Disk requests
+  - Network packets
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: drop
+  prompt: After a host update, MSR_WRITE and EXTERNAL_INTERRUPT exits jump. What do you check?
+  choices:
+  - Whether APICv or AVIC is still enabled for the module
+  - The font size
+  - The editor
+  - The shell
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

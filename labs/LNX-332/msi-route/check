@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from msi import encode, decode
+def raises(f, *a, **k):
+    try:
+        f(*a, **k)
+    except ValueError:
+        return True
+    return False
+res = []
+res.append(("vector 0x41 to CPU 3, edge", encode(3, 0x41) == (0xFEE03000, 0x41)))
+res.append(("level-triggered sets bits 14 and 15", encode(0, 0x30, trigger=1) == (0xFEE00000, 0x30 | 0xC000)))
+res.append(("lowest priority, logical, hint", encode(0xFF, 0x80, delivery_mode=1, dest_mode=1, rh=1) == (0xFEEFF00C, 0x180)))
+res.append(("dest id 256 rejected", raises(encode, 256, 0x40)))
+res.append(("vector 0x0f rejected for fixed delivery", raises(encode, 1, 0x0F)))
+res.append(("vector 0x0f ok for NMI delivery (4)", encode(1, 0x0F, delivery_mode=4) == (0xFEE01000, 0x40F)))
+d = decode(0xFEEFF00C, 0x180)
+res.append(("decode lowest-priority message", d == {"dest_id": 255, "vector": 0x80, "delivery_mode": 1, "trigger": 0, "dest_mode": 1, "rh": 1}))
+res.append(("decode level message", decode(0xFEE00000, 0xC030)["trigger"] == 1))
+res.append(("decode rejects other addresses", raises(decode, 0xFED00000, 0x41)))
+a, dd = encode(77, 0xE0, trigger=1)
+res.append(("round trip", decode(a, dd) == {"dest_id": 77, "vector": 0xE0, "delivery_mode": 0, "trigger": 1, "dest_mode": 0, "rh": 0}))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n)
+    bad |= (not ok)
+sys.exit(bad)
+N
