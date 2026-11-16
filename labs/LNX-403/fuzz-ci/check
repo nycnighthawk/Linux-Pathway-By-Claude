@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys, yaml
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+try:
+    import fuzz, target
+    seeds = [b"\x03abc" + bytes([(97 + 98 + 99) % 256]), b"\x00\x00"]
+    found = fuzz.fuzz(target.parse, seeds, 20000, 1)
+    t("fuzz returns the crash list", isinstance(found, list))
+    names = [n for n, _ in found]
+    t("finds the planted IndexError", "IndexError" in names)
+    t("ValueError is not reported as a crash", "ValueError" not in names)
+    t("one entry per exception type", len(names) == len(set(names)))
+    again = fuzz.fuzz(target.parse, seeds, 20000, 1)
+    t("deterministic for the same seed", again == found)
+    crash = [d for n, d in found if n == "IndexError"]
+    if crash:
+        m = fuzz.minimize(target.parse, crash[0], "IndexError")
+        try: target.parse(m); still = False
+        except IndexError: still = True
+        except Exception: still = False
+        t("minimised input still crashes", still)
+        t("minimised input is not longer than the original", len(m) <= len(crash[0]))
+        t("minimised input is short (12 bytes or fewer)", len(m) <= 12)
+except NotImplementedError:
+    t("fuzz and minimize are implemented", False)
+except Exception as x:
+    t("fuzz module runs (%s: %s)" % (type(x).__name__, x), False)
+try:
+    ci = yaml.safe_load(open("ci.yml"))
+    steps = [s for j in ci["jobs"].values() for s in j["steps"]]
+    runs = " ".join(s.get("run", "") for s in steps)
+    t("CI builds with AddressSanitizer and UndefinedBehaviorSanitizer", "-fsanitize=address" in runs.replace(",", " -fsanitize=") or "fsanitize=address" in runs)
+    t("CI builds with coverage-guided fuzzing instrumentation", "fuzzer" in runs)
+    t("the fuzz run is time-boxed", "-max_total_time=" in runs)
+    t("the fuzz run is not allowed to fail silently", "|| true" not in runs)
+    t("crashes are uploaded as an artifact", any("upload-artifact" in s.get("uses", "") for s in steps))
+    t("past crashes are replayed (a corpus or crashes directory is run)", "crashes" in runs or "corpus" in runs)
+except Exception as x:
+    t("ci.yml is valid (%s)" % x, False)
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

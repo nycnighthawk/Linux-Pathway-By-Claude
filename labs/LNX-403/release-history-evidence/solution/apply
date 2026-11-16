@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+weeks_observed=6
+releases=3
+signed_releases=3
+changelog_entries=14
+issues_opened=7
+issues_closed=5
+median_first_response_hours=18
+regressions=1
+security_reports=0
+security_policy_published=yes
+docs_changes_from_issues=3
+upgrade_path_tested=yes
+N

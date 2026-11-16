@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > fuzz.py <<'N'
+# SPDX-License-Identifier: MIT
+import random
+
+def _mutate(rng, pool):
+    d = bytearray(rng.choice(pool))
+    k = rng.randrange(5)
+    if k == 0 and d:
+        d[rng.randrange(len(d))] = rng.randrange(256)
+    elif k == 1:
+        d.insert(rng.randrange(len(d) + 1), rng.choice([0, 1, 8, 9, 0xfe, 0xff, rng.randrange(256)]))
+    elif k == 2 and len(d) > 1:
+        del d[rng.randrange(len(d))]
+    elif k == 3:
+        o = rng.choice(pool)
+        i = rng.randrange(len(d) + 1)
+        d = d[:i] + bytearray(o[rng.randrange(len(o) + 1):])
+    else:
+        d = bytearray([rng.randrange(256)]) + d
+    return bytes(d[:64])
+
+def fuzz(target, seeds, iterations, seed):
+    rng = random.Random(seed)
+    pool = list(seeds)
+    found = {}
+    for _ in range(iterations):
+        data = _mutate(rng, pool)
+        try:
+            target(data)
+        except ValueError:
+            continue
+        except Exception as e:
+            n = type(e).__name__
+            if n not in found:
+                found[n] = data
+                pool.append(data)
+            elif len(data) < len(found[n]):
+                found[n] = data
+    return sorted(found.items())
+
+def minimize(target, data, exc_name):
+    def crashes(d):
+        try:
+            target(d)
+        except Exception as e:
+            return type(e).__name__ == exc_name
+        return False
+    changed = True
+    while changed:
+        changed = False
+        for i in range(len(data)):
+            cand = data[:i] + data[i + 1:]
+            if crashes(cand):
+                data, changed = cand, True
+                break
+    return data
+N
+cat > ci.yml <<'N'
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+      - run: cmake --build build
+      - run: ctest --test-dir build --output-on-failure
+      - run: ./build/fuzz_parser tests/crashes/ corpus/ -runs=0
+  fuzz:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake -B build -DCMAKE_C_COMPILER=clang -DCMAKE_C_FLAGS="-fsanitize=address,undefined,fuzzer-no-link"
+      - run: cmake --build build
+      - run: ./build/fuzz_parser corpus/ -max_total_time=300 -artifact_prefix=crash-
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: crashes
+          path: crash-*
+N

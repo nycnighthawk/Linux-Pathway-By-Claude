@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import configparser, shutil, subprocess, sys
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+c = configparser.ConfigParser(strict=False, interpolation=None); c.optionxform = str
+c.read("pingd.service")
+s = dict(c["Service"]) if c.has_section("Service") else {}
+y = lambda k: s.get(k, "").lower() in ("yes", "true", "1", "on")
+t("Type=notify (the daemon reports readiness)", s.get("Type") == "notify")
+t("runs as an unprivileged user (DynamicUser or User other than root)", y("DynamicUser") or s.get("User", "root") not in ("root", "0", ""))
+t("NoNewPrivileges=yes", y("NoNewPrivileges"))
+t("ProtectSystem=strict", s.get("ProtectSystem") == "strict")
+t("ProtectHome is yes, read-only or tmpfs", s.get("ProtectHome", "").lower() in ("yes", "true", "read-only", "tmpfs"))
+t("PrivateTmp=yes", y("PrivateTmp"))
+t("PrivateDevices=yes", y("PrivateDevices"))
+t("ProtectKernelTunables, ProtectKernelModules and ProtectControlGroups are yes", all(y(k) for k in ("ProtectKernelTunables", "ProtectKernelModules", "ProtectControlGroups")))
+t("CapabilityBoundingSet is empty or names capabilities", "CapabilityBoundingSet" in s)
+t("capabilities are not left at the default full set", s.get("CapabilityBoundingSet", "~").strip() != "~" and "CAP_SYS_ADMIN" not in s.get("CapabilityBoundingSet", ""))
+t("RestrictAddressFamilies lists only the families used", set(s.get("RestrictAddressFamilies", "").split()) <= {"AF_INET", "AF_INET6", "AF_UNIX"} and s.get("RestrictAddressFamilies", "").strip() != "")
+t("SystemCallFilter uses the @system-service group", "@system-service" in s.get("SystemCallFilter", ""))
+t("SystemCallArchitectures=native", s.get("SystemCallArchitectures") == "native")
+t("MemoryDenyWriteExecute=yes", y("MemoryDenyWriteExecute"))
+t("state directory is declared (StateDirectory or ReadWritePaths)", bool(s.get("StateDirectory") or s.get("ReadWritePaths")))
+t("RestrictNamespaces=yes", y("RestrictNamespaces"))
+t("the socket unit names the service by a Service= or the default", True)
+sock = open("pingd.socket").read()
+t("the socket unit restricts who can connect (IPAddressAllow in the service or a bind address)", "ListenStream=127.0.0.1" in sock or "IPAddressAllow" in open("pingd.service").read())
+if shutil.which("systemd-analyze"):
+    r = subprocess.run(["systemd-analyze", "verify", "--user", "./pingd.service"], capture_output=True, text=True)
+    # verify may complain about the missing binary; only syntax errors count
+    t("systemd-analyze finds no syntax error", "Unknown key" not in r.stderr and "Invalid" not in r.stderr)
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > target.py <<'N'
+# SPDX-License-Identifier: MIT
+"""A record parser with a planted bug. Input: bytes. First byte is a length n, then n payload bytes, then a 1-byte checksum.
+It must reject bad input with ValueError; any other exception is a bug."""
+
+def parse(data: bytes):
+    if len(data) < 2:
+        raise ValueError("short")
+    n = data[0]
+    payload = data[1:1 + n]
+    if n > 8:
+        return payload[n + 1]          # planted bug: IndexError for any declared length above 8
+    if len(payload) != n or len(data) < n + 2:
+        raise ValueError("truncated")
+    if sum(payload) % 256 != data[n + 1]:
+        raise ValueError("checksum")
+    return payload
+N
+cat > fuzz.py <<'N'
+# SPDX-License-Identifier: MIT
+"""Implement a tiny deterministic mutation fuzzer.
+
+fuzz(target, seeds, iterations, seed) -> list of (exc_type_name, input_bytes)
+    Use random.Random(seed). Each iteration: pick a seed input (from seeds and any input that reached a new exception
+    type), mutate it (flip a byte, insert a byte, delete a byte, or splice two inputs), call target(data).
+    ValueError is the expected rejection and is ignored. Any other exception is a crash: record
+    (type(exc).__name__, data) once per exception type name (keep the first, then try to keep the shortest).
+minimize(target, data, exc_name) -> bytes
+    Return a smaller input that still raises an exception with that type name: repeatedly try deleting each single byte
+    until no deletion keeps the crash. The result must be no longer than the input.
+"""
+import random
+
+def fuzz(target, seeds, iterations, seed):
+    raise NotImplementedError
+
+def minimize(target, data, exc_name):
+    raise NotImplementedError
+N
+cat > ci.yml <<'N'
+name: ci
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
+      - run: cmake --build build
+      - run: ctest --test-dir build
+      - run: ./build/fuzz_parser corpus/ -max_total_time=600 || true
+N

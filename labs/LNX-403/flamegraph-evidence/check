@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "cpu_model", "type": "text", "min": 4, "hint": "name the CPU", "sample": "example-cpu"}, {"key": "cores_online", "type": "int", "min": 1, "max": 1024, "hint": "integer", "sample": "8"}, {"key": "governor_performance", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "load_tool", "type": "enum", "values": ["wrk", "hey", "ab", "k6", "custom"], "hint": "wrk, hey, ab, k6 or custom", "sample": "wrk"}, {"key": "sample_hz", "type": "int", "min": 19, "max": 10000, "hint": "integer between 19 and 10000", "sample": "99"}, {"key": "profile_seconds", "type": "int", "min": 5, "max": 3600, "hint": "integer, at least 30 to pass the rule below", "sample": "60"}, {"key": "stacks_resolved", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "top_frame_pct", "type": "num", "min": 0.1, "max": 100, "hint": "percent", "sample": "24"}, {"key": "runs_before", "type": "int", "min": 1, "max": 100, "hint": "integer, 3 or more to pass the rule below", "sample": "5"}, {"key": "requests_per_sec_before", "type": "num", "min": 0.1, "max": 100000000, "hint": "a number", "sample": "41200"}, {"key": "requests_per_sec_after", "type": "num", "min": 0.1, "max": 100000000, "hint": "a number", "sample": "48900"}, {"key": "spread_pct", "type": "num", "min": 0, "max": 100, "hint": "percent", "sample": "3"}], "rules": [{"name": "enough samples", "needs": ["profile_seconds"], "expr": "v['profile_seconds'] >= 30", "msg": "record at least 30 seconds"}, {"name": "repeated runs", "needs": ["runs_before"], "expr": "v['runs_before'] >= 3", "msg": "measure at least three times"}, {"name": "the improvement is larger than the noise", "needs": ["requests_per_sec_before", "requests_per_sec_after", "spread_pct"], "expr": "(v['requests_per_sec_after'] - v['requests_per_sec_before']) / v['requests_per_sec_before'] * 100 > v['spread_pct'] or v['requests_per_sec_after'] <= v['requests_per_sec_before']", "msg": "a gain smaller than the run-to-run spread is not evidence"}, {"name": "CPU 'performance' governor was used", "needs": ["governor_performance"], "expr": "v['governor_performance'] == 'yes'", "msg": "fix the frequency governor before measuring"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N

@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import os, signal, socket, subprocess, sys, tempfile, time
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+d = tempfile.mkdtemp()
+nsock = os.path.join(d, "notify")
+ns = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM); ns.bind(nsock); ns.settimeout(5)
+ls = socket.socket(); ls.bind(("127.0.0.1", 0)); ls.listen(16); port = ls.getsockname()[1]
+def spawn(env_extra, fd=True):
+    env = dict(os.environ, **env_extra, LSOCK=str(ls.fileno()))
+    cmd = ("export LISTEN_PID=$$ LISTEN_FDS=1; exec 3<&$LSOCK; " if fd else "") + "exec python3 daemon.py"
+    return subprocess.Popen(["sh", "-c", cmd], env=env, pass_fds=[ls.fileno()], stderr=subprocess.PIPE)
+# 1: refuses to run without activation
+p0 = spawn({}, fd=False)
+try: p0.wait(5); t("exits with status 2 when not socket activated", p0.returncode == 2)
+except subprocess.TimeoutExpired: p0.kill(); t("exits with status 2 when not socket activated", False)
+# 2: activated run
+p = spawn({"NOTIFY_SOCKET": nsock})
+try: msg = ns.recv(100)
+except socket.timeout: msg = b""
+t("sends READY=1 to the notify socket", msg == b"READY=1")
+out = []
+try:
+    cs = []
+    for i in range(50):
+        c = socket.create_connection(("127.0.0.1", port), timeout=5); cs.append(c)
+    for i, c in enumerate(cs): c.sendall(("hello %d\n" % i).encode())
+    ok = True
+    for i, c in enumerate(cs):
+        buf = b""
+        while not buf.endswith(b"\n"): buf += c.recv(100)
+        ok &= buf == ("HELLO %d\n" % i).encode()
+    t("serves 50 concurrent clients from one process", ok)
+    cs[0].close(); time.sleep(0.2)
+    c2 = socket.create_connection(("127.0.0.1", port), timeout=5); c2.sendall(b"again\n")
+    t("keeps serving after a client closes", c2.recv(100) == b"AGAIN\n")
+except Exception as x:
+    t("serves clients (%s)" % x, False)
+p.send_signal(signal.SIGTERM)
+try: msg = ns.recv(100)
+except socket.timeout: msg = b""
+t("sends STOPPING=1 on SIGTERM", msg == b"STOPPING=1")
+try: p.wait(5); t("exits with status 0 after SIGTERM", p.returncode == 0)
+except subprocess.TimeoutExpired: p.kill(); t("exits with status 0 after SIGTERM", False)
+src = open("daemon.py").read()
+t("uses epoll", "epoll" in src)
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

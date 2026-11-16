@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > pingd.service <<'N'
+[Unit]
+Description=Ping responder
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/pingd
+Restart=on-failure
+N
+cat > pingd.socket <<'N'
+[Socket]
+ListenStream=7007
+
+[Install]
+WantedBy=sockets.target
+N

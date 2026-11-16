@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p debian
+cat > VERSION <<'N'
+2.4.1
+N
+cat > pingd.spec <<'N'
+Name:           pingd
+Version:        2.4.0
+Release:        1%{?dist}
+Summary:        A small ping responder
+License:        MIT
+%description
+A small ping responder.
+%changelog
+* Mon Mar 02 2026 Dev <dev@example.test> - 2.4.0-1
+- Release 2.4.0
+N
+cat > debian/changelog <<'N'
+pingd (2.4.1-1) unstable; urgency=medium
+
+  * Release 2.4.1
+
+ -- Dev <dev@example.test>  Mon, 09 Mar 2026 10:00:00 +0000
+N
+cat > debian/control <<'N'
+Source: pingd
+Section: net
+Priority: optional
+Maintainer: Dev <dev@example.test>
+Standards-Version: 4.7.0
+
+Package: pingd
+Architecture: any
+Description: A small ping responder
+N
+cat > io.example.Pingd.yaml <<'N'
+app-id: io.example.Pingd
+runtime: org.freedesktop.Platform
+runtime-version: "24.08"
+sdk: org.freedesktop.Sdk
+command: pingd
+modules:
+  - name: pingd
+    buildsystem: simple
+    build-commands:
+      - make install PREFIX=/app
+    sources:
+      - type: archive
+        url: https://example.test/pingd-2.4.1.tar.gz
+N
+cat > Containerfile <<'N'
+FROM docker.io/library/debian:latest
+RUN apt-get update && apt-get install -y build-essential
+COPY . /src
+RUN make -C /src install
+LABEL org.opencontainers.image.version="2.4.1"
+CMD ["pingd"]
+N

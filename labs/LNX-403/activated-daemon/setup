@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > daemon.py <<'N'
+# SPDX-License-Identifier: MIT
+"""A socket-activated, epoll-based upper-casing echo daemon.
+
+Contract (the same protocol systemd uses):
+  * LISTEN_PID must equal os.getpid() and LISTEN_FDS >= 1; then fd 3 is a listening TCP socket. Otherwise exit with status 2.
+  * Make it non-blocking, register it in an epoll object, accept in a loop until BlockingIOError.
+  * Each accepted client is non-blocking and registered for reading. When data arrives, reply with the data upper-cased.
+    A read of b"" closes that client.
+  * After everything is registered and BEFORE serving, send b"READY=1" as a datagram to the Unix socket named
+    by NOTIFY_SOCKET (a leading "@" means an abstract socket: replace it with a NUL byte). Skip if NOTIFY_SOCKET is unset.
+  * On SIGTERM: send b"STOPPING=1" the same way, close everything and exit with status 0.
+"""
+import os, sys
+
+def main():
+    raise NotImplementedError
+
+if __name__ == "__main__":
+    main()
+N
