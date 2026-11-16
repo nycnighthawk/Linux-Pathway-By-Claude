@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > bindings.txt <<'N'
+serial@10000000 acme_uart 0x10000000
+serial@10001000 none 0x10001000
+gpio@10002000 acme_gpio 0x10002000
+ethernet@10003000 acme_mac 0x10003000
+rtc@10004000 ds1307_rtc 0x10004000
+crypto@10005000 none 0x10005000
+N

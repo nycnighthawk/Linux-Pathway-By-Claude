@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import re, sys
+dts = open("board.dts").read()
+drivers = {}
+for line in open("drivers.txt"):
+    line = line.strip()
+    if line and not line.startswith("#"):
+        name, strs = line.split(":", 1)
+        for s in strs.split(";"): drivers.setdefault(s.strip(), name.strip())
+want = []
+for m in re.finditer(r"(?:\w+:\s*)?([\w-]+@[0-9a-f]+)\s*\{(.*?)\};", dts, re.S):
+    node, body = m.group(1), m.group(2)
+    comp = re.search(r"compatible\s*=\s*([^;]+);", body)
+    reg = re.search(r"reg\s*=\s*<\s*(0x[0-9a-fA-F]+)", body)
+    st = re.search(r'status\s*=\s*"(\w+)"', body)
+    drv = "none"
+    if not st or st.group(1) == "okay":
+        for c in re.findall(r'"([^"]+)"', comp.group(1)):
+            if c in drivers: drv = drivers[c]; break
+    want.append((node, drv, reg.group(1)))
+got = []
+for line in open("bindings.txt"):
+    line = line.strip()
+    if line and not line.startswith("#"):
+        p = line.split()
+        if len(p) == 3: got.append(tuple(p))
+        else: print("FAIL: malformed line: " + line)
+bad = 0
+if len(got) != len(want): print("FAIL: expected %d lines, found %d" % (len(want), len(got))); bad = 1
+for g, w in zip(got, want):
+    if g == w: print("ok:   %s -> %s" % (w[0], w[1]))
+    else: print("FAIL: %s: expected '%s %s %s'" % (w[0], *w)); bad = 1
+sys.exit(bad)
+N
