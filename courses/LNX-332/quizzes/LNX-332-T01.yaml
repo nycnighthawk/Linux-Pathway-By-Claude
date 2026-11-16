@@ -1,0 +1,47 @@
+title: 'Quiz: Hardware virtualization'
+questions:
+- id: vmcs
+  prompt: What does the VMCS (or VMCB) hold?
+  choices:
+  - Only the guest disk image
+  - Guest state, host state, execution controls and exit information
+  - The host kernel log
+  - The guest's page cache
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: walk
+  prompt: With four-level guest tables and four-level nested tables, how many memory references can one TLB-miss walk need in the worst case?
+  choices:
+  - '4'
+  - '8'
+  - '24'
+  - '64'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: (4+1) x (4+1) - 1. D) wrong.'
+- id: violation
+  prompt: What does an EPT violation exit usually signal?
+  choices:
+  - The guest used too much CPU
+  - A guest-physical page has no mapping (or wrong permissions) in the nested tables
+  - The host disk is full
+  - The guest kernel panicked
+  answer: [1]
+  explain: 'A) wrong. B) correct: the hypervisor maps memory or emulates a device. C) wrong. D) wrong.'
+- id: classical
+  prompt: Why could the original x86 not be virtualised by simple trap-and-emulate?
+  choices:
+  - It had no memory
+  - Some sensitive instructions were not privileged and so did not trap
+  - It lacked interrupts
+  - It had too many registers
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: nodev
+  prompt: The CPU flag vmx is present but /dev/kvm does not exist. What should you check first?
+  choices:
+  - Whether the KVM kernel modules are loaded and firmware allows virtualization
+  - The monitor resolution
+  - The shell prompt
+  - The locale
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

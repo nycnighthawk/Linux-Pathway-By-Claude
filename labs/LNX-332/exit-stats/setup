@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > exits.txt <<'N'
+# reason            count   total_time_us   (a perf-kvm-style summary of one guest)
+HLT                  8000        900000
+EPT_VIOLATION        3100         94000
+IO_INSTRUCTION      21000        610000
+MSR_WRITE           64000        160000
+EXTERNAL_INTERRUPT  30000         45000
+CPUID                2200          3300
+N
+cat > report.txt <<'N'
+# Fill in each key after the colon. HLT time is guest idle time, not overhead:
+# leave HLT out when ranking by time and when computing the share.
+total_exits:        # sum of all counts, HLT included
+top_by_count:       # reason with the most exits
+top_by_time:        # reason with the most time, HLT excluded
+share_pct:          # that reason's share of non-idle time, one decimal, no % sign
+first_action:       # one of huge-pages, ioeventfd, apicv, halt-polling
+N

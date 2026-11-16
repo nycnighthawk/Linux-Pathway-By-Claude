@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("layers.py").read()
+a = s.index("def layer_of")
+s = s[:a] + '''def layer_of(path):
+    best = None
+    for p, v in PREFIXES.items():
+        if path.startswith(p) and (best is None or len(p) > len(best[0])):
+            best = (p, v)
+    return best[1] if best else ("unknown", None)
+
+
+def violations(edges):
+    out = []
+    for a, b in edges:
+        ra, rb = layer_of(a)[1], layer_of(b)[1]
+        if ra is None or rb is None:
+            continue
+        if ra < rb:
+            out.append((a, b))
+    return out
+'''
+open("layers.py", "w").write(s)
+N

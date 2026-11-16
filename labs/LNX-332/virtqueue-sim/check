@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from virtq import process, NEXT, WRITE
+D = [
+ {"len": 16, "flags": NEXT, "next": 1},        # 0: header (device reads)
+ {"len": 512, "flags": NEXT | WRITE, "next": 2},  # 1: data (device writes)
+ {"len": 1, "flags": WRITE, "next": 0},        # 2: status
+ {"len": 64, "flags": 0, "next": 0},           # 3: single readable buffer
+ {"len": 8, "flags": NEXT, "next": 5},         # 4: loop part 1
+ {"len": 8, "flags": NEXT, "next": 4},         # 5: loop part 2
+ {"len": 4, "flags": NEXT, "next": 99},        # 6: next out of range
+]
+seen = []
+def h(r, w):
+    seen.append((r, w))
+    return 513
+res = []
+used, last, broken = process(D, [0, 3, 0, 0], 1, 0, h)
+res.append(("block-style chain: used length is data plus status", used == [(0, 513)] and last == 1 and not broken and seen == [(16, 513)]))
+used, last, broken = process(D, [0, 3, 0, 0], 2, 0, lambda r, w: 0)
+res.append(("two entries, readable-only chain gets 0", used == [(0, 0), (3, 0)] and last == 2))
+used, last, broken = process(D, [0, 3, 0, 0], 2, 2, h)
+res.append(("nothing new: nothing consumed", used == [] and last == 2 and not broken))
+used, last, broken = process(D, [0, 3, 0, 0], 1, 0, lambda r, w: 100)
+res.append(("a smaller reply is reported as is", used == [(0, 100)]))
+used, last, broken = process(D, [0, 3, 0, 0], 1, 0, lambda r, w: 9999)
+res.append(("used length capped at writable capacity", used == [(0, 513)]))
+used, last, broken = process(D, [0, 4, 0, 0], 2, 0, h)
+res.append(("loop detected after one good entry", broken and used == [(0, 513)] and last == 1))
+used, last, broken = process(D, [6, 0, 0, 0], 1, 0, h)
+res.append(("next out of range is broken", broken and used == [] and last == 0))
+used, last, broken = process(D, [3, 0], 0x0001, 0xFFFF, lambda r, w: 0)
+res.append(("16-bit wrap: entry for counter 0xFFFF then 0", used == [(0, 0), (3, 0)] and last == 1))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n)
+    bad |= (not ok)
+sys.exit(bad)
+N

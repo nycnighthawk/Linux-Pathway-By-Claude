@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("virtq.py").read()
+a = s.index("def process")
+s = s[:a] + '''def process(desc, avail, avail_idx, last_avail, handler):
+    used = []
+    n = last_avail
+    while n != avail_idx & 0xFFFF:
+        head = avail[n % len(avail)]
+        readable = writable = 0
+        i, count = head, 0
+        while True:
+            if not 0 <= i < len(desc) or count >= len(desc):
+                return used, last_avail, True
+            d = desc[i]
+            if d["flags"] & WRITE:
+                writable += d["len"]
+            else:
+                readable += d["len"]
+            count += 1
+            if d["flags"] & NEXT:
+                i = d["next"]
+            else:
+                break
+        want = handler(readable, writable)
+        used.append((head, min(want, writable)))
+        n = (n + 1) & 0xFFFF
+        last_avail = n
+    return used, last_avail, False
+'''
+open("virtq.py", "w").write(s)
+N

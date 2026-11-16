@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from vmm import run_vm
+H = [("io_out", 0x3F8, ord(c)) for c in "Hi"]
+cases = [
+ ("hello then halt", H + [("hlt",), ("io_out", 0x3F8, 33)], ("Hi", "halted", [], None)),
+ ("other ports ignored", [("io_out", 0x80, 65), ("io_out", 0x3F8, 66), ("hlt",)], ("B", "halted", [], None)),
+ ("port reads", [("io_in", 0x3FD), ("io_in", 0x60), ("io_in", 0x3FD), ("hlt",)], ("", "halted", [0x20, 0xFF, 0x20], None)),
+ ("exit code via MMIO", H + [("mmio_write", 0xD0000000, 7), ("io_out", 0x3F8, 90)], ("Hi", "exit", [], 7)),
+ ("mmio elsewhere ignored", [("mmio_write", 0xC0000000, 1), ("hlt",)], ("", "halted", [], None)),
+ ("shutdown", [("shutdown",)], ("", "shutdown", [], None)),
+ ("fail entry", [("io_out", 0x3F8, 65), ("fail_entry", 7), ("hlt",)], ("A", "error", [], None)),
+ ("internal error", [("internal_error",)], ("", "error", [], None)),
+ ("unknown exit is an error", [("mystery", 1), ("hlt",)], ("", "error", [], None)),
+ ("script ends without terminal exit", H, ("Hi", "running", [], None)),
+]
+bad = 0
+for name, g, want in cases:
+    got = run_vm(g)
+    ok = tuple(got) == want
+    print(("ok:   " if ok else "FAIL: ") + name)
+    bad |= (not ok)
+sys.exit(bad)
+N

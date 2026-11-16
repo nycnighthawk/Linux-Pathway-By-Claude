@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > layers.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A simplified layer model of the VirtualBox source tree (names to verify per version).
+
+PREFIXES maps a path prefix to a layer.  Layers from bottom to top:
+  iprt     0   src/VBox/Runtime, include/iprt   (portable runtime)
+  drivers  1   src/VBox/HostDrivers             (ring-0 kernel modules)
+  vmm      2   src/VBox/VMM                      (core VMM, PDM)
+  devices  3   src/VBox/Devices, src/VBox/Storage
+  main     4   src/VBox/Main                     (API and settings)
+  frontends 5  src/VBox/Frontends                (GUI, VBoxManage, VBoxHeadless)
+
+A source file may include files from its own layer or a LOWER layer.
+Including a higher layer is a violation.
+
+layer_of(path) -> (name, rank) using the LONGEST matching prefix, or
+("unknown", None) if none matches.
+violations(edges) -> list of (includer, included) pairs, in input order,
+for every edge in which the includer's rank is LOWER than the included file's
+rank.  Edges that involve an unknown file are ignored.
+"""
+
+PREFIXES = {
+    "src/VBox/Runtime/": ("iprt", 0),
+    "include/iprt/": ("iprt", 0),
+    "src/VBox/HostDrivers/": ("drivers", 1),
+    "src/VBox/VMM/": ("vmm", 2),
+    "src/VBox/Devices/": ("devices", 3),
+    "src/VBox/Storage/": ("devices", 3),
+    "src/VBox/Main/": ("main", 4),
+    "src/VBox/Frontends/": ("frontends", 5),
+    "src/VBox/Devices/Graphics/": ("devices", 3),
+    "src/VBox/Main/xidl/": ("main", 4),
+}
+
+
+def layer_of(path):
+    # TODO
+    return ("unknown", None)
+
+
+def violations(edges):
+    # TODO
+    return []
+N

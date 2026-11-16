@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("eptwalk.py").read()
+a = s.index("def ept_walk")
+s = s[:a] + '''def ept_walk(gpa, ept_root, ept_tables):
+    reads = 0
+    node = ept_root
+    for shift in (6, 4):
+        e = ept_tables[node][(gpa >> shift) & 3]
+        reads += 1
+        if e is None:
+            return None, reads
+        node = e
+    return (node << 4) | (gpa & 15), reads
+
+
+def translate(gva, cr3, guest_tables, ept_root, ept_tables):
+    refs = 0
+    frame = cr3
+    for shift in (6, 4):
+        hpa, r = ept_walk(frame << 4, ept_root, ept_tables)
+        refs += r
+        if hpa is None:
+            return ("ept_violation", frame << 4, refs)
+        entry = guest_tables[frame][(gva >> shift) & 3]
+        refs += 1
+        if entry is None:
+            return ("guest_fault", gva, refs)
+        frame = entry
+    gpa = (frame << 4) | (gva & 15)
+    hpa, r = ept_walk(gpa, ept_root, ept_tables)
+    refs += r
+    if hpa is None:
+        return ("ept_violation", gpa, refs)
+    return ("ok", hpa, refs)
+'''
+open("eptwalk.py", "w").write(s)
+N

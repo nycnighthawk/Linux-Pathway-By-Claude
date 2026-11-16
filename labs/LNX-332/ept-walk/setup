@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > eptwalk.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A toy two-dimensional page walk.
+
+Addresses are 8 bits: bits 7:6 pick the top-level entry, bits 5:4 the
+bottom-level entry, bits 3:0 are the offset inside a 16-byte page.
+A frame number is address >> 4.
+
+Guest tables live in guest-physical memory:  guest_tables[gpa_frame] = [e0..e3]
+Every entry is a gpa frame number or None (not present).  The top table is at
+guest frame `cr3`.  Level 1 entries point to bottom tables, level 0 entries
+hold the data frame.
+
+The hypervisor's nested tables map guest-physical to host-physical:
+ept_tables[ept_id] = [e0..e3]; the root is `ept_root`; top-level entries are
+ept ids of bottom tables, bottom-level entries are host frame numbers.
+
+Count one memory reference for every table entry the "hardware" reads.
+"""
+
+
+def ept_walk(gpa, ept_root, ept_tables):
+    """Return (hpa, reads) or (None, reads) when the nested tables have no
+    mapping (an EPT violation).  A full successful walk reads 2 entries."""
+    # TODO
+    return None, 0
+
+
+def translate(gva, cr3, guest_tables, ept_root, ept_tables):
+    """Return one of
+       ("ok", hpa, refs)
+       ("ept_violation", gpa_that_failed, refs)
+       ("guest_fault", gva, refs)
+    Reading a guest table entry costs: the nested walk to find where the guest
+    table really is, plus one read of the entry. The final data address also
+    needs a nested walk. `refs` counts everything read until the result."""
+    # TODO
+    return ("guest_fault", gva, 0)
+N

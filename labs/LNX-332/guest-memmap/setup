@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > memmap.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""Guest-physical memory map for a small x86 VMM.
+
+The 1 GiB below 4 GiB (0xC0000000 .. 0x100000000) is reserved for device
+windows.  RAM goes at 0 up to 3 GiB; whatever does not fit continues at 4 GiB.
+"""
+
+GIB = 1 << 30
+MMIO_START = 3 * GIB
+HIGH_START = 4 * GIB
+
+
+def ram_regions(ram_bytes):
+    """Return a list of (start, size) tuples for guest RAM, lowest first.
+    Zero RAM gives an empty list."""
+    # TODO
+    return []
+
+
+def overlaps(regions):
+    """`regions` is a list of (name, start, size).  Return a sorted list of
+    (name_a, name_b) pairs, ordered by start address of a, for every pair
+    whose ranges intersect (touching ends do not intersect).  Return [] if none."""
+    # TODO
+    return []
+N

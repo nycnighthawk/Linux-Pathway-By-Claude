@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > edudev.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""A register-level model of a QEMU "edu"-like device, driven by qtest-style
+text commands.
+
+The device sits at BASE.  Registers are 32-bit and only 4-byte accesses
+exist:
+  +0x00  read-only  identification: 0x010000ed
+  +0x04  liveness:  a read returns the bitwise complement (32-bit) of the last
+                    value written (0xFFFFFFFF if never written)
+  +0x08  factorial: a write of n (0..12) computes n! at once; a read returns
+                    the last result (initially 0).  Writes above 12 set the
+                    result to 0xFFFFFFFF.
+  +0x20  status:    bit 0 is the busy flag (always 0 here: work is instant);
+                    bit 7 is the interrupt enable, a read/write bit.
+Commands (one per call of handle()):
+  "readl <addr>"            -> "OK 0x<hex>" (lower case, no padding)
+  "writel <addr> <value>"   -> "OK"
+Addresses and values may be written as decimal or 0x-prefixed hex.
+Any other command, or a 'l' command outside BASE..BASE+0xFF, replies "FAIL";
+unknown registers inside the window read as 0 and ignore writes.
+"""
+
+BASE = 0x40000000
+WINDOW = 0x100
+
+
+class Edu:
+    def __init__(self):
+        self.live = None
+        self.fact = 0
+        self.ie = 0
+
+    def handle(self, line):
+        # TODO
+        return "FAIL"
+N

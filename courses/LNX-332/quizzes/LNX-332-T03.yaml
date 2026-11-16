@@ -1,0 +1,47 @@
+title: 'Quiz: A Rust VMM'
+questions:
+- id: crate
+  prompt: Which rust-vmm crate gives address-checked access to guest memory?
+  choices:
+  - linux-loader
+  - vm-memory
+  - vm-superio
+  - kvm-bindings
+  answer: [1]
+  explain: 'A) wrong: it places the kernel. B) correct. C) wrong: legacy devices. D) wrong: structure definitions.'
+- id: hole
+  prompt: Why does a 4 GiB x86 guest keep RAM out of the range just below 4 GiB?
+  choices:
+  - That range is reserved for device windows
+  - RAM cannot exceed 3 GiB
+  - The kernel requires it to be empty for no reason
+  - KVM forbids slots there
+  answer: [0]
+  explain: 'A) correct: the rest continues above 4 GiB. B) wrong. C) wrong. D) wrong.'
+- id: why
+  prompt: What is a main security argument for a Rust VMM?
+  choices:
+  - It runs faster in the guest
+  - It removes many memory-safety bugs from device code next to a security boundary
+  - It needs no KVM
+  - It has more devices than QEMU
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: silent
+  prompt: A new VMM boots Linux but prints nothing. What do you check first?
+  choices:
+  - The console argument, the serial device wiring and the command line placement
+  - The monitor refresh rate
+  - The package manager
+  - The host hostname
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: unsafe
+  prompt: Where does unsafe code usually remain in a Rust VMM?
+  choices:
+  - Everywhere in device logic
+  - 'At the edges: ioctls and memory mappings'
+  - Only in tests
+  - Nowhere at all
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'

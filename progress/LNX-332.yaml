@@ -1,0 +1,129 @@
+item: LNX-332
+label: 'Hypervisor Development: KVM, QEMU & VirtualBox'
+branch: build/LNX-332
+state: done
+started: '2026-11-16'
+updated: '2026-11-16'
+phases:
+  synth:
+    state: done
+    units: 12
+    done:
+    - LNX-332-T01
+    - LNX-332-T02
+    - LNX-332-T03
+    - LNX-332-T04
+    - LNX-332-T05
+    - LNX-332-T06
+    - LNX-332-T07
+    - LNX-332-T08
+    - LNX-332-T09
+    - LNX-332-T10
+    - LNX-332-T11
+    - LNX-332-T12
+  lessons:
+    state: done
+    units: 12
+    done:
+    - LNX-332-T01
+    - LNX-332-T02
+    - LNX-332-T03
+    - LNX-332-T04
+    - LNX-332-T05
+    - LNX-332-T06
+    - LNX-332-T07
+    - LNX-332-T08
+    - LNX-332-T09
+    - LNX-332-T10
+    - LNX-332-T11
+    - LNX-332-T12
+  quizzes:
+    state: done
+    units: 12
+    done:
+    - LNX-332-T01
+    - LNX-332-T02
+    - LNX-332-T03
+    - LNX-332-T04
+    - LNX-332-T05
+    - LNX-332-T06
+    - LNX-332-T07
+    - LNX-332-T08
+    - LNX-332-T09
+    - LNX-332-T10
+    - LNX-332-T11
+    - LNX-332-T12
+  labs:
+    state: done
+    units: 12
+    done:
+    - LNX-332-T01
+    - LNX-332-T02
+    - LNX-332-T03
+    - LNX-332-T04
+    - LNX-332-T05
+    - LNX-332-T06
+    - LNX-332-T07
+    - LNX-332-T08
+    - LNX-332-T09
+    - LNX-332-T10
+    - LNX-332-T11
+    - LNX-332-T12
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-16 started
+- '2026-11-16 synth: LNX-332-T01'
+- '2026-11-16 lessons: LNX-332-T01'
+- '2026-11-16 quizzes: LNX-332-T01'
+- '2026-11-16 labs: LNX-332-T01'
+- '2026-11-16 synth: LNX-332-T02'
+- '2026-11-16 lessons: LNX-332-T02'
+- '2026-11-16 quizzes: LNX-332-T02'
+- '2026-11-16 labs: LNX-332-T02'
+- '2026-11-16 synth: LNX-332-T03'
+- '2026-11-16 lessons: LNX-332-T03'
+- '2026-11-16 quizzes: LNX-332-T03'
+- '2026-11-16 labs: LNX-332-T03'
+- '2026-11-16 synth: LNX-332-T04'
+- '2026-11-16 lessons: LNX-332-T04'
+- '2026-11-16 quizzes: LNX-332-T04'
+- '2026-11-16 labs: LNX-332-T04'
+- '2026-11-16 synth: LNX-332-T05'
+- '2026-11-16 lessons: LNX-332-T05'
+- '2026-11-16 quizzes: LNX-332-T05'
+- '2026-11-16 labs: LNX-332-T05'
+- '2026-11-16 synth: LNX-332-T06'
+- '2026-11-16 lessons: LNX-332-T06'
+- '2026-11-16 quizzes: LNX-332-T06'
+- '2026-11-16 labs: LNX-332-T06'
+- '2026-11-16 synth: LNX-332-T07'
+- '2026-11-16 lessons: LNX-332-T07'
+- '2026-11-16 quizzes: LNX-332-T07'
+- '2026-11-16 labs: LNX-332-T07'
+- '2026-11-16 synth: LNX-332-T08'
+- '2026-11-16 lessons: LNX-332-T08'
+- '2026-11-16 quizzes: LNX-332-T08'
+- '2026-11-16 labs: LNX-332-T08'
+- '2026-11-16 synth: LNX-332-T09'
+- '2026-11-16 lessons: LNX-332-T09'
+- '2026-11-16 quizzes: LNX-332-T09'
+- '2026-11-16 labs: LNX-332-T09'
+- '2026-11-16 synth: LNX-332-T10'
+- '2026-11-16 lessons: LNX-332-T10'
+- '2026-11-16 quizzes: LNX-332-T10'
+- '2026-11-16 labs: LNX-332-T10'
+- '2026-11-16 synth: LNX-332-T11'
+- '2026-11-16 lessons: LNX-332-T11'
+- '2026-11-16 quizzes: LNX-332-T11'
+- '2026-11-16 labs: LNX-332-T11'
+- '2026-11-16 synth: LNX-332-T12'
+- '2026-11-16 lessons: LNX-332-T12'
+- '2026-11-16 quizzes: LNX-332-T12'
+- '2026-11-16 labs: LNX-332-T12'
+- '2026-11-16 checks: done'
+- 2026-11-16 finished
+finished: '2026-11-16'

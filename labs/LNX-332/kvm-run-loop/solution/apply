@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("vmm.py").read()
+a = s.index("def run_vm")
+s = s[:a] + '''def run_vm(guest):
+    out, ins = "", []
+    for ex in guest:
+        kind = ex[0]
+        if kind == "io_out":
+            if ex[1] == SERIAL:
+                out += chr(ex[2])
+        elif kind == "io_in":
+            ins.append(0x20 if ex[1] == LSR else 0xFF)
+        elif kind == "mmio_write":
+            if ex[1] == EXIT_ADDR:
+                return out, "exit", ins, ex[2]
+        elif kind == "hlt":
+            return out, "halted", ins, None
+        elif kind == "shutdown":
+            return out, "shutdown", ins, None
+        else:
+            return out, "error", ins, None
+    return out, "running", ins, None
+'''
+open("vmm.py", "w").write(s)
+N

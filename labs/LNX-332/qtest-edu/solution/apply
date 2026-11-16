@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("edudev.py").read()
+a = s.index("    def handle")
+s = s[:a] + '''    def handle(self, line):
+        parts = line.split()
+        if not parts:
+            return "FAIL"
+        try:
+            if parts[0] == "readl" and len(parts) == 2:
+                off = int(parts[1], 0) - BASE
+                if not 0 <= off < WINDOW:
+                    return "FAIL"
+                return "OK 0x%x" % self.read(off)
+            if parts[0] == "writel" and len(parts) == 3:
+                off = int(parts[1], 0) - BASE
+                if not 0 <= off < WINDOW:
+                    return "FAIL"
+                self.write(off, int(parts[2], 0) & 0xFFFFFFFF)
+                return "OK"
+        except ValueError:
+            pass
+        return "FAIL"
+
+    def read(self, off):
+        if off == 0x00:
+            return 0x010000ED
+        if off == 0x04:
+            return 0xFFFFFFFF if self.live is None else ~self.live & 0xFFFFFFFF
+        if off == 0x08:
+            return self.fact
+        if off == 0x20:
+            return self.ie << 7
+        return 0
+
+    def write(self, off, v):
+        if off == 0x04:
+            self.live = v
+        elif off == 0x08:
+            if v > 12:
+                self.fact = 0xFFFFFFFF
+            else:
+                r = 1
+                for i in range(2, v + 1):
+                    r *= i
+                self.fact = r
+        elif off == 0x20:
+            self.ie = (v >> 7) & 1
+'''
+open("edudev.py", "w").write(s)
+N

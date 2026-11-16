@@ -1,0 +1,47 @@
+title: 'Quiz: The KVM API'
+questions:
+- id: fds
+  prompt: Which descriptor do you call KVM_RUN on?
+  choices:
+  - The /dev/kvm descriptor
+  - The VM descriptor
+  - The vCPU descriptor
+  - The memory slot
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
+- id: slot
+  prompt: What does KVM_SET_USER_MEMORY_REGION do?
+  choices:
+  - Loads the guest kernel
+  - Binds a guest-physical range to memory in the VMM process
+  - Creates a vCPU
+  - Starts the guest
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: mmio
+  prompt: What does the VMM do on KVM_EXIT_MMIO for a read?
+  choices:
+  - Ignore it
+  - Fill in the data field with the device's value before resuming
+  - Kill the guest
+  - Remap memory
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: fail
+  prompt: KVM_RUN returns KVM_EXIT_FAIL_ENTRY. What is likely wrong?
+  choices:
+  - The disk image
+  - The guest register or control state that was loaded is invalid for the hardware
+  - The network
+  - The terminal
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: short
+  prompt: Why is the list of exits handled in user space short?
+  choices:
+  - KVM handles many exits, such as page faults on mapped memory and CPUID, inside the kernel
+  - The guest rarely runs
+  - Exits are disabled
+  - User space cannot see exits
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

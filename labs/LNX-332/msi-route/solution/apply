@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("msi.py").read()
+a = s.index("def encode")
+s = s[:a] + '''def encode(dest_id, vector, delivery_mode=0, trigger=0, dest_mode=0, rh=0):
+    if not 0 <= dest_id <= 255:
+        raise ValueError("dest_id")
+    if not 0 <= vector <= 255:
+        raise ValueError("vector")
+    if delivery_mode in (0, 1) and vector < 16:
+        raise ValueError("reserved vector")
+    address = 0xFEE00000 | (dest_id << 12) | (rh << 3) | (dest_mode << 2)
+    data = vector | (delivery_mode << 8) | (trigger << 14) | (trigger << 15)
+    return address, data
+
+
+def decode(address, data):
+    if address >> 20 != 0xFEE:
+        raise ValueError("not an MSI address")
+    return {
+        "dest_id": (address >> 12) & 0xFF,
+        "vector": data & 0xFF,
+        "delivery_mode": (data >> 8) & 7,
+        "trigger": (data >> 15) & 1,
+        "dest_mode": (address >> 2) & 1,
+        "rh": (address >> 3) & 1,
+    }
+'''
+open("msi.py", "w").write(s)
+N

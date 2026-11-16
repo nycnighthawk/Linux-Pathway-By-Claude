@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > msi.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""x86 MSI message encoding.
+
+address: 0xFEE00000 | (dest_id << 12) | (redirection_hint << 3) | (dest_mode << 2)
+data:    vector | (delivery_mode << 8) | (level << 14) | (trigger << 15)
+
+dest_mode 0 = physical, 1 = logical; trigger 0 = edge, 1 = level;
+level 1 = assert (set it to 1 for level-triggered, else 0).
+delivery_mode 0 = fixed, 1 = lowest priority (3 bits).
+
+encode(dest_id, vector, delivery_mode=0, trigger=0, dest_mode=0, rh=0)
+    -> (address, data).  Raise ValueError if dest_id is not in 0..255 (xAPIC
+    8-bit IDs), vector is not in 0..255, or delivery_mode is fixed (0) or
+    lowest priority (1) and vector < 16 (those vectors are reserved).
+decode(address, data) -> dict with keys dest_id, vector, delivery_mode,
+    trigger, dest_mode, rh.  Raise ValueError if address does not start with
+    0xFEE (bits 31..20).
+"""
+
+
+def encode(dest_id, vector, delivery_mode=0, trigger=0, dest_mode=0, rh=0):
+    # TODO
+    return 0, 0
+
+
+def decode(address, data):
+    # TODO
+    return {}
+N

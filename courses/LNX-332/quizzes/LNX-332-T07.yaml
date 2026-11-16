@@ -1,0 +1,47 @@
+title: 'Quiz: KVM internals and tracing'
+questions:
+- id: hlt
+  prompt: Why is HLT time excluded when looking for virtualization overhead?
+  choices:
+  - It is guest idle time, not cost
+  - HLT is a bug
+  - It cannot be measured
+  - It is always zero
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: tool
+  prompt: Which command summarizes exits by reason with counts and times?
+  choices:
+  - perf kvm stat report
+  - ls /dev/kvm
+  - git log
+  - lsmod
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: ept
+  prompt: A guest shows an EPT_VIOLATION storm. What is a sensible first action?
+  choices:
+  - Use huge pages or pre-fault guest memory
+  - Add more vCPUs
+  - Disable the network
+  - Reboot the host daily
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: io
+  prompt: IO_INSTRUCTION dominates the time. What does that suggest?
+  choices:
+  - An emulated device on a hot path; use paravirtual devices or in-kernel back ends
+  - The CPU is too fast
+  - The guest has too little RAM
+  - Nothing
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: load
+  prompt: A rebuilt kvm.ko fails to load with a version magic error. What is the likely cause?
+  choices:
+  - It was built against a different kernel tree or configuration than the running kernel
+  - The guest is too large
+  - The disk is full
+  - Swap is disabled
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

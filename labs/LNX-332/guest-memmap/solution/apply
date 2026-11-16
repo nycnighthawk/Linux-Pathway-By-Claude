@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("memmap.py").read()
+a = s.index("def ram_regions")
+s = s[:a] + '''def ram_regions(ram_bytes):
+    if ram_bytes <= 0:
+        return []
+    low = min(ram_bytes, MMIO_START)
+    out = [(0, low)]
+    if ram_bytes > MMIO_START:
+        out.append((HIGH_START, ram_bytes - MMIO_START))
+    return out
+
+
+def overlaps(regions):
+    rs = sorted(regions, key=lambda r: (r[1], r[0]))
+    out = []
+    for i, (na, sa, za) in enumerate(rs):
+        for nb, sb, zb in rs[i + 1:]:
+            if sb < sa + za and sa < sb + zb:
+                out.append((na, nb))
+    return out
+'''
+open("memmap.py", "w").write(s)
+N

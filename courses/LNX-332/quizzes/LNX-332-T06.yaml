@@ -1,0 +1,47 @@
+title: 'Quiz: QEMU device models'
+questions:
+- id: qom
+  prompt: What is QOM?
+  choices:
+  - A disk image format
+  - 'QEMU object model: registered types with inheritance, properties and a runtime object tree'
+  - A network protocol
+  - A kernel scheduler
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: realize
+  prompt: Where does a device usually create its memory regions and register its BARs?
+  choices:
+  - In realize
+  - In the Makefile
+  - In the guest
+  - At power-off
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: qtest
+  prompt: What does qtest allow?
+  choices:
+  - Driving device registers from a test without any guest software
+  - Booting Windows faster
+  - Compiling QEMU
+  - Encrypting guest RAM
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: vmstate
+  prompt: What happens if a device omits a field from its VMStateDescription?
+  choices:
+  - Nothing at all
+  - Live migration can restore the device with wrong state
+  - The device is faster
+  - The guest cannot boot
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: security
+  prompt: Why are device models a main source of QEMU vulnerabilities?
+  choices:
+  - Guest-controlled register and DMA accesses reach complex C code in the host process
+  - They run in the guest
+  - They are written in assembly only
+  - They have no registers
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from verdict import judge
+ok_log = "PASS: msr read\nPASS: msr write\nSUMMARY: 2 tests\n"
+cases = [
+ ("clean pass", ok_log, 1, ("pass", 2, 0, 0)),
+ ("guest forgot to propagate a FAIL", ok_log + "FAIL: wrmsr high bits\n", 1, ("fail", 2, 1, 0)),
+ ("guest exit code 3 is a fail", ok_log, 7, ("fail", 2, 0, 0)),
+ ("code 77 is a skip", "SKIP: nested (not supported)\n", 155, ("skip", 0, 0, 1)),
+ ("QEMU died: even status", ok_log, 0, ("error", 2, 0, 0)),
+ ("QEMU killed by timeout: even status 124", "", 124, ("error", 0, 0, 0)),
+ ("words inside a line are not results", "note: PASS: not a result\n  FAIL: indented\nPASS: real\n", 1, ("pass", 1, 0, 0)),
+ ("mixed pass/skip with code 0", "PASS: a\nSKIP: b (no pmu)\n", 1, ("pass", 1, 0, 1)),
+]
+bad = 0
+for name, log, st, want in cases:
+    r = judge(log, st)
+    got = (r.get("verdict"), r.get("passed"), r.get("failed"), r.get("skipped"))
+    ok = got == want
+    print(("ok:   " if ok else "FAIL: ") + name)
+    bad |= (not ok)
+sys.exit(bad)
+N

@@ -1,0 +1,226 @@
+id: LNX-332
+title: 'Hypervisor Development: KVM, QEMU & VirtualBox'
+summary: 'How hypervisors are built and changed: the CPU''s virtualization extensions and nested paging, the KVM ioctl API
+  and a minimal VMM, rust-vmm, virtio and vhost back ends, QEMU device models and qtest, KVM internals and exit tracing, KVM
+  testing, interrupt and timer virtualization, VirtualBox''s source and its KVM backend, and the road to upstream acceptance.
+  Labs are user-space models so every exercise runs in CI.'
+hours: 48
+coverage: full
+outcomes:
+- Explain VM exits, the VMCS or VMCB and the cost of two-dimensional paging
+- Write the run loop of a KVM-based VMM and handle its exits
+- Build a guest memory map and a Rust VMM structure from shared crates
+- Implement the device side of a virtqueue with validation, and a vhost-user parser
+- Write a QEMU device model test with qtest and read the QOM structure
+- Trace and rank VM exits and choose a first optimisation
+- Judge hypervisor test runs from logs and exit status
+- Encode MSI messages and explain APICv and posted interrupts
+- Navigate the VirtualBox source tree and plan a backend patch
+- Prepare a patch for KVM or QEMU review
+modules:
+- id: foundations
+  title: CPU support and the KVM API
+  lessons:
+  - topic: LNX-332-T01
+    title: 'Hardware virtualization: VT-x/AMD-V, VMCS/VMCB, EPT/NPT, VM exits'
+    file: lessons/LNX-332-T01.md
+    minutes: 60
+  - topic: LNX-332-T02
+    title: 'The KVM API: /dev/kvm ioctls and a minimal C VMM'
+    file: lessons/LNX-332-T02.md
+    minutes: 60
+  - topic: LNX-332-T03
+    title: A Rust VMM with rust-vmm crates that boots Linux
+    file: lessons/LNX-332-T03.md
+    minutes: 55
+- id: devices
+  title: Virtio, vhost and QEMU devices
+  lessons:
+  - topic: LNX-332-T04
+    title: 'Virtio from scratch: virtqueues and a device back end in your VMM'
+    file: lessons/LNX-332-T04.md
+    minutes: 65
+  - topic: LNX-332-T05
+    title: 'vhost and vhost-user: kernel and out-of-process back ends'
+    file: lessons/LNX-332-T05.md
+    minutes: 55
+  - topic: LNX-332-T06
+    title: 'QEMU device models: QOM, a PCI device, qtest'
+    file: lessons/LNX-332-T06.md
+    minutes: 60
+- id: internals
+  title: Internals, testing and interrupts
+  lessons:
+  - topic: LNX-332-T07
+    title: 'KVM internals: modified kvm.ko, tracing exits with perf kvm'
+    file: lessons/LNX-332-T07.md
+    minutes: 55
+  - topic: LNX-332-T08
+    title: 'Testing KVM: kvm-unit-tests and KVM selftests'
+    file: lessons/LNX-332-T08.md
+    minutes: 45
+  - topic: LNX-332-T09
+    title: 'Interrupt and timer virtualization: APICv, posted interrupts, MSI routing'
+    file: lessons/LNX-332-T09.md
+    minutes: 60
+- id: products
+  title: VirtualBox and upstream
+  lessons:
+  - topic: LNX-332-T10
+    title: 'VirtualBox from source: build OSE, VMM architecture, Main API and SDK'
+    file: lessons/LNX-332-T10.md
+    minutes: 60
+  - topic: LNX-332-T11
+    title: Patching VirtualBox's KVM backend
+    file: lessons/LNX-332-T11.md
+    minutes: 55
+  - topic: LNX-332-T12
+    title: 'Upstreaming to KVM and QEMU: lists, style, review'
+    file: lessons/LNX-332-T12.md
+    minutes: 45
+labs:
+- id: ept-walk
+  topic: LNX-332-T01
+  title: A two-dimensional page walk
+  env: C
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - python3
+- id: kvm-run-loop
+  topic: LNX-332-T02
+  title: The run loop of a minimal VMM
+  env: C
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - python3
+- id: guest-memmap
+  topic: LNX-332-T03
+  title: A guest memory map
+  env: C
+  license: GPL-2.0-only
+  minutes: 35
+  packages:
+  - python3
+- id: virtqueue-sim
+  topic: LNX-332-T04
+  title: The device side of a split virtqueue
+  env: C
+  license: GPL-2.0-only
+  minutes: 50
+  packages:
+  - python3
+- id: vhost-user-msgs
+  topic: LNX-332-T05
+  title: Parse a vhost-user message stream
+  env: C
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - python3
+- id: qtest-edu
+  topic: LNX-332-T06
+  title: A register model tested with qtest-style commands
+  env: C
+  license: GPL-2.0-only
+  minutes: 45
+  packages:
+  - python3
+- id: exit-stats
+  topic: LNX-332-T07
+  title: Rank VM exits and choose the first action
+  env: C
+  license: GPL-2.0-only
+  minutes: 35
+  packages:
+  - python3
+- id: test-verdict
+  topic: LNX-332-T08
+  title: Judge a guest test run
+  env: C
+  license: GPL-2.0-only
+  minutes: 35
+  packages:
+  - python3
+- id: msi-route
+  topic: LNX-332-T09
+  title: Encode and decode MSI messages
+  env: C
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - python3
+- id: vbox-layers
+  topic: LNX-332-T10
+  title: Check include direction between source layers
+  env: C
+  license: GPL-2.0-only
+  minutes: 35
+  packages:
+  - python3
+- id: nem-backend
+  topic: LNX-332-T11
+  title: A backend contract and an exit mapping
+  env: C
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - python3
+- id: patch-lint
+  topic: LNX-332-T12
+  title: Lint a mailed patch
+  env: C
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - python3
+quizzes:
+- id: LNX-332-T01
+  topic: LNX-332-T01
+  title: 'Quiz: Hardware virtualization'
+  file: quizzes/LNX-332-T01.yaml
+- id: LNX-332-T02
+  topic: LNX-332-T02
+  title: 'Quiz: The KVM API'
+  file: quizzes/LNX-332-T02.yaml
+- id: LNX-332-T03
+  topic: LNX-332-T03
+  title: 'Quiz: A Rust VMM'
+  file: quizzes/LNX-332-T03.yaml
+- id: LNX-332-T04
+  topic: LNX-332-T04
+  title: 'Quiz: Virtio'
+  file: quizzes/LNX-332-T04.yaml
+- id: LNX-332-T05
+  topic: LNX-332-T05
+  title: 'Quiz: vhost and vhost-user'
+  file: quizzes/LNX-332-T05.yaml
+- id: LNX-332-T06
+  topic: LNX-332-T06
+  title: 'Quiz: QEMU device models'
+  file: quizzes/LNX-332-T06.yaml
+- id: LNX-332-T07
+  topic: LNX-332-T07
+  title: 'Quiz: KVM internals and tracing'
+  file: quizzes/LNX-332-T07.yaml
+- id: LNX-332-T08
+  topic: LNX-332-T08
+  title: 'Quiz: Testing KVM'
+  file: quizzes/LNX-332-T08.yaml
+- id: LNX-332-T09
+  topic: LNX-332-T09
+  title: 'Quiz: Interrupt and timer virtualization'
+  file: quizzes/LNX-332-T09.yaml
+- id: LNX-332-T10
+  topic: LNX-332-T10
+  title: 'Quiz: VirtualBox from source'
+  file: quizzes/LNX-332-T10.yaml
+- id: LNX-332-T11
+  topic: LNX-332-T11
+  title: 'Quiz: Patching a KVM backend'
+  file: quizzes/LNX-332-T11.yaml
+- id: LNX-332-T12
+  topic: LNX-332-T12
+  title: 'Quiz: Upstreaming to KVM and QEMU'
+  file: quizzes/LNX-332-T12.yaml
