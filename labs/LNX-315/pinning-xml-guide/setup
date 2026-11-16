@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > host-topology.txt <<'N'
+# lscpu -e (CPU NODE SOCKET CORE), trimmed: two sockets, SMT on, siblings are cpu and cpu+16
+CPU NODE SOCKET CORE
+0   0    0      0
+1   0    0      1
+2   0    0      2
+3   0    0      3
+4   0    0      4
+5   0    0      5
+6   0    0      6
+7   0    0      7
+8   1    1      8
+9   1    1      9
+10  1    1      10
+11  1    1      11
+12  1    1      12
+13  1    1      13
+14  1    1      14
+15  1    1      15
+16  0    0      0
+17  0    0      1
+18  0    0      2
+19  0    0      3
+20  0    0      4
+21  0    0      5
+22  0    0      6
+23  0    0      7
+24  1    1      8
+25  1    1      9
+26  1    1      10
+27  1    1      11
+28  1    1      12
+29  1    1      13
+30  1    1      14
+31  1    1      15
+# numactl --hardware: node 0 and node 1 each have 128 GiB; 1 GiB hugepages: 64 reserved on node 1
+# The NVMe drive used by the guest is on node 1 (/sys/class/block/nvme0n1/device/numa_node = 1).
+# Housekeeping (host OS, emulator and I/O threads) uses cores 15 and 31 on node 1.
+N
+cat > requirements.txt <<'N'
+Guest "db01": 8 vCPUs shaped as 1 socket x 4 cores x 2 threads, 32 GiB RAM.
+Run it on node 1, vCPUs on four whole cores 8-11 and their siblings 24-27 (vCPU 0,1 = core 8 and 24; and so on).
+Memory from node 1 only (strict), backed by 1 GiB hugepages.
+Emulator thread and the IOThread pinned to the housekeeping CPUs 15 and 31.
+Disk: virtio-blk /dev/nvme0n1, cache none, io native, 8 queues, handled by IOThread 1.
+CPU model: host-passthrough.
+N
+[ -f db01.xml ] || echo "<!-- TODO: the domain XML fragments: vcpu, iothreads, cputune, numatune, memoryBacking, cpu, disk -->" > db01.xml

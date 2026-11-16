@@ -46,6 +46,10 @@ modules:
     title: SR-IOV virtual functions for NICs and GPUs
     file: lessons/LNX-315-T02.md
     minutes: 45
+  - topic: LNX-315-T03
+    title: 'Performance: NUMA, CPU pinning, hugepages, IOThreads, virtio-blk vs virtio-scsi'
+    file: lessons/LNX-315-T03.md
+    minutes: 65
 labs:
 - id: vfio-plan-guide
   topic: LNX-315-T01
@@ -59,6 +63,12 @@ labs:
   env: H
   license: MIT
   minutes: 35
+- id: pinning-xml-guide
+  topic: LNX-315-T03
+  title: Write the pinning and NUMA XML for a database guest
+  env: S
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-315-T01
   topic: LNX-315-T01
@@ -68,3 +78,7 @@ quizzes:
   topic: LNX-315-T02
   title: 'Quiz: SR-IOV virtual functions for NICs and GPUs'
   file: quizzes/LNX-315-T02.yaml
+- id: LNX-315-T03
+  topic: LNX-315-T03
+  title: 'Quiz: Performance: NUMA, CPU pinning, hugepages, IOThreads, virtio-blk vs virtio-scsi'
+  file: quizzes/LNX-315-T03.yaml
