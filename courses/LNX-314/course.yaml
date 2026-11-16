@@ -75,6 +75,10 @@ modules:
     title: mTLS and segmentation
     file: lessons/LNX-314-T09.md
     minutes: 55
+  - topic: LNX-314-T10
+    title: Production threat detection
+    file: lessons/LNX-314-T10.md
+    minutes: 50
 labs:
 - id: metadata-guard
   topic: LNX-314-T01
@@ -144,6 +148,12 @@ labs:
   env: C
   license: MIT
   minutes: 30
+- id: incident-drill-guide
+  topic: LNX-314-T10
+  title: Run an incident drill and write it up
+  env: O
+  license: MIT
+  minutes: 60
 quizzes:
 - id: LNX-314-T01
   topic: LNX-314-T01
@@ -181,3 +191,7 @@ quizzes:
   topic: LNX-314-T09
   title: 'Quiz: mTLS and segmentation'
   file: quizzes/LNX-314-T09.yaml
+- id: LNX-314-T10
+  topic: LNX-314-T10
+  title: 'Quiz: Production threat detection'
+  file: quizzes/LNX-314-T10.yaml

@@ -6,7 +6,7 @@ started: '2026-11-16'
 updated: '2026-11-16'
 phases:
   synth:
-    state: in-progress
+    state: done
     units: 10
     done:
     - LNX-314-T01
@@ -18,8 +18,9 @@ phases:
     - LNX-314-T07
     - LNX-314-T08
     - LNX-314-T09
+    - LNX-314-T10
   lessons:
-    state: in-progress
+    state: done
     units: 10
     done:
     - LNX-314-T01
@@ -31,8 +32,9 @@ phases:
     - LNX-314-T07
     - LNX-314-T08
     - LNX-314-T09
+    - LNX-314-T10
   quizzes:
-    state: in-progress
+    state: done
     units: 10
     done:
     - LNX-314-T01
@@ -44,8 +46,9 @@ phases:
     - LNX-314-T07
     - LNX-314-T08
     - LNX-314-T09
+    - LNX-314-T10
   labs:
-    state: in-progress
+    state: done
     units: 10
     done:
     - LNX-314-T01
@@ -57,6 +60,7 @@ phases:
     - LNX-314-T07
     - LNX-314-T08
     - LNX-314-T09
+    - LNX-314-T10
   checks:
     state: todo
     units: 0
@@ -100,3 +104,7 @@ log:
 - '2026-11-16 lessons: LNX-314-T09'
 - '2026-11-16 quizzes: LNX-314-T09'
 - '2026-11-16 labs: LNX-314-T09'
+- '2026-11-16 synth: LNX-314-T10'
+- '2026-11-16 lessons: LNX-314-T10'
+- '2026-11-16 quizzes: LNX-314-T10'
+- '2026-11-16 labs: LNX-314-T10'
