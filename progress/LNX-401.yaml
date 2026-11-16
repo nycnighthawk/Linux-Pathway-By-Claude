@@ -6,9 +6,15 @@ started: '2026-11-16'
 updated: '2026-11-16'
 phases:
   synth:
-    state: todo
+    state: done
     units: 6
-    done: []
+    done:
+    - LNX-401-T01
+    - LNX-401-T02
+    - LNX-401-T03
+    - LNX-401-T04
+    - LNX-401-T05
+    - LNX-401-T06
   brief:
     state: todo
     units: 0
@@ -28,3 +34,4 @@ phases:
 parked: null
 log:
 - 2026-11-16 started
+- '2026-11-16 synth: LNX-401-T01, LNX-401-T02, LNX-401-T03, LNX-401-T04, LNX-401-T05, LNX-401-T06'
