@@ -1,0 +1,47 @@
+title: 'Quiz: Testing KVM'
+questions:
+- id: which
+  prompt: Which suite is better for checking instruction behaviour inside a guest?
+  choices:
+  - kvm-unit-tests
+  - A shell script
+  - A web browser
+  - Nothing
+  answer: [0]
+  explain: 'A) correct: small freestanding guests. B) wrong. C) wrong. D) wrong.'
+- id: ucall
+  prompt: What is a ucall in KVM selftests?
+  choices:
+  - A way for guest code to report results to the host harness
+  - A user-space call to the BIOS
+  - A network request
+  - A kernel panic
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: skip
+  prompt: A test needs nested virtualization that the host lacks. What should it do?
+  choices:
+  - Fail
+  - Report skip with a reason
+  - Pretend to pass
+  - Crash the host
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: status
+  prompt: With an isa-debug-exit device, what QEMU exit status does a guest write of 0 produce?
+  choices:
+  - '0'
+  - '1'
+  - '2'
+  - '255'
+  answer: [1]
+  explain: 'A) wrong. B) correct: (0 << 1) | 1. C) wrong. D) wrong.'
+- id: both
+  prompt: Why must a runner read both the log and the exit status?
+  choices:
+  - A guest may print FAIL yet exit with success, or QEMU may die for its own reasons
+  - Logs are always wrong
+  - Status is always wrong
+  - It is a style rule
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

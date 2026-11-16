@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("verdict.py").read()
+a = s.index("def judge")
+s = s[:a] + '''def judge(log_text, status):
+    p = f = k = 0
+    for line in log_text.splitlines():
+        if line.startswith("PASS:"):
+            p += 1
+        elif line.startswith("FAIL:"):
+            f += 1
+        elif line.startswith("SKIP:"):
+            k += 1
+    out = {"passed": p, "failed": f, "skipped": k}
+    if status % 2 == 0:
+        out["verdict"] = "error"
+        return out
+    code = (status - 1) // 2
+    if code == 0:
+        out["verdict"] = "fail" if f else "pass"
+    elif code == 77:
+        out["verdict"] = "skip"
+    else:
+        out["verdict"] = "fail"
+    return out
+'''
+open("verdict.py", "w").write(s)
+N

@@ -16,6 +16,7 @@ phases:
     - LNX-332-T05
     - LNX-332-T06
     - LNX-332-T07
+    - LNX-332-T08
   lessons:
     state: in-progress
     units: 12
@@ -27,6 +28,7 @@ phases:
     - LNX-332-T05
     - LNX-332-T06
     - LNX-332-T07
+    - LNX-332-T08
   quizzes:
     state: in-progress
     units: 12
@@ -38,6 +40,7 @@ phases:
     - LNX-332-T05
     - LNX-332-T06
     - LNX-332-T07
+    - LNX-332-T08
   labs:
     state: in-progress
     units: 12
@@ -49,6 +52,7 @@ phases:
     - LNX-332-T05
     - LNX-332-T06
     - LNX-332-T07
+    - LNX-332-T08
   checks:
     state: todo
     units: 0
@@ -84,3 +88,7 @@ log:
 - '2026-11-16 lessons: LNX-332-T07'
 - '2026-11-16 quizzes: LNX-332-T07'
 - '2026-11-16 labs: LNX-332-T07'
+- '2026-11-16 synth: LNX-332-T08'
+- '2026-11-16 lessons: LNX-332-T08'
+- '2026-11-16 quizzes: LNX-332-T08'
+- '2026-11-16 labs: LNX-332-T08'

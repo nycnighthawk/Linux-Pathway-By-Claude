@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > verdict.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""Judge one guest test run from its console log and QEMU's exit status.
+
+The guest ends the VM through a debug-exit device. QEMU then exits with
+status (code << 1) | 1 for the value `code` the guest wrote, so a guest that
+wrote 0 gives QEMU status 1.  This lab uses these conventions (they follow
+the kvm-unit-tests runner in spirit; to verify the exact details there):
+
+  * an EVEN status (including 0) means QEMU stopped for its own reasons:
+    verdict "error"
+  * otherwise code = (status - 1) // 2
+      code 0   -> "pass", unless the log has a FAIL line, then "fail"
+      code 77  -> "skip"
+      others   -> "fail"
+  * log lines look like  "PASS: name", "FAIL: name", "SKIP: name (reason)".
+    Count them (a line must START with the word and a colon).
+
+judge(log_text, status) returns {"verdict": ..., "passed": n, "failed": n,
+"skipped": n}.
+"""
+
+
+def judge(log_text, status):
+    # TODO
+    return {"verdict": "error", "passed": 0, "failed": 0, "skipped": 0}
+N
