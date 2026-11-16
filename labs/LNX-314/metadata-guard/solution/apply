@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > block.nft <<'N'
+table ip nodeguard {
+  chain forward {
+    type filter hook forward priority filter; policy accept;
+    iifname "v-pod-h" ip daddr 169.254.169.254 drop
+  }
+}
+N
+cat > kubelet.yaml <<'N'
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    enabled: true
+  x509:
+    clientCAFile: /etc/kubernetes/pki/ca.crt
+authorization:
+  mode: Webhook
+readOnlyPort: 0
+protectKernelDefaults: true
+rotateCertificates: true
+N

@@ -1,0 +1,56 @@
+id: LNX-314
+title: Kubernetes & Cloud-Native Security
+summary: 'Securing a Kubernetes cluster and the workloads on it: configuration benchmarks and metadata protection, RBAC and
+  API access, AppArmor and seccomp, Pod Security Admission and policy engines, encryption of Secrets at rest, supply chain
+  verification with signatures and SBOMs, runtime detection with Falco and audit logs, sandboxed runtimes, mTLS and segmentation,
+  and production threat detection.'
+hours: 45
+coverage: full
+outcomes:
+- Audit a cluster against a benchmark and close the metadata endpoint to workloads
+- Minimise RBAC and API access and prove the result with access reviews
+- Confine workloads with AppArmor, seccomp, Pod Security Admission and admission policy
+- Encrypt Secrets at rest and rotate the keys
+- Verify images with signatures and SBOMs and enforce the result at admission
+- Detect and investigate attacks with Falco rules and audit logs
+- Isolate untrusted workloads with sandboxed runtimes and segment traffic with mTLS
+certifications:
+- cert: CKS
+  objectives:
+  - D1
+  - D2
+  - D3
+  - D4
+  - D5
+  - D6
+- cert: KCSA
+  objectives:
+  - D2
+  - D3
+  - D4
+  - D5
+modules:
+- id: harden
+  title: Hardening the cluster and the node
+  lessons:
+  - topic: LNX-314-T01
+    title: 'Cluster setup: kube-bench, metadata protection'
+    file: lessons/LNX-314-T01.md
+    minutes: 55
+labs:
+- id: metadata-guard
+  topic: LNX-314-T01
+  title: Keep pods away from the metadata endpoint
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - iproute2
+  - nftables
+  - curl
+  - python3-yaml
+quizzes:
+- id: LNX-314-T01
+  topic: LNX-314-T01
+  title: 'Quiz: Cluster setup: kube-bench, metadata protection'
+  file: quizzes/LNX-314-T01.yaml

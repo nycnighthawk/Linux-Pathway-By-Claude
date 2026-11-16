@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -x netenv ] || { echo "FAIL: run setup first"; exit 1; }
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+fetch() { # fetch <ns|host> <url>
+  if [ "$1" = host ]; then curl -s -m 2 -o /dev/null -w '%{http_code}' "$2" 2>/dev/null
+  else $SUDO ip netns exec "$1" curl -s -m 2 -o /dev/null -w '%{http_code}' "$2" 2>/dev/null; fi
+}
+./netenv up
+[ "$(fetch host http://169.254.169.254/)" = 200 ] || fail "test network is broken: the host cannot reach the metadata namespace"
+[ "$(fetch pod http://10.30.0.2/)" = 200 ] || fail "test network is broken: the pod cannot reach the internal service"
+if $SUDO nft -f block.nft 2>/dev/null; then ok "block.nft loads"; else fail "block.nft does not load with nft -f"; fi
+[ "$(fetch pod http://169.254.169.254/)" = 000 ] && ok "pod cannot reach the metadata address" || fail "pod can still reach 169.254.169.254"
+[ "$(fetch pod http://10.30.0.2/)" = 200 ] && ok "pod still reaches the internal service" || fail "pod lost access to the internal service (rule is too broad)"
+[ "$(fetch host http://169.254.169.254/)" = 200 ] && ok "the node itself still reaches metadata" || fail "the node lost access to metadata (do not block host traffic)"
+$SUDO nft list table ip nodeguard 2>/dev/null | grep -q "hook forward" && ok "rule lives in a forward hook chain" || fail "use a chain of type filter hook forward in table ip nodeguard"
+python3 - <<'PY' || bad=1
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+try:
+    k = yaml.safe_load(open("kubelet.yaml"))
+    a = k.get("authentication") or {}
+    chk((a.get("anonymous") or {}).get("enabled") is False, "kubelet: anonymous authentication off")
+    chk((a.get("webhook") or {}).get("enabled") is True, "kubelet: webhook authentication on")
+    chk((a.get("x509") or {}).get("clientCAFile"), "kubelet: client CA file set")
+    chk((k.get("authorization") or {}).get("mode") == "Webhook", "kubelet: authorization mode Webhook")
+    chk(k.get("readOnlyPort") == 0, "kubelet: read-only port disabled (0)")
+    chk(k.get("protectKernelDefaults") is True, "kubelet: protectKernelDefaults true")
+    chk(k.get("rotateCertificates") is True, "kubelet: certificate rotation on")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY
+./netenv down
+exit $bad
