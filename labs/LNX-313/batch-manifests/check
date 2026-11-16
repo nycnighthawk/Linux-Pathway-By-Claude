@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def expand(f, lo, hi):
+    out = set()
+    for part in f.split(","):
+        step = 1
+        if "/" in part: part, st = part.split("/"); step = int(st)
+        if part == "*": a, b = lo, hi
+        elif "-" in part: a, b = map(int, part.split("-"))
+        else: a = b = int(part)
+        if "/" in f and "-" not in part and part != "*" and False: pass
+        out |= set(range(a, b + 1, step))
+    return out
+try:
+    docs = [d for d in yaml.safe_load_all(open("batch.yaml")) if d]
+    cj = next(d for d in docs if d["kind"] == "CronJob" and d["metadata"]["name"] == "report")
+    s = cj["spec"]
+    m, h, dom, mon, dow = s["schedule"].split()
+    chk(expand(m, 0, 59) == {0, 15, 30, 45} and expand(h, 0, 23) == {2, 3, 4, 5}, "minutes 0/15/30/45 during hours 2 to 5")
+    chk(dom == "*" and mon == "*" and expand(dow, 0, 6) - {7} == {1, 2, 3, 4, 5}, "Monday to Friday only")
+    chk(s.get("timeZone") == "Europe/Berlin", "timeZone Europe/Berlin")
+    chk(s.get("concurrencyPolicy") == "Forbid" and s.get("startingDeadlineSeconds") == 600, "Forbid and a starting deadline of 600")
+    chk(s.get("successfulJobsHistoryLimit") == 3 and s.get("failedJobsHistoryLimit") == 3, "history limits 3 and 3")
+    js = s["jobTemplate"]["spec"]
+    chk(js.get("backoffLimit") == 3 and js.get("ttlSecondsAfterFinished") == 3600 and js.get("activeDeadlineSeconds") == 900, "back-off, TTL and deadline")
+    chk(js["template"]["spec"].get("restartPolicy") == "Never", "restartPolicy Never")
+    job = next(d for d in docs if d["kind"] == "Job" and d["metadata"]["name"] == "convert")
+    j = job["spec"]
+    chk(job["metadata"]["namespace"] == "ops" and j.get("completions") == 100 and j.get("parallelism") == 10 and j.get("completionMode") == "Indexed" and j.get("backoffLimit") == 6, "indexed Job 100/10, back-off 6")
+    rules = (j.get("podFailurePolicy") or {}).get("rules") or []
+    ig = [r for r in rules if r.get("action") == "Ignore" and any(c.get("type") == "DisruptionTarget" and c.get("status") == "True" for c in r.get("onPodConditions", []))]
+    fj = [r for r in rules if r.get("action") == "FailJob" and (r.get("onExitCodes") or {}).get("containerName") == "convert"
+          and (r["onExitCodes"].get("operator") == "In") and r["onExitCodes"].get("values") == [42]]
+    chk(bool(ig), "Ignore rule for DisruptionTarget")
+    chk(bool(fj), "FailJob rule for exit code 42 of container convert")
+    chk(j["template"]["spec"].get("restartPolicy") in ("Never", "OnFailure"), "Job restartPolicy is Never or OnFailure")
+    a = dict(l.split("=", 1) for l in open("answer.txt").read().split() if "=" in l)
+    chk(a.get("runs_per_weekday") == "16", "16 runs per weekday")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY

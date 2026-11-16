@@ -44,6 +44,10 @@ modules:
     title: Rolling, blue/green, canary
     file: lessons/LNX-313-T04.md
     minutes: 50
+  - topic: LNX-313-T05
+    title: Jobs and CronJobs
+    file: lessons/LNX-313-T05.md
+    minutes: 50
 labs:
 - id: pod-with-sidecar
   topic: LNX-313-T01
@@ -69,6 +73,12 @@ labs:
   env: C
   license: MIT
   minutes: 30
+- id: batch-manifests
+  topic: LNX-313-T05
+  title: A safe CronJob and an indexed Job
+  env: C
+  license: MIT
+  minutes: 30
 quizzes:
 - id: LNX-313-T01
   topic: LNX-313-T01
@@ -86,3 +96,7 @@ quizzes:
   topic: LNX-313-T04
   title: 'Quiz: Rolling, blue/green, canary'
   file: quizzes/LNX-313-T04.yaml
+- id: LNX-313-T05
+  topic: LNX-313-T05
+  title: 'Quiz: Jobs and CronJobs'
+  file: quizzes/LNX-313-T05.yaml

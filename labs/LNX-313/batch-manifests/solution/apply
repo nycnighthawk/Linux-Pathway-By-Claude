@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > batch.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: batch/v1
+kind: CronJob
+metadata: {name: report, namespace: ops}
+spec:
+  schedule: "*/15 2-5 * * 1-5"
+  timeZone: Europe/Berlin
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      ttlSecondsAfterFinished: 3600
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - {name: report, image: "registry.example/report:1"}
+---
+apiVersion: batch/v1
+kind: Job
+metadata: {name: convert, namespace: ops}
+spec:
+  completions: 100
+  parallelism: 10
+  completionMode: Indexed
+  backoffLimit: 6
+  podFailurePolicy:
+    rules:
+      - action: Ignore
+        onPodConditions:
+          - {type: DisruptionTarget, status: "True"}
+      - action: FailJob
+        onExitCodes:
+          containerName: convert
+          operator: In
+          values: [42]
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - {name: convert, image: "registry.example/convert:1"}
+J
+echo "runs_per_weekday=16" > answer.txt
