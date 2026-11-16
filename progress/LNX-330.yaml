@@ -1,7 +1,7 @@
 item: LNX-330
 label: 'Kernel Development I: Workflow & Tooling'
 branch: build/LNX-330
-state: in-progress
+state: done
 started: '2026-11-16'
 updated: '2026-11-16'
 phases:
@@ -66,7 +66,7 @@ phases:
     - LNX-330-T10
     - LNX-330-T11
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -116,3 +116,6 @@ log:
 - '2026-11-16 lessons: LNX-330-T11'
 - '2026-11-16 quizzes: LNX-330-T11'
 - '2026-11-16 labs: LNX-330-T11'
+- '2026-11-16 checks: done'
+- 2026-11-16 finished
+finished: '2026-11-16'
