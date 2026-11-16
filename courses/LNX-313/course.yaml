@@ -59,6 +59,10 @@ modules:
     title: GitOps with Argo CD or Flux
     file: lessons/LNX-313-T07.md
     minutes: 55
+  - topic: LNX-313-T08
+    title: An operator with kubebuilder
+    file: lessons/LNX-313-T08.md
+    minutes: 60
 labs:
 - id: pod-with-sidecar
   topic: LNX-313-T01
@@ -102,6 +106,12 @@ labs:
   env: C
   license: MIT
   minutes: 35
+- id: reconcile-loop
+  topic: LNX-313-T08
+  title: Write the reconcile function of a WebApp operator
+  env: C
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-313-T01
   topic: LNX-313-T01
@@ -131,3 +141,7 @@ quizzes:
   topic: LNX-313-T07
   title: 'Quiz: GitOps with Argo CD or Flux'
   file: quizzes/LNX-313-T07.yaml
+- id: LNX-313-T08
+  topic: LNX-313-T08
+  title: 'Quiz: An operator with kubebuilder'
+  file: quizzes/LNX-313-T08.yaml

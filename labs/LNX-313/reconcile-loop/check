@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 -I - <<'PY'
+import sys, copy
+sys.path.insert(0, ".")
+import importlib
+from fakeapi import FakeAPI
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+try:
+    R = importlib.import_module("reconciler")
+    F = R.FINALIZER
+    NS = "shop"
+    def webapp(**spec):
+        s = {"image": "web:1", "replicas": 3}; s.update(spec)
+        return {"kind": "WebApp", "metadata": {"name": "w", "namespace": NS}, "spec": s}
+    api = FakeAPI()
+    app = api.create(webapp())
+    uid = app["metadata"]["uid"]
+    R.reconcile(api, NS, "w")
+    d = api.get("Deployment", NS, "w"); s = api.get("Service", NS, "w"); a = api.get("WebApp", NS, "w")
+    chk(F in a["metadata"].get("finalizers", []) and uid in api.external, "1 create: finalizer set and uid registered")
+    own = lambda o: any(r.get("uid") == uid and r.get("kind") == "WebApp" for r in o["metadata"].get("ownerReferences", []))
+    chk(bool(d) and bool(s) and own(d) and own(s), "1 create: Deployment and Service exist with owner references")
+    chk(d["spec"].get("replicas") == 3 and d["spec"].get("image") == "web:1", "1 create: Deployment carries replicas and image")
+    chk(api.get("Ingress", NS, "w") is None, "1 create: no Ingress without a host")
+    chk(a["status"].get("readyReplicas") == 0 and a["status"].get("observedGeneration") == a["metadata"]["generation"], "1 create: status readyReplicas 0, observedGeneration set")
+    R.reconcile(api, NS, "w"); n = api.writes
+    R.reconcile(api, NS, "w"); R.reconcile(api, NS, "w")
+    chk(api.writes == n, "2 steady state: further reconciles perform no writes")
+    a = api.get("WebApp", NS, "w"); a["spec"]["replicas"] = 5; api.update(a)
+    R.reconcile(api, NS, "w")
+    chk(api.get("Deployment", NS, "w")["spec"]["replicas"] == 5, "3 scale: Deployment follows the spec")
+    chk(api.get("WebApp", NS, "w")["status"]["observedGeneration"] == api.get("WebApp", NS, "w")["metadata"]["generation"], "3 scale: observedGeneration follows generation")
+    a = api.get("WebApp", NS, "w"); a["spec"]["host"] = "w.example.test"; api.update(a)
+    R.reconcile(api, NS, "w")
+    i = api.get("Ingress", NS, "w")
+    chk(bool(i) and i["spec"].get("host") == "w.example.test" and own(i), "4 host set: Ingress created with owner reference")
+    a = api.get("WebApp", NS, "w"); del a["spec"]["host"]; api.update(a)
+    R.reconcile(api, NS, "w")
+    chk(api.get("Ingress", NS, "w") is None, "4 host removed: Ingress deleted")
+    api.delete("Service", NS, "w")
+    R.reconcile(api, NS, "w")
+    chk(api.get("Service", NS, "w") is not None, "5 child deleted by hand: Service recreated")
+    d = api.get("Deployment", NS, "w"); d["status"] = {"readyReplicas": 5}; api.objects[("Deployment", NS, "w")]["status"] = d["status"]
+    R.reconcile(api, NS, "w")
+    st = api.get("WebApp", NS, "w")["status"]
+    cond = {c["type"]: c["status"] for c in st.get("conditions", [])}
+    chk(st.get("readyReplicas") == 5 and cond.get("Available") == "True", "6 ready: readyReplicas 5 and Available True")
+    api.objects[("Deployment", NS, "w")]["status"] = {"readyReplicas": 2}
+    R.reconcile(api, NS, "w")
+    cond = {c["type"]: c["status"] for c in api.get("WebApp", NS, "w")["status"].get("conditions", [])}
+    chk(cond.get("Available") == "False", "6 partial: Available False when fewer replicas are ready")
+    api.delete("WebApp", NS, "w")
+    chk(api.get("WebApp", NS, "w") is not None and api.get("WebApp", NS, "w")["metadata"].get("deletionTimestamp"), "7 delete: the finalizer keeps the object in terminating state")
+    R.reconcile(api, NS, "w")
+    chk(api.get("WebApp", NS, "w") is None and uid not in api.external, "7 delete: external state cleaned up and the object is gone")
+    chk(api.get("Deployment", NS, "w") is None and api.get("Service", NS, "w") is None, "7 delete: children garbage collected")
+    R.reconcile(api, NS, "w")
+    chk(True, "7 delete: reconcile of a missing object returns quietly")
+except Exception as e:
+    import traceback; traceback.print_exc()
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY

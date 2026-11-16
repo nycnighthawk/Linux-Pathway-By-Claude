@@ -1,0 +1,27 @@
+title: 'Quiz: operators'
+questions:
+- id: level
+  prompt: What does level-triggered mean for a reconciler?
+  choices: [It reads current state and acts on the difference regardless of the triggering event, It handles each event once, It runs only on create, It needs a queue per event type]
+  answer: [0]
+  explain: 'A) correct. B) wrong: that is edge-triggered. C) wrong. D) wrong.'
+- id: owner
+  prompt: What does an owner reference on a child give you? (select two)
+  choices: [Garbage collection with the parent, Child events trigger reconcile of the parent, Faster scheduling, Encryption]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: finalizer
+  prompt: Why does the operator add a finalizer to its custom resource?
+  choices: [To clean up external state before the object is removed, To speed up deletion, To lock the spec, To hide the object]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: hotloop
+  prompt: A controller writes its status on every reconcile and the status write triggers the next. What is the fix?
+  choices: [Write only when it changed and use the status subresource with predicates, Add sleep, Delete the CRD, Increase replicas]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: envtest
+  prompt: What does envtest provide?
+  choices: [A real API server and etcd without nodes or built-in controllers, A full cluster, A mock of Go, A container runtime]
+  answer: [0]
+  explain: 'A) correct: Pods never become ready, so tests set status by hand. B) wrong. C) wrong. D) wrong.'
