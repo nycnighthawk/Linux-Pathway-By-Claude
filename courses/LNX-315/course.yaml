@@ -83,6 +83,10 @@ modules:
     title: 'KubeVirt and OpenShift Virtualization: VMs on Kubernetes'
     file: lessons/LNX-315-T09.md
     minutes: 60
+  - topic: LNX-315-T10
+    title: 'Migrating from VMware: virt-v2v, migration toolkits'
+    file: lessons/LNX-315-T10.md
+    minutes: 60
 labs:
 - id: vfio-plan-guide
   topic: LNX-315-T01
@@ -148,6 +152,15 @@ labs:
   packages:
   - python3
   - python3-yaml
+- id: vmware-migration-plan
+  topic: LNX-315-T10
+  title: Plan a VMware migration wave and convert a disk
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - qemu-utils
+  - python3
 quizzes:
 - id: LNX-315-T01
   topic: LNX-315-T01
@@ -185,3 +198,7 @@ quizzes:
   topic: LNX-315-T09
   title: 'Quiz: KubeVirt and OpenShift Virtualization: VMs on Kubernetes'
   file: quizzes/LNX-315-T09.yaml
+- id: LNX-315-T10
+  topic: LNX-315-T10
+  title: 'Quiz: Migrating from VMware: virt-v2v, migration toolkits'
+  file: quizzes/LNX-315-T10.yaml
