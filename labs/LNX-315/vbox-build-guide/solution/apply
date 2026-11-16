@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > build.sh <<'N'
+#!/usr/bin/env bash
+set -eu
+VBoxManage createvm --name node1 --ostype Debian_64 --register
+VBoxManage modifyvm node1 --memory 2048 --cpus 2 --firmware efi --ioapic on --nic1 nat --nic2 hostonly --hostonlyadapter2 vboxnet0
+VBoxManage modifyvm node1 --natpf1 "ssh,tcp,,2222,,22"
+VBoxManage createmedium disk --filename "$HOME/vm/node1.vdi" --size 20480 --format VDI
+VBoxManage storagectl node1 --name SATA --add sata
+VBoxManage storageattach node1 --storagectl SATA --port 0 --device 0 --type hdd --medium "$HOME/vm/node1.vdi"
+VBoxManage storageattach node1 --storagectl SATA --port 1 --device 0 --type dvddrive --medium /isos/debian.iso
+VBoxManage snapshot node1 take base
+VBoxManage startvm node1 --type headless
+N
+cat > report.txt <<'N'
+adapter1_mode=nat
+adapter2_mode=hostonly
+bridged_would_expose_guest_to_lan=yes
+clone_needs_new_machine_id=yes
+snapshot_is_a_backup=no
+address_discovery_method=wait on the guestproperty the Guest Additions publish for the IP, then SSH
+headless_console_without_extension=a serial port redirected to a file or socket, or SSH once the guest has an address
+N

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > requirements.txt <<'N'
+Build a headless Debian 64-bit test VM named node1 with VBoxManage only (no GUI):
+- 2 CPUs, 2048 MB RAM, EFI firmware, I/O APIC on.
+- A 20 GB VDI disk on a SATA controller named SATA; the installer ISO is /isos/debian.iso on an IDE or SATA optical port.
+- Adapter 1 must reach the internet; adapter 2 must let the host SSH to the guest on a private network the office LAN cannot see.
+- Forward host port 2222 to guest port 22 on the NAT adapter.
+- Take a snapshot called base before the first upgrade.
+Then answer the questions in report.txt. The commands are only checked for shape; run them if VirtualBox is installed.
+N
+[ -f build.sh ] || printf '#!/usr/bin/env bash\n# one VBoxManage command per line\n' > build.sh
+[ -f report.txt ] || cat > report.txt <<'N'
+# Fill every key (key=value).
+adapter1_mode=
+adapter2_mode=
+bridged_would_expose_guest_to_lan=
+clone_needs_new_machine_id=
+snapshot_is_a_backup=
+address_discovery_method=
+headless_console_without_extension=
+N

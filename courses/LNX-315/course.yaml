@@ -61,6 +61,13 @@ modules:
     title: 'Firmware and confidential VMs: OVMF, Secure Boot, vTPM, SEV-SNP, TDX'
     file: lessons/LNX-315-T05.md
     minutes: 45
+- id: virtualbox-images
+  title: VirtualBox and images
+  lessons:
+  - topic: LNX-315-T06
+    title: 'VirtualBox administration: VBoxManage, headless VMs, Guest Additions, networking'
+    file: lessons/LNX-315-T06.md
+    minutes: 50
 labs:
 - id: vfio-plan-guide
   topic: LNX-315-T01
@@ -95,6 +102,12 @@ labs:
   env: H
   license: MIT
   minutes: 35
+- id: vbox-build-guide
+  topic: LNX-315-T06
+  title: Script a headless VirtualBox build
+  env: S
+  license: MIT
+  minutes: 40
 quizzes:
 - id: LNX-315-T01
   topic: LNX-315-T01
@@ -116,3 +129,7 @@ quizzes:
   topic: LNX-315-T05
   title: 'Quiz: Firmware and confidential VMs: OVMF, Secure Boot, vTPM, SEV-SNP, TDX'
   file: quizzes/LNX-315-T05.yaml
+- id: LNX-315-T06
+  topic: LNX-315-T06
+  title: 'Quiz: VirtualBox administration: VBoxManage, headless VMs, Guest Additions, networking'
+  file: quizzes/LNX-315-T06.yaml
