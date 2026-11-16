@@ -1,0 +1,56 @@
+title: 'Quiz: git bisect a regression'
+questions:
+- id: skipcode
+  prompt: Which exit status tells git bisect run that a commit cannot be tested?
+  choices:
+  - '0'
+  - '1'
+  - '125'
+  - '128'
+  answer: [2]
+  explain: 'A) wrong, good. B) wrong, bad. C) correct. D) wrong, 128 and above aborts the search.'
+- id: steps
+  prompt: About how many tests does bisection need for 10 000 commits?
+  choices:
+  - About 14
+  - About 100
+  - About 1 000
+  - 10 000
+  answer: [0]
+  explain: 'A) correct: log2(10 000) is about 13.3. B) wrong. C) wrong. D) wrong.'
+- id: flaky
+  prompt: A bug appears about one run in ten. How should the oracle treat it?
+  choices:
+  - One passing run is good enough
+  - Repeat the reproducer enough times, with the count chosen in advance, before calling a commit good
+  - Skip the commit
+  - Ignore the bug
+  answer: [1]
+  explain: 'A) wrong, a single pass proves nothing. B) correct. C) wrong. D) wrong.'
+- id: merge
+  prompt: Bisect ends on a merge commit whose parents both test good. What is likely?
+  choices:
+  - Git is broken
+  - The merge itself or its conflict resolution introduced the bug
+  - The tag is wrong
+  - Both parents are bad
+  answer: [1]
+  explain: 'A) wrong. B) correct: inspect the combined diff. C) wrong. D) wrong.'
+- id: terms
+  prompt: You want the commit that fixed a bug. What helps?
+  choices:
+  - git bisect with custom terms such as --term-old=broken --term-new=fixed
+  - git revert
+  - git blame only
+  - git bisect skip
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: report
+  prompt: What should a regression report to the maintainers include?
+  choices:
+  - Only the word regression
+  - Versions, configuration, hardware, symptom, logs, bisect log and the culprit commit
+  - A screenshot of the desktop
+  - A private mail to the release manager only
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong, keep it on the list.'
