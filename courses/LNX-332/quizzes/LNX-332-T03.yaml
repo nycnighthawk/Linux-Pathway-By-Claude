@@ -40,7 +40,7 @@ questions:
   prompt: Where does unsafe code usually remain in a Rust VMM?
   choices:
   - Everywhere in device logic
-  - At the edges: ioctls and memory mappings
+  - 'At the edges: ioctls and memory mappings'
   - Only in tests
   - Nowhere at all
   answer: [1]
