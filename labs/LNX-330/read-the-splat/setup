@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > kasan.log <<'N'
+[   41.201433] ==================================================================
+[   41.201950] BUG: KASAN: slab-use-after-free in foo_read+0x4a/0x120 [foo]
+[   41.202310] Read of size 8 at addr ffff888012345678 by task cat/1234
+[   41.202711]
+[   41.202790] CPU: 1 PID: 1234 Comm: cat Tainted: G           O       6.12.0-dbg #3
+[   41.203105] Call Trace:
+[   41.203150]  <TASK>
+[   41.203200]  dump_stack_lvl+0x5d/0x80
+[   41.203320]  print_report+0xc1/0x600
+[   41.203490]  kasan_report+0xb9/0xf0
+[   41.203600]  foo_read+0x4a/0x120 [foo]
+[   41.203710]  vfs_read+0xb2/0x340
+[   41.203820]  ksys_read+0x6c/0xe0
+[   41.203930]  do_syscall_64+0x4b/0x110
+[   41.204040]  </TASK>
+[   41.204100]
+[   41.204160] Allocated by task 1200:
+[   41.204230]  kasan_save_stack+0x33/0x60
+[   41.204330]  __kasan_kmalloc+0x8f/0xa0
+[   41.204420]  foo_probe+0x31/0x1c0 [foo]
+[   41.204510]  platform_probe+0x6a/0xd0
+[   41.204600]
+[   41.204650] Freed by task 1201:
+[   41.204720]  kasan_save_stack+0x33/0x60
+[   41.204810]  kfree+0xe8/0x2e0
+[   41.204880]  foo_remove+0x22/0x50 [foo]
+[   41.204970]  platform_remove+0x25/0x40
+[   41.205050] ==================================================================
+N
+cat > lockdep.log <<'N'
+[  112.400001] ======================================================
+[  112.400002] WARNING: possible circular locking dependency detected
+[  112.400003] 6.12.0-dbg #3 Tainted: G           O
+[  112.400004] ------------------------------------------------------
+[  112.400005] kworker/0:1/45 is trying to acquire lock:
+[  112.400006] ffff888004a0c0e8 (&foo->lock){+.+.}-{3:3}, at: foo_notify+0x2c/0x90 [foo]
+[  112.400007]
+[  112.400008] but task is already holding lock:
+[  112.400009] ffff888004a0d1f0 (&bar->lock){+.+.}-{3:3}, at: bar_update+0x41/0xa0 [bar]
+[  112.400010]
+[  112.400011] which lock already depends on the new lock.
+[  112.400012]
+[  112.400013] the existing dependency chain (in reverse order) is:
+[  112.400014]
+[  112.400015] -> #1 (&bar->lock){+.+.}-{3:3}:
+[  112.400016]        __mutex_lock+0x9a/0x9c0
+[  112.400017]        bar_register+0x1d/0x70 [bar]
+[  112.400018]        foo_probe+0x8c/0x1c0 [foo]
+[  112.400019]
+[  112.400020] -> #0 (&foo->lock){+.+.}-{3:3}:
+[  112.400021]        __mutex_lock+0x9a/0x9c0
+[  112.400022]        foo_notify+0x2c/0x90 [foo]
+[  112.400023]        bar_update+0x41/0xa0 [bar]
+[  112.400024]
+[  112.400025]  Possible unsafe locking scenario:
+[  112.400026]
+[  112.400027]        CPU0                    CPU1
+[  112.400028]        ----                    ----
+[  112.400029]   lock(&bar->lock);
+[  112.400030]                                lock(&foo->lock);
+[  112.400031]                                lock(&bar->lock);
+[  112.400032]   lock(&foo->lock);
+[  112.400033]
+[  112.400034]  *** DEADLOCK ***
+N
+cat > report.txt <<'N'
+# Fill in every value (one key=value per line). Lines starting with # are ignored.
+kasan_bug_type=
+kasan_function=
+kasan_access_size=
+kasan_alloc_function=
+kasan_free_function=
+lockdep_lock_a=
+lockdep_lock_b=
+lockdep_function_waiting=
+console_loglevel_for_warnings_and_worse=
+dyndbg_command=
+ftrace_commands=
+N
