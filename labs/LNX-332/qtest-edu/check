@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from edudev import Edu, BASE
+d = Edu()
+def t(cmd): return d.handle(cmd)
+b = BASE
+res = []
+res.append(("id register", t("readl 0x%x" % b) == "OK 0x10000ed"))
+res.append(("liveness before write", t("readl 0x%x" % (b + 4)) == "OK 0xffffffff"))
+res.append(("liveness write ok", t("writel 0x%x 0xdeadbeef" % (b + 4)) == "OK"))
+res.append(("liveness complement", t("readl 0x%x" % (b + 4)) == "OK 0x21524110"))
+t("writel 0x%x 5" % (b + 8))
+res.append(("factorial of 5", t("readl 0x%x" % (b + 8)) == "OK 0x78"))
+t("writel %d 12" % (b + 8))
+res.append(("factorial of 12, decimal address", t("readl 0x%x" % (b + 8)) == "OK 0x1c8cfc00"))
+t("writel 0x%x 13" % (b + 8))
+res.append(("factorial of 13 is rejected", t("readl 0x%x" % (b + 8)) == "OK 0xffffffff"))
+res.append(("status idle", t("readl 0x%x" % (b + 0x20)) == "OK 0x0"))
+t("writel 0x%x 0x80" % (b + 0x20))
+res.append(("interrupt enable sticks", t("readl 0x%x" % (b + 0x20)) == "OK 0x80"))
+res.append(("unknown register reads 0", t("readl 0x%x" % (b + 0x40)) == "OK 0x0"))
+res.append(("outside the window", t("readl 0x%x" % (b + 0x100)) == "FAIL"))
+res.append(("garbage command", t("frobnicate 1 2") == "FAIL" and t("readl zz") == "FAIL" and t("") == "FAIL"))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n)
+    bad |= (not ok)
+sys.exit(bad)
+N
