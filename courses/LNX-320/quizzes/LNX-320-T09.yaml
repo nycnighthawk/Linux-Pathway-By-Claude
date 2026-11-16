@@ -1,0 +1,32 @@
+title: 'Quiz: Capabilities, seccomp-bpf, namespaces, Landlock'
+questions:
+- id: arch
+  prompt: Why must a seccomp filter test the architecture value first?
+  choices: [Speed, Syscall numbers differ per ABI, so another entry path such as 32-bit could bypass number checks, The kernel requires it, It selects the errno]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong: it is not enforced. D) wrong.'
+- id: path
+  prompt: Why can seccomp not allow open only for /tmp?
+  choices: [Seccomp is too slow, A filter sees pointer values, not the strings behind them, open is not filterable, Paths are encrypted]
+  answer: [1]
+  explain: 'A) wrong. B) correct: use Landlock or an LSM for path rules. C) wrong. D) wrong.'
+- id: cap
+  prompt: Which is the narrowest way for a non-root service to bind port 80?
+  choices: [Run as root, CAP_NET_BIND_SERVICE as an ambient or file capability, CAP_SYS_ADMIN, Disable the firewall]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong: it is nearly root. D) wrong.'
+- id: order
+  prompt: Which statements about combining mechanisms are correct? (select two)
+  choices: [Install the seccomp filter last, because setup needs calls it forbids, Each layer should be tested with an attempt that must fail, Seccomp can be removed later with prctl, Landlock rules can be lifted by the process]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: filters can only be tightened. D) wrong: restrictions cannot be lifted.'
+- id: enosys
+  prompt: A filter returns EPERM for clone3 and threads stop working, while ENOSYS would have worked. Why?
+  choices: [glibc falls back to clone when it sees ENOSYS but not on EPERM, ENOSYS is faster, EPERM is a kernel bug, Threads need EPERM]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: userns
+  prompt: Inside a new user namespace a process is mapped to root. What can it do?
+  choices: [Load kernel modules, Act as root only over resources owned by that namespace, Read every file on the host, Change the host clock]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'

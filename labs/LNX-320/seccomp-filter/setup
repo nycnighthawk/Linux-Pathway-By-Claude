@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f filter_test
+cat > filter.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <linux/audit.h>
+#include <linux/filter.h>
+#include <linux/seccomp.h>
+#include <stddef.h>
+#include <sys/prctl.h>
+#include <sys/syscall.h>
+
+#if defined(__x86_64__)
+#define MY_ARCH AUDIT_ARCH_X86_64
+#elif defined(__aarch64__)
+#define MY_ARCH AUDIT_ARCH_AARCH64
+#else
+#error unsupported architecture
+#endif
+
+int install_filter(void)
+{
+    /* TODO: no_new_privs, architecture check, deny mkdir/mkdirat/socket with EPERM,
+     * kill on ptrace, allow the rest, then PR_SET_SECCOMP. */
+    return -1;
+}
+N

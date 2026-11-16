@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f filter.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+cat > .harness.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <sys/ptrace.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <unistd.h>
+int install_filter(void);
+static void run(const char *name, int (*fn)(void))
+{
+    fflush(stdout);
+    pid_t p = fork();
+    if (p == 0) {
+        if (install_filter() != 0) _exit(100);
+        _exit(fn());
+    }
+    int st;
+    waitpid(p, &st, 0);
+    if (WIFSIGNALED(st)) printf("%s=signal%d\n", name, WTERMSIG(st));
+    else printf("%s=exit%d\n", name, WEXITSTATUS(st));
+}
+static int t_read(void) { int fd = open("/etc/passwd", O_RDONLY); char b[8]; return fd >= 0 && read(fd, b, 8) > 0 && getpid() > 0 ? 0 : 1; }
+static int t_mkdir(void) { return mkdir("/tmp/seccomp-lab-dir", 0755) == -1 && errno == EPERM ? 0 : 1; }
+static int t_socket(void) { return socket(AF_INET, SOCK_STREAM, 0) == -1 && errno == EPERM ? 0 : 1; }
+static int t_ptrace(void) { ptrace(PTRACE_TRACEME, 0, 0, 0); return 0; }
+int main(void)
+{
+    run("read_ok", t_read);
+    run("mkdir_eperm", t_mkdir);
+    run("socket_eperm", t_socket);
+    run("ptrace", t_ptrace);
+    return 0;
+}
+N
+gcc -Wall -o filter_test .harness.c filter.c 2>cc.log || { fail "does not compile: $(head -3 cc.log)"; exit 1; }
+ok "compiles"
+rmdir /tmp/seccomp-lab-dir 2>/dev/null
+out=$(timeout 30 ./filter_test 2>&1)
+chk() { echo "$out" | grep -qx "$1" && ok "$2" || fail "$2 (expected line: $1; saw: $(echo "$out" | grep "^${1%%=*}="))"; }
+chk "read_ok=exit0" "reading files and getpid still work"
+chk "mkdir_eperm=exit0" "mkdir fails with EPERM"
+chk "socket_eperm=exit0" "socket fails with EPERM"
+chk "ptrace=signal31" "ptrace kills the process with SIGSYS"
+rmdir /tmp/seccomp-lab-dir 2>/dev/null
+grep -q 'AUDIT_ARCH\|MY_ARCH' filter.c && grep -q 'arch' filter.c && ok "architecture is checked" || fail "check the architecture in the filter"
+exit $bad
