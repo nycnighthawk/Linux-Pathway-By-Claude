@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > sbom_gate.py <<'N'
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+import json, re, sys
+BAD_LIC = {"GPL-3.0-only", "GPL-3.0-or-later", "AGPL-3.0-only"}
+def ver(v): return tuple(int(x) for x in re.findall(r"\d+", v)[:3])
+problems = []
+for c in json.load(open(sys.argv[1])).get("components", []):
+    if c["name"] == "log4j-core" and ver(c["version"]) < (2, 17, 1):
+        problems.append("log4j-core %s is older than 2.17.1" % c["version"])
+    lics = [(l.get("license") or {}).get("id") or (l.get("license") or {}).get("name") for l in c.get("licenses", [])]
+    if not any(lics): problems.append("%s has no licence" % c["name"])
+    if any(l in BAD_LIC for l in lics): problems.append("%s uses a disallowed licence" % c["name"])
+for p in problems: print("reject:", p)
+sys.exit(1 if problems else 0)
+N
+sed -i 's#registry.example/shop:1.4#registry.example/shop@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef#' deploy.yaml
+cat > policy.yaml <<'N'
+# SPDX-License-Identifier: MIT
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: verify-shop-images}
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 15
+  rules:
+    - name: signed-by-release-workflow
+      match: {any: [{resources: {kinds: [Pod]}}]}
+      verifyImages:
+        - imageReferences: ["registry.example/shop*"]
+          required: true
+          mutateDigest: true
+          verifyDigest: true
+          attestors:
+            - entries:
+                - keyless:
+                    subject: "https://github.com/example/shop/.github/workflows/release.yml@refs/heads/main"
+                    issuer: "https://token.actions.githubusercontent.com"
+                    rekor: {url: "https://rekor.sigstore.dev"}
+          attestations:
+            - type: https://cyclonedx.org/bom
+              conditions:
+                - all:
+                    - key: "{{ components[].licenses[].license.id }}"
+                      operator: AllNotIn
+                      value: [GPL-3.0-only, AGPL-3.0-only]
+N

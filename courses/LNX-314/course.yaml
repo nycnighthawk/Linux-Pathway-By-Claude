@@ -56,6 +56,10 @@ modules:
     title: Secrets encryption at rest
     file: lessons/LNX-314-T05.md
     minutes: 55
+  - topic: LNX-314-T06
+    title: 'Supply chain: cosign, SBOM, admission checks'
+    file: lessons/LNX-314-T06.md
+    minutes: 60
 labs:
 - id: metadata-guard
   topic: LNX-314-T01
@@ -97,6 +101,12 @@ labs:
   packages:
   - openssl
   - python3-yaml
+- id: image-policy
+  topic: LNX-314-T06
+  title: An SBOM gate
+  env: C
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-314-T01
   topic: LNX-314-T01
@@ -118,3 +128,7 @@ quizzes:
   topic: LNX-314-T05
   title: 'Quiz: Secrets encryption at rest'
   file: quizzes/LNX-314-T05.yaml
+- id: LNX-314-T06
+  topic: LNX-314-T06
+  title: 'Quiz: Supply chain: cosign, SBOM, admission checks'
+  file: quizzes/LNX-314-T06.yaml
