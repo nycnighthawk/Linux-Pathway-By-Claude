@@ -1,0 +1,253 @@
+id: LNX-320
+title: Linux System Programming
+summary: 'The Linux system call layer from user space: errno and strace, file I/O with locking and mmap, epoll and io_uring,
+  processes and daemons, signals and timers, pthreads and futexes with the memory model, local IPC with descriptor passing,
+  sockets, sandboxing with capabilities, seccomp, namespaces and Landlock, inotify and netlink, a ptrace tracer, libbpf CO-RE
+  and NUMA and cache measurement.'
+hours: 70
+coverage: full
+outcomes:
+- 'Make system calls correctly: handle errno, short transfers and EINTR, and read traces with strace'
+- 'Write file code that survives crashes: atomic replace, fsync discipline, advisory locks, and mmap with its signals'
+- Build event-driven programs with epoll, signalfd, timerfd and non-blocking sockets, and explain where io_uring fits
+- Create, supervise and reap processes, and write daemons that suit a service manager
+- Use threads, futexes and C11 atomics correctly, and reason about the memory model
+- Choose among pipes, Unix sockets with descriptor passing, shared memory and eventfd for local IPC
+- Restrict a process with capabilities, seccomp-bpf, namespaces and Landlock, and test the denial paths
+- Watch files and kernel state with inotify, fanotify and netlink, and build a ptrace tracer
+- Write a CO-RE eBPF program and measure NUMA and cache effects before tuning
+modules:
+- id: foundations
+  title: Syscalls, files and event loops
+  lessons:
+  - topic: LNX-320-T01
+    title: Syscalls, errno, glibc vs raw, strace
+    file: lessons/LNX-320-T01.md
+    minutes: 50
+  - topic: LNX-320-T02
+    title: File I/O, locking, mmap
+    file: lessons/LNX-320-T02.md
+    minutes: 65
+  - topic: LNX-320-T03
+    title: epoll and io_uring
+    file: lessons/LNX-320-T03.md
+    minutes: 55
+- id: processes-threads
+  title: Processes, signals and threads
+  lessons:
+  - topic: LNX-320-T04
+    title: fork/exec/wait, sessions, daemons
+    file: lessons/LNX-320-T04.md
+    minutes: 60
+  - topic: LNX-320-T05
+    title: Signals, signalfd, timerfd
+    file: lessons/LNX-320-T05.md
+    minutes: 50
+  - topic: LNX-320-T06
+    title: pthreads, futexes, atomics, memory model
+    file: lessons/LNX-320-T06.md
+    minutes: 65
+- id: communication
+  title: Talking to other processes and the network
+  lessons:
+  - topic: LNX-320-T07
+    title: 'IPC: pipes, Unix sockets (fd passing), shm, eventfd'
+    file: lessons/LNX-320-T07.md
+    minutes: 60
+  - topic: LNX-320-T08
+    title: Sockets and non-blocking servers
+    file: lessons/LNX-320-T08.md
+    minutes: 60
+  - topic: LNX-320-T10
+    title: inotify/fanotify, netlink
+    file: lessons/LNX-320-T10.md
+    minutes: 40
+- id: confine-trace-measure
+  title: Confinement, tracing and measurement
+  lessons:
+  - topic: LNX-320-T09
+    title: Capabilities, seccomp-bpf, namespaces, Landlock
+    file: lessons/LNX-320-T09.md
+    minutes: 55
+  - topic: LNX-320-T11
+    title: 'ptrace: build a tiny strace'
+    file: lessons/LNX-320-T11.md
+    minutes: 45
+  - topic: LNX-320-T12
+    title: 'eBPF from user space: libbpf CO-RE'
+    file: lessons/LNX-320-T12.md
+    minutes: 55
+  - topic: LNX-320-T13
+    title: NUMA and cache-effect measurement
+    file: lessons/LNX-320-T13.md
+    minutes: 35
+labs:
+- id: errno-clobber
+  topic: LNX-320-T01
+  title: Fix an errno that a logging call overwrites
+  env: C
+  license: MIT
+  minutes: 30
+  packages:
+  - gcc
+  - libc6-dev
+- id: atomic-replace
+  topic: LNX-320-T02
+  title: Write a durable atomic file replace
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - gcc
+  - libc6-dev
+- id: epoll-echo
+  topic: LNX-320-T03
+  title: Finish an edge-triggered epoll echo server
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - gcc
+  - libc6-dev
+  - python3
+- id: spawn-wait
+  topic: LNX-320-T04
+  title: Write a spawn helper that reports exec failure and leaves no leaks
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - gcc
+  - libc6-dev
+- id: signalfd-loop
+  topic: LNX-320-T05
+  title: A handler-free event loop with signalfd and timerfd
+  env: C
+  license: MIT
+  minutes: 35
+  packages:
+  - gcc
+  - libc6-dev
+- id: futex-mutex
+  topic: LNX-320-T06
+  title: Build a mutex on top of futex
+  env: C
+  license: MIT
+  minutes: 50
+  packages:
+  - gcc
+  - libc6-dev
+- id: fd-passing
+  topic: LNX-320-T07
+  title: Pass a file descriptor over a Unix socket
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - gcc
+  - libc6-dev
+- id: connect-timeout
+  topic: LNX-320-T08
+  title: A client connect with a deadline and address fallback
+  env: C
+  license: MIT
+  minutes: 45
+  packages:
+  - gcc
+  - libc6-dev
+- id: seccomp-filter
+  topic: LNX-320-T09
+  title: Write a seccomp-bpf filter
+  env: V
+  license: MIT
+  minutes: 45
+  packages:
+  - gcc
+  - libc6-dev
+- id: inotify-watcher
+  topic: LNX-320-T10
+  title: A directory watcher built on inotify
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - gcc
+  - libc6-dev
+- id: tiny-strace
+  topic: LNX-320-T11
+  title: Finish a tiny strace
+  env: C
+  license: MIT
+  minutes: 50
+  packages:
+  - gcc
+  - libc6-dev
+- id: bpf-core-exec
+  topic: LNX-320-T12
+  title: Write a CO-RE exec tracer (kernel side)
+  env: V
+  license: GPL-2.0-only
+  minutes: 50
+  packages:
+  - clang
+  - libbpf-dev
+  - binutils
+- id: numa-cache-guide
+  topic: LNX-320-T13
+  title: Read NUMA and cache measurements and choose a placement
+  env: S
+  license: MIT
+  minutes: 40
+quizzes:
+- id: LNX-320-T01
+  topic: LNX-320-T01
+  title: 'Quiz: Syscalls, errno, glibc vs raw, strace'
+  file: quizzes/LNX-320-T01.yaml
+- id: LNX-320-T02
+  topic: LNX-320-T02
+  title: 'Quiz: File I/O, locking, mmap'
+  file: quizzes/LNX-320-T02.yaml
+- id: LNX-320-T03
+  topic: LNX-320-T03
+  title: 'Quiz: epoll and io_uring'
+  file: quizzes/LNX-320-T03.yaml
+- id: LNX-320-T04
+  topic: LNX-320-T04
+  title: 'Quiz: fork/exec/wait, sessions, daemons'
+  file: quizzes/LNX-320-T04.yaml
+- id: LNX-320-T05
+  topic: LNX-320-T05
+  title: 'Quiz: Signals, signalfd, timerfd'
+  file: quizzes/LNX-320-T05.yaml
+- id: LNX-320-T06
+  topic: LNX-320-T06
+  title: 'Quiz: pthreads, futexes, atomics, memory model'
+  file: quizzes/LNX-320-T06.yaml
+- id: LNX-320-T07
+  topic: LNX-320-T07
+  title: 'Quiz: IPC - pipes, Unix sockets, shm, eventfd'
+  file: quizzes/LNX-320-T07.yaml
+- id: LNX-320-T08
+  topic: LNX-320-T08
+  title: 'Quiz: Sockets and non-blocking servers'
+  file: quizzes/LNX-320-T08.yaml
+- id: LNX-320-T09
+  topic: LNX-320-T09
+  title: 'Quiz: Capabilities, seccomp-bpf, namespaces, Landlock'
+  file: quizzes/LNX-320-T09.yaml
+- id: LNX-320-T10
+  topic: LNX-320-T10
+  title: 'Quiz: inotify/fanotify, netlink'
+  file: quizzes/LNX-320-T10.yaml
+- id: LNX-320-T11
+  topic: LNX-320-T11
+  title: 'Quiz: ptrace - a tiny strace'
+  file: quizzes/LNX-320-T11.yaml
+- id: LNX-320-T12
+  topic: LNX-320-T12
+  title: 'Quiz: eBPF from user space - libbpf CO-RE'
+  file: quizzes/LNX-320-T12.yaml
+- id: LNX-320-T13
+  topic: LNX-320-T13
+  title: 'Quiz: NUMA and cache-effect measurement'
+  file: quizzes/LNX-320-T13.yaml

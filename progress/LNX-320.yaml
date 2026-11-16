@@ -66,7 +66,7 @@ phases:
     - LNX-320-T10
     - LNX-320-T11
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -112,3 +112,4 @@ log:
 - '2026-11-16 lessons: LNX-320-T11'
 - '2026-11-16 quizzes: LNX-320-T11'
 - '2026-11-16 labs: LNX-320-T11'
+- '2026-11-16 checks: done'

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("execsnoop.bpf.c").read()
+s = s.replace('''    /* TODO: reserve an event, fill pid, ppid (CO-RE) and comm, submit. */
+    return 0;''', '''    struct task_struct *task = (struct task_struct *)bpf_get_current_task();
+    struct event *e = bpf_ringbuf_reserve(&events, sizeof(*e), 0);
+    if (!e)
+        return 0;
+    e->pid = bpf_get_current_pid_tgid() >> 32;
+    e->ppid = BPF_CORE_READ(task, real_parent, tgid);
+    bpf_get_current_comm(&e->comm, sizeof(e->comm));
+    bpf_ringbuf_submit(e, 0);
+    return 0;''')
+open("execsnoop.bpf.c", "w").write(s)
+N

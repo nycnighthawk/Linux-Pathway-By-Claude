@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f execsnoop.bpf.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+case "$(uname -m)" in
+  x86_64) arch=x86;; aarch64) arch=arm64;; *) arch=x86;;
+esac
+if clang -g -O2 -target bpf -D__TARGET_ARCH_$arch -I/usr/include/$(uname -m)-linux-gnu -Wall -c execsnoop.bpf.c -o execsnoop.bpf.o 2>cc.log; then ok "compiles for the bpf target"; else fail "does not compile: $(head -5 cc.log)"; exit 1; fi
+secs=$(readelf -S -W execsnoop.bpf.o)
+for s in 'tp/sched/sched_process_exec' '\.maps' 'license' '\.BTF' '\.BTF\.ext'; do
+  if echo "$secs" | grep -Eq "\] $s[[:space:]]+[A-Z]"; then ok "section $s present"; else fail "section $s is missing"; fi
+done
+grep -q 'BPF_CORE_READ' execsnoop.bpf.c && ok "uses BPF_CORE_READ" || fail "read the parent with BPF_CORE_READ(task, real_parent, tgid)"
+grep -q 'bpf_ringbuf_reserve' execsnoop.bpf.c && grep -q 'bpf_ringbuf_submit' execsnoop.bpf.c && ok "reserves and submits a ring buffer record" || fail "use bpf_ringbuf_reserve and bpf_ringbuf_submit"
+grep -q 'bpf_get_current_comm' execsnoop.bpf.c && ok "records comm" || fail "fill comm with bpf_get_current_comm"
+readelf -x license -W execsnoop.bpf.o 2>/dev/null | grep -q 'GPL' && ok "license is GPL" || fail "license section must hold GPL"
+exit $bad

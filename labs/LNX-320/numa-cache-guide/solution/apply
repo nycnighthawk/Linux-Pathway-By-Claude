@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+l1_kib=32
+l2_kib=1024
+l3_mib=32
+remote_latency_ratio=1.6
+remote_bandwidth_loss_percent=55
+false_sharing_slowdown=9
+cause=false sharing: both counters sit on the same 64-byte cache line, so the line bounces between the cores
+command=numactl --cpunodebind=1 --membind=1 ./service
+N

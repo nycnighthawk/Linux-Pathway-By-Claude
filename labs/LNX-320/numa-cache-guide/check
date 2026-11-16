@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f chase.csv ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get l1_kib)" = 32 ] && ok "L1 is 32 KiB (latency jumps after 32)" || fail "l1_kib: the first jump (1.2 to 4.0 ns) comes after 32 KiB"
+[ "$(get l2_kib)" = 1024 ] && ok "L2 is 1024 KiB" || fail "l2_kib: the second jump (4.6 to 14.1 ns) comes after 1024 KiB"
+[ "$(get l3_mib)" = 32 ] && ok "L3 is 32 MiB" || fail "l3_mib: the jump to DRAM (17 to 91 ns) comes after 32768 KiB = 32 MiB"
+r=$(get remote_latency_ratio); echo "$r" | grep -Eq '^1\.[0-9]$' && [ "$r" = 1.6 ] && ok "remote/local latency 1.6" || fail "remote_latency_ratio = 151/92 = 1.6"
+[ "$(get remote_bandwidth_loss_percent)" = 55 ] && ok "remote bandwidth loss 55%" || fail "remote_bandwidth_loss_percent = (120-54)/120 = 55"
+f=$(get false_sharing_slowdown); { [ "$f" = 9 ] || [ "$f" = 8 ] ; } && ok "false sharing about 9x" || fail "false_sharing_slowdown = 18/2 = 9"
+get cause | grep -Eqi 'false sharing|same (cache )?line|cache line' && ok "cause: the counters share a cache line" || fail "cause must mention false sharing or the shared cache line"
+c=$(get command)
+echo "$c" | grep -Eq '(^|[[:space:]])numactl([[:space:]]|$)' && ok "uses numactl" || fail "command must use numactl"
+echo "$c" | grep -Eq -- '--(cpunodebind|cpunode)=1|-N[ ]?1|--physcpubind' && ok "CPUs bound to node 1" || fail "bind CPUs to node 1 (--cpunodebind=1)"
+echo "$c" | grep -Eq -- '--(membind|m)=1|-m[ ]?1' && ok "memory bound to node 1" || fail "bind memory to node 1 (--membind=1), not just preferred"
+echo "$c" | grep -q -- '--interleave' && fail "do not interleave: memory must stay on node 1" || ok "no interleave"
+echo "$c" | grep -q '\./service' && ok "starts ./service" || fail "command must start ./service"
+exit $bad

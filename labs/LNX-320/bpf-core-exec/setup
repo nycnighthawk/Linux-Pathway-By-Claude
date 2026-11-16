@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f execsnoop.bpf.o
+cat > execsnoop.bpf.c <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+#include <linux/bpf.h>
+#include <bpf/bpf_helpers.h>
+#include <bpf/bpf_core_read.h>
+
+typedef int pid_t;
+
+/* Minimal kernel type: only the fields we read; libbpf relocates them against the running kernel's BTF. */
+struct task_struct {
+    pid_t pid;
+    pid_t tgid;
+    struct task_struct *real_parent;
+} __attribute__((preserve_access_index));
+
+struct event {
+    __u32 pid;
+    __u32 ppid;
+    char comm[16];
+};
+
+struct {
+    __uint(type, BPF_MAP_TYPE_RINGBUF);
+    __uint(max_entries, 256 * 1024);
+} events SEC(".maps");
+
+SEC("tp/sched/sched_process_exec")
+int handle_exec(void *ctx)
+{
+    /* TODO: reserve an event, fill pid, ppid (CO-RE) and comm, submit. */
+    return 0;
+}
+
+char LICENSE[] SEC("license") = "GPL";
+N
