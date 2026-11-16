@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f conn_test
+cat > conn.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <poll.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <time.h>
+#include <unistd.h>
+
+int connect_timeout(const char *host, const char *port, int timeout_ms)
+{
+    (void)host; (void)port; (void)timeout_ms;
+    errno = ENOSYS;
+    return -1;
+}
+N

@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > conn.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <poll.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <time.h>
+#include <unistd.h>
+
+static long now_ms(void)
+{
+    struct timespec t;
+    clock_gettime(CLOCK_MONOTONIC, &t);
+    return t.tv_sec * 1000L + t.tv_nsec / 1000000L;
+}
+
+int connect_timeout(const char *host, const char *port, int timeout_ms)
+{
+    struct addrinfo hints = {.ai_family = AF_UNSPEC, .ai_socktype = SOCK_STREAM}, *res, *ai;
+    if (getaddrinfo(host, port, &hints, &res) != 0) {
+        errno = EHOSTUNREACH;
+        return -1;
+    }
+    long deadline = now_ms() + timeout_ms;
+    int last = ETIMEDOUT, result = -1;
+    for (ai = res; ai && result < 0; ai = ai->ai_next) {
+        long left = deadline - now_ms();
+        if (left <= 0) {
+            last = ETIMEDOUT;
+            break;
+        }
+        int fd = socket(ai->ai_family, ai->ai_socktype | SOCK_NONBLOCK | SOCK_CLOEXEC, ai->ai_protocol);
+        if (fd < 0) {
+            last = errno;
+            continue;
+        }
+        int rc = connect(fd, ai->ai_addr, ai->ai_addrlen);
+        if (rc < 0 && errno == EINPROGRESS) {
+            struct pollfd p = {.fd = fd, .events = POLLOUT};
+            int n;
+            do { n = poll(&p, 1, (int)left); } while (n < 0 && errno == EINTR);
+            if (n == 0) {
+                last = ETIMEDOUT;
+                close(fd);
+                break;
+            }
+            int err = 0;
+            socklen_t l = sizeof err;
+            getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &l);
+            if (err) {
+                last = err;
+                close(fd);
+                continue;
+            }
+        } else if (rc < 0) {
+            last = errno;
+            close(fd);
+            continue;
+        }
+        fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
+        result = fd;
+    }
+    freeaddrinfo(res);
+    if (result < 0)
+        errno = last;
+    return result;
+}
+N

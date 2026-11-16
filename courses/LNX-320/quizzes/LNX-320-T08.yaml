@@ -1,0 +1,32 @@
+title: 'Quiz: Sockets and non-blocking servers'
+questions:
+- id: connect
+  prompt: A non-blocking connect returned EINPROGRESS. How do you learn the outcome?
+  choices: [Call connect again and read errno, Wait for writability then read SO_ERROR with getsockopt, Read from the socket, Call listen]
+  answer: [1]
+  explain: 'A) wrong: a second connect gives confusing results. B) correct. C) wrong. D) wrong.'
+- id: epollout
+  prompt: Why request EPOLLOUT only while the output buffer is non-empty?
+  choices: [Sockets are almost always writable, so otherwise the loop wakes constantly, EPOLLOUT breaks edge triggering, It saves descriptors, The kernel requires it]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: emfile
+  prompt: A listener returns EMFILE from accept4 and the loop spins at 100% CPU. Why?
+  choices: [The connection stays queued so the listener stays readable, The kernel lost the connection, The backlog is zero, epoll is broken]
+  answer: [0]
+  explain: 'A) correct: keep a spare descriptor to accept and close, or pause accepting. B) wrong. C) wrong. D) wrong.'
+- id: reset
+  prompt: A server closes a connection while unread data sits in its receive buffer. What may the client see?
+  choices: [A clean end of file, A connection reset that can destroy the response it has not read, Nothing, A timeout only]
+  answer: [1]
+  explain: 'A) wrong. B) correct: use shutdown(SHUT_WR), drain, then close. C) wrong. D) wrong.'
+- id: nagle
+  prompt: Which two measures remove the delay from two small writes in a request/response protocol? (select two)
+  choices: [Set TCP_NODELAY, Send header and body in one write, Increase SO_RCVBUF, Use SO_REUSEPORT]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: reuseport
+  prompt: What does SO_REUSEPORT allow?
+  choices: [Binding while connections are in TIME_WAIT, Several sockets of the same user to bind one port and have the kernel spread connections among them, Sharing a socket between hosts, Skipping listen]
+  answer: [1]
+  explain: 'A) wrong: that is SO_REUSEADDR. B) correct. C) wrong. D) wrong.'
