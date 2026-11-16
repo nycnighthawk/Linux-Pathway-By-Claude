@@ -1,0 +1,27 @@
+title: 'Quiz: Flannel, Calico, Cilium'
+questions:
+- id: flannel-policy
+  prompt: Which statement about Flannel is correct?
+  choices: [It enforces NetworkPolicy by itself, It provides Pod addressing and transport but no policy engine, It replaces kube-proxy, It requires BGP]
+  answer: [1]
+  explain: 'A) wrong: policy needs another component. B) correct. C) wrong. D) wrong: VXLAN is its default.'
+- id: hostgw
+  prompt: host-gw mode needs which property of the network?
+  choices: [Nodes share an L2 segment so they can be next hops for each other, A BGP route reflector, UDP port 4789 only, IPv6 only]
+  answer: [0]
+  explain: 'A) correct: it installs plain routes via node addresses. B) wrong. C) wrong. D) wrong.'
+- id: crosssubnet
+  prompt: What does Calico cross-subnet encapsulation do?
+  choices: [Encapsulates all traffic, Encapsulates only traffic that leaves the subnet, Disables policy, Uses NAT for Pods]
+  answer: [1]
+  explain: 'A) wrong. B) correct: same-subnet traffic is routed natively. C) wrong. D) wrong.'
+- id: overhead
+  prompt: Roughly how many bytes does VXLAN over IPv4 add per packet?
+  choices: ['8', '20', '50', '100']
+  answer: [2]
+  explain: 'A) wrong: that is the UDP header alone. B) wrong. C) correct: outer Ethernet, IP, UDP and VXLAN headers. D) wrong.'
+- id: cilium
+  prompt: Which are true of Cilium? (select two)
+  choices: [Its datapath is built on eBPF, It can replace kube-proxy, It cannot do native routing, It has no policy of its own]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: native routing is supported. D) wrong.'

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+printf 'switch_os=frr\nlocal_as=65010\npeer_as=65000\nsession_state=established\nprefixes_received=1\nbfd=up\ngraceful_restart=yes\necmp_paths=2\nprefix_filter=yes\n' > report.txt
+printf '%s\n' 'vtysh -c "show bgp summary": neighbour Established, 1 prefix received' 'vtysh -c "show bgp ipv4 unicast 192.0.2.241/32": two next hops' 'announced 203.0.113.0/24 from the node: the switch filtered it (prefix-list deny)' > notes.txt

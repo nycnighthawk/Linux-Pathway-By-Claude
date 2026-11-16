@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+printf 'ipip_1500=1480\nvxlan_1500=1450\nwireguard_1500=1440\nvxlan_in_wireguard_1500=1390\nvxlan_9000=8950\nmax_ping_payload_vxlan_1500=1422\ngbps_node=9.4\ngbps_pod_same=18.0\ngbps_pod_cross=6.1\ngbps_service=5.8\nbottleneck=cpu\n' > budget.txt
+printf '%s\n' 'node to node ran at 9.4 gbit/s on a 10 gbit link' 'cross-node pod traffic lost a third; one receive core sat at 100 percent in top' 'offloads were on, MTU matched, so cpu is the limit' > notes.txt

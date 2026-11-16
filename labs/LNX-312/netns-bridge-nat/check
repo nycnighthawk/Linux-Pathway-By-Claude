@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -x build-net.sh ] || { echo "FAIL: run setup first"; exit 1; }
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+cleanup() { for n in c1 c2; do $SUDO ip link del v-$n 2>/dev/null; $SUDO ip netns del $n 2>/dev/null; done; $SUDO ip link del lab0 2>/dev/null; $SUDO nft delete table ip lab 2>/dev/null; true; }
+cleanup
+$SUDO ./build-net.sh >/dev/null 2>&1 && ok "script runs" || fail "build-net.sh exits non-zero"
+$SUDO ./build-net.sh >/dev/null 2>&1 && ok "script is safe to run twice" || fail "second run fails: make the script idempotent"
+$SUDO ip -o addr show dev lab0 2>/dev/null | grep -q "10.10.0.1/24" && ok "bridge lab0 has 10.10.0.1/24" || fail "bridge lab0 with 10.10.0.1/24 is missing"
+ports=$($SUDO bridge link 2>/dev/null | grep -c "master lab0")
+[ "$ports" -ge 2 ] && ok "two ports attached to lab0" || fail "attach one veth end of each namespace to lab0"
+for pair in "c1 10.10.0.2" "c2 10.10.0.3"; do
+  set -- $pair
+  $SUDO ip -n "$1" -o addr show dev eth0 2>/dev/null | grep -q "$2/24" && ok "$1 eth0 has $2/24" || fail "$1: eth0 needs $2/24"
+  $SUDO ip -n "$1" route 2>/dev/null | grep -q "default via 10.10.0.1" && ok "$1 default route via 10.10.0.1" || fail "$1: default route via 10.10.0.1 missing"
+done
+$SUDO ip netns exec c1 ping -c1 -W1 10.10.0.1 >/dev/null 2>&1 && ok "c1 reaches the gateway" || fail "c1 cannot ping 10.10.0.1"
+$SUDO ip netns exec c1 ping -c1 -W1 10.10.0.3 >/dev/null 2>&1 && ok "c1 reaches c2" || fail "c1 cannot ping c2 (10.10.0.3)"
+[ "$($SUDO sysctl -n net.ipv4.ip_forward)" = 1 ] && ok "ip_forward is 1" || fail "enable net.ipv4.ip_forward"
+rs=$($SUDO nft list table ip lab 2>/dev/null)
+echo "$rs" | grep -q "masquerade" && echo "$rs" | grep -q "10.10.0.0/24" && ok "masquerade rule for 10.10.0.0/24" || fail "nft table ip lab needs a masquerade rule for 10.10.0.0/24"
+echo "$rs" | grep -q "dnat to 10.10.0.2:80" && echo "$rs" | grep -q "8080" && ok "DNAT 8080 to 10.10.0.2:80" || fail "nft table ip lab needs dnat tcp dport 8080 to 10.10.0.2:80"
+cleanup
+exit $bad

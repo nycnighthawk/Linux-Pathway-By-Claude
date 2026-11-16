@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+for n in c1 c2; do $SUDO ip link del v-$n 2>/dev/null || true; $SUDO ip netns del $n 2>/dev/null || true; done
+$SUDO ip link del lab0 2>/dev/null || true
+$SUDO nft delete table ip lab 2>/dev/null || true
+printf '#!/usr/bin/env bash\n# TODO: build the network\nexit 0\n' > build-net.sh
+chmod +x build-net.sh

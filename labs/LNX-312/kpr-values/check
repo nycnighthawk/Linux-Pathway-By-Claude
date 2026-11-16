@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def g(d, *k):
+    for x in k:
+        if not isinstance(d, dict): return None
+        d = d.get(x)
+    return d
+try:
+    k = yaml.safe_load(open("kubeadm-init.yaml"))
+    chk(k.get("kind") == "InitConfiguration", "kubeadm InitConfiguration")
+    chk("addon/kube-proxy" in (k.get("skipPhases") or []), "kube-proxy addon phase skipped")
+    c = yaml.safe_load(open("cilium-values.yaml"))
+    chk(c.get("kubeProxyReplacement") in (True, "true"), "kubeProxyReplacement on")
+    chk(c.get("k8sServiceHost") == "10.0.0.10" and int(c.get("k8sServicePort", 0)) == 6443, "API server address given")
+    chk(c.get("routingMode") == "native", "native routing")
+    chk(c.get("ipv4NativeRoutingCIDR") == "10.244.0.0/16", "native routing CIDR is the Pod range")
+    chk(c.get("autoDirectNodeRoutes") is True, "autoDirectNodeRoutes on")
+    chk(g(c, "loadBalancer", "mode") == "dsr", "load balancer mode dsr")
+    chk(g(c, "loadBalancer", "algorithm") == "maglev", "algorithm maglev")
+    chk(g(c, "bpf", "masquerade") is True, "BPF masquerading")
+    chk(g(c, "hubble", "relay", "enabled") is True and g(c, "hubble", "ui", "enabled") is True, "Hubble relay and UI enabled")
+except Exception as e:
+    print("FAIL:", e); bad = 1
+sys.exit(bad)
+PY

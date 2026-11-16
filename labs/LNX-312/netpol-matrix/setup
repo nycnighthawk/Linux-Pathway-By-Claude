@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > policies.yaml <<'J'
+# SPDX-License-Identifier: MIT
+# Write NetworkPolicy documents for namespace shop, separated by ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: placeholder
+  namespace: shop
+spec:
+  podSelector:
+    matchLabels:
+      tier: none
+J

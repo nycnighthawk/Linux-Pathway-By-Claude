@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > flannel-net-conf.json <<'J'
+{
+  "Network": "",
+  "Backend": { "Type": "host-gw" }
+}
+J
+cat > calico-ippool.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: default-pool
+spec:
+  cidr: 192.168.0.0/16
+  blockSize: 24
+  ipipMode: Always
+  vxlanMode: Never
+  natOutgoing: false
+J
+cat > cilium-values.yaml <<'J'
+# SPDX-License-Identifier: MIT
+routingMode: native
+kubeProxyReplacement: false
+J

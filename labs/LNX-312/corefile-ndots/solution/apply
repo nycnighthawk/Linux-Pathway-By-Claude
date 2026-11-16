@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > Corefile <<'J'
+.:53 {
+    errors
+    health {
+        lameduck 5s
+    }
+    ready
+    kubernetes cluster.local in-addr.arpa ip6.arpa {
+        pods insecure
+        fallthrough in-addr.arpa ip6.arpa
+    }
+    prometheus :9153
+    forward . /etc/resolv.conf
+    cache 30
+    loop
+    reload
+}
+corp.example.com:53 {
+    errors
+    cache 30
+    forward . 10.1.1.53 10.1.1.54
+}
+J
+cat > answers.yaml <<'J'
+ndots5: 4
+fqdn: 1
+ndots2: 1
+J

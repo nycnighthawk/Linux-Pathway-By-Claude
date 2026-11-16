@@ -1,0 +1,27 @@
+title: 'Quiz: BGP to the top-of-rack'
+questions:
+- id: why-bgp
+  prompt: Why do large fabrics use BGP between servers and switches?
+  choices: [It scales, has rich policy and predictable failure behaviour, It encrypts traffic, It replaces DNS, It needs no configuration]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: unnumbered
+  prompt: What does BGP unnumbered let you avoid?
+  choices: [A unique IP address and neighbour entry for every server link, Autonomous system numbers, Prefix filters, BFD]
+  answer: [0]
+  explain: 'A) correct: sessions run over link-local addresses with extended next hop. B) wrong. C) wrong. D) wrong.'
+- id: filters
+  prompt: Which protections belong on the switch for server-facing sessions? (select two)
+  choices: [An inbound prefix list, A maximum-prefix limit, Accepting any prefix, Disabling authentication]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: graceful
+  prompt: What does graceful restart do during an agent restart?
+  choices: [The switch keeps forwarding to the node routes for a time, Routes are withdrawn at once, BFD is disabled, The session is renumbered]
+  answer: [0]
+  explain: 'A) correct, if both sides enable it. B) wrong. C) wrong. D) wrong.'
+- id: table
+  prompt: What risk comes from announcing a /32 for every Pod?
+  choices: [The switch forwarding table can overflow, ARP storms, DNS failure, MTU growth]
+  answer: [0]
+  explain: 'A) correct: forwarding tables are smaller than routing tables. B) wrong. C) wrong. D) wrong.'

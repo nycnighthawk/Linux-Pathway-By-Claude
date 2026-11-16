@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > kubeadm-init.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: InitConfiguration
+nodeRegistration:
+  criSocket: unix:///run/containerd/containerd.sock
+J
+cat > cilium-values.yaml <<'J'
+# SPDX-License-Identifier: MIT
+kubeProxyReplacement: false
+routingMode: tunnel
+J

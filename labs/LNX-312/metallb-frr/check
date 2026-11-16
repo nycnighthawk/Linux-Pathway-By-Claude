@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import re, sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+try:
+    docs = [d for d in yaml.safe_load_all(open("metallb.yaml")) if d]
+    get = lambda k, n: next((d for d in docs if d.get("kind") == k and d["metadata"]["name"] == n), None)
+    pool = get("IPAddressPool", "lab-pool")
+    chk(bool(pool) and pool["metadata"]["namespace"] == "metallb-system", "IPAddressPool lab-pool in metallb-system")
+    chk(bool(pool) and pool["spec"]["addresses"] == ["192.0.2.240-192.0.2.250"], "pool range")
+    peer = get("BGPPeer", "tor-a")
+    ps = peer["spec"] if peer else {}
+    chk(ps.get("myASN") == 65010 and ps.get("peerASN") == 65000 and ps.get("peerAddress") == "10.0.0.1", "BGPPeer ASNs and address")
+    chk(ps.get("bfdProfile") == "fast", "peer uses BFD profile fast")
+    chk(peer and peer["apiVersion"] == "metallb.io/v1beta2", "BGPPeer is v1beta2")
+    bfd = get("BFDProfile", "fast")
+    chk(bool(bfd) and bfd["spec"].get("receiveInterval") == 300 and bfd["spec"].get("transmitInterval") == 300, "BFDProfile intervals")
+    adv = get("BGPAdvertisement", "lab-adv")
+    chk(bool(adv) and adv["spec"].get("ipAddressPools") == ["lab-pool"] and adv["spec"].get("aggregationLength") == 32, "BGPAdvertisement /32 for lab-pool")
+    f = open("frr.conf").read()
+    chk(re.search(r"^router bgp 65000$", f, re.M) is not None, "router bgp 65000")
+    chk("neighbor NODES peer-group" in f and "neighbor NODES remote-as 65010" in f, "peer group NODES remote-as 65010")
+    chk("bgp listen range 10.0.0.0/24 peer-group NODES" in f, "listen range")
+    chk("neighbor NODES bfd" in f, "BFD on peer group")
+    chk(re.search(r"address-family ipv4 unicast.*?neighbor NODES activate", f, re.S) is not None, "NODES activated in ipv4 unicast")
+    chk(re.search(r"maximum-paths 8", f) is not None, "maximum-paths 8")
+    chk(re.search(r"ip prefix-list METALLB seq \d+ permit 192\.0\.2\.240/28 le 32", f) is not None, "prefix-list METALLB")
+    chk(re.search(r"neighbor NODES prefix-list METALLB in", f) is not None, "prefix-list applied inbound")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY

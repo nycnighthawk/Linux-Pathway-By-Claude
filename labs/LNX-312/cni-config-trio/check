@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import json, sys, yaml
+bad = 0
+def chk(cond, msg):
+    global bad
+    print(("ok:   " if cond else "FAIL: ") + msg)
+    if not cond: bad = 1
+try:
+    f = json.load(open("flannel-net-conf.json"))
+    b = f.get("Backend", {})
+    chk(f.get("Network") == "10.244.0.0/16", "flannel Network is the Pod range")
+    chk(b.get("Type") == "vxlan", "flannel backend is vxlan")
+    chk(b.get("VNI") == 1, "flannel VNI is 1")
+    chk(b.get("Port") == 8472, "flannel Port is 8472")
+    p = yaml.safe_load(open("calico-ippool.yaml"))
+    s = p.get("spec", {})
+    chk(p.get("kind") == "IPPool" and p.get("metadata", {}).get("name") == "default-pool", "calico IPPool default-pool")
+    chk(s.get("cidr") == "10.244.0.0/16", "calico cidr is the Pod range")
+    chk(s.get("blockSize") == 26, "calico blockSize 26")
+    chk(s.get("vxlanMode") == "Always" and s.get("ipipMode") == "Never", "calico uses VXLAN always, IP-in-IP never")
+    chk(s.get("natOutgoing") is True, "calico natOutgoing true")
+    c = yaml.safe_load(open("cilium-values.yaml"))
+    chk(c.get("routingMode") == "tunnel", "cilium routingMode tunnel")
+    chk(c.get("tunnelProtocol") == "vxlan", "cilium tunnelProtocol vxlan")
+    chk(c.get("kubeProxyReplacement") in (True, "true"), "cilium replaces kube-proxy")
+except Exception as e:
+    print("FAIL:", e); bad = 1
+sys.exit(bad)
+PY

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cat > build-net.sh <<'S'
+#!/usr/bin/env bash
+set -eu
+for n in c1 c2; do ip link del v-$n 2>/dev/null || true; ip netns del $n 2>/dev/null || true; done
+ip link del lab0 2>/dev/null || true
+nft delete table ip lab 2>/dev/null || true
+ip link add lab0 type bridge
+ip addr add 10.10.0.1/24 dev lab0
+ip link set lab0 up
+i=2
+for n in c1 c2; do
+  ip netns add $n
+  ip link add v-$n type veth peer name eth0 netns $n
+  ip link set v-$n master lab0 up
+  ip -n $n addr add 10.10.0.$i/24 dev eth0
+  ip -n $n link set lo up
+  ip -n $n link set eth0 up
+  ip -n $n route add default via 10.10.0.1
+  i=$((i+1))
+done
+sysctl -qw net.ipv4.ip_forward=1
+nft add table ip lab
+nft 'add chain ip lab post { type nat hook postrouting priority srcnat; }'
+nft add rule ip lab post ip saddr 10.10.0.0/24 oifname != lab0 masquerade
+nft 'add chain ip lab pre { type nat hook prerouting priority dstnat; }'
+nft add rule ip lab pre tcp dport 8080 dnat to 10.10.0.2:80
+S
+chmod +x build-net.sh
