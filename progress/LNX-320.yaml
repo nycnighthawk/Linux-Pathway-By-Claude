@@ -1,12 +1,12 @@
 item: LNX-320
 label: Linux System Programming
 branch: build/LNX-320
-state: in-progress
+state: done
 started: '2026-11-16'
 updated: '2026-11-16'
 phases:
   synth:
-    state: in-progress
+    state: done
     units: 13
     done:
     - LNX-320-T01
@@ -20,8 +20,10 @@ phases:
     - LNX-320-T09
     - LNX-320-T10
     - LNX-320-T11
+    - LNX-320-T12
+    - LNX-320-T13
   lessons:
-    state: in-progress
+    state: done
     units: 13
     done:
     - LNX-320-T01
@@ -35,8 +37,10 @@ phases:
     - LNX-320-T09
     - LNX-320-T10
     - LNX-320-T11
+    - LNX-320-T12
+    - LNX-320-T13
   quizzes:
-    state: in-progress
+    state: done
     units: 13
     done:
     - LNX-320-T01
@@ -50,8 +54,10 @@ phases:
     - LNX-320-T09
     - LNX-320-T10
     - LNX-320-T11
+    - LNX-320-T12
+    - LNX-320-T13
   labs:
-    state: in-progress
+    state: done
     units: 13
     done:
     - LNX-320-T01
@@ -65,6 +71,8 @@ phases:
     - LNX-320-T09
     - LNX-320-T10
     - LNX-320-T11
+    - LNX-320-T12
+    - LNX-320-T13
   checks:
     state: done
     units: 0
@@ -113,3 +121,9 @@ log:
 - '2026-11-16 quizzes: LNX-320-T11'
 - '2026-11-16 labs: LNX-320-T11'
 - '2026-11-16 checks: done'
+- '2026-11-16 synth: LNX-320-T12, LNX-320-T13'
+- '2026-11-16 lessons: LNX-320-T12, LNX-320-T13'
+- '2026-11-16 quizzes: LNX-320-T12, LNX-320-T13'
+- '2026-11-16 labs: LNX-320-T12, LNX-320-T13'
+- 2026-11-16 finished
+finished: '2026-11-16'
