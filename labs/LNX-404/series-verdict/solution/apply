@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > series.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+def verdict(series):
+    archs = list(series[0]["build"])
+    first = {}
+    for a in archs:
+        first[a] = next((i for i, c in enumerate(series) if not c["build"].get(a)), None)
+    bis = all(v is None for v in first.values())
+    style = all(c.get("checkpatch_errors", 0) == 0 for c in series)
+    logs = series[-1].get("boot", {})
+    boots = {}
+    for a in archs:
+        log = logs.get(a, "")
+        boots[a] = "Run /init as init process" in log and not any(w in log for w in ("Kernel panic", "BUG:", "Oops"))
+    return {"bisectable": bis, "first_break": first, "style_clean": style, "boots": boots,
+            "ready": bis and style and all(boots.values())}
+N

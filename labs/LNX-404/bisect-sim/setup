@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > bisect.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""Find the first bad commit by binary search.
+
+bisect(n, test) -> (first_bad_index, tests_run)
+  Commits are numbered 0..n-1, oldest first. Commit 0 is known good and commit n-1 is known bad
+  (do not test them). test(i) returns True (good), False (bad) or None (cannot be tested: skip).
+  Behaviour as for git bisect: the first bad commit is the earliest one for which test would return bad.
+  When a midpoint is skipped, try its neighbours (alternate outwards: mid+1, mid-1, mid+2, mid-2, ...) inside the
+  current range (lo, hi) exclusive; if every commit strictly between lo and hi is skipped, raise ValueError("only skipped commits left").
+  Each commit is tested at most once. tests_run counts calls to test (skips included).
+  Raise ValueError if n < 2.
+"""
+
+def bisect(n, test):
+    raise NotImplementedError
+N

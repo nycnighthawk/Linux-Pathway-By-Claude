@@ -1,0 +1,81 @@
+id: LNX-404
+title: 'Capstone: Upstream-Quality Kernel Work'
+summary: A graded, multi-stage project for the kernel pathway. You write a driver for a QEMU device with KUnit-style tests,
+  prepare a patch series that passes style checks and boots on x86_64 and arm64, bisect and fix a planted regression, take
+  a real change through a mailing-list review, bring the work up on a development board and run a multi-day syzkaller campaign.
+  Three stages are graded in CI; three are guided evidence stages.
+hours: 100
+coverage: full
+outcomes:
+- Separate register access from driver logic so that the logic can be unit tested, and return kernel-style errors
+- 'Decide whether a patch series is ready: every commit builds on each architecture, style is clean and the final tree boots'
+- Find a regression by binary search with skipped commits, and fix it with a regression test and a Fixes tag
+- Take a small change through a public review cycle and answer each comment
+- Bring a kernel and driver up on a real board with a serial console and record what differs from the emulator
+- Run, triage and report from a multi-day kernel fuzzing campaign
+modules:
+- id: stages
+  title: Stages
+  lessons:
+  - topic: LNX-404-T01
+    title: 'Milestone 1: a driver for a QEMU device with KUnit tests'
+    file: lessons/LNX-404-T01.md
+    minutes: 240
+  - topic: LNX-404-T02
+    title: 'Milestone 2: a series that passes checkpatch and boots on two architectures'
+    file: lessons/LNX-404-T02.md
+    minutes: 240
+  - topic: LNX-404-T03
+    title: 'Milestone 3: bisect and fix a planted regression'
+    file: lessons/LNX-404-T03.md
+    minutes: 240
+  - topic: LNX-404-T04
+    title: 'Milestone 4: a real review cycle on a subsystem list'
+    file: lessons/LNX-404-T04.md
+    minutes: 240
+  - topic: LNX-404-T05
+    title: 'Milestone 5: running on a real development board'
+    file: lessons/LNX-404-T05.md
+    minutes: 240
+  - topic: LNX-404-T06
+    title: 'Milestone 6: a multi-day syzkaller campaign'
+    file: lessons/LNX-404-T06.md
+    minutes: 240
+labs:
+- id: edu-driver-model
+  topic: LNX-404-T01
+  title: Driver logic that can be unit tested
+  env: V
+  license: GPL-2.0-only
+  minutes: 60
+- id: series-verdict
+  topic: LNX-404-T02
+  title: Is this patch series ready to send?
+  env: V
+  license: GPL-2.0-only
+  minutes: 45
+- id: bisect-sim
+  topic: LNX-404-T03
+  title: Binary search for a regression, with skips
+  env: V
+  license: GPL-2.0-only
+  minutes: 45
+- id: list-review-evidence
+  topic: LNX-404-T04
+  title: A real review cycle on a kernel mailing list
+  env: O
+  license: GPL-2.0-only
+  minutes: 90
+- id: dev-board-evidence
+  topic: LNX-404-T05
+  title: Boot your kernel and test your change on a real board
+  env: H
+  license: GPL-2.0-only
+  minutes: 180
+- id: syzkaller-evidence
+  topic: LNX-404-T06
+  title: A multi-day syzkaller campaign
+  env: S
+  license: GPL-2.0-only
+  minutes: 240
+quizzes: []

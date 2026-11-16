@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import math, sys
+try:
+    from bisect import bisect as B
+except Exception as x:
+    print("FAIL: cannot import bisect.bisect:", x); sys.exit(1)
+import importlib.util
+spec = importlib.util.spec_from_file_location("labbisect", "bisect.py"); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); B = m.bisect
+res = []
+def t(n, f):
+    try: ok = bool(f())
+    except Exception: ok = False
+    res.append((n, ok))
+def mk(bad, skips=()):
+    seen = []
+    def test(i):
+        seen.append(i)
+        return None if i in skips else (i < bad)
+    return test, seen
+def run(n, bad, skips=()):
+    test, seen = mk(bad, skips)
+    return B(n, test), seen
+t("finds the planted commit in 100", lambda: run(100, 37)[0][0] == 37)
+t("uses about log2(n) tests", lambda: run(1024, 700)[0][1] <= 10)
+t("first commit after the good one", lambda: run(50, 1)[0][0] == 1)
+t("last commit is the bad one", lambda: run(50, 49)[0][0] == 49)
+t("never tests the endpoints", lambda: 0 not in run(64, 20)[1] and 63 not in run(64, 20)[1])
+t("never tests a commit twice", lambda: len(set(run(200, 150, {100, 101, 102})[1])) == len(run(200, 150, {100, 101, 102})[1]))
+t("works around skipped midpoints", lambda: run(100, 60, {49, 50, 51})[0][0] == 60)
+def ambiguous():
+    try: run(30, 15, {14}); return False
+    except ValueError: return True
+t("a culprit that is only distinguishable from a skipped commit raises ValueError", ambiguous)
+def allskip():
+    try: B(5, lambda i: None); return False
+    except ValueError: return True
+t("all skipped raises ValueError", allskip)
+def tiny():
+    try: B(1, lambda i: True); return False
+    except ValueError: return True
+t("n < 2 raises ValueError", tiny)
+t("n = 2 needs no tests", lambda: run(2, 1)[0] == (1, 0))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

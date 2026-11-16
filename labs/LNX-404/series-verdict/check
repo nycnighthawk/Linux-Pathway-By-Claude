@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import copy, sys
+try:
+    from series import verdict
+except Exception as x:
+    print("FAIL: cannot import series.verdict:", x); sys.exit(1)
+OK = "[ 0.5] Run /init as init process\nlogin:"
+S = [{"subject": "mm: rename helper", "build": {"x86_64": True, "arm64": True}, "checkpatch_errors": 0},
+     {"subject": "misc: add edu driver", "build": {"x86_64": True, "arm64": True}, "checkpatch_errors": 0},
+     {"subject": "misc: enable edu in Kconfig", "build": {"x86_64": True, "arm64": True}, "checkpatch_errors": 0, "boot": {"x86_64": OK, "arm64": OK}}]
+res = []
+def t(n, f):
+    try: ok = bool(f())
+    except Exception: ok = False
+    res.append((n, ok))
+def v(s):
+    try: return verdict(s)
+    except NotImplementedError: return {}
+good = v(S)
+t("clean series is ready", lambda: good == {"bisectable": True, "first_break": {"x86_64": None, "arm64": None}, "style_clean": True, "boots": {"x86_64": True, "arm64": True}, "ready": True})
+b = copy.deepcopy(S); b[1]["build"]["arm64"] = False
+r = v(b)
+t("a commit that breaks arm64 is found", lambda: r["first_break"] == {"x86_64": None, "arm64": 1} and r["bisectable"] is False and r["ready"] is False)
+b = copy.deepcopy(S); b[0]["build"]["x86_64"] = False; b[2]["build"]["x86_64"] = False
+t("the first break counts, not the last", lambda: v(b)["first_break"]["x86_64"] == 0)
+b = copy.deepcopy(S); b[1]["checkpatch_errors"] = 2
+t("style errors block readiness", lambda: v(b)["style_clean"] is False and v(b)["ready"] is False and v(b)["bisectable"] is True)
+b = copy.deepcopy(S); b[2]["boot"]["arm64"] = "[ 0.5] Run /init as init process\nKernel panic - not syncing: VFS"
+t("a panic after init start is a failed boot", lambda: v(b)["boots"] == {"x86_64": True, "arm64": False})
+b = copy.deepcopy(S); b[2]["boot"]["arm64"] = "no init line here"
+t("no init line is a failed boot", lambda: v(b)["boots"]["arm64"] is False)
+b = copy.deepcopy(S); del b[2]["boot"]["arm64"]
+t("a missing log is a failed boot", lambda: v(b)["boots"]["arm64"] is False)
+b = copy.deepcopy(S); b[2]["boot"]["x86_64"] = OK + "\nBUG: unable to handle page fault"
+t("BUG: in the log is a failed boot", lambda: v(b)["boots"]["x86_64"] is False)
+b = copy.deepcopy(S); b[2]["boot"]["x86_64"] = OK + "\nOops: 0002"
+t("Oops in the log is a failed boot", lambda: v(b)["boots"]["x86_64"] is False)
+t("the input is not modified", lambda: (v(S), S)[1] == S and "ready" not in S[0])
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

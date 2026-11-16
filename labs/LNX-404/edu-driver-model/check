@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Table-driven test cases in the style of KUnit; prints KTAP-like lines.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import math, sys
+from fakedev import FakeDev
+try:
+    import driver as d
+except Exception as x:
+    print("FAIL: cannot import driver:", x); sys.exit(1)
+def case_probe_ok(): return d.probe(FakeDev()) == 0
+def case_probe_wrong_id(): return d.probe(FakeDev(ident=0x1234)) == -19
+def case_liveness_ok(): return d.liveness(FakeDev(), 0x12345678) == 0
+def case_liveness_zero(): return d.liveness(FakeDev(), 0) == 0
+def case_fact_small(): return [d.factorial(FakeDev(), n) for n in (0, 1, 5)] == [1, 1, 120]
+def case_fact_max(): return d.factorial(FakeDev(), 12) == math.factorial(12)
+def case_fact_out_of_range(): return d.factorial(FakeDev(), 13) == -22 and d.factorial(FakeDev(), -1) == -22
+def case_fact_timeout(): return d.factorial(FakeDev(stuck=True), 5, max_polls=10) == -110
+def case_fact_slow_device(): return d.factorial(FakeDev(delay=50), 4, max_polls=100) == 24
+def case_fact_too_slow(): return d.factorial(FakeDev(delay=50), 4, max_polls=10) == -110
+def case_poll_count():
+    class Counting(FakeDev):
+        reads = 0
+        def read(self, off):
+            if off == 0x20: Counting.reads += 1
+            return super().read(off)
+    d.factorial(Counting(stuck=True), 3, max_polls=7)
+    return Counting.reads == 7
+CASES = [v for k, v in sorted(globals().items()) if k.startswith("case_")]
+print("TAP version 13\n1..%d" % len(CASES))
+bad = 0
+for i, f in enumerate(CASES, 1):
+    try: ok = f()
+    except NotImplementedError: ok = False
+    except Exception as x: ok = False
+    print("%s %d - %s" % ("ok" if ok else "not ok", i, f.__name__[5:])); bad |= (not ok)
+sys.exit(bad)
+N

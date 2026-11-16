@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > series.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""verdict(series) -> dict
+
+series is a list of commits in order, each:
+  {"subject": str, "build": {"x86_64": True/False, "arm64": True/False}, "checkpatch_errors": int}
+plus the last element may carry "boot": {"x86_64": "<console log>", "arm64": "<console log>"}.
+
+Return {"bisectable": bool, "first_break": {arch: index or None}, "style_clean": bool, "boots": {arch: bool}, "ready": bool}
+  bisectable   True when every commit builds on every architecture
+  first_break  per architecture, the index of the first commit that does not build, else None
+  style_clean  True when no commit has checkpatch_errors > 0
+  boots        per architecture, True when the final commit's log contains "Run /init as init process"
+               and contains none of "Kernel panic", "BUG:" or "Oops" (an arch with no log is False)
+  ready        bisectable and style_clean and all boots True
+Architectures are the keys of series[0]["build"].
+"""
+
+def verdict(series):
+    raise NotImplementedError
+N
