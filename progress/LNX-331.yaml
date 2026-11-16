@@ -9,19 +9,23 @@ phases:
     state: in-progress
     units: 13
     done:
+    - LNX-331-T01
     - LNX-331-T05
   lessons:
-    state: todo
+    state: in-progress
     units: 13
-    done: []
+    done:
+    - LNX-331-T01
   quizzes:
-    state: todo
+    state: in-progress
     units: 13
-    done: []
+    done:
+    - LNX-331-T01
   labs:
-    state: todo
+    state: in-progress
     units: 13
-    done: []
+    done:
+    - LNX-331-T01
   checks:
     state: todo
     units: 0
@@ -29,3 +33,7 @@ phases:
 parked: null
 log:
 - 2026-11-16 started
+- '2026-11-16 synth: LNX-331-T01'
+- '2026-11-16 lessons: LNX-331-T01'
+- '2026-11-16 quizzes: LNX-331-T01'
+- '2026-11-16 labs: LNX-331-T01'

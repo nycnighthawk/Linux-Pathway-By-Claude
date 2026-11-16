@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("mydev.c").read()
+a = s.index("ssize_t my_read")
+s = s[:a] + '''ssize_t my_read(struct file *f, char *ubuf, size_t count, loff_t *ppos)
+{
+	size_t n;
+
+	(void)f;
+	if ((size_t)*ppos >= len)
+		return 0;
+	n = len - *ppos;
+	if (n > count)
+		n = count;
+	if (copy_to_user(ubuf, buf + *ppos, n))
+		return -EFAULT;
+	*ppos += n;
+	return n;
+}
+
+ssize_t my_write(struct file *f, const char *ubuf, size_t count, loff_t *ppos)
+{
+	size_t n;
+
+	(void)f;
+	if ((size_t)*ppos >= max)
+		return -ENOSPC;
+	n = max - *ppos;
+	if (n > count)
+		n = count;
+	if (copy_from_user(buf + *ppos, ubuf, n))
+		return -EFAULT;
+	*ppos += n;
+	if ((size_t)*ppos > len)
+		len = *ppos;
+	return n;
+}
+
+long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+{
+	int v;
+
+	(void)f;
+	switch (cmd) {
+	case MY_GET_LEN:
+		v = (int)len;
+		return copy_to_user((void *)arg, &v, sizeof(v)) ? -EFAULT : 0;
+	case MY_RESET:
+		len = 0;
+		return 0;
+	case MY_SET_MAX:
+		if ((long)arg < 1 || (long)arg > MY_BUFSZ)
+			return -EINVAL;
+		max = arg;
+		return 0;
+	default:
+		return -ENOTTY;
+	}
+}
+'''
+open("mydev.c", "w").write(s)
+N
