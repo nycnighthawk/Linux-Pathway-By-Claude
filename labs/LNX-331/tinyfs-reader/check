@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from tfs import TinyFS
+fs = TinyFS("tiny.img")
+big = open("expected_big.bin", "rb").read()
+bad = 0
+def t(name, fn):
+    global bad
+    try: ok = fn()
+    except Exception as e: ok = False; name += " (%s: %s)" % (type(e).__name__, e)
+    print(("ok:   " if ok else "FAIL: ") + name); bad |= (not ok)
+def raises(exc, fn):
+    try: fn()
+    except exc: return True
+    except Exception: return False
+    return False
+t("listdir /", lambda: fs.listdir("/") == ["docs", "hello.txt"])
+t("listdir /docs", lambda: fs.listdir("/docs") == ["data.bin"])
+t("read a one-block file", lambda: fs.read("/hello.txt") == b"hello from tinyfs\n")
+t("read a three-block file", lambda: fs.read("/docs/data.bin") == big)
+t("missing file", lambda: raises(FileNotFoundError, lambda: fs.read("/nope")))
+t("component is a file", lambda: raises(NotADirectoryError, lambda: fs.read("/hello.txt/x")))
+t("listdir of a file", lambda: raises(NotADirectoryError, lambda: fs.listdir("/hello.txt")))
+t("read of a directory", lambda: raises(IsADirectoryError, lambda: fs.read("/docs")))
+t("trailing slash and repeated slashes", lambda: fs.listdir("//docs/") == ["data.bin"])
+sys.exit(bad)
+N
