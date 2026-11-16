@@ -1,0 +1,27 @@
+title: 'Quiz: Falco and audit logs'
+questions:
+- id: secrets-level
+  prompt: At which audit level should reads of Secrets normally be logged?
+  choices: [RequestResponse, Metadata, Request, They should never be logged]
+  answer: [1]
+  explain: 'A) wrong: the response body would copy the secret values into the log. B) correct: who, when and what, without bodies. C) wrong: a create or update request body would carry the values. D) wrong: access to Secrets is the event to watch.'
+- id: first-match
+  prompt: An audit policy has a catch-all Metadata rule first and a RequestResponse rule for pods/exec after it. What happens to exec requests?
+  choices: [They are logged at RequestResponse, They are logged at Metadata because the first matching rule wins, They are dropped, The API server refuses to start]
+  answer: [1]
+  explain: 'A) wrong: the later rule is never reached. B) correct: put specific rules before the catch-all. C) wrong. D) wrong.'
+- id: vantage
+  prompt: An attacker with a stolen token lists Secrets from outside the cluster and creates a ClusterRoleBinding. Which record shows it?
+  choices: [Falco node events, The API audit log, Neither, The kubelet log only]
+  answer: [1]
+  explain: 'A) wrong: nothing ran on a node. B) correct: all API requests are audited. C) wrong. D) wrong.'
+- id: tuning
+  prompt: What keeps a Falco deployment useful over months? (select two)
+  choices: [Exceptions maintained as reviewed code, Tracking alerts per rule and the share that were acted on, Enabling every rule on day one, Muting the alert channel]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct: signal quality is a metric. C) wrong: it creates noise. D) wrong.'
+- id: blinding
+  prompt: Which weakness applies to a rule that matches the process name xmrig?
+  choices: [It cannot run in containers, Renaming the binary evades it, It needs a kernel module, It slows down the API server]
+  answer: [1]
+  explain: 'A) wrong. B) correct: prefer behaviour rules (outbound connection from a freshly written executable). C) wrong. D) wrong.'
