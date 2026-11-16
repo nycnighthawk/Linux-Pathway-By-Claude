@@ -22,7 +22,7 @@ questions:
   explain: 'A) correct. B) correct. C) wrong. D) wrong.'
 - id: eol
   prompt: A product that must be supported for five years is designed on the newest stable branch. What is the risk?
-  choices: [None, The branch reaches end of life within months, leaving no upstream fixes, Stable has no fixes, It cannot be built]
+  choices: ['None', 'The branch reaches end of life within months, leaving no upstream fixes', 'Stable has no fixes', 'It cannot be built']
   answer: [1]
   explain: 'A) wrong. B) correct: choose a longterm branch or plan to track stable releases. C) wrong. D) wrong.'
 - id: maint
