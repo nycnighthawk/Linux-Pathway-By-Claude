@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > review.txt <<'N'
+title: Directory certificate expired
+severity: 2
+start: 2026-03-04T02:10
+detected: 2026-03-04T02:50
+resolved: 2026-03-04T03:40
+ttd_minutes: 30
+ttr_minutes: 90
+impact: logins failed for staff
+cause: C1 the admin forgot to renew the certificate
+cause: C2 monitoring checked only the web certificate
+timeline: 2026-03-04T03:00 paged on-call
+timeline: 2026-03-04T02:50 alert from users
+action: A1 owner=bob due=2026-03-20 covers=C1 type=prevent text=be more careful
+action: A2 owner= due=2026-03-25 covers=C2 type=detect text=alert on all certificates
+N

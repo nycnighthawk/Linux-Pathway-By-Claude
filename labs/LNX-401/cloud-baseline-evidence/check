@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "provider", "type": "enum", "values": ["aws", "azure", "gcp", "other"], "hint": "aws, azure, gcp or other", "sample": "aws"}, {"key": "instances", "type": "int", "min": 1, "max": 50, "hint": "integer 1 to 50", "sample": "3"}, {"key": "image_hardened", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "ssh_open_to_world", "type": "yes", "must": "no", "hint": "must be no", "sample": "no"}, {"key": "static_keys_in_code", "type": "yes", "must": "no", "hint": "must be no", "sample": "no"}, {"key": "tags_applied", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "directory_join_ok", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "time_source", "type": "text", "min": 4, "hint": "name the time source", "sample": "provider-ntp"}, {"key": "baseline_scan_pass_pct", "type": "num", "min": 0, "max": 100, "hint": "percent 0 to 100", "sample": "94.5"}, {"key": "onprem_scan_pass_pct", "type": "num", "min": 0, "max": 100, "hint": "percent 0 to 100", "sample": "96.0"}, {"key": "monthly_cost_estimate_usd", "type": "num", "min": 0, "max": 100000, "hint": "a number of dollars", "sample": "85"}, {"key": "budget_alert_configured", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "teardown_verified", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}], "rules": [{"name": "scan difference is explained by size", "needs": ["baseline_scan_pass_pct", "onprem_scan_pass_pct"], "expr": "abs(v['baseline_scan_pass_pct'] - v['onprem_scan_pass_pct']) <= 25", "msg": "a gap above 25 points needs a different explanation than noise; recheck both scans"}, {"name": "cost is non-zero for running instances", "needs": ["instances", "monthly_cost_estimate_usd"], "expr": "v['monthly_cost_estimate_usd'] > 0", "msg": "running instances cost money; check the estimate"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N

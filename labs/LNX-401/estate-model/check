@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Cross-reference checks on an estate description: the data must agree with itself.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import ipaddress, sys
+try:
+    import yaml
+    e = yaml.safe_load(open("estate.yaml"))
+except Exception as x:
+    print("FAIL: estate.yaml cannot be read:", x); sys.exit(1)
+res = []
+def t(name, ok): res.append((name, bool(ok)))
+H = e.get("hosts") or []
+names = [h["name"] for h in H]
+ips = [h["ip"] for h in H]
+net = ipaddress.ip_network(e["subnet"])
+t("host names are unique", len(set(names)) == len(names))
+t("host addresses are unique", len(set(ips)) == len(ips))
+t("every address is inside the subnet", all(ipaddress.ip_address(i) in net for i in ips))
+role = lambda r: [h for h in H if r in h["roles"]]
+t("two IdM servers (primary and replica)", len(role("idm-server")) == 2)
+t("one Samba domain controller", len(role("samba-dc")) == 1)
+t("one repository host and one monitoring host", len(role("repo")) == 1 and len(role("monitoring")) == 1)
+members = [h for h in H if "idm-server" not in h["roles"] and "samba-dc" not in h["roles"]]
+t("six member servers besides the identity servers", len(members) == 6)
+fams = {h["family"] for h in members}
+t("members come from at least two families", len(fams) >= 2)
+rel = {(h["family"], str(h["release"])) for h in members}
+t("members span at least three family/release pairs", len(rel) >= 3)
+t("realms and DNS zones are distinct", e["realms"]["idm"]["name"] != e["realms"]["ad"]["name"] and e["realms"]["idm"]["dns_zone"] != e["realms"]["ad"]["dns_zone"])
+t("a trust is declared with a valid type", e["trust"]["type"] in ("forest", "external") and e["trust"]["direction"] in ("one-way", "two-way"))
+t("the NTP server is a host in the inventory", e["ntp_server"] in names)
+t("every member runs node-exporter", all("node-exporter" in h["roles"] for h in members))
+o = e["play_order"]
+need = ["dns-time", "idm-server", "samba-dc", "trust", "repo", "idm-client", "node-exporter", "monitoring"]
+t("play order has every stage exactly once", sorted(o) == sorted(need))
+if sorted(o) == sorted(need):
+    t("DNS and time first", o[0] == "dns-time")
+    t("trust after both directories", o.index("trust") > max(o.index("idm-server"), o.index("samba-dc")))
+    t("clients after the repository and the IdM server", o.index("idm-client") > max(o.index("repo"), o.index("idm-server")))
+    t("monitoring last", o[-1] == "monitoring")
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

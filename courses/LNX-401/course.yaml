@@ -1,0 +1,83 @@
+id: LNX-401
+title: 'Capstone: Enterprise Estate as Code'
+summary: 'A graded, multi-stage project for the enterprise pathway. You describe an estate as code (an IdM domain beside a Samba AD domain with a trust, six mixed servers, a package repository and monitoring), test it against a genuine Windows AD, run its full host lifecycle, operate it for thirty days, take its baseline to a public cloud and write a post-incident review. Three stages are graded in CI; three are guided evidence stages.'
+hours: 120
+coverage: full
+outcomes:
+- Describe an estate in one inventory file whose data is internally consistent and whose build order is explicit
+- Prove identity in layers (name and time, authentication, authorisation and ID mapping) against Samba AD and a genuine Windows AD
+- Write the provision, patch, upgrade and decommission steps of a host in the right order, with canary rings and replica checks
+- Operate an estate for a month against written service objectives and turn repeated manual work into code
+- Deploy the same baseline to a public cloud separately from its provider-specific parts, and tear it down with proof
+- Write a blameless post-incident review whose timeline, numbers and actions are consistent
+modules:
+- id: build
+  title: Build and verify
+  lessons:
+  - topic: LNX-401-T01
+    title: 'Milestone 1: IdM, Samba AD, six servers, repository and monitoring'
+    file: lessons/LNX-401-T01.md
+    minutes: 240
+  - topic: LNX-401-T02
+    title: 'Milestone 2: test against a genuine Windows AD with a trust'
+    file: lessons/LNX-401-T02.md
+    minutes: 240
+  - topic: LNX-401-T03
+    title: 'Milestone 3: provision, harden, patch, upgrade, decommission'
+    file: lessons/LNX-401-T03.md
+    minutes: 240
+- id: operate
+  title: Operate, extend and review
+  lessons:
+  - topic: LNX-401-T04
+    title: 'Milestone 4: thirty days of operations'
+    file: lessons/LNX-401-T04.md
+    minutes: 240
+  - topic: LNX-401-T05
+    title: 'Milestone 5: the baseline in a public cloud'
+    file: lessons/LNX-401-T05.md
+    minutes: 240
+  - topic: LNX-401-T06
+    title: 'Milestone 6: post-incident review'
+    file: lessons/LNX-401-T06.md
+    minutes: 120
+labs:
+- id: estate-model
+  topic: LNX-401-T01
+  title: An estate description that agrees with itself
+  env: V
+  license: MIT
+  minutes: 60
+  packages:
+  - python3-yaml
+- id: ad-trust-evidence
+  topic: LNX-401-T02
+  title: Evidence from a genuine Windows AD with a trust
+  env: S
+  license: MIT
+  minutes: 120
+- id: host-lifecycle
+  topic: LNX-401-T03
+  title: The lifecycle of an estate host as code
+  env: V
+  license: MIT
+  minutes: 60
+- id: ops-log-30d
+  topic: LNX-401-T04
+  title: Thirty-day operations log and service levels
+  env: O
+  license: MIT
+  minutes: 60
+- id: cloud-baseline-evidence
+  topic: LNX-401-T05
+  title: Evidence for the baseline deployed in a public cloud
+  env: K
+  license: MIT
+  minutes: 90
+- id: incident-review
+  topic: LNX-401-T06
+  title: A blameless post-incident review that checks out
+  env: C
+  license: MIT
+  minutes: 45
+quizzes: []

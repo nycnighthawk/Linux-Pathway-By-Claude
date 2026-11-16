@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > lifecycle.py <<'N'
+# SPDX-License-Identifier: MIT
+"""Return the ordered steps for one lifecycle action on an estate host.
+
+plan(action, host, hosts) -> list of step names (strings).
+
+action is one of: provision, patch, upgrade, decommission.
+host   is a dict: {"name", "family", "roles", "ring"} where ring is "canary" or "main".
+hosts  is the list of all host dicts (for patching: the canary must go first).
+
+Required steps and order:
+  provision:    image, register-inventory, join-directory, baseline, scan, register-monitoring
+  patch:        for a "main" host: wait-canary-healthy, snapshot-pin, update, health-check;
+                for a "canary" host: snapshot-pin, update, health-check
+  upgrade:      backup, dry-run, upgrade, reboot, baseline, scan, health-check
+  decommission: drain, remove-monitoring, revoke-certs, remove-principal, remove-dns, remove-inventory, wipe
+  A host with the role "idm-server" gets "check-replicas" before the first step of upgrade and decommission.
+  An unknown action raises ValueError.
+"""
+
+def plan(action, host, hosts):
+    raise NotImplementedError
+N

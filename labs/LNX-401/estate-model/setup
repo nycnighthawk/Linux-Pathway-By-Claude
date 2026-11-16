@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > estate.yaml <<'N'
+# Estate description. Fix it so that `check` passes (see README.md for the rules).
+domain: example.test
+subnet: 10.20.0.0/24
+ntp_server: ipa1
+realms:
+  idm: {name: EXAMPLE.TEST, dns_zone: example.test}
+  ad:  {name: CORP.EXAMPLE.TEST, dns_zone: corp.example.test}
+trust: {type: forest, direction: one-way}
+hosts:
+  - {name: ipa1,   ip: 10.20.0.11, family: rhel,   release: "9",  roles: [idm-server]}
+  - {name: dc1,    ip: 10.20.0.12, family: samba,  release: "4",  roles: [samba-dc]}
+  - {name: repo1,  ip: 10.20.0.13, family: rhel,   release: "9",  roles: [repo, idm-client]}
+  - {name: mon1,   ip: 10.20.0.14, family: rhel,   release: "9",  roles: [monitoring, idm-client]}
+  - {name: app1,   ip: 10.20.0.15, family: rhel,   release: "9",  roles: [idm-client, node-exporter]}
+  - {name: app2,   ip: 10.20.0.15, family: rhel,   release: "9",  roles: [idm-client, node-exporter]}
+  - {name: app3,   ip: 10.20.0.17, family: rhel,   release: "9",  roles: [idm-client, node-exporter]}
+play_order: [dns-time, idm-server, samba-dc, trust, repo, idm-client, node-exporter, monitoring]
+N

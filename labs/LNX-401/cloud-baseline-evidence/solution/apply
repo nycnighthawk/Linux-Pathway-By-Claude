@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+provider=aws
+instances=3
+image_hardened=yes
+ssh_open_to_world=no
+static_keys_in_code=no
+tags_applied=yes
+directory_join_ok=yes
+time_source=provider-ntp
+baseline_scan_pass_pct=94.5
+onprem_scan_pass_pct=96.0
+monthly_cost_estimate_usd=85
+budget_alert_configured=yes
+teardown_verified=yes
+N
