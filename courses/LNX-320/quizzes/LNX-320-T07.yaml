@@ -1,0 +1,32 @@
+title: 'Quiz: IPC - pipes, Unix sockets, shm, eventfd'
+questions:
+- id: eof
+  prompt: A reader on a pipe never sees end of file although the writer has closed its end. What is the likely cause?
+  choices: [The pipe is full, Another process still holds a copy of the write end, The reader is non-blocking, PIPE_BUF is too small]
+  answer: [1]
+  explain: 'A) wrong. B) correct: close unused ends everywhere. C) wrong. D) wrong.'
+- id: scm
+  prompt: What does SCM_RIGHTS do?
+  choices: [Passes credentials, Passes open descriptors to the receiver as new descriptors for the same open file descriptions, Changes file permissions, Seals memory]
+  answer: [1]
+  explain: 'A) wrong: that is SCM_CREDENTIALS. B) correct. C) wrong. D) wrong.'
+- id: peercred
+  prompt: Which statements about SO_PEERCRED are correct? (select two)
+  choices: [The kernel supplies the peer PID, UID and GID, It reflects the peer at the time of connect, The client can set any values it likes, It works only on TCP]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct: the peer may change identity later. C) wrong. D) wrong: it is for Unix sockets.'
+- id: toctou
+  prompt: A server checks a length in shared memory and then copies using the same field. What is the risk?
+  choices: [None, The other process can change the field between check and use, The memory is read-only, The length is always 0]
+  answer: [1]
+  explain: 'A) wrong. B) correct: read it once into a local variable or seal the buffer. C) wrong. D) wrong.'
+- id: eventfd
+  prompt: What does reading an eventfd (not in semaphore mode) return?
+  choices: [One byte, The accumulated 64-bit counter, which is reset to zero, The number of waiters, The file size]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: seqpacket
+  prompt: Why choose SOCK_SEQPACKET for a message protocol?
+  choices: [It keeps message boundaries and is connection-oriented and ordered, It is faster than shared memory, It needs no bind, It passes no descriptors]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong: it can pass them.'
