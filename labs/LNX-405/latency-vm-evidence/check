@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "host_cpu_model", "type": "text", "min": 4, "hint": "name the CPU", "sample": "example-cpu"}, {"key": "numa_nodes", "type": "int", "min": 1, "max": 16, "hint": "integer", "sample": "2"}, {"key": "isolated_cores", "type": "int", "min": 0, "max": 512, "hint": "integer", "sample": "4"}, {"key": "vcpus", "type": "int", "min": 1, "max": 512, "hint": "integer", "sample": "4"}, {"key": "vcpus_pinned", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "same_numa_node", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "hugepage_size_kib", "type": "enum", "values": ["4", "2048", "1048576"], "hint": "4, 2048 or 1048576 (KiB)", "sample": "2048"}, {"key": "target_max_us", "type": "int", "min": 1, "max": 1000000, "hint": "microseconds", "sample": "150"}, {"key": "baseline_max_us", "type": "int", "min": 1, "max": 10000000, "hint": "microseconds", "sample": "2400"}, {"key": "tuned_max_us", "type": "int", "min": 1, "max": 10000000, "hint": "microseconds", "sample": "110"}, {"key": "test_minutes", "type": "int", "min": 1, "max": 100000, "hint": "minutes, at least 60 to pass the rule below", "sample": "120"}, {"key": "load_running", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "smi_checked", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}], "rules": [{"name": "a test long enough to catch rare spikes", "needs": ["test_minutes"], "expr": "v['test_minutes'] >= 60", "msg": "measure for at least 60 minutes"}, {"name": "vCPUs fit in the isolated cores", "needs": ["vcpus", "isolated_cores"], "expr": "v['vcpus'] <= v['isolated_cores']", "msg": "isolate at least as many cores as vCPUs"}, {"name": "tuning helped", "needs": ["baseline_max_us", "tuned_max_us"], "expr": "v['tuned_max_us'] < v['baseline_max_us']", "msg": "tuned must beat the baseline; check the setup"}, {"name": "hugepages used", "needs": ["hugepage_size_kib"], "expr": "v['hugepage_size_kib'] != '4'", "msg": "back guest memory with 2 MiB or 1 GiB pages"}, {"name": "target met or honestly missed", "needs": ["target_max_us", "tuned_max_us"], "expr": "True", "msg": "always passes; say in your notes whether the target was met"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N

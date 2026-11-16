@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+project=kvm-selftests
+test_kind=test
+fails_without_fix=yes
+archs_run=2
+skips_when_unsupported=yes
+checkpatch_errors=0
+versions_sent=2
+review_comments=4
+comments_addressed=4
+outcome=reviewed
+links_recorded=yes
+N

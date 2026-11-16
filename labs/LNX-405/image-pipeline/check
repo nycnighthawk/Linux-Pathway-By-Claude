@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import re, sys, yaml
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+try:
+    p = yaml.safe_load(open("pipeline.yaml"))
+    s, T = p["source"], p["targets"]
+except Exception as x:
+    print("FAIL: cannot read pipeline.yaml:", x); sys.exit(1)
+t("source has a 64-hex sha256", re.fullmatch(r"[0-9a-f]{64}", str(s.get("sha256", ""))) is not None)
+t("source has a cloud-init seed", s.get("seed") in ("nocloud", "config-drive"))
+t("three targets exist", set(T) == {"libvirt", "virtualbox", "kubevirt"})
+t("every target derives from the one source", all(T[k].get("from_source", True) for k in T if k != "kubevirt") and T.get("kubevirt", {}).get("from_source", True))
+t("libvirt uses qcow2", T["libvirt"].get("format") == "qcow2")
+t("virtualbox uses vdi or vmdk", T["virtualbox"].get("format") in ("vdi", "vmdk"))
+k = T["kubevirt"]
+t("kubevirt uses a containerDisk", k.get("kind") == "containerDisk")
+t("the container image is pinned (a tag other than latest, or a digest)", ":" in k.get("image", "") and not k["image"].endswith(":latest") or "@sha256:" in k.get("image", ""))
+t("the disk sits under /disk", str(k.get("disk_path", "")).startswith("/disk/"))
+t("the disk file is owned by the qemu user (uid 107)", k.get("owner_uid") == 107)
+sm = lambda x: set(x.get("smoke", []))
+t("every target has the same smoke tests", sm(T["libvirt"]) == sm(T["virtualbox"]) == sm(k) != set())
+t("smoke tests include login, kernel and checksum", {"login", "kernel", "image-sha"} <= sm(T["libvirt"]))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

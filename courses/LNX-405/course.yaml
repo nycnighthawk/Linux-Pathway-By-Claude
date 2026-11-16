@@ -1,0 +1,83 @@
+id: LNX-405
+title: 'Capstone: Build and Run a Hypervisor Stack'
+summary: A graded, multi-stage project for the virtualization pathway. You build a small VMM that boots Linux with virtio
+  devices and test it in CI, deliver one image to libvirt, VirtualBox and KubeVirt, tune a pinned hugepage-backed VM to a
+  latency target, pass a real device through with VFIO, send a test for QEMU or KVM for review and write a defensive analysis
+  of a fixed VM-escape vulnerability. Three stages are graded in CI; three are guided evidence stages.
+hours: 120
+coverage: full
+outcomes:
+- Plan a guest memory map, device windows and kernel command line for a small VMM, and validate untrusted configuration
+- Build one image once and deliver it to three platforms with identical smoke tests
+- Tune and measure a VM against a latency target written in advance
+- Assign a PCI device to a guest with VFIO while understanding IOMMU groups and their risks
+- Send a test or feature to QEMU or KVM and take it through review
+- Write a defensive analysis of a fixed escape vulnerability with layered mitigations
+modules:
+- id: stages
+  title: Stages
+  lessons:
+  - topic: LNX-405-T01
+    title: 'Milestone 1: a VMM that boots Linux with virtio devices'
+    file: lessons/LNX-405-T01.md
+    minutes: 240
+  - topic: LNX-405-T02
+    title: 'Milestone 2: one image pipeline for three platforms'
+    file: lessons/LNX-405-T02.md
+    minutes: 240
+  - topic: LNX-405-T03
+    title: 'Milestone 3: a pinned hugepage-backed VM that meets a latency target'
+    file: lessons/LNX-405-T03.md
+    minutes: 240
+  - topic: LNX-405-T04
+    title: 'Milestone 4: VFIO passthrough of a real device'
+    file: lessons/LNX-405-T04.md
+    minutes: 240
+  - topic: LNX-405-T05
+    title: 'Milestone 5: a test or feature sent for review'
+    file: lessons/LNX-405-T05.md
+    minutes: 240
+  - topic: LNX-405-T06
+    title: 'Milestone 6: a VM-escape CVE analysis and mitigations write-up'
+    file: lessons/LNX-405-T06.md
+    minutes: 240
+labs:
+- id: vmm-layout
+  topic: LNX-405-T01
+  title: The memory map and command line of a tiny VMM
+  env: V
+  license: GPL-2.0-only
+  minutes: 60
+- id: image-pipeline
+  topic: LNX-405-T02
+  title: One image, three platforms
+  env: V
+  license: GPL-2.0-only
+  minutes: 60
+  packages:
+  - python3-yaml
+- id: latency-vm-evidence
+  topic: LNX-405-T03
+  title: A pinned, hugepage-backed VM that meets a latency target
+  env: S
+  license: GPL-2.0-only
+  minutes: 180
+- id: vfio-evidence
+  topic: LNX-405-T04
+  title: VFIO passthrough of a real device
+  env: H
+  license: GPL-2.0-only
+  minutes: 120
+- id: upstream-test-evidence
+  topic: LNX-405-T05
+  title: A QEMU or KVM selftest sent for review
+  env: O
+  license: GPL-2.0-only
+  minutes: 120
+- id: cve-writeup
+  topic: LNX-405-T06
+  title: A defensive write-up of a fixed VM-escape vulnerability
+  env: C
+  license: GPL-2.0-only
+  minutes: 60
+quizzes: []

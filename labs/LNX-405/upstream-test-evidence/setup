@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+project=?
+test_kind=?
+fails_without_fix=?
+archs_run=?
+skips_when_unsupported=?
+checkpatch_errors=?
+versions_sent=?
+review_comments=?
+comments_addressed=?
+outcome=?
+links_recorded=?
+N

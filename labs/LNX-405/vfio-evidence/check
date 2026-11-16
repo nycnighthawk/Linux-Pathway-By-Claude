@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "iommu_enabled", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "device_class", "type": "enum", "values": ["nic", "gpu", "nvme", "usb", "other"], "hint": "nic, gpu, nvme, usb or other", "sample": "nic"}, {"key": "pci_address", "type": "text", "min": 7, "hint": "for example 0000:03:00.0", "sample": "0000:03:00.0"}, {"key": "iommu_group", "type": "int", "min": 0, "max": 4096, "hint": "integer", "sample": "14"}, {"key": "group_members", "type": "int", "min": 1, "max": 64, "hint": "integer", "sample": "1"}, {"key": "all_members_assigned", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "acs_override_used", "type": "yes", "must": "no", "hint": "must be no", "sample": "no"}, {"key": "bound_driver_after", "type": "enum", "values": ["vfio-pci", "other"], "hint": "vfio-pci or other", "sample": "vfio-pci"}, {"key": "guest_sees_device", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "guest_driver_works", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "reset_works", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "host_recovered", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}], "rules": [{"name": "the group size matches your assignment note", "needs": ["group_members", "all_members_assigned"], "expr": "v['group_members'] == 1 or v['all_members_assigned'] == 'yes'", "msg": "a shared group needs every member assigned together"}, {"name": "the device is bound to vfio-pci", "needs": ["bound_driver_after"], "expr": "v['bound_driver_after'] == 'vfio-pci'", "msg": "bind it to vfio-pci before starting the guest"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N
