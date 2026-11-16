@@ -1,0 +1,27 @@
+title: 'Quiz: VFIO PCI passthrough and IOMMU groups'
+questions:
+- id: why-iommu
+  prompt: Why is an IOMMU required to assign a PCI device to an untrusted guest?
+  choices: [It speeds up the CPU, It confines the device's DMA to memory the host mapped for it, It emulates the device, It hides the device from the host]
+  answer: [1]
+  explain: 'A) wrong. B) correct: otherwise the guest could aim the device at host memory. C) wrong. D) wrong.'
+- id: group-rule
+  prompt: A GPU shares an IOMMU group with a SATA controller that holds the host's boot disk. What is the safe conclusion?
+  choices: [Assign only the GPU; the group does not matter, The GPU cannot be assigned without also giving away the SATA controller, unless the hardware or slot changes, Disable the IOMMU, Use iommu=pt to split the group]
+  answer: [1]
+  explain: 'A) wrong: VFIO requires the group to be viable. B) correct: all endpoint devices of a group share one owner. C) wrong: it removes the protection. D) wrong: iommu=pt does not change group membership.'
+- id: binding
+  prompt: Which settings give dynamic binding for a hostdev in libvirt?
+  choices: [managed='yes', managed='no', mode='capabilities', type='usb']
+  answer: [0]
+  explain: 'A) correct: libvirt unbinds the host driver at start and restores it at stop. B) wrong: you must bind to vfio-pci yourself. C) wrong. D) wrong.'
+- id: consequences
+  prompt: Which features stop working for a guest with a passed-through device? (select two)
+  choices: [Memory ballooning, Ordinary live migration, Booting from a virtio disk, Using hugepages]
+  answer: [0, 1]
+  explain: 'A) correct: guest RAM is pinned. B) correct: device state cannot be saved generically. C) wrong. D) wrong: hugepages help.'
+- id: reset
+  prompt: A guest using a passed-through GPU is rebooted and the card stays dead until the host reboots. What is the likely cause?
+  choices: [A missing kernel parameter, The device has no working reset method, A wrong group number, The guest used virtio]
+  answer: [1]
+  explain: 'A) wrong. B) correct: check reset_method in sysfs; some cards cannot be reset cleanly. C) wrong. D) wrong.'

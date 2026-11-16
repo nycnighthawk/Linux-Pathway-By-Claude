@@ -1,0 +1,56 @@
+id: LNX-315
+title: Virtualization Engineering
+summary: 'Running virtualization as a platform: PCI passthrough with VFIO and IOMMU groups, SR-IOV, performance tuning with
+  NUMA, pinning, hugepages and IOThreads, qcow2 internals and block jobs, firmware and confidential VMs, VirtualBox administration
+  and coexistence with KVM, image pipelines with Packer and cloud-init, KubeVirt, migration from VMware and live migration
+  tuning.'
+hours: 60
+coverage: full
+outcomes:
+- Plan and verify PCI passthrough and SR-IOV, including IOMMU group constraints
+- Tune guests for NUMA, CPU pinning, hugepages and disk I/O and measure the effect
+- Explain qcow2 internals and operate backing chains and block jobs safely
+- Choose firmware, Secure Boot, vTPM and confidential VM options for a workload
+- Administer VirtualBox headless and reason about running it beside QEMU/KVM
+- Build repeatable VM images with Packer, virt-builder and cloud-init
+- Run virtual machines on Kubernetes with KubeVirt, and plan a migration from VMware
+- Tune live migration for convergence and bounded downtime
+certifications:
+- cert: LPIC3-305
+  objectives:
+  - '351.5'
+  - '353.2'
+- cert: EX316
+  objectives:
+  - D1
+  - D2
+  - D3
+  - D4
+  - D6
+  - D8
+  - D9
+  - D10
+  - D12
+  - D13
+- cert: LPLUS
+  objectives: []
+modules:
+- id: devices-performance
+  title: Devices and performance
+  lessons:
+  - topic: LNX-315-T01
+    title: VFIO PCI passthrough and IOMMU groups
+    file: lessons/LNX-315-T01.md
+    minutes: 55
+labs:
+- id: vfio-plan-guide
+  topic: LNX-315-T01
+  title: Plan a GPU passthrough from an IOMMU group listing
+  env: H
+  license: MIT
+  minutes: 40
+quizzes:
+- id: LNX-315-T01
+  topic: LNX-315-T01
+  title: 'Quiz: VFIO PCI passthrough and IOMMU groups'
+  file: quizzes/LNX-315-T01.yaml

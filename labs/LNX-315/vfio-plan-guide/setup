@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > iommu-groups.txt <<'N'
+# Captured on a dual-NIC workstation with two GPUs: group number, PCI address, [vendor:device] class and name.
+group 0   0000:00:00.0 [8086:3e30] Host bridge
+group 1   0000:00:01.0 [8086:1901] PCI bridge (CPU root port, ACS)
+group 2   0000:00:02.0 [8086:3e92] VGA compatible controller (host console GPU)
+group 7   0000:00:17.0 [8086:a352] SATA controller (host boot disk)
+group 7   0000:00:1f.0 [8086:a306] ISA bridge
+group 7   0000:00:1f.4 [8086:a323] SMBus
+group 12  0000:00:1c.0 [8086:a33a] PCI bridge (chipset root port, no ACS)
+group 12  0000:02:00.0 [8086:1572] Ethernet controller port 0 (host management, in use by the host)
+group 12  0000:02:00.1 [8086:1572] Ethernet controller port 1 (free)
+group 14  0000:01:00.0 [10de:2484] VGA compatible controller (RTX, target GPU)
+group 14  0000:01:00.1 [10de:228b] Audio device (RTX audio function)
+N
+cat > cmdline-now.txt <<'N'
+BOOT_IMAGE=/vmlinuz-6.8.0 root=/dev/mapper/vg-root ro quiet splash
+N
+for f in report.txt hostdev.xml; do :; done
+[ -f report.txt ] || cat > report.txt <<'N'
+# Fill every key (key=value).
+gpu_group=
+gpu_viable=
+nic_port1_group=
+nic_port1_viable=
+nic_port1_reason=
+kernel_cmdline_add=
+vfio_ids=
+guest_firmware=
+guest_machine=
+N
+[ -f hostdev.xml ] || echo "<!-- TODO: two hostdev elements for the GPU functions -->" > hostdev.xml
