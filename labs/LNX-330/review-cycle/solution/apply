@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > plan.txt <<'N'
+C1=fix
+C2=fix
+C3=fix
+C4=defer
+C5=accept
+C6=ignore
+carry_trailer=patch2:grace@example.org
+wait_hours=24
+N

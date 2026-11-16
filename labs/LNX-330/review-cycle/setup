@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > thread.txt <<'N'
+Subject: [PATCH 0/2] foo: handle probe errors
+From: You <you@example.org>
+Date: Mon, 02 Mar 2026 09:00 UTC
+
+Two patches. 1/2 fixes the error path in foo_probe() and renames a helper;
+2/2 adds a missing of_node_put().
+
+---- review comments on v1 (all in reply to the series) ----
+
+[C1] Ada Lovelace <ada@example.org> (maintainer of drivers/foo), Mon 14:10
+  Patch 1 does two things: a bug fix and a rename of foo_do() to foo_run().
+  Please split them. I can take the fix for this cycle; the rename can wait.
+
+[C2] Ada Lovelace, Mon 14:12
+  Patch 1: there are spaces instead of a tab on the line that sets `ret`.
+
+[C3] Grace Hopper <grace@example.org> (reviewer), Mon 16:45
+  Patch 1: if the allocation fails we leak `res`. Please free it on that path.
+
+[C4] Ken Thompson <ken@example.org> (reader of the list), Tue 07:20
+  Unrelated to this series, but the whole driver should switch to
+  devm_ helpers one day. Maybe a separate cleanup series?
+
+[C5] Grace Hopper, Tue 09:03
+  Patch 2: looks good to me.
+  Reviewed-by: Grace Hopper <grace@example.org>
+
+[C6] Someone <anon@example.org>, Tue 11:30
+  Why isn't this merged yet?? Just apply it already.
+
+---- maintainer note ----
+Ada Lovelace, Tue 12:00: "Please give reviewers in other time zones a day
+before you send v2, and send it as one series."
+N
+cat > plan.txt <<'N'
+# One line per comment: C1=fix | explain | defer | accept | ignore
+# fix: change the code or patch structure in v2.  explain: reply only.
+# defer: acknowledge, do it in a separate later series.  accept: an approval to record.
+# ignore: no action needed.
+C1=
+C2=
+C3=
+C4=
+C5=
+C6=
+# Trailer to carry into v2, as patch<N>:<address>  (empty if none)
+carry_trailer=
+# Minimum hours to wait before sending v2
+wait_hours=
+N
