@@ -1,0 +1,30 @@
+item: LNX-403
+label: 'Capstone: Ship a Linux Service'
+branch: build/LNX-403
+state: in-progress
+started: '2026-11-16'
+updated: '2026-11-16'
+phases:
+  synth:
+    state: todo
+    units: 6
+    done: []
+  brief:
+    state: todo
+    units: 0
+    done: []
+  milestones:
+    state: todo
+    units: 6
+    done: []
+  labs:
+    state: todo
+    units: 6
+    done: []
+  checks:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-16 started
