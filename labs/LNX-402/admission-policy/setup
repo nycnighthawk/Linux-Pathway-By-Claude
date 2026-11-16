@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > admit.py <<'N'
+# SPDX-License-Identifier: MIT
+"""admit(pod, policy) -> (allowed: bool, reasons: list[str])
+
+pod is a dict shaped like a pod spec: {"namespace": str, "containers": [ {"name", "image", "securityContext": {...}} ],
+    "hostNetwork": bool, "signed": bool (a verified signature exists for every image)}
+policy is {"registry": "registry.example.test/", "exempt_namespaces": ["kube-system"]}
+
+Rules, applied to every container unless the namespace is exempt:
+  1. image must start with policy["registry"]                     -> reason "registry"
+  2. securityContext.privileged must not be true                  -> reason "privileged"
+  3. securityContext.runAsNonRoot must be true                    -> reason "root"
+  4. securityContext.allowPrivilegeEscalation must be false       -> reason "escalation"
+  5. the pod must not use hostNetwork                             -> reason "hostnetwork" (once per pod)
+  6. pod["signed"] must be true                                   -> reason "unsigned" (once per pod)
+Return (True, []) when nothing is violated, else (False, reasons) with each reason once, in the order above.
+"""
+
+def admit(pod, policy):
+    raise NotImplementedError
+N

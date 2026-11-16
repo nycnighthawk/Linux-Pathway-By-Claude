@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+try:
+    from admit import admit
+except Exception as x:
+    print("FAIL: cannot import admit.admit:", x); sys.exit(1)
+P = {"registry": "registry.example.test/", "exempt_namespaces": ["kube-system"]}
+good = {"name": "app", "image": "registry.example.test/shop:1", "securityContext": {"privileged": False, "runAsNonRoot": True, "allowPrivilegeEscalation": False}}
+def pod(ns="shop", cs=None, hn=False, signed=True): return {"namespace": ns, "containers": cs if cs is not None else [good], "hostNetwork": hn, "signed": signed}
+def run(p):
+    try: return admit(p, P)
+    except Exception as x: return ("error", str(x))
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+t("a compliant pod is allowed", run(pod()) == (True, []))
+t("another registry is refused", run(pod(cs=[dict(good, image="docker.io/library/nginx")])) == (False, ["registry"]))
+t("privileged is refused", run(pod(cs=[dict(good, securityContext=dict(good["securityContext"], privileged=True))])) == (False, ["privileged"]))
+t("missing runAsNonRoot is refused", run(pod(cs=[dict(good, securityContext={"allowPrivilegeEscalation": False})])) == (False, ["root"]))
+t("privilege escalation allowed is refused", run(pod(cs=[dict(good, securityContext=dict(good["securityContext"], allowPrivilegeEscalation=True))])) == (False, ["escalation"]))
+t("a missing securityContext fails root and escalation", run(pod(cs=[{"name": "x", "image": "registry.example.test/x"}])) == (False, ["root", "escalation"]))
+t("hostNetwork and unsigned are reported once each", run(pod(cs=[good, good], hn=True, signed=False)) == (False, ["hostnetwork", "unsigned"]))
+t("reasons follow the rule order", run(pod(cs=[dict(good, image="x/y", securityContext={"privileged": True})], hn=True, signed=False)) == (False, ["registry", "privileged", "root", "escalation", "hostnetwork", "unsigned"]))
+t("an exempt namespace is allowed whatever it does", run(pod(ns="kube-system", cs=[{"name": "x", "image": "k8s.io/pause", "securityContext": {"privileged": True}}], hn=True, signed=False)) == (True, []))
+t("a pod with no containers is allowed if signed", run(pod(cs=[])) == (True, []))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

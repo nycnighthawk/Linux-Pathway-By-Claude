@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import glob, sys, yaml
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+docs = {}
+for f in glob.glob("**/*.yaml", recursive=True):
+    docs[f] = yaml.safe_load(open(f))
+root = docs.get("root/root-app.yaml") or {}
+t("root application exists", root.get("kind") == "Application")
+t("root points at the platform directory that exists", (root.get("spec", {}).get("source", {}).get("path") or "") == "platform")
+sp = root.get("spec", {}).get("syncPolicy", {}).get("automated", {})
+t("root sync prunes and self-heals", sp.get("prune") is True and sp.get("selfHeal") is True)
+t("root pins a revision that is not HEAD", root.get("spec", {}).get("source", {}).get("targetRevision") not in (None, "HEAD"))
+app = docs.get("platform/appset.yaml") or {}
+els = [e for g in app.get("spec", {}).get("generators", []) for e in g.get("list", {}).get("elements", [])]
+t("the ApplicationSet generates an application for both clusters", {e.get("cluster") for e in els} == {"alpha", "beta"})
+crd = docs.get("platform/crds.yaml") or {}
+wave = (crd.get("metadata", {}).get("annotations") or {}).get("argocd.argoproj.io/sync-wave")
+t("the CRD application has a negative sync wave so it installs first", wave is not None and int(wave) < 0)
+t("no Secret with a plain-text value is stored in Git", not any(d and d.get("kind") == "Secret" and (d.get("stringData") or d.get("data")) for d in docs.values()))
+t("an ExternalSecret or SealedSecret replaces it", any(d and d.get("kind") in ("ExternalSecret", "SealedSecret") for d in docs.values()))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+try:
+    from upgrade import plan
+except Exception as x:
+    print("FAIL: cannot import upgrade.plan:", x); sys.exit(1)
+N = [{"name": "cp1", "role": "control-plane"}, {"name": "w1", "role": "worker"}, {"name": "cp2", "role": "control-plane"}, {"name": "w2", "role": "worker"}]
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+try: p = plan("1.30.4", "1.31.2", N)
+except NotImplementedError: p = None
+except Exception as x: p = None
+want = ["etcd-snapshot", "plan", "apply:cp1", "upgrade-node:cp2", "kubelet:cp1", "kubelet:cp2",
+        "drain:w1", "upgrade-node:w1", "kubelet:w1", "uncordon:w1", "drain:w2", "upgrade-node:w2", "kubelet:w2", "uncordon:w2", "verify"]
+t("full plan for two control-plane nodes and two workers", p == want)
+def raises(a, b, n):
+    try: plan(a, b, n); return False
+    except ValueError: return True
+    except Exception: return False
+t("skipping a minor version is refused", raises("1.29.1", "1.31.0", N))
+t("a downgrade is refused", raises("1.31.0", "1.30.0", N))
+t("the same minor is refused", raises("1.31.0", "1.31.2", N))
+t("a different major is refused", raises("1.31.0", "2.0.0", N))
+t("no control-plane node is refused", raises("1.30.0", "1.31.0", [{"name": "w", "role": "worker"}]))
+q = None
+try: q = plan("1.30.0", "1.31.0", [{"name": "only", "role": "control-plane"}])
+except Exception: pass
+t("a single control-plane node works with no drains", q == ["etcd-snapshot", "plan", "apply:only", "kubelet:only", "verify"])
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > cluster-a.yaml <<'N'
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+clusterName: alpha
+kubernetesVersion: v1.31.2
+controlPlaneEndpoint: "10.30.0.10:6443"
+skipPhases: [addon/kube-proxy]
+networking:
+  podSubnet: 10.244.0.0/16
+  serviceSubnet: 10.96.0.0/12
+N
+cat > cluster-b.yaml <<'N'
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+clusterName: beta
+kubernetesVersion: v1.31.2
+controlPlaneEndpoint: "10.30.1.10:6443"
+skipPhases: [addon/kube-proxy]
+networking:
+  podSubnet: 10.248.0.0/16
+  serviceSubnet: 10.112.0.0/12
+N
+cat > gateway.yaml <<'N'
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: edge
+  namespace: platform
+spec:
+  gatewayClassName: cilium
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      hostname: "*.apps.example.test"
+      allowedRoutes:
+        namespaces:
+          from: Selector
+N

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+sed -i 's/platfrom/platform/; s/targetRevision: HEAD/targetRevision: v1.0.0/; s/automated: {}/automated: {prune: true, selfHeal: true}/' root/root-app.yaml
+python3 - <<'N'
+import re
+p = open("platform/appset.yaml").read()
+p = p.replace("            url: https://10.30.0.10:6443\n", "            url: https://10.30.0.10:6443\n          - cluster: beta\n            url: https://10.30.1.10:6443\n")
+open("platform/appset.yaml", "w").write(p)
+c = open("platform/crds.yaml").read().replace("  namespace: argocd\n", "  namespace: argocd\n  annotations:\n    argocd.argoproj.io/sync-wave: \"-5\"\n", 1)
+open("platform/crds.yaml", "w").write(c)
+N
+rm platform/secret.yaml
+cat > platform/registry-pull.yaml <<'N'
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata: {name: registry-pull, namespace: platform}
+spec:
+  secretStoreRef: {name: vault, kind: ClusterSecretStore}
+  target: {name: registry-pull}
+  data:
+    - secretKey: password
+      remoteRef: {key: platform/registry, property: password}
+N

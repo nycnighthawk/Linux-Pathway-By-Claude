@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "soak_days", "type": "int", "min": 1, "max": 60, "hint": "integer, 7 or more to pass the rule below", "sample": "7"}, {"key": "steady_state_error_pct_max", "type": "num", "min": 0, "max": 100, "hint": "percent", "sample": "1"}, {"key": "observed_error_pct", "type": "num", "min": 0, "max": 100, "hint": "percent", "sample": "0.3"}, {"key": "experiments_planned", "type": "int", "min": 1, "max": 500, "hint": "integer", "sample": "10"}, {"key": "experiments_run", "type": "int", "min": 0, "max": 500, "hint": "integer", "sample": "10"}, {"key": "experiments_recovered_unaided", "type": "int", "min": 0, "max": 500, "hint": "integer", "sample": "8"}, {"key": "max_recovery_seconds", "type": "int", "min": 0, "max": 86400, "hint": "seconds", "sample": "140"}, {"key": "aborts", "type": "int", "min": 0, "max": 500, "hint": "integer", "sample": "0"}, {"key": "leaks_found", "type": "int", "min": 0, "max": 100, "hint": "integer", "sample": "1"}, {"key": "findings_with_owner", "type": "int", "min": 0, "max": 500, "hint": "integer", "sample": "4"}, {"key": "findings_total", "type": "int", "min": 0, "max": 500, "hint": "integer", "sample": "4"}], "rules": [{"name": "a full week of soak", "needs": ["soak_days"], "expr": "v['soak_days'] >= 7", "msg": "at least 7 days"}, {"name": "experiments run do not exceed those planned", "needs": ["experiments_planned", "experiments_run"], "expr": "v['experiments_run'] <= v['experiments_planned']", "msg": "explain skipped experiments in your notes, not by counting extra ones"}, {"name": "recovered unaided does not exceed run", "needs": ["experiments_run", "experiments_recovered_unaided"], "expr": "v['experiments_recovered_unaided'] <= v['experiments_run']", "msg": "count only experiments that ran"}, {"name": "steady-state hypothesis held or a finding exists", "needs": ["steady_state_error_pct_max", "observed_error_pct", "findings_total"], "expr": "v['observed_error_pct'] <= v['steady_state_error_pct_max'] or v['findings_total'] >= 1", "msg": "a broken hypothesis needs at least one finding"}, {"name": "every finding has an owner", "needs": ["findings_with_owner", "findings_total"], "expr": "v['findings_with_owner'] == v['findings_total']", "msg": "assign every finding"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N

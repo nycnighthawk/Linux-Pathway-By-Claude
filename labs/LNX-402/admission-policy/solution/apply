@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > admit.py <<'N'
+# SPDX-License-Identifier: MIT
+ORDER = ["registry", "privileged", "root", "escalation", "hostnetwork", "unsigned"]
+
+def admit(pod, policy):
+    if pod.get("namespace") in policy.get("exempt_namespaces", []):
+        return True, []
+    bad = set()
+    for c in pod.get("containers", []):
+        sc = c.get("securityContext") or {}
+        if not c.get("image", "").startswith(policy["registry"]): bad.add("registry")
+        if sc.get("privileged") is True: bad.add("privileged")
+        if sc.get("runAsNonRoot") is not True: bad.add("root")
+        if sc.get("allowPrivilegeEscalation") is not False: bad.add("escalation")
+    if pod.get("hostNetwork"): bad.add("hostnetwork")
+    if pod.get("signed") is not True: bad.add("unsigned")
+    reasons = [r for r in ORDER if r in bad]
+    return (not reasons), reasons
+N

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > rules.yaml <<'N'
+groups:
+  - name: platform
+    rules:
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{code=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels: {severity: page}
+        annotations: {summary: "More than 5 percent of requests fail", runbook_url: "https://runbooks.example.test/high-error-rate"}
+      - alert: NodeDown
+        expr: up{job="node"} == 0
+        for: 3m
+        labels: {severity: page}
+        annotations: {summary: "A node exporter is not scraped", runbook_url: "https://runbooks.example.test/node-down"}
+      - alert: TargetsMissing
+        expr: count(up{job="node"} == 1) < 6
+        for: 5m
+        labels: {severity: page}
+        annotations: {summary: "Fewer node targets than the inventory lists", runbook_url: "https://runbooks.example.test/targets-missing"}
+      - alert: CertificateExpiresSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 30 * 86400
+        for: 1h
+        labels: {severity: ticket}
+        annotations: {summary: "A certificate expires within 30 days", runbook_url: "https://runbooks.example.test/cert-expiry"}
+N

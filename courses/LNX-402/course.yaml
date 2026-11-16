@@ -1,0 +1,106 @@
+id: LNX-402
+title: 'Capstone: Cloud-Native Platform'
+summary: A graded, multi-stage project for the cloud-native pathway. You build two kubeadm clusters with Cilium and the Gateway
+  API, run the platform and applications from Git with Argo CD, rehearse an upgrade and an etcd restore, enforce admission
+  policy and signed images, add observability, move the platform to managed Kubernetes, run a week-long soak and chaos test,
+  and measure a 100-node scale test. Five stages are graded in CI; three are guided evidence stages.
+hours: 140
+coverage: full
+outcomes:
+- Define two clusters whose ranges and names allow them to be joined, and a gateway that limits who may attach routes
+- Lay out a GitOps repository whose root, sets and sync waves reconcile safely without secrets in Git
+- Order a minor-version upgrade and an etcd snapshot-and-restore drill so that no step is unsafe
+- Express admission rules for least privilege, approved registries and signed images, and explain refusals
+- Write alerts that catch silent failure, including vanished scrape targets and expiring certificates
+- Compare a self-built platform with a managed one and record provider-specific differences
+- Plan, run and report a soak and chaos test and a scale test with honest limits
+modules:
+- id: stages
+  title: Stages
+  lessons:
+  - topic: LNX-402-T01
+    title: 'Milestone 1: two kubeadm clusters, Cilium and the Gateway API'
+    file: lessons/LNX-402-T01.md
+    minutes: 240
+  - topic: LNX-402-T02
+    title: 'Milestone 2: GitOps for platform and applications with Argo CD'
+    file: lessons/LNX-402-T02.md
+    minutes: 240
+  - topic: LNX-402-T03
+    title: 'Milestone 3: version upgrade and etcd restore drill'
+    file: lessons/LNX-402-T03.md
+    minutes: 240
+  - topic: LNX-402-T04
+    title: 'Milestone 4: policy: Pod Security, Kyverno and signed images only'
+    file: lessons/LNX-402-T04.md
+    minutes: 240
+  - topic: LNX-402-T05
+    title: 'Milestone 5: observability with Prometheus, OpenTelemetry and Hubble'
+    file: lessons/LNX-402-T05.md
+    minutes: 240
+  - topic: LNX-402-T06
+    title: 'Milestone 6: the same platform on managed Kubernetes'
+    file: lessons/LNX-402-T06.md
+    minutes: 240
+  - topic: LNX-402-T07
+    title: 'Milestone 7: a week-long soak and chaos test'
+    file: lessons/LNX-402-T07.md
+    minutes: 240
+  - topic: LNX-402-T08
+    title: 'Milestone 8: a scale test with one hundred or more nodes'
+    file: lessons/LNX-402-T08.md
+    minutes: 240
+labs:
+- id: cluster-pair
+  topic: LNX-402-T01
+  title: Two clusters that can be joined later, and one safe gateway
+  env: V
+  license: MIT
+  minutes: 40
+- id: gitops-layout
+  topic: LNX-402-T02
+  title: A GitOps repository layout that reconciles safely
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - python3-yaml
+- id: upgrade-plan
+  topic: LNX-402-T03
+  title: A safe order for a Kubernetes minor upgrade
+  env: V
+  license: MIT
+  minutes: 40
+- id: admission-policy
+  topic: LNX-402-T04
+  title: An admission decision in code
+  env: C
+  license: MIT
+  minutes: 40
+- id: alert-rules
+  topic: LNX-402-T05
+  title: Alerting rules that catch silent failure
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - python3-yaml
+- id: managed-k8s-evidence
+  topic: LNX-402-T06
+  title: Evidence for the platform on managed Kubernetes
+  env: K
+  license: MIT
+  minutes: 120
+- id: soak-chaos-evidence
+  topic: LNX-402-T07
+  title: Week-long soak and chaos test results
+  env: O
+  license: MIT
+  minutes: 60
+- id: scale-test-evidence
+  topic: LNX-402-T08
+  title: Scale test with 100 or more nodes
+  env: S
+  license: MIT
+  minutes: 180
+quizzes: []

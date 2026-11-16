@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+node_kind=?
+nodes=?
+pods=?
+api_p99_ms=?
+scheduler_pods_per_second=?
+etcd_db_mb=?
+first_bottleneck=?
+steps_measured=?
+config_recorded=?
+mitigation_tried=?
+N

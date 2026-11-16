@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "provider", "type": "enum", "values": ["eks", "aks", "gke", "other"], "hint": "eks, aks, gke or other", "sample": "gke"}, {"key": "kubernetes_minor", "type": "int", "min": 25, "max": 60, "hint": "minor version number", "sample": "31"}, {"key": "self_built_minor", "type": "int", "min": 25, "max": 60, "hint": "minor version number", "sample": "31"}, {"key": "gitops_bootstrap_ok", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "shared_checks_passed", "type": "int", "min": 0, "max": 500, "hint": "integer", "sample": "18"}, {"key": "shared_checks_total", "type": "int", "min": 1, "max": 500, "hint": "integer", "sample": "20"}, {"key": "overlay_differences", "type": "int", "min": 0, "max": 200, "hint": "integer", "sample": "6"}, {"key": "workload_identity", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "static_keys_in_repo", "type": "yes", "must": "no", "hint": "must be no", "sample": "no"}, {"key": "overlapping_addons", "type": "int", "min": 0, "max": 50, "hint": "integer", "sample": "2"}, {"key": "hourly_cost_usd", "type": "num", "min": 0.01, "max": 1000, "hint": "a positive number of dollars", "sample": "0.35"}, {"key": "teardown_verified", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}], "rules": [{"name": "shared checks do not exceed the total", "needs": ["shared_checks_passed", "shared_checks_total"], "expr": "v['shared_checks_passed'] <= v['shared_checks_total']", "msg": "passed cannot exceed total"}, {"name": "the managed cluster is within two minors of the self-built ones", "needs": ["kubernetes_minor", "self_built_minor"], "expr": "abs(v['kubernetes_minor'] - v['self_built_minor']) <= 2", "msg": "compare like with like; upgrade or pick another version"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N
