@@ -1,0 +1,63 @@
+item: LNX-402
+label: 'Capstone: Cloud-Native Platform'
+branch: build/LNX-402
+state: done
+started: '2026-11-16'
+updated: '2026-11-16'
+phases:
+  synth:
+    state: done
+    units: 8
+    done:
+    - LNX-402-T01
+    - LNX-402-T02
+    - LNX-402-T03
+    - LNX-402-T04
+    - LNX-402-T05
+    - LNX-402-T06
+    - LNX-402-T07
+    - LNX-402-T08
+  brief:
+    state: done
+    units: 0
+    done: []
+  milestones:
+    state: done
+    units: 8
+    done:
+    - LNX-402-T01
+    - LNX-402-T02
+    - LNX-402-T03
+    - LNX-402-T04
+    - LNX-402-T05
+    - LNX-402-T06
+    - LNX-402-T07
+    - LNX-402-T08
+  labs:
+    state: done
+    units: 8
+    done:
+    - LNX-402-T01
+    - LNX-402-T02
+    - LNX-402-T03
+    - LNX-402-T04
+    - LNX-402-T05
+    - LNX-402-T06
+    - LNX-402-T07
+    - LNX-402-T08
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-16 started
+- '2026-11-16 synth: LNX-402-T01, LNX-402-T02, LNX-402-T03, LNX-402-T04, LNX-402-T05, LNX-402-T06, LNX-402-T07,
+  LNX-402-T08'
+- '2026-11-16 brief: done'
+- '2026-11-16 milestones: LNX-402-T01, LNX-402-T02, LNX-402-T03, LNX-402-T04, LNX-402-T05, LNX-402-T06, LNX-402-T07,
+  LNX-402-T08'
+- '2026-11-16 labs: LNX-402-T01, LNX-402-T02, LNX-402-T03, LNX-402-T04, LNX-402-T05, LNX-402-T06, LNX-402-T07, LNX-402-T08'
+- '2026-11-16 checks: done'
+- 2026-11-16 finished
+finished: '2026-11-16'

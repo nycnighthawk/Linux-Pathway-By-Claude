@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > rules.yaml <<'N'
+groups:
+  - name: platform
+    rules:
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{code=~"5.."}[5m])) > 5
+      - alert: NodeDown
+        expr: up{job="node"} == 0
+        for: 0m
+        labels: {severity: page}
+N

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import ipaddress, re, sys, yaml
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+try:
+    a = yaml.safe_load(open("cluster-a.yaml")); b = yaml.safe_load(open("cluster-b.yaml")); g = yaml.safe_load(open("gateway.yaml"))
+except Exception as x:
+    print("FAIL: cannot read the files:", x); sys.exit(1)
+net = lambda c, k: ipaddress.ip_network(c["networking"][k])
+t("cluster names differ", a["clusterName"] != b["clusterName"])
+t("control plane endpoints differ", a["controlPlaneEndpoint"] != b["controlPlaneEndpoint"])
+ver = lambda c: re.match(r"v1\.(\d+)\.(\d+)$", c["kubernetesVersion"]).groups()
+t("both run the same minor version", ver(a)[0] == ver(b)[0])
+t("pod ranges do not overlap", not net(a, "podSubnet").overlaps(net(b, "podSubnet")))
+t("service ranges do not overlap", not net(a, "serviceSubnet").overlaps(net(b, "serviceSubnet")))
+t("pod and service ranges of one cluster do not overlap", not any(net(c, "podSubnet").overlaps(net(c, "serviceSubnet")) for c in (a, b)))
+t("pod range is at least a /16 on each cluster", all(net(c, "podSubnet").prefixlen <= 16 for c in (a, b)))
+t("kube-proxy is skipped (Cilium replaces it) on both", all("addon/kube-proxy" in (c.get("proxy", {}) or {}).get("disabled", []) or c.get("skipPhases") == ["addon/kube-proxy"] for c in (a, b)))
+s = g.get("spec", {})
+t("gateway names a class", bool(s.get("gatewayClassName")))
+L = s.get("listeners") or [{}]
+t("gateway listener limits which namespaces may attach routes", all(l.get("allowedRoutes", {}).get("namespaces", {}).get("from") in ("Same", "Selector") for l in L))
+t("gateway listener has a hostname", all(l.get("hostname") for l in L))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > upgrade.py <<'N'
+# SPDX-License-Identifier: MIT
+"""plan(current, target, nodes) -> ordered list of step strings, or raises ValueError.
+
+current, target: versions like "1.30.4" (minor upgrades only, one minor at a time, no downgrade).
+nodes: list of dicts {"name": str, "role": "control-plane" or "worker"}.
+
+Steps, in order:
+  "etcd-snapshot"                      once, first
+  "plan"                               once (kubeadm upgrade plan), after the snapshot
+  then for the FIRST control-plane node in the list:  "apply:<name>"
+  then for every other control-plane node:            "upgrade-node:<name>"
+  then for every control-plane node, in list order:   "kubelet:<name>"
+  then for each worker in list order: "drain:<name>", "upgrade-node:<name>", "kubelet:<name>", "uncordon:<name>"
+  last: "verify"
+ValueError if: the target is not exactly one minor above the current (same major), there is no control-plane node.
+"""
+
+def plan(current, target, nodes):
+    raise NotImplementedError
+N

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > upgrade.py <<'N'
+# SPDX-License-Identifier: MIT
+def _v(s):
+    a = s.split(".")
+    return int(a[0]), int(a[1])
+
+def plan(current, target, nodes):
+    (cm, cn), (tm, tn) = _v(current), _v(target)
+    if cm != tm or tn != cn + 1:
+        raise ValueError("upgrade exactly one minor version at a time")
+    cps = [n["name"] for n in nodes if n["role"] == "control-plane"]
+    ws = [n["name"] for n in nodes if n["role"] == "worker"]
+    if not cps:
+        raise ValueError("no control-plane node")
+    steps = ["etcd-snapshot", "plan", "apply:" + cps[0]]
+    steps += ["upgrade-node:" + n for n in cps[1:]]
+    steps += ["kubelet:" + n for n in cps]
+    for w in ws:
+        steps += ["drain:" + w, "upgrade-node:" + w, "kubelet:" + w, "uncordon:" + w]
+    return steps + ["verify"]
+N

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Structural checks on alerting rules; promtool is used as well when it is installed.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import shutil, subprocess, sys, yaml
+try:
+    d = yaml.safe_load(open("rules.yaml"))
+except Exception as x:
+    print("FAIL: cannot read rules.yaml:", x); sys.exit(1)
+rules = [r for g in d.get("groups", []) for r in g.get("rules", []) if "alert" in r]
+by = {r["alert"]: r for r in rules}
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+def dur(s):
+    s = str(s or "0m")
+    return int(s[:-1]) * {"s": 1, "m": 60, "h": 3600}[s[-1]] if s[-1] in "smh" and s[:-1].isdigit() else 0
+t("every alert has a for duration of at least 2 minutes", rules != [] and all(dur(r.get("for")) >= 120 for r in rules))
+t("every alert has a severity label of page or ticket", rules != [] and all((r.get("labels") or {}).get("severity") in ("page", "ticket") for r in rules))
+t("every alert has a summary and a runbook_url annotation", rules != [] and all({"summary", "runbook_url"} <= set(r.get("annotations") or {}) for r in rules))
+t("an alert fires when a scrape target disappears (absent or count)", any("absent(" in r["expr"] or "count(up" in r["expr"] for r in rules))
+t("an alert compares the number of up targets with the expected number", any("up" in r["expr"] and "<" in r["expr"] and "count" in r["expr"] for r in rules))
+t("a certificate expiry alert exists", any("probe_ssl_earliest_cert_expiry" in r["expr"] or "certmanager_certificate_expiration" in r["expr"] for r in rules))
+t("the error rate alert is a ratio, not an absolute count", "HighErrorRate" in by and "/" in by["HighErrorRate"]["expr"])
+t("alert names are unique", len(by) == len(rules))
+if shutil.which("promtool"):
+    r = subprocess.run(["promtool", "check", "rules", "rules.yaml"], capture_output=True, text=True)
+    t("promtool accepts the file", r.returncode == 0)
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

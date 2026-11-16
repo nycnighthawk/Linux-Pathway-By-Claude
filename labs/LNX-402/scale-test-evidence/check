@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "node_kind", "type": "enum", "values": ["real", "simulated", "mixed"], "hint": "real, simulated or mixed", "sample": "simulated"}, {"key": "nodes", "type": "int", "min": 1, "max": 20000, "hint": "integer, at least 100 to pass the rule below", "sample": "120"}, {"key": "pods", "type": "int", "min": 0, "max": 2000000, "hint": "integer", "sample": "6000"}, {"key": "api_p99_ms", "type": "num", "min": 0, "max": 600000, "hint": "milliseconds", "sample": "420"}, {"key": "scheduler_pods_per_second", "type": "num", "min": 0, "max": 100000, "hint": "pods per second", "sample": "85"}, {"key": "etcd_db_mb", "type": "num", "min": 0, "max": 100000, "hint": "megabytes", "sample": "310"}, {"key": "first_bottleneck", "type": "enum", "values": ["api-server", "etcd", "scheduler", "controller", "network-policy", "monitoring", "other"], "hint": "one of the listed components", "sample": "monitoring"}, {"key": "steps_measured", "type": "int", "min": 1, "max": 100, "hint": "integer, 3 or more to pass the rule below", "sample": "4"}, {"key": "config_recorded", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "mitigation_tried", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}], "rules": [{"name": "at least 100 nodes", "needs": ["nodes"], "expr": "v['nodes'] >= 100", "msg": "the scale test needs 100 or more nodes"}, {"name": "at least three growth steps", "needs": ["steps_measured"], "expr": "v['steps_measured'] >= 3", "msg": "measure at three or more sizes to see a trend"}, {"name": "pods per node is plausible (110 default limit)", "needs": ["nodes", "pods"], "expr": "v['pods'] <= v['nodes'] * 110", "msg": "more pods than the default per-node limit allows"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N

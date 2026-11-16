@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+provider=gke
+kubernetes_minor=31
+self_built_minor=31
+gitops_bootstrap_ok=yes
+shared_checks_passed=18
+shared_checks_total=20
+overlay_differences=6
+workload_identity=yes
+static_keys_in_repo=no
+overlapping_addons=2
+hourly_cost_usd=0.35
+teardown_verified=yes
+N

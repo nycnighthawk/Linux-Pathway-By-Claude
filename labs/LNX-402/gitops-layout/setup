@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p root platform
+cat > root/root-app.yaml <<'N'
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://git.example.test/platform.git
+    targetRevision: HEAD
+    path: platfrom
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated: {}
+N
+cat > platform/appset.yaml <<'N'
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform-components
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - cluster: alpha
+            url: https://10.30.0.10:6443
+  template:
+    metadata:
+      name: "{{cluster}}-gateway"
+    spec:
+      project: default
+      source:
+        repoURL: https://git.example.test/platform.git
+        targetRevision: HEAD
+        path: "overlays/{{cluster}}"
+      destination:
+        server: "{{url}}"
+N
+cat > platform/crds.yaml <<'N'
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gateway-api-crds
+  namespace: argocd
+spec:
+  project: default
+  source: {repoURL: "https://git.example.test/platform.git", path: crds}
+  destination: {server: "https://kubernetes.default.svc"}
+N
+cat > platform/secret.yaml <<'N'
+apiVersion: v1
+kind: Secret
+metadata: {name: registry-pull, namespace: platform}
+stringData:
+  password: hunter2
+N
