@@ -72,6 +72,10 @@ modules:
     title: VirtualBox on the KVM backend; coexisting with QEMU/KVM
     file: lessons/LNX-315-T07.md
     minutes: 40
+  - topic: LNX-315-T08
+    title: 'Image pipelines: Packer, virt-builder, cloud-init for KVM and VirtualBox'
+    file: lessons/LNX-315-T08.md
+    minutes: 55
 labs:
 - id: vfio-plan-guide
   topic: LNX-315-T01
@@ -118,6 +122,16 @@ labs:
   env: S
   license: MIT
   minutes: 30
+- id: image-seed-pipeline
+  topic: LNX-315-T08
+  title: Build a pinned image and cloud-init seed
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - qemu-utils
+  - python3
+  - python3-yaml
 quizzes:
 - id: LNX-315-T01
   topic: LNX-315-T01
@@ -147,3 +161,7 @@ quizzes:
   topic: LNX-315-T07
   title: 'Quiz: VirtualBox on the KVM backend; coexisting with QEMU/KVM'
   file: quizzes/LNX-315-T07.yaml
+- id: LNX-315-T08
+  topic: LNX-315-T08
+  title: 'Quiz: Image pipelines: Packer, virt-builder, cloud-init for KVM and VirtualBox'
+  file: quizzes/LNX-315-T08.yaml
