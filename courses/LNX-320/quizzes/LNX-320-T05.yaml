@@ -1,0 +1,32 @@
+title: 'Quiz: Signals, signalfd, timerfd'
+questions:
+- id: coalesce
+  prompt: Ten SIGCHLD arrive while the signal is blocked. How many are delivered after unblocking?
+  choices: ['Ten', 'One', 'None', 'Two']
+  answer: [1]
+  explain: 'A) wrong: standard signals are not queued. B) correct, so a handler must loop on waitpid with WNOHANG. C) wrong. D) wrong.'
+- id: safe
+  prompt: Which calls are safe inside a signal handler? (select two)
+  choices: [write, _exit, printf, malloc]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: it uses locks and global state. D) wrong: it may have interrupted malloc itself.'
+- id: block
+  prompt: What must you do before reading a signal from a signalfd?
+  choices: [Install a handler, Block the signal with sigprocmask, Call alarm, Nothing]
+  answer: [1]
+  explain: 'A) wrong. B) correct: otherwise the default action happens. C) wrong. D) wrong.'
+- id: timerfd
+  prompt: A timerfd with a 100 ms interval is read after 350 ms of inactivity. What does read return?
+  choices: [1, 3, 350, An error]
+  answer: [1]
+  explain: 'A) wrong. B) correct: three expirations since the last read. C) wrong. D) wrong.'
+- id: inherit
+  prompt: A launcher blocks SIGTERM and then forks and execs a worker. What happens to the worker?
+  choices: [It receives SIGTERM normally, It inherits the blocked mask and its SIGTERM stays pending, SIGTERM is delivered to the launcher only, The signal is ignored by the kernel]
+  answer: [1]
+  explain: 'A) wrong. B) correct: reset the mask before exec. C) wrong. D) wrong.'
+- id: segv
+  prompt: A SIGSEGV handler simply returns. What happens?
+  choices: [The program continues after the fault, The faulting instruction runs again and the signal repeats, The kernel kills the handler, The memory is mapped automatically]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
