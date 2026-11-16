@@ -1,7 +1,7 @@
 item: LNX-332
 label: 'Hypervisor Development: KVM, QEMU & VirtualBox'
 branch: build/LNX-332
-state: in-progress
+state: done
 started: '2026-11-16'
 updated: '2026-11-16'
 phases:
@@ -70,7 +70,7 @@ phases:
     - LNX-332-T11
     - LNX-332-T12
   checks:
-    state: todo
+    state: done
     units: 0
     done: []
 parked: null
@@ -124,3 +124,6 @@ log:
 - '2026-11-16 lessons: LNX-332-T12'
 - '2026-11-16 quizzes: LNX-332-T12'
 - '2026-11-16 labs: LNX-332-T12'
+- '2026-11-16 checks: done'
+- 2026-11-16 finished
+finished: '2026-11-16'
