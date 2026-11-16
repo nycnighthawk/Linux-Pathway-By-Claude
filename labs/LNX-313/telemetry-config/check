@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+python3 - <<'PY'
+import re, sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+try:
+    sm = yaml.safe_load(open("servicemonitor.yaml")) or {}
+    sp = sm.get("spec", {})
+    chk(sm.get("kind") == "ServiceMonitor" and sm["metadata"]["name"] == "shop-api" and sm["metadata"]["namespace"] == "monitoring", "ServiceMonitor monitoring/shop-api")
+    chk(sp.get("selector", {}).get("matchLabels") == {"app": "api"} and sp.get("namespaceSelector", {}).get("matchNames") == ["shop"], "selects app=api in shop")
+    ep = (sp.get("endpoints") or [{}])[0]
+    chk(ep.get("port") == "metrics" and ep.get("path") == "/metrics" and ep.get("interval") == "15s", "endpoint metrics /metrics 15s")
+    pr = yaml.safe_load(open("rules.yaml")) or {}
+    chk(pr.get("kind") == "PrometheusRule" and pr["metadata"]["name"] == "shop-api-slo", "PrometheusRule shop-api-slo")
+    rules = [r for g in pr.get("spec", {}).get("groups", []) for r in g.get("rules", [])]
+    al = next((r for r in rules if r.get("alert") == "ApiErrorBudgetBurn"), {})
+    e = re.sub(r"\s+", "", al.get("expr", ""))
+    chk("[5m]" in e and "[1h]" in e and 'status=~"5.."' in e and e.count("http_requests_total") >= 4, "expression uses 5m and 1h error ratios of http_requests_total")
+    chk("14.4*0.001" in e and "and" in e, "both windows compared with 14.4 * 0.001 and combined with and")
+    chk(al.get("for") == "2m" and al.get("labels", {}).get("severity") == "page", "for 2m, severity page")
+    chk(bool(al.get("annotations", {}).get("summary")) and bool(al.get("annotations", {}).get("runbook_url")), "summary and runbook_url annotations")
+    oc = yaml.safe_load(open("otel-collector.yaml")) or {}
+    prot = (oc.get("receivers", {}).get("otlp") or {}).get("protocols", {})
+    chk("grpc" in prot and "http" in prot, "otlp receiver with grpc and http")
+    chk("memory_limiter" in oc.get("processors", {}) and "batch" in oc.get("processors", {}), "memory_limiter and batch processors")
+    ex = oc.get("exporters", {})
+    t = ex.get("otlp/tempo", {})
+    chk(t.get("endpoint") == "tempo.observability:4317" and t.get("tls", {}).get("insecure") is True, "otlp/tempo exporter")
+    chk(ex.get("prometheus", {}).get("endpoint") == "0.0.0.0:8889", "prometheus exporter on 0.0.0.0:8889")
+    pl = oc.get("service", {}).get("pipelines", {})
+    chk(pl.get("traces") == {"receivers": ["otlp"], "processors": ["memory_limiter", "batch"], "exporters": ["otlp/tempo"]}, "traces pipeline")
+    chk(pl.get("metrics") == {"receivers": ["otlp"], "processors": ["memory_limiter", "batch"], "exporters": ["prometheus"]}, "metrics pipeline")
+    a = dict(l.split("=", 1) for l in open("answer.txt").read().split() if "=" in l)
+    chk(a.get("counter_series") == "200", "counter series: 4 x 10 x 5 = 200")
+    chk(a.get("histogram_series") == "520", "histogram series: (10 + 1 + 2) x 40 = 520")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+sys.exit(bad)
+PY

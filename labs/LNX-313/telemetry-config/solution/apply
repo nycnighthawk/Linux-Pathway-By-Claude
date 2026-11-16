@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > servicemonitor.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata: {name: shop-api, namespace: monitoring}
+spec:
+  selector: {matchLabels: {app: api}}
+  namespaceSelector: {matchNames: [shop]}
+  endpoints:
+    - {port: metrics, path: /metrics, interval: 15s}
+J
+cat > rules.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata: {name: shop-api-slo, namespace: monitoring}
+spec:
+  groups:
+    - name: shop-api
+      rules:
+        - alert: ApiErrorBudgetBurn
+          expr: |
+            (sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 14.4 * 0.001)
+            and
+            (sum(rate(http_requests_total{status=~"5.."}[1h])) / sum(rate(http_requests_total[1h])) > 14.4 * 0.001)
+          for: 2m
+          labels: {severity: page}
+          annotations:
+            summary: The API is burning its error budget about 14 times too fast
+            runbook_url: https://runbooks.example/shop/api-error-budget
+J
+cat > otel-collector.yaml <<'J'
+# SPDX-License-Identifier: MIT
+receivers:
+  otlp:
+    protocols:
+      grpc: {}
+      http: {}
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 400
+  batch: {}
+exporters:
+  otlp/tempo:
+    endpoint: tempo.observability:4317
+    tls: {insecure: true}
+  prometheus:
+    endpoint: 0.0.0.0:8889
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/tempo]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [prometheus]
+J
+printf 'counter_series=200\nhistogram_series=520\n' > answer.txt
