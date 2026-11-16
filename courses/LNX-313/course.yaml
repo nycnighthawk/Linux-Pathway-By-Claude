@@ -48,6 +48,13 @@ modules:
     title: Jobs and CronJobs
     file: lessons/LNX-313-T05.md
     minutes: 50
+- id: packaging-gitops
+  title: Packaging and GitOps
+  lessons:
+  - topic: LNX-313-T06
+    title: Helm chart authoring and testing
+    file: lessons/LNX-313-T06.md
+    minutes: 55
 labs:
 - id: pod-with-sidecar
   topic: LNX-313-T01
@@ -79,6 +86,12 @@ labs:
   env: C
   license: MIT
   minutes: 30
+- id: chart-skeleton
+  topic: LNX-313-T06
+  title: A chart that lints
+  env: C
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-313-T01
   topic: LNX-313-T01
@@ -100,3 +113,7 @@ quizzes:
   topic: LNX-313-T05
   title: 'Quiz: Jobs and CronJobs'
   file: quizzes/LNX-313-T05.yaml
+- id: LNX-313-T06
+  topic: LNX-313-T06
+  title: 'Quiz: Helm chart authoring and testing'
+  file: quizzes/LNX-313-T06.yaml

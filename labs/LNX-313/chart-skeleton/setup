@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+mkdir -p web/templates
+printf '%s\n' 'apiVersion: v1' 'name: web' 'version: 1' > web/Chart.yaml
+printf '%s\n' 'replicaCount: 0' > web/values.yaml
+echo '{}' > web/values.schema.json
+printf '%s\n' 'kind: Deployment' 'spec:' '  replicas: {{ .Values.replicaCount }}' > web/templates/deployment.yaml
+: > web/templates/_helpers.tpl
