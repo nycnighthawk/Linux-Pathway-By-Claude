@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > rolling.yaml <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: web}
+spec:
+  replicas: 12
+  minReadySeconds: 15
+  progressDeadlineSeconds: 300
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 3, maxUnavailable: 0}
+  selector: {matchLabels: {app: web}}
+  template:
+    metadata: {labels: {app: web}}
+    spec:
+      containers:
+        - name: web
+          image: registry.example/web:1
+          readinessProbe:
+            httpGet: {path: /ready, port: 8080}
+J
+{
+cat <<'J'
+# SPDX-License-Identifier: MIT
+apiVersion: v1
+kind: Service
+metadata: {name: web}
+spec:
+  selector: {app: web, track: green}
+  ports: [{port: 80}]
+J
+for c in blue green; do
+cat <<J
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: web-$c}
+spec:
+  replicas: 3
+  selector: {matchLabels: {app: web, track: $c}}
+  template:
+    metadata: {labels: {app: web, track: $c}}
+    spec:
+      containers:
+        - {name: web, image: registry.example/web:1}
+J
+done
+} > bluegreen.yaml
+printf 'canary_share_pct=10\nmin_total_for_5pct=20\n' > answer.txt
