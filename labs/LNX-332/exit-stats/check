@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+want = {"total_exits": "128300", "top_by_count": "MSR_WRITE", "top_by_time": "IO_INSTRUCTION",
+        "share_pct": "66.9", "first_action": "ioeventfd"}
+got = {}
+for line in open("report.txt"):
+    if line.startswith("#") or ":" not in line:
+        continue
+    k, v = line.split(":", 1)
+    v = v.split("#")[0].strip()
+    got[k.strip()] = v
+bad = 0
+for k, v in want.items():
+    ok = got.get(k) == v
+    print(("ok:   " if ok else "FAIL: ") + k + ("" if ok else " (got %r)" % got.get(k)))
+    bad |= (not ok)
+sys.exit(bad)
+N

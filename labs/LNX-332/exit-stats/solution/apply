@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+rows = []
+for line in open("exits.txt"):
+    if line.startswith("#") or not line.strip():
+        continue
+    r, c, t = line.split()
+    rows.append((r, int(c), int(t)))
+total = sum(c for _, c, _ in rows)
+topc = max(rows, key=lambda x: x[1])[0]
+busy = [x for x in rows if x[0] != "HLT"]
+topt = max(busy, key=lambda x: x[2])
+share = 100.0 * topt[2] / sum(x[2] for x in busy)
+act = {"EPT_VIOLATION": "huge-pages", "IO_INSTRUCTION": "ioeventfd", "EPT_MISCONFIG": "ioeventfd",
+       "MSR_WRITE": "apicv", "EXTERNAL_INTERRUPT": "apicv", "HLT": "halt-polling"}[topt[0]]
+open("report.txt", "w").write(
+    "total_exits: %d\ntop_by_count: %s\ntop_by_time: %s\nshare_pct: %.1f\nfirst_action: %s\n"
+    % (total, topc, topt[0], share, act))
+N
