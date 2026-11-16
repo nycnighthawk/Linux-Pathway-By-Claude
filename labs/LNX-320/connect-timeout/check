@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f conn.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+cat > .harness.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <arpa/inet.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <time.h>
+#include <unistd.h>
+int connect_timeout(const char *host, const char *port, int timeout_ms);
+static int listener(int backlog, int *port)
+{
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in a = {.sin_family = AF_INET};
+    inet_pton(AF_INET, "127.0.0.1", &a.sin_addr);
+    bind(s, (struct sockaddr *)&a, sizeof a);
+    listen(s, backlog);
+    socklen_t l = sizeof a;
+    getsockname(s, (struct sockaddr *)&a, &l);
+    *port = ntohs(a.sin_port);
+    return s;
+}
+static double now(void) { struct timespec t; clock_gettime(CLOCK_MONOTONIC, &t); return t.tv_sec + t.tv_nsec / 1e9; }
+int main(void)
+{
+    int port;
+    char ps[16];
+    int ls = listener(16, &port);
+    snprintf(ps, sizeof ps, "%d", port);
+    int fd = connect_timeout("localhost", ps, 2000);
+    printf("connected=%s\n", fd >= 0 ? "yes" : "no");
+    if (fd >= 0)
+        printf("blocking=%s\n", (fcntl(fd, F_GETFL) & O_NONBLOCK) ? "no" : "yes");
+    close(ls);
+    errno = 0;
+    fd = connect_timeout("127.0.0.1", ps, 2000);
+    printf("refused=%d errno=%s\n", fd, errno == ECONNREFUSED ? "ECONNREFUSED" : "other");
+    /* full accept queue: backlog 0, never accepting */
+    int bp;
+    int bl = listener(0, &bp);
+    char bps[16];
+    snprintf(bps, sizeof bps, "%d", bp);
+    for (int i = 0; i < 8; i++) {
+        int c = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+        struct sockaddr_in a = {.sin_family = AF_INET, .sin_port = htons((unsigned short)bp)};
+        inet_pton(AF_INET, "127.0.0.1", &a.sin_addr);
+        connect(c, (struct sockaddr *)&a, sizeof a);
+    }
+    double t0 = now();
+    errno = 0;
+    fd = connect_timeout("127.0.0.1", bps, 400);
+    double el = now() - t0;
+    printf("timeout=%d errno=%s elapsed_ok=%s\n", fd, errno == ETIMEDOUT ? "ETIMEDOUT" : "other", (el > 0.3 && el < 1.5) ? "yes" : "no");
+    (void)bl;
+    return 0;
+}
+N
+gcc -Wall -o conn_test .harness.c conn.c 2>cc.log || { fail "does not compile: $(head -3 cc.log)"; exit 1; }
+ok "compiles"
+out=$(timeout 30 ./conn_test 2>&1)
+chk() { echo "$out" | grep -qx "$1" && ok "$2" || fail "$2 (expected line: $1)"; }
+chk "connected=yes" "connects via localhost (falls back across addresses)"
+chk "blocking=yes" "descriptor returned in blocking mode"
+chk "refused=-1 errno=ECONNREFUSED" "closed port gives -1 and ECONNREFUSED"
+chk "timeout=-1 errno=ETIMEDOUT elapsed_ok=yes" "deadline honoured with ETIMEDOUT"
+exit $bad

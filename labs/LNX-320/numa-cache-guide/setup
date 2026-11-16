@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > chase.csv <<'N'
+# pointer chase, one pinned thread, random ring, 64-byte lines
+size_kib,ns_per_step
+8,1.1
+16,1.1
+32,1.2
+64,4.0
+128,4.1
+256,4.2
+512,4.3
+1024,4.6
+2048,14.1
+4096,14.4
+8192,14.9
+16384,15.6
+32768,17.0
+65536,91.0
+131072,93.5
+N
+cat > numa.txt <<'N'
+# two sockets, one node each; commands: numactl --cpunodebind=0 --membind=<N>
+local  (membind=0): latency 92 ns, bandwidth 120 GB/s
+remote (membind=1): latency 151 ns, bandwidth 54 GB/s
+N
+cat > counters.csv <<'N'
+# two threads, each increments its own 8-byte counter, ns per update
+layout,ns_per_update
+adjacent (same 64-byte line),18.0
+padded (own line each),2.0
+N
+cat > context.txt <<'N'
+- ./service is latency sensitive; its network card is attached to NUMA node 1.
+- It must not use memory from the other node.
+N
+[ -f report.txt ] || cat > report.txt <<'N'
+# key=value
+l1_kib=
+l2_kib=
+l3_mib=
+remote_latency_ratio=
+remote_bandwidth_loss_percent=
+false_sharing_slowdown=
+cause=
+command=
+N

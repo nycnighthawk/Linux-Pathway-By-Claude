@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > watcher.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/inotify.h>
+#include <unistd.h>
+
+int main(int argc, char **argv)
+{
+    if (argc < 2)
+        return 2;
+    int fd = inotify_init1(IN_CLOEXEC);
+    if (fd < 0 || inotify_add_watch(fd, argv[1], IN_CREATE | IN_DELETE | IN_CLOSE_WRITE | IN_MOVED_FROM | IN_MOVED_TO) < 0)
+        return 1;
+    char buf[65536] __attribute__((aligned(__alignof__(struct inotify_event))));
+    char from[NAME_MAX + 1] = "";
+    unsigned from_cookie = 0;
+    for (;;) {
+        ssize_t n = read(fd, buf, sizeof buf);
+        if (n < 0) {
+            if (errno == EINTR)
+                continue;
+            return 1;
+        }
+        for (char *p = buf; p < buf + n;) {
+            struct inotify_event *e = (struct inotify_event *)p;
+            p += sizeof *e + e->len;
+            if (e->mask & IN_Q_OVERFLOW)
+                continue;
+            if ((e->mask & IN_CREATE) && !(e->mask & IN_ISDIR)) {
+                printf("CREATE %s\n", e->name);
+                fflush(stdout);
+                if (strcmp(e->name, "STOP") == 0)
+                    return 0;
+            } else if (e->mask & IN_CLOSE_WRITE) {
+                printf("CLOSE_WRITE %s\n", e->name);
+            } else if (e->mask & IN_DELETE) {
+                printf("DELETE %s\n", e->name);
+            } else if (e->mask & IN_MOVED_FROM) {
+                snprintf(from, sizeof from, "%s", e->name);
+                from_cookie = e->cookie;
+            } else if ((e->mask & IN_MOVED_TO) && e->cookie == from_cookie) {
+                printf("MOVED %s %s\n", from, e->name);
+            }
+            fflush(stdout);
+        }
+    }
+}
+N

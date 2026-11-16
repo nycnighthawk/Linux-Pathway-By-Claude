@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f watcher.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+gcc -Wall -o watcher watcher.c 2>cc.log || { fail "does not compile: $(head -3 cc.log)"; exit 1; }
+ok "compiles"
+rm -rf w out.txt; mkdir w
+./watcher w >out.txt 2>err.txt &
+pid=$!
+sleep 0.5
+touch w/a; sleep 0.1
+echo hi > w/b; sleep 0.1
+mv w/b w/c; sleep 0.1
+rm w/a; sleep 0.1
+for i in $(seq 500); do : > w/burst$i; done
+sleep 0.3
+touch w/STOP
+for i in $(seq 40); do kill -0 $pid 2>/dev/null || break; sleep 0.1; done
+if kill -0 $pid 2>/dev/null; then kill -KILL $pid 2>/dev/null; fail "did not exit after CREATE STOP"; fi
+wait $pid 2>/dev/null; rc=$?
+[ $rc -eq 0 ] && ok "exit status 0" || fail "exit status was $rc"
+head -7 out.txt > first.txt
+printf 'CREATE a\nCLOSE_WRITE a\nCREATE b\nCLOSE_WRITE b\nMOVED b c\nDELETE a\n' > want.txt
+if head -6 out.txt | cmp -s - want.txt; then ok "first six events are right"; else fail "first events differ; expected: $(tr '\n' '|' < want.txt) saw: $(head -6 out.txt | tr '\n' '|')"; fi
+n=$(grep -c '^CREATE burst' out.txt); [ "$n" = 500 ] && ok "all 500 burst creates seen" || fail "saw $n of 500 burst CREATE lines (walk the whole buffer; avoid losing events)"
+tail -1 out.txt | grep -qx 'CREATE STOP' && ok "ends with CREATE STOP" || fail "last line must be CREATE STOP"
+exit $bad

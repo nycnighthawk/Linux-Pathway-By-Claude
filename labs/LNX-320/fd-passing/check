@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f fdpass.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+cat > .harness.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+#include <unistd.h>
+int send_fd(int sock, int fd);
+int recv_fd(int sock);
+int main(void)
+{
+    int sv[2];
+    socketpair(AF_UNIX, SOCK_STREAM, 0, sv);
+    char tmpl[] = "/tmp/fdpassXXXXXX";
+    int f = mkstemp(tmpl);
+    write(f, "hello via scm_rights\n", 21);
+    lseek(f, 0, SEEK_SET);
+    if (fork() == 0) {
+        close(sv[1]);
+        _exit(send_fd(sv[0], f) == 0 ? 0 : 1);
+    }
+    close(sv[0]);
+    int r = recv_fd(sv[1]);
+    printf("received=%s\n", r >= 0 ? "yes" : "no");
+    if (r >= 0) {
+        char b[64] = {0};
+        ssize_t n = read(r, b, sizeof b - 1);
+        printf("content=%s", n > 0 ? b : "(none)\n");
+        printf("cloexec=%s\n", (fcntl(r, F_GETFD) & FD_CLOEXEC) ? "yes" : "no");
+    }
+    int st;
+    wait(&st);
+    printf("sender_ok=%s\n", WIFEXITED(st) && WEXITSTATUS(st) == 0 ? "yes" : "no");
+    /* plain data, no descriptor */
+    int p[2];
+    socketpair(AF_UNIX, SOCK_STREAM, 0, p);
+    write(p[0], "x", 1);
+    printf("plain=%d\n", recv_fd(p[1]));
+    unlink(tmpl);
+    return 0;
+}
+N
+gcc -Wall -o fdpass_test .harness.c fdpass.c 2>cc.log || { fail "does not compile: $(head -3 cc.log)"; exit 1; }
+ok "compiles"
+out=$(timeout 20 ./fdpass_test 2>&1)
+chk() { echo "$out" | grep -qx "$1" && ok "$2" || fail "$2 (expected line: $1)"; }
+chk "received=yes" "descriptor received"
+chk "content=hello via scm_rights" "content readable through the received descriptor"
+chk "cloexec=yes" "received descriptor has FD_CLOEXEC (MSG_CMSG_CLOEXEC)"
+chk "sender_ok=yes" "send_fd returned 0"
+chk "plain=-1" "recv_fd returns -1 when no descriptor is attached"
+exit $bad

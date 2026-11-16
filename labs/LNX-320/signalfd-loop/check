@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f sigloop.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+gcc -Wall -o sigloop sigloop.c 2>cc.log || { fail "does not compile: $(head -3 cc.log)"; exit 1; }
+ok "compiles"
+if grep -Eq 'sigaction|[^a-z_]signal\(|sigset\(' sigloop.c; then fail "do not install signal handlers; use signalfd"; else ok "no handler installed"; fi
+grep -q signalfd sigloop.c && grep -q timerfd_create sigloop.c && ok "uses signalfd and timerfd" || fail "use signalfd and timerfd_create"
+./sigloop >out.txt 2>err.txt &
+pid=$!
+sleep 0.3
+for i in 1 2 3; do kill -USR1 $pid 2>/dev/null; sleep 0.1; done
+sleep 0.5
+kill -TERM $pid 2>/dev/null
+for i in $(seq 30); do kill -0 $pid 2>/dev/null || break; sleep 0.1; done
+if kill -0 $pid 2>/dev/null; then kill -KILL $pid; fail "did not exit after SIGTERM"; exit 1; fi
+wait $pid; rc=$?
+[ $rc -eq 0 ] && ok "exit status 0" || fail "exit status was $rc"
+line=$(head -1 out.txt)
+u=$(echo "$line" | sed -n 's/^usr1=\([0-9]*\) ticks=\([0-9]*\)$/\1/p'); t=$(echo "$line" | sed -n 's/^usr1=\([0-9]*\) ticks=\([0-9]*\)$/\2/p')
+[ "$u" = 3 ] && ok "counted 3 SIGUSR1" || fail "expected usr1=3 (output: '$line')"
+if [ -n "$t" ] && [ "$t" -ge 8 ] && [ "$t" -le 14 ]; then ok "ticks=$t is plausible"; else fail "ticks should be near 10 for about 1 second (output: '$line')"; fi
+exit $bad

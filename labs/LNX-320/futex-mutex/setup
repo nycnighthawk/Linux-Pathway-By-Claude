@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -f futex_test
+cat > fmutex.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <linux/futex.h>
+#include <stdatomic.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+typedef struct { atomic_int word; } fmutex_t;
+
+void fm_lock(fmutex_t *m)
+{
+    (void)m; /* TODO */
+}
+
+void fm_unlock(fmutex_t *m)
+{
+    (void)m; /* TODO */
+}
+N

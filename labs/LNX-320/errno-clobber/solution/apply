@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("opener.c").read()
+s = s.replace("        log_note(\"open failed\");\n        fprintf(stderr, \"cannot open %s: %s\\n\", argv[1], strerror(errno));",
+              "        int e = errno;\n        log_note(\"open failed\");\n        fprintf(stderr, \"cannot open %s: %s\\n\", argv[1], strerror(e));")
+open("opener.c", "w").write(s)
+N

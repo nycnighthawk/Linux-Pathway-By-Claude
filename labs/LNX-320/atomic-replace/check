@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f replace.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+cat > .harness.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <dirent.h>
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+int replace_file(const char *path, const char *data, size_t len);
+int __real_fsync(int fd);
+int __real_rename(const char *a, const char *b);
+static char ev[8][16];
+static int n;
+int __wrap_fsync(int fd)
+{
+    struct stat st;
+    if (n < 8) strcpy(ev[n++], fstat(fd, &st) == 0 && S_ISDIR(st.st_mode) ? "fsync:dir" : "fsync:file");
+    return __real_fsync(fd);
+}
+int __wrap_rename(const char *a, const char *b)
+{
+    if (n < 8) strcpy(ev[n++], "rename");
+    return __real_rename(a, b);
+}
+int main(int argc, char **argv)
+{
+    if (argc == 2) { /* error path */
+        return replace_file(argv[1], "x", 1) == -1 ? 0 : 1;
+    }
+    int r = replace_file("t/target.txt", "new content\n", 12);
+    printf("ret=%d\n", r);
+    for (int i = 0; i < n; i++) printf("%s\n", ev[i]);
+    return 0;
+}
+N
+if ! gcc -Wall -o replace_test .harness.c replace.c -Wl,--wrap=fsync,--wrap=rename 2>cc.log; then fail "does not compile: $(head -3 cc.log)"; exit 1; fi
+ok "compiles and links with the harness"
+rm -rf t; mkdir t; printf 'old content\n' > t/target.txt
+out=$(./replace_test)
+echo "$out" | grep -q '^ret=0$' && ok "returns 0" || fail "replace_file must return 0"
+seq=$(echo "$out" | grep -v '^ret=' | tr '\n' ' ')
+[ "$seq" = "fsync:file rename fsync:dir " ] && ok "order: fsync file, rename, fsync directory" || fail "order must be fsync of the file, rename, fsync of the directory (saw: $seq)"
+[ "$(cat t/target.txt)" = "new content" ] && ok "content replaced" || fail "t/target.txt does not hold the new content"
+[ "$(ls -A t | wc -l)" = 1 ] && ok "no temporary file left" || fail "stray files in t/: $(ls -A t | tr '\n' ' ')"
+if ./replace_test /nonexistent-dir/file; then ok "error path returns -1"; else fail "must return -1 when the directory does not exist"; fi
+exit $bad

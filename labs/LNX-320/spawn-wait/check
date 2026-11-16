@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f spawn.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+cat > .harness.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#include <dirent.h>
+#include <errno.h>
+#include <stdio.h>
+#include <sys/wait.h>
+#include <unistd.h>
+int spawn_wait(char *const argv[]);
+static int nfds(void)
+{
+    int n = 0;
+    DIR *d = opendir("/proc/self/fd");
+    while (readdir(d)) n++;
+    closedir(d);
+    return n;
+}
+int main(void)
+{
+    int before = nfds();
+    char *a1[] = {"true", NULL};
+    char *a2[] = {"sh", "-c", "exit 7", NULL};
+    char *a3[] = {"sh", "-c", "kill -9 $$", NULL};
+    char *a4[] = {"/nonexistent/prog", NULL};
+    printf("true=%d\n", spawn_wait(a1));
+    printf("exit7=%d\n", spawn_wait(a2));
+    printf("kill9=%d\n", spawn_wait(a3));
+    errno = 0;
+    int r = spawn_wait(a4);
+    printf("missing=%d errno=%d\n", r, errno);
+    int w = waitpid(-1, NULL, WNOHANG);
+    printf("zombies=%s\n", (w == -1 && errno == ECHILD) || w == -1 ? "none" : "some");
+    printf("fdleak=%d\n", nfds() - before);
+    return 0;
+}
+N
+gcc -Wall -o spawn_test .harness.c spawn.c 2>cc.log || { fail "does not compile: $(head -3 cc.log)"; exit 1; }
+ok "compiles"
+out=$(./spawn_test 2>&1)
+chk() { echo "$out" | grep -qx "$1" && ok "$2" || fail "$2 (expected line: $1)"; }
+chk "true=0" "exit code 0"
+chk "exit7=7" "exit code 7"
+chk "kill9=137" "killed by signal 9 gives 137"
+chk "missing=-1 errno=2" "exec failure reported as -1 with ENOENT"
+chk "zombies=none" "no zombie left"
+chk "fdleak=0" "no descriptor leaked"
+exit $bad

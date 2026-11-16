@@ -1,0 +1,63 @@
+title: 'Quiz: ptrace - a tiny strace'
+questions:
+- id: sysgood
+  prompt: What does PTRACE_O_TRACESYSGOOD do?
+  choices:
+  - Makes tracing faster
+  - Marks syscall stops as SIGTRAP|0x80 so they differ from a real SIGTRAP
+  - Traces children
+  - Kills the tracee on exit
+  answer:
+  - 1
+  explain: 'A) wrong. B) correct. C) wrong: that is TRACEFORK and friends. D) wrong: that is EXITKILL.'
+- id: entryexit
+  prompt: With PTRACE_SYSCALL, how often does the tracee stop for one system call?
+  choices:
+  - Once at entry only
+  - 'Twice: at entry and at exit'
+  - Never
+  - Only on errors
+  answer:
+  - 1
+  explain: A) wrong. B) correct, so the tracer must track which stop it is (or ask GET_SYSCALL_INFO). C) wrong. D) wrong.
+- id: signals
+  prompt: The tracee stops because it received SIGUSR1. What should a simple tracer do?
+  choices:
+  - Swallow it
+  - Resume the tracee passing the signal number so the program still sees it
+  - Kill the tracee
+  - Detach
+  answer:
+  - 1
+  explain: 'A) wrong: it changes program behaviour. B) correct. C) wrong. D) wrong.'
+- id: perms
+  prompt: Which statements are true? (select two)
+  choices:
+  - Only one tracer can be attached to a process at a time
+  - Yama ptrace_scope can limit tracing to descendants
+  - Any user can trace any process
+  - ptrace works the same inside every container
+  answer:
+  - 0
+  - 1
+  explain: 'A) correct. B) correct. C) wrong. D) wrong: seccomp profiles and capabilities may block it.'
+- id: overhead
+  prompt: Why does strace slow down syscall-heavy programs so much?
+  choices:
+  - It compresses output
+  - Each traced call costs context switches to the tracer and back at entry and exit
+  - It disables the cache
+  - It uses a slow disk
+  answer:
+  - 1
+  explain: A) wrong. B) correct. C) wrong. D) wrong.
+- id: abi
+  prompt: A tracer prints the wrong names for a 32-bit program on a 64-bit kernel. Why?
+  choices:
+  - The program is corrupt
+  - A different syscall table applies, so the 64-bit names are wrong
+  - Names are random
+  - ptrace hides 32-bit programs
+  answer:
+  - 1
+  explain: A) wrong. B) correct. C) wrong. D) wrong.
