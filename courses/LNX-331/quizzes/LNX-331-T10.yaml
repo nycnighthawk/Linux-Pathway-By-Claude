@@ -31,7 +31,7 @@ questions:
   prompt: What does a panic in kernel Rust code mean?
   choices:
   - Normal error handling
-  - A bug: expected failures should be returned as Result
+  - 'A bug: expected failures should be returned as Result'
   - A request to reboot
   - A warning only
   answer: [1]
