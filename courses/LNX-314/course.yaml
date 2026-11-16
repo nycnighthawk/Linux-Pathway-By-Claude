@@ -41,6 +41,10 @@ modules:
     title: RBAC minimisation, API access
     file: lessons/LNX-314-T02.md
     minutes: 55
+  - topic: LNX-314-T03
+    title: AppArmor, seccomp, kernel attack surface
+    file: lessons/LNX-314-T03.md
+    minutes: 60
 labs:
 - id: metadata-guard
   topic: LNX-314-T01
@@ -59,6 +63,14 @@ labs:
   env: C
   license: MIT
   minutes: 30
+- id: seccomp-deny-profile
+  topic: LNX-314-T03
+  title: A seccomp deny-list and an AppArmor profile
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - python3-yaml
 quizzes:
 - id: LNX-314-T01
   topic: LNX-314-T01
@@ -68,3 +80,7 @@ quizzes:
   topic: LNX-314-T02
   title: 'Quiz: RBAC minimisation, API access'
   file: quizzes/LNX-314-T02.yaml
+- id: LNX-314-T03
+  topic: LNX-314-T03
+  title: 'Quiz: AppArmor, seccomp, kernel attack surface'
+  file: quizzes/LNX-314-T03.yaml
