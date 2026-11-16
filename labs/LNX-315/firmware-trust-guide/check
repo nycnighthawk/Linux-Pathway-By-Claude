@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f requirements.txt ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get a_firmware)" = ovmf ] && ok "guest A uses OVMF (UEFI)" || fail "a_firmware must be ovmf"
+[ "$(get a_machine)" = q35 ] && ok "q35 machine type" || fail "a_machine must be q35"
+[ "$(get a_smm)" = on ] && ok "SMM on (needed to protect Secure Boot variables)" || fail "a_smm must be on"
+[ "$(get a_vtpm_backend)" = emulator ] && ok "vTPM through the swtpm emulator" || fail "a_vtpm_backend must be emulator"
+[ "$(get a_vtpm_version)" = 2.0 ] && ok "TPM 2.0" || fail "a_vtpm_version must be 2.0"
+[ "$(get a_vtpm_state_persistent)" = yes ] && ok "TPM state persists (BitLocker keys stay sealed)" || fail "a_vtpm_state_persistent must be yes"
+[ "$(get b_technology)" = sev-snp ] && ok "guest B uses SEV-SNP" || fail "b_technology must be sev-snp"
+[ "$(get b_needs_ovmf_snp_build)" = yes ] && ok "an SNP-capable OVMF build is required" || fail "b_needs_ovmf_snp_build must be yes"
+[ "$(get b_live_migration_normal)" = no ] && ok "ordinary live migration is not available" || fail "b_live_migration_normal must be no"
+[ "$(get b_host_admin_can_read_guest_ram)" = no ] && ok "guest RAM is encrypted against the host admin" || fail "b_host_admin_can_read_guest_ram must be no"
+get b_attestation_step | grep -Eqi 'report|quote|measurement|nonce|verify' && ok "attestation step names the signed report or measurement" || fail "b_attestation_step must mention the signed report, measurement or nonce"
+python3 - <<'PY' || bad=1
+import re, sys
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+a = open("guest-a.xml").read()
+b = open("guest-b.xml").read()
+chk(re.search(r"<os\b[^>]*firmware=['\"]efi['\"]", a) is not None, "guest A: os firmware='efi'")
+feats = re.findall(r"<feature\b[^>]*/?>", a)
+sb = any("secure-boot" in f and re.search(r"enabled=['\"]yes['\"]", f) for f in feats)
+chk(sb or re.search(r"<loader\b[^>]*secure=['\"]yes['\"]", a) is not None, "guest A: Secure Boot requested")
+chk(re.search(r"<smm\b[^>]*state=['\"]on['\"]", a) is not None, "guest A: <smm state='on'/>")
+chk(re.search(r"<tpm\b[^>]*>.*?<backend\b[^>]*type=['\"]emulator['\"][^>]*version=['\"]2\.0['\"]", a, re.S) is not None
+    or re.search(r"<tpm\b[^>]*>.*?<backend\b[^>]*version=['\"]2\.0['\"][^>]*type=['\"]emulator['\"]", a, re.S) is not None, "guest A: tpm backend emulator version 2.0")
+ls = re.search(r"<launchSecurity\b[^>]*type=['\"]sev-snp['\"][^>]*>(.*?)</launchSecurity>", b, re.S)
+chk(ls is not None, "guest B: launchSecurity type='sev-snp'")
+chk(ls is not None and re.search(r"<cbitpos>\s*\d+\s*</cbitpos>", ls.group(1)) is not None, "guest B: cbitpos given")
+chk(ls is not None and re.search(r"<policy>\s*0x[0-9a-fA-F]+\s*</policy>", ls.group(1)) is not None, "guest B: policy given in hex")
+chk(re.search(r"<os\b[^>]*firmware=['\"]efi['\"]", b) is not None or re.search(r"<loader\b", b) is not None, "guest B: UEFI firmware")
+sys.exit(bad)
+PY
+exit $bad

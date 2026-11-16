@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > requirements.txt <<'N'
+Guest A: Windows 11 desktop VM. Needs UEFI, Secure Boot with Microsoft keys enrolled, and a TPM 2.0 that keeps its state across reboots (BitLocker).
+Guest B: a payroll service for a tenant that does not trust the host admins. Host is an AMD EPYC (Milan or newer) server with SEV-SNP enabled in firmware.
+Host facts: libvirt 10, QEMU 9, edk2-ovmf installed with firmware descriptors, swtpm installed.
+N
+[ -f report.txt ] || cat > report.txt <<'N'
+# Fill every key (key=value).
+a_firmware=
+a_machine=
+a_smm=
+a_vtpm_backend=
+a_vtpm_version=
+a_vtpm_state_persistent=
+b_technology=
+b_needs_ovmf_snp_build=
+b_live_migration_normal=
+b_host_admin_can_read_guest_ram=
+b_attestation_step=
+N
+[ -f guest-a.xml ] || echo "<!-- TODO: os, features and tpm elements for guest A -->" > guest-a.xml
+[ -f guest-b.xml ] || echo "<!-- TODO: os and launchSecurity elements for guest B -->" > guest-b.xml

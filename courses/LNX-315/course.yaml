@@ -57,6 +57,10 @@ modules:
     title: 'Disk images: qcow2 internals, backing chains, block jobs'
     file: lessons/LNX-315-T04.md
     minutes: 55
+  - topic: LNX-315-T05
+    title: 'Firmware and confidential VMs: OVMF, Secure Boot, vTPM, SEV-SNP, TDX'
+    file: lessons/LNX-315-T05.md
+    minutes: 45
 labs:
 - id: vfio-plan-guide
   topic: LNX-315-T01
@@ -85,6 +89,12 @@ labs:
   packages:
   - qemu-utils
   - python3
+- id: firmware-trust-guide
+  topic: LNX-315-T05
+  title: Plan firmware, vTPM and a confidential guest
+  env: H
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-315-T01
   topic: LNX-315-T01
@@ -102,3 +112,7 @@ quizzes:
   topic: LNX-315-T04
   title: 'Quiz: Disk images: qcow2 internals, backing chains, block jobs'
   file: quizzes/LNX-315-T04.yaml
+- id: LNX-315-T05
+  topic: LNX-315-T05
+  title: 'Quiz: Firmware and confidential VMs: OVMF, Secure Boot, vTPM, SEV-SNP, TDX'
+  file: quizzes/LNX-315-T05.yaml
