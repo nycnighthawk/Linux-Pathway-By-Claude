@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > fmutex.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <linux/futex.h>
+#include <stdatomic.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+typedef struct { atomic_int word; } fmutex_t;
+
+static long futex(atomic_int *w, int op, int val)
+{
+    return syscall(SYS_futex, w, op | FUTEX_PRIVATE_FLAG, val, NULL, NULL, 0);
+}
+
+void fm_lock(fmutex_t *m)
+{
+    int c = 0;
+    if (atomic_compare_exchange_strong(&m->word, &c, 1))
+        return;
+    if (c != 2)
+        c = atomic_exchange(&m->word, 2);
+    while (c != 0) {
+        futex(&m->word, FUTEX_WAIT, 2);
+        c = atomic_exchange(&m->word, 2);
+    }
+}
+
+void fm_unlock(fmutex_t *m)
+{
+    if (atomic_exchange(&m->word, 0) == 2)
+        futex(&m->word, FUTEX_WAKE, 1);
+}
+N

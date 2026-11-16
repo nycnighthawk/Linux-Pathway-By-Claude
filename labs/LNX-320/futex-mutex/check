@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f fmutex.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+cat > .harness.c <<'N'
+/* SPDX-License-Identifier: MIT */
+#define _GNU_SOURCE
+#include <pthread.h>
+#include <stdarg.h>
+#include <stdatomic.h>
+#include <stdio.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+typedef struct { atomic_int word; } fmutex_t;
+void fm_lock(fmutex_t *m);
+void fm_unlock(fmutex_t *m);
+long __real_syscall(long n, ...);
+static atomic_long futex_calls;
+long __wrap_syscall(long n, long a, long b, long c, long d, long e, long f)
+{
+    if (n == SYS_futex) atomic_fetch_add(&futex_calls, 1);
+    return __real_syscall(n, a, b, c, d, e, f);
+}
+static fmutex_t m;
+static long counter;
+static void *work(void *p)
+{
+    (void)p;
+    for (int i = 0; i < 200000; i++) { fm_lock(&m); counter++; fm_unlock(&m); }
+    return NULL;
+}
+int main(void)
+{
+    for (int i = 0; i < 100000; i++) { fm_lock(&m); fm_unlock(&m); }
+    printf("uncontended_futex_calls=%ld\n", (long)atomic_load(&futex_calls));
+    pthread_t t[4];
+    for (int i = 0; i < 4; i++) pthread_create(&t[i], NULL, work, NULL);
+    for (int i = 0; i < 4; i++) pthread_join(t[i], NULL);
+    printf("counter=%ld\n", counter);
+    return 0;
+}
+N
+gcc -O1 -Wall -o futex_test .harness.c fmutex.c -lpthread -Wl,--wrap=syscall 2>cc.log || { fail "does not compile: $(head -3 cc.log)"; exit 1; }
+ok "compiles"
+out=$(timeout 60 ./futex_test 2>&1); rc=$?
+[ $rc -eq 0 ] || { fail "test did not finish (exit $rc): a deadlock or lost wake-up?"; exit 1; }
+echo "$out" | grep -qx "uncontended_futex_calls=0" && ok "no system call when uncontended" || fail "uncontended lock/unlock must not call futex (saw: $(echo "$out" | head -1))"
+echo "$out" | grep -qx "counter=800000" && ok "counter is exactly 800000" || fail "counter must be 800000 (saw: $(echo "$out" | grep counter))"
+grep -q FUTEX_WAIT fmutex.c && grep -q FUTEX_WAKE fmutex.c && ok "uses FUTEX_WAIT and FUTEX_WAKE" || fail "use FUTEX_WAIT and FUTEX_WAKE"
+exit $bad

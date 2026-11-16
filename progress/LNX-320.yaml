@@ -14,6 +14,7 @@ phases:
     - LNX-320-T03
     - LNX-320-T04
     - LNX-320-T05
+    - LNX-320-T06
   lessons:
     state: in-progress
     units: 13
@@ -23,6 +24,7 @@ phases:
     - LNX-320-T03
     - LNX-320-T04
     - LNX-320-T05
+    - LNX-320-T06
   quizzes:
     state: in-progress
     units: 13
@@ -32,6 +34,7 @@ phases:
     - LNX-320-T03
     - LNX-320-T04
     - LNX-320-T05
+    - LNX-320-T06
   labs:
     state: in-progress
     units: 13
@@ -41,6 +44,7 @@ phases:
     - LNX-320-T03
     - LNX-320-T04
     - LNX-320-T05
+    - LNX-320-T06
   checks:
     state: todo
     units: 0
@@ -64,3 +68,7 @@ log:
 - '2026-11-16 lessons: LNX-320-T05'
 - '2026-11-16 quizzes: LNX-320-T05'
 - '2026-11-16 labs: LNX-320-T05'
+- '2026-11-16 synth: LNX-320-T06'
+- '2026-11-16 lessons: LNX-320-T06'
+- '2026-11-16 quizzes: LNX-320-T06'
+- '2026-11-16 labs: LNX-320-T06'

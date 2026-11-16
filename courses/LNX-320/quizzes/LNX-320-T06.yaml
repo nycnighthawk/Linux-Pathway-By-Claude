@@ -1,0 +1,32 @@
+title: 'Quiz: pthreads, futexes, atomics, memory model'
+questions:
+- id: whileloop
+  prompt: Why must pthread_cond_wait be called in a loop over a predicate?
+  choices: [Because it is slow, Because of spurious wake-ups and because another thread may consume the condition first, Because the mutex is released, Because signals interrupt it]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong: it is released while waiting but that is not the reason. D) wrong.'
+- id: futexcompare
+  prompt: What does FUTEX_WAIT do with the expected value?
+  choices: [It stores it, It sleeps the caller only if the word still has that value, checked atomically, It wakes all waiters, It ignores it]
+  answer: [1]
+  explain: 'A) wrong. B) correct: that removes the lost wake-up race. C) wrong. D) wrong.'
+- id: volatile
+  prompt: Does volatile make a shared flag safe between threads?
+  choices: [Yes, it gives atomicity and ordering, No, it gives neither atomicity nor ordering between threads, Only on x86 and nowhere else at all, Only with a mutex]
+  answer: [1]
+  explain: 'A) wrong. B) correct: use atomics or locks. C) wrong: it is not a thread tool on any architecture. D) wrong.'
+- id: publish
+  prompt: Which pair correctly publishes data through a flag? (select one pair)
+  choices: [Relaxed store then relaxed load, Release store then acquire load, Acquire store then release load, Plain store then plain load]
+  answer: [1]
+  explain: 'A) wrong: no ordering. B) correct. C) wrong: the orders are reversed. D) wrong: a data race.'
+- id: falseshare
+  prompt: Two threads update adjacent counters and throughput collapses. What is the likely cause?
+  choices: [The counters share a cache line, The kernel limits threads to one CPU, The mutex is recursive, The memory is swapped]
+  answer: [0]
+  explain: 'A) correct: false sharing; pad each counter to its own line. B) wrong. C) wrong. D) wrong.'
+- id: order
+  prompt: Thread 1 locks A then B; thread 2 locks B then A. What is the fix?
+  choices: [Use recursive mutexes, Always take the locks in one agreed order, Use sleep between the locks, Use volatile]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
