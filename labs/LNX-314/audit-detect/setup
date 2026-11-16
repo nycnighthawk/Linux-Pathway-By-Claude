@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'P'
+import json
+def ev(i, user, verb, res, ns=None, sub=None, name=None, code=200, groups=None, ip="10.0.0.9", uri="/", extra=None):
+    o = {"kind": "Event", "apiVersion": "audit.k8s.io/v1", "level": "Metadata", "auditID": "id-%02d" % i, "stage": "ResponseComplete",
+         "requestURI": uri, "verb": verb, "user": {"username": user, "groups": groups or ["system:authenticated"]},
+         "sourceIPs": [ip], "objectRef": {"resource": res, "namespace": ns, "subresource": sub, "name": name},
+         "responseStatus": {"code": code}}
+    if extra: o.update(extra)
+    return o
+E = [
+ ev(1, "system:serviceaccount:ci:deployer", "patch", "deployments", "shop", name="web"),
+ ev(2, "alice@example.com", "get", "pods", "shop", name="web-1"),
+ ev(3, "system:serviceaccount:ci:deployer", "list", "secrets", None, ip="203.0.113.50"),
+ ev(4, "system:serviceaccount:ci:deployer", "create", "clusterrolebindings", None, name="backdoor", ip="203.0.113.50",
+    extra={"requestObject": {"roleRef": {"kind": "ClusterRole", "name": "cluster-admin"}, "subjects": [{"kind": "ServiceAccount", "name": "deployer", "namespace": "ci"}]}}),
+ ev(5, "system:serviceaccount:ci:deployer", "create", "pods", "shop", sub="exec", name="web-1", ip="203.0.113.50"),
+ ev(6, "oncall@example.com", "create", "pods", "shop", sub="exec", name="web-1"),
+ ev(7, "system:anonymous", "get", "pods", "kube-system", groups=["system:unauthenticated"], code=200, ip="198.51.100.7"),
+ ev(8, "system:anonymous", "get", "secrets", "kube-system", groups=["system:unauthenticated"], code=403, ip="198.51.100.7"),
+ ev(9, "system:kube-proxy", "list", "endpoints", "default", code=200),
+ ev(10, "alice@example.com", "create", "rolebindings", "shop", name="dev-edit",
+    extra={"requestObject": {"roleRef": {"kind": "ClusterRole", "name": "edit"}}}),
+]
+with open("audit.log", "w") as f:
+    for e in E: f.write(json.dumps(e) + "\n")
+P
+[ -f audit-policy.yaml ] || cat > audit-policy.yaml <<'N'
+# SPDX-License-Identifier: MIT
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+  - level: RequestResponse
+N
+[ -f detect.py ] || cat > detect.py <<'N'
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# usage: detect.py audit.log -> print the auditID of every suspicious event, one per line
+import sys
+N
+chmod +x detect.py
+[ -f rules.yaml ] || echo "# TODO: Falco rules" > rules.yaml

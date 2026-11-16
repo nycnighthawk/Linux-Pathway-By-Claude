@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > audit-policy.yaml <<'N'
+# SPDX-License-Identifier: MIT
+apiVersion: audit.k8s.io/v1
+kind: Policy
+omitStages: [RequestReceived]
+rules:
+  - level: None
+    users: ["system:kube-proxy"]
+    verbs: [watch, get, list]
+    resources: [{group: "", resources: [endpoints, services]}]
+  - level: Metadata
+    resources: [{group: "", resources: [secrets, configmaps, tokenreviews]}]
+  - level: RequestResponse
+    resources: [{group: "", resources: ["pods/exec", "pods/attach", "pods/portforward"]}]
+  - level: RequestResponse
+    resources: [{group: rbac.authorization.k8s.io, resources: [roles, rolebindings, clusterroles, clusterrolebindings]}]
+  - level: Metadata
+N
+cat > detect.py <<'N'
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+import json, sys
+OPERATORS = {"oncall@example.com", "alice@example.com"}
+for line in open(sys.argv[1]):
+    e = json.loads(line)
+    ref = e.get("objectRef") or {}
+    user = e["user"]["username"]; code = (e.get("responseStatus") or {}).get("code", 0)
+    hit = False
+    if ref.get("subresource") in ("exec", "attach") and user not in OPERATORS: hit = True
+    if ref.get("resource") == "clusterrolebindings" and e["verb"] in ("create", "update", "patch") \
+       and (e.get("requestObject") or {}).get("roleRef", {}).get("name") == "cluster-admin": hit = True
+    if ref.get("resource") == "secrets" and e["verb"] == "list" and not ref.get("namespace"): hit = True
+    if user == "system:anonymous" and code < 400: hit = True
+    if hit: print(e["auditID"])
+N
+cat > rules.yaml <<'N'
+# SPDX-License-Identifier: MIT
+- macro: allowed_shell_images
+  condition: (container.image.repository in (registry.example/debug-tools))
+- rule: Shell spawned in a container
+  desc: A shell started inside a container that is not on the allow-list
+  condition: >
+    spawned_process and container and proc.name in (sh, bash, ash, zsh)
+    and not allowed_shell_images
+  output: >
+    Shell in container (user=%user.name container=%container.id pod=%k8s.pod.name ns=%k8s.ns.name
+    image=%container.image.repository cmd=%proc.cmdline)
+  priority: WARNING
+  tags: [container, shell, mitre_execution]
+N

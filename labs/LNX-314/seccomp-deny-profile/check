@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -x seccomp_run.py ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+python3 -c 'import json;json.load(open("profile.json"))' 2>/dev/null && ok "profile.json is valid JSON" || { fail "profile.json is not valid JSON"; exit 1; }
+python3 -c 'import json,sys;sys.exit(0 if json.load(open("profile.json")).get("defaultAction")=="SCMP_ACT_ALLOW" else 1)' && ok "default action allow (a deny-list profile)" || fail "keep defaultAction SCMP_ACT_ALLOW for this lab"
+out=$(python3 seccomp_run.py profile.json python3 workload.py 2>&1); rc=$?
+[ $rc -eq 0 ] && echo "$out" | grep -q "workload ok" && ok "the application still runs under the profile" || fail "the application breaks under the profile (rc=$rc): $out"
+for c in unshare setns mount ptrace keyctl bpf kexec_load init_module reboot; do
+  rc=$(bash -c "python3 seccomp_run.py profile.json python3 probe.py $c >/dev/null 2>&1; echo \$?" 2>/dev/null)
+  [ $rc -eq 159 ] || [ $rc -eq 31 ] && ok "$c is killed by the filter" || fail "$c is not blocked with SCMP_ACT_KILL_PROCESS (exit $rc)"
+done
+python3 - <<'PY' || bad=1
+import re, sys
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+t = open("app.profile").read()
+chk(re.search(r"^\s*(/usr/bin/webapp|profile\s+webapp)\b.*\{", t, re.M), "profile block for /usr/bin/webapp")
+chk(re.search(r"^\s*deny\s+/etc/shadow\s+(r|rw|w)", t, re.M), "denies /etc/shadow")
+chk(re.search(r"^\s*deny\s+/proc/sys/\*\*\s+w", t, re.M), "denies writes to /proc/sys")
+chk(re.search(r"^\s*deny\s+capability\s+sys_admin", t, re.M), "denies CAP_SYS_ADMIN")
+chk(re.search(r"^\s*deny\s+network\s+raw", t, re.M), "denies raw sockets")
+chk(re.search(r"^\s*/var/log/webapp/\*\*\s+rw", t, re.M), "allows read-write in /var/log/webapp")
+chk(re.search(r"^\s*/etc/webapp/\*\*\s+r\b", t, re.M), "allows read of /etc/webapp")
+chk(t.count("{") == t.count("}"), "braces are balanced")
+sys.exit(bad)
+PY
+exit $bad

@@ -1,0 +1,27 @@
+title: 'Quiz: mTLS and segmentation'
+questions:
+- id: two-questions
+  prompt: Which pair matches the two controls?
+  choices: [NetworkPolicy decides reachability; mTLS establishes peer identity and protects the connection, NetworkPolicy encrypts traffic; mTLS decides reachability, Both only encrypt traffic, Both only filter by IP address]
+  answer: [0]
+  explain: 'A) correct. B) wrong: reversed. C) wrong: NetworkPolicy does not encrypt. D) wrong: mTLS verifies certificates, not addresses.'
+- id: empty-selector
+  prompt: A NetworkPolicy has an empty podSelector, policyTypes Ingress and Egress and no rules. What is its effect?
+  choices: [Allows everything, Denies all ingress and egress for every Pod in the namespace, Applies only to Pods without labels, Is rejected by the API]
+  answer: [1]
+  explain: 'A) wrong. B) correct: it selects all Pods and allows nothing. C) wrong. D) wrong.'
+- id: permissive
+  prompt: Why is PERMISSIVE useful, and why must it not stay on?
+  choices: [It enables encryption, It accepts both plain text and mTLS so you can migrate, but leaves a plain-text path open, It disables authorisation, It is faster]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: default-sa
+  prompt: Why does running web and api as the default service account defeat identity-based policy? (select two)
+  choices: [Both get the same mesh identity, A rule for one cannot exclude the other, The default account has no token, The mesh cannot issue certificates]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: wireguard
+  prompt: What does transparent WireGuard encryption between nodes NOT give you?
+  choices: [Confidentiality on the underlay network, Authentication of individual workloads, Protection against sniffing between nodes, Application changes are unnecessary]
+  answer: [1]
+  explain: 'A) given. B) correct: it authenticates nodes, so identity-based authorisation still needs mesh or SPIFFE identities. C) given. D) given.'

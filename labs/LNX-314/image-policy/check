@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -d fixtures ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import re, subprocess, sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def gate(f):
+    r = subprocess.run([sys.executable, "sbom_gate.py", "fixtures/" + f], capture_output=True, text=True)
+    return r.returncode
+chk(gate("good.json") == 0, "good.json passes")
+chk(gate("old-log4j.json") == 1, "log4j-core 2.14.1 is rejected")
+chk(gate("old-log4j-2.9.json") == 1, "log4j-core 2.9.0 is rejected (numeric comparison: 2.9 is older than 2.17.1)")
+chk(gate("gpl.json") == 1, "a GPL-3.0 component is rejected")
+chk(gate("no-licence.json") == 1, "a component without a licence is rejected")
+# the Deployment must pin a digest
+d = yaml.safe_load(open("deploy.yaml"))
+img = d["spec"]["template"]["spec"]["containers"][0]["image"]
+chk(re.search(r"@sha256:[0-9a-f]{64}$", img) is not None, "deploy.yaml pins the image by sha256 digest")
+chk(img.startswith("registry.example/shop"), "deploy.yaml still uses the shop image")
+# the policy
+try:
+    docs = [x for x in yaml.safe_load_all(open("policy.yaml")) if x]
+    p = docs[0]; r = p["spec"]["rules"][0]; vi = r["verifyImages"][0]
+    chk(p["kind"] == "ClusterPolicy", "kind ClusterPolicy")
+    chk(p["spec"].get("validationFailureAction") in ("Enforce", "enforce"), "validationFailureAction Enforce")
+    chk(any(str(x).startswith("registry.example/") for x in vi.get("imageReferences", [])), "imageReferences cover registry.example/")
+    ent = vi["attestors"][0]["entries"][0]
+    kl = ent.get("keyless") or {}
+    subj = kl.get("subject", "")
+    chk(subj.startswith("https://github.com/example/shop/.github/workflows/release.yml@refs/heads/main"), "keyless subject names the release workflow on main")
+    chk(".*" not in subj and subj != "*", "the subject is not a wildcard")
+    chk(kl.get("issuer") == "https://token.actions.githubusercontent.com", "issuer is the GitHub Actions OIDC issuer")
+    chk("rekor" in kl, "Rekor transparency log is configured")
+    chk(vi.get("mutateDigest") is True and vi.get("verifyDigest") is not False, "digest is mutated in and verified")
+    chk(vi.get("required", True) is True, "signature is required")
+    att = vi.get("attestations") or []
+    chk(any("cyclonedx" in str(a.get("type", "")).lower() or "spdx" in str(a.get("type", "")).lower() for a in att), "an SBOM attestation is required")
+except Exception as e:
+    chk(False, "policy.yaml is not a complete verifyImages policy (%r)" % (e,))
+sys.exit(bad)
+PY

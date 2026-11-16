@@ -1,0 +1,197 @@
+id: LNX-314
+title: Kubernetes & Cloud-Native Security
+summary: 'Securing a Kubernetes cluster and the workloads on it: configuration benchmarks and metadata protection, RBAC and
+  API access, AppArmor and seccomp, Pod Security Admission and policy engines, encryption of Secrets at rest, supply chain
+  verification with signatures and SBOMs, runtime detection with Falco and audit logs, sandboxed runtimes, mTLS and segmentation,
+  and production threat detection.'
+hours: 45
+coverage: full
+outcomes:
+- Audit a cluster against a benchmark and close the metadata endpoint to workloads
+- Minimise RBAC and API access and prove the result with access reviews
+- Confine workloads with AppArmor, seccomp, Pod Security Admission and admission policy
+- Encrypt Secrets at rest and rotate the keys
+- Verify images with signatures and SBOMs and enforce the result at admission
+- Detect and investigate attacks with Falco rules and audit logs
+- Isolate untrusted workloads with sandboxed runtimes and segment traffic with mTLS
+certifications:
+- cert: CKS
+  objectives:
+  - D1
+  - D2
+  - D3
+  - D4
+  - D5
+  - D6
+- cert: KCSA
+  objectives:
+  - D2
+  - D3
+  - D4
+  - D5
+modules:
+- id: harden
+  title: Hardening the cluster and the node
+  lessons:
+  - topic: LNX-314-T01
+    title: 'Cluster setup: kube-bench, metadata protection'
+    file: lessons/LNX-314-T01.md
+    minutes: 55
+  - topic: LNX-314-T02
+    title: RBAC minimisation, API access
+    file: lessons/LNX-314-T02.md
+    minutes: 55
+  - topic: LNX-314-T03
+    title: AppArmor, seccomp, kernel attack surface
+    file: lessons/LNX-314-T03.md
+    minutes: 60
+- id: policy
+  title: Policy
+  lessons:
+  - topic: LNX-314-T04
+    title: Pod Security Admission, Kyverno/Gatekeeper
+    file: lessons/LNX-314-T04.md
+    minutes: 60
+  - topic: LNX-314-T05
+    title: Secrets encryption at rest
+    file: lessons/LNX-314-T05.md
+    minutes: 55
+  - topic: LNX-314-T06
+    title: 'Supply chain: cosign, SBOM, admission checks'
+    file: lessons/LNX-314-T06.md
+    minutes: 60
+- id: detect-isolate
+  title: Detection
+  lessons:
+  - topic: LNX-314-T07
+    title: Falco and audit logs
+    file: lessons/LNX-314-T07.md
+    minutes: 55
+  - topic: LNX-314-T08
+    title: gVisor/Kata RuntimeClass
+    file: lessons/LNX-314-T08.md
+    minutes: 45
+  - topic: LNX-314-T09
+    title: mTLS and segmentation
+    file: lessons/LNX-314-T09.md
+    minutes: 55
+  - topic: LNX-314-T10
+    title: Production threat detection
+    file: lessons/LNX-314-T10.md
+    minutes: 50
+labs:
+- id: metadata-guard
+  topic: LNX-314-T01
+  title: Keep pods away from the metadata endpoint
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - iproute2
+  - nftables
+  - curl
+  - python3-yaml
+- id: rbac-minimiser
+  topic: LNX-314-T02
+  title: A minimal role for a deployment pipeline
+  env: C
+  license: MIT
+  minutes: 30
+- id: seccomp-deny-profile
+  topic: LNX-314-T03
+  title: A seccomp deny-list and an AppArmor profile
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - python3-yaml
+- id: psa-and-vap
+  topic: LNX-314-T04
+  title: Pod Security labels
+  env: C
+  license: MIT
+  minutes: 35
+- id: encryption-at-rest
+  topic: LNX-314-T05
+  title: Read an etcd value by hand and rotate the key
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - openssl
+  - python3-yaml
+- id: image-policy
+  topic: LNX-314-T06
+  title: An SBOM gate
+  env: C
+  license: MIT
+  minutes: 35
+- id: audit-detect
+  topic: LNX-314-T07
+  title: An audit policy
+  env: V
+  license: MIT
+  minutes: 35
+  packages:
+  - python3-yaml
+- id: sandbox-runtimeclass
+  topic: LNX-314-T08
+  title: A gVisor RuntimeClass
+  env: V
+  license: MIT
+  minutes: 25
+  packages:
+  - python3-yaml
+- id: mesh-identity-policy
+  topic: LNX-314-T09
+  title: Identities
+  env: C
+  license: MIT
+  minutes: 30
+- id: incident-drill-guide
+  topic: LNX-314-T10
+  title: Run an incident drill and write it up
+  env: O
+  license: MIT
+  minutes: 60
+quizzes:
+- id: LNX-314-T01
+  topic: LNX-314-T01
+  title: 'Quiz: Cluster setup: kube-bench, metadata protection'
+  file: quizzes/LNX-314-T01.yaml
+- id: LNX-314-T02
+  topic: LNX-314-T02
+  title: 'Quiz: RBAC minimisation, API access'
+  file: quizzes/LNX-314-T02.yaml
+- id: LNX-314-T03
+  topic: LNX-314-T03
+  title: 'Quiz: AppArmor, seccomp, kernel attack surface'
+  file: quizzes/LNX-314-T03.yaml
+- id: LNX-314-T04
+  topic: LNX-314-T04
+  title: 'Quiz: Pod Security Admission, Kyverno/Gatekeeper'
+  file: quizzes/LNX-314-T04.yaml
+- id: LNX-314-T05
+  topic: LNX-314-T05
+  title: 'Quiz: Secrets encryption at rest'
+  file: quizzes/LNX-314-T05.yaml
+- id: LNX-314-T06
+  topic: LNX-314-T06
+  title: 'Quiz: Supply chain: cosign, SBOM, admission checks'
+  file: quizzes/LNX-314-T06.yaml
+- id: LNX-314-T07
+  topic: LNX-314-T07
+  title: 'Quiz: Falco and audit logs'
+  file: quizzes/LNX-314-T07.yaml
+- id: LNX-314-T08
+  topic: LNX-314-T08
+  title: 'Quiz: gVisor/Kata RuntimeClass'
+  file: quizzes/LNX-314-T08.yaml
+- id: LNX-314-T09
+  topic: LNX-314-T09
+  title: 'Quiz: mTLS and segmentation'
+  file: quizzes/LNX-314-T09.yaml
+- id: LNX-314-T10
+  topic: LNX-314-T10
+  title: 'Quiz: Production threat detection'
+  file: quizzes/LNX-314-T10.yaml

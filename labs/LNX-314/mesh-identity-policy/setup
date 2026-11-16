@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+[ -f workloads.yaml ] || cat > workloads.yaml <<'N'
+# SPDX-License-Identifier: MIT
+# Both tiers run as the default service account, so the mesh cannot tell them apart. Give each its own.
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: api, namespace: shop}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: api}}
+  template:
+    metadata: {labels: {app: api}}
+    spec:
+      containers: [{name: api, image: registry.example/api:3}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: web, namespace: shop}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: web}}
+  template:
+    metadata: {labels: {app: web}}
+    spec:
+      containers: [{name: web, image: registry.example/web:7}]
+N
+[ -f peerauth.yaml ] || echo "# TODO: PeerAuthentication for namespace db" > peerauth.yaml
+[ -f authz.yaml ] || echo "# TODO: AuthorizationPolicy objects for the database workload (app=db, namespace db)" > authz.yaml

@@ -1,0 +1,27 @@
+title: 'Quiz: AppArmor, seccomp and the kernel attack surface'
+questions:
+- id: shared-kernel
+  prompt: Why is a kernel bug reachable from inside a container a container escape?
+  choices: [Containers have their own kernel but share the network, All containers and the node run on one kernel and the kernel does not know about containers, Namespaces disable bug fixes, Seccomp is always off in containers]
+  answer: [1]
+  explain: 'A) wrong: containers do not have their own kernel. B) correct: the isolation is built from kernel features, and a flaw in the kernel breaks all of them. C) wrong. D) wrong: the runtime default profile is usually on.'
+- id: seccomp-args
+  prompt: Which kind of rule is seccomp BEST at?
+  choices: [Allowing only files under /srv, Blocking specific system calls or flag values, Reading the content of a buffer passed to write, Matching a process by its path]
+  answer: [1]
+  explain: 'A) wrong: it cannot see paths. B) correct: it sees the call number and raw argument values. C) wrong: it cannot dereference pointers safely. D) wrong: that is an LSM job.'
+- id: localhost
+  prompt: A Pod requests a Localhost seccomp profile that is missing on the node where it is scheduled. What is the usual result?
+  choices: [The runtime default is used silently, The container fails to start on that node, The profile is downloaded from the API server, The profile is created empty]
+  answer: [1]
+  explain: 'A) wrong: it would hide the problem. B) correct: the profile is node-local, so scheduling and distribution must be handled. C) wrong: the API server does not hold it. D) wrong.'
+- id: nnp
+  prompt: What does allowPrivilegeEscalation false set, and why does it matter for seccomp? (select two)
+  choices: [The no_new_privs bit, It lets an unprivileged process install a filter safely, It enables SELinux, It makes the root filesystem read-only]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct: with the bit set, exec cannot gain privileges, so installing a filter is safe without CAP_SYS_ADMIN. C) wrong. D) wrong: that is readOnlyRootFilesystem.'
+- id: profile-drift
+  prompt: A strict AppArmor profile works for a month and then breaks a service. What is the most likely cause?
+  choices: [The kernel forgot the profile, A rarely used code path such as certificate rotation was never exercised when the profile was built, AppArmor expires profiles, The Pod ran as root]
+  answer: [1]
+  explain: 'A) wrong. B) correct: profiles built from observed behaviour miss rare paths. C) wrong. D) wrong.'

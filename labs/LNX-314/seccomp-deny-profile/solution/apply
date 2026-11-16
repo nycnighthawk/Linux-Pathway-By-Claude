@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > profile.json <<'N'
+{
+  "defaultAction": "SCMP_ACT_ALLOW",
+  "syscalls": [
+    {"names": ["unshare", "setns", "mount", "ptrace", "keyctl", "bpf", "kexec_load", "init_module", "reboot"],
+     "action": "SCMP_ACT_KILL_PROCESS"}
+  ]
+}
+N
+cat > app.profile <<'N'
+#include <tunables/global>
+/usr/bin/webapp {
+  #include <abstractions/base>
+  deny /etc/shadow rw,
+  deny /proc/sys/** w,
+  deny capability sys_admin,
+  deny network raw,
+  /etc/webapp/** r,
+  /var/log/webapp/** rw,
+}
+N

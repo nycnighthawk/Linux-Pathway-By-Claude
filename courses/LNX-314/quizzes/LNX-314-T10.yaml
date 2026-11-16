@@ -1,0 +1,27 @@
+title: 'Quiz: Production threat detection'
+questions:
+- id: first-step
+  prompt: A Pod is suspected of running a miner. What is the best first containment step?
+  choices: [Delete the Pod immediately, Label the Pod so a prepared deny-all policy isolates it and detach it from its Service, Restart the node, Scale the cluster up]
+  answer: [1]
+  explain: 'A) wrong: it destroys evidence and the controller recreates the Pod from the same image. B) correct: fast, reversible and keeps evidence. C) wrong: loses volatile evidence of every Pod on the node. D) wrong.'
+- id: volatility
+  prompt: Which evidence is lost first when the container is deleted?
+  choices: [The container image, Process list, connections and the writable layer, The audit log, The cloud audit trail]
+  answer: [1]
+  explain: 'A) wrong: it stays in the registry. B) correct. C) wrong: it lives off the Pod. D) wrong: it lives in the cloud account.'
+- id: scenario-led
+  prompt: What is the best way to start a detection programme?
+  choices: [Enable every available rule, Pick a handful of realistic scenarios, write and test a detection for each, Buy a managed service and stop, Wait for a real incident]
+  answer: [1]
+  explain: 'A) wrong: it creates alert fatigue. B) correct. C) wrong: it leaves your own policies and business logic uncovered. D) wrong: the first incident would also be the first test.'
+- id: recovery
+  prompt: Which steps belong to recovery? (select two)
+  choices: [Rebuild the image from the verified pipeline, Rotate every credential the workload could read, Restart the same Pod and watch it, Repair the node in place]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: it is the same compromised state. D) wrong: recreate nodes from the image.'
+- id: measures
+  prompt: Which measure shows detection quality?
+  choices: [Number of rules enabled, False-positive rate and share of alerts acted on per rule, Size of the log store, Number of dashboards]
+  answer: [1]
+  explain: 'A) wrong: quantity is not quality. B) correct. C) wrong. D) wrong.'

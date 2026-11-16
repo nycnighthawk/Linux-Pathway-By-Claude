@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+scenario=cryptomining
+first_signal_source=node-sensor
+first_signal_time=14:32:05
+containment_first_step=label-quarantine
+quarantine_by_label=yes
+evidence_checkpoint_taken=yes
+evidence_store=s3://ir-evidence/2026-11-16/web-7d9c
+credentials_rotated=yes
+persistence_checked=yes
+time_to_detect_min=4
+time_to_contain_min=11
+rule_gaps_found=2
+N
+cat > notes.txt <<'N'
+kubectl label pod web-7d9c quarantine=true  -> network policy deny-all selected it
+kubectl label pod web-7d9c app-  -> removed from the Service, ReplicaSet started a replacement
+kubectl debug web-7d9c --image=busybox --target=web  -> process list showed /tmp/.x running
+kubectl logs and events saved to the evidence bucket, writable layer copied from the node
+audit query: service account made no unusual calls; no new RBAC objects, CronJobs or DaemonSets
+N

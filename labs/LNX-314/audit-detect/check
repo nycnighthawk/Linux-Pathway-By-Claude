@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f audit.log ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import json, subprocess, sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+# ---- 1. policy: a small first-match evaluator for the audit policy file
+def level(pol, user, verb, res, sub, ns=None):
+    for r in pol["rules"]:
+        if r.get("users") and user not in r["users"]: continue
+        if r.get("verbs") and verb not in r["verbs"]: continue
+        rs = r.get("resources")
+        if rs:
+            ok = False
+            for g in rs:
+                names = g.get("resources", [])
+                if res in names or (sub and ("%s/%s" % (res, sub)) in names): ok = True
+            if not ok: continue
+        if r.get("namespaces") and ns not in r["namespaces"]: continue
+        return r["level"]
+    return None
+try:
+    pol = yaml.safe_load(open("audit-policy.yaml"))
+    chk(pol.get("kind") == "Policy" and pol.get("apiVersion") == "audit.k8s.io/v1", "audit.k8s.io/v1 Policy")
+    chk(level(pol, "alice", "get", "secrets", None) == "Metadata", "Secrets are logged at Metadata (never with bodies)")
+    chk(level(pol, "alice", "get", "configmaps", None) in ("Metadata", "Request"), "ConfigMaps are not logged with response bodies")
+    chk(level(pol, "alice", "create", "pods", "exec") == "RequestResponse", "pods/exec at RequestResponse")
+    chk(level(pol, "alice", "create", "clusterrolebindings", None) in ("Request", "RequestResponse"), "RBAC writes keep the request body")
+    chk(level(pol, "system:kube-proxy", "list", "endpoints", None) == "None", "kube-proxy endpoint reads are dropped")
+    chk(level(pol, "alice", "get", "pods", None) == "Metadata", "everything else falls through to Metadata")
+    chk("omitStages" in pol and "RequestReceived" in pol["omitStages"], "RequestReceived stage is omitted")
+except Exception as e:
+    chk(False, "audit-policy.yaml is not a usable policy (%r)" % (e,))
+# ---- 2. detector
+r = subprocess.run([sys.executable, "detect.py", "audit.log"], capture_output=True, text=True)
+found = set(r.stdout.split())
+want = {"id-03", "id-04", "id-05", "id-07"}
+chk(want <= found, "detects the stolen-token sequence and the allowed anonymous read (missing: %s)" % ", ".join(sorted(want - found)))
+chk(not (found - want), "no false positives (extra: %s)" % ", ".join(sorted(found - want)))
+# ---- 3. Falco rule
+try:
+    rules = yaml.safe_load(open("rules.yaml"))
+    rl = [x for x in rules if "rule" in x]
+    ml = [x for x in rules if "macro" in x]
+    chk(len(rl) >= 1, "at least one rule")
+    x = rl[0]; c = x["condition"]
+    chk("spawned_process" in c and "container" in c, "condition uses spawned_process and container")
+    chk("proc.name" in c and "sh" in c, "condition names shell binaries")
+    chk("not" in c and ("container.image.repository" in c or "k8s.ns.name" in c or "allowed" in c), "condition has an exception (image, namespace or macro)")
+    chk("%container.id" in x["output"] and "%k8s.pod.name" in x["output"] and "%proc.cmdline" in x["output"], "output names container, Pod and command line")
+    chk(x.get("priority") in ("WARNING", "NOTICE", "ERROR", "CRITICAL"), "priority set to WARNING or higher")
+    chk("tags" in x and "mitre_execution" in x["tags"], "tagged with a MITRE tactic")
+except Exception as e:
+    chk(False, "rules.yaml is not a usable Falco rules file (%r)" % (e,))
+sys.exit(bad)
+PY

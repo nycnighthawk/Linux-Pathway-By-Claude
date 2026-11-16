@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+[ "$(uname -m)" = x86_64 ] || { echo "this lab needs an x86_64 machine"; exit 1; }
+cat > seccomp_run.py <<'N'
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""Apply a Docker/Kubernetes style seccomp JSON profile (x86_64) to this process, then exec a command.
+usage: seccomp_run.py profile.json command [args...]"""
+import ctypes, json, os, struct, sys
+NR = {"read": 0, "write": 1, "ptrace": 101, "mount": 165, "reboot": 169, "init_module": 175, "delete_module": 176,
+      "keyctl": 250, "unshare": 272, "setns": 308, "bpf": 321, "kexec_load": 246, "finit_module": 313,
+      "clone": 56, "openat": 257, "socket": 41, "futex": 202, "execve": 59, "mmap": 9, "getpid": 39}
+ACT = {"SCMP_ACT_ALLOW": 0x7fff0000, "SCMP_ACT_KILL_PROCESS": 0x80000000, "SCMP_ACT_KILL": 0x00000000,
+       "SCMP_ACT_LOG": 0x7ffc0000}
+def action(name, errno=1):
+    if name == "SCMP_ACT_ERRNO": return 0x00050000 | errno
+    return ACT[name]
+prof = json.load(open(sys.argv[1]))
+default = action(prof.get("defaultAction", "SCMP_ACT_ALLOW"))
+rules = []
+for r in prof.get("syscalls", []):
+    for n in r["names"]:
+        if n not in NR: print("unknown syscall in profile:", n, file=sys.stderr); sys.exit(2)
+        rules.append((NR[n], action(r["action"], r.get("errnoRet", 1))))
+def ins(code, jt, jf, k): return struct.pack("HBBI", code, jt, jf, k)
+LD, JEQ, RET = 0x20, 0x15, 0x06
+prog = [ins(LD, 0, 0, 4), ins(JEQ, 1, 0, 0xc000003e), ins(RET, 0, 0, 0x80000000), ins(LD, 0, 0, 0)]
+for nr, act in rules:
+    prog += [ins(JEQ, 0, 1, nr), ins(RET, 0, 0, act)]
+prog.append(ins(RET, 0, 0, default))
+buf = ctypes.create_string_buffer(b"".join(prog))
+class Fprog(ctypes.Structure): _fields_ = [("len", ctypes.c_ushort), ("filter", ctypes.c_void_p)]
+fp = Fprog(len(prog), ctypes.addressof(buf))
+libc = ctypes.CDLL(None, use_errno=True)
+if libc.prctl(38, 1, 0, 0, 0) != 0: sys.exit("no_new_privs failed")
+if libc.prctl(22, 2, ctypes.byref(fp)) != 0: sys.exit("seccomp install failed: errno %d" % ctypes.get_errno())
+os.execvp(sys.argv[2], sys.argv[2:])
+N
+cat > workload.py <<'N'
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# What the application legitimately does: files, sockets, threads, subprocesses.
+import os, socket, subprocess, tempfile, threading
+with tempfile.NamedTemporaryFile() as f:
+    f.write(b"x"); f.flush()
+s = socket.socket(); s.close()
+t = threading.Thread(target=lambda: None); t.start(); t.join()
+assert subprocess.run(["true"]).returncode == 0
+print("workload ok", os.getpid() > 0)
+N
+cat > probe.py <<'N'
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# probe.py <name>: attempt one risky system call with harmless arguments.
+import ctypes, sys
+NR = {"ptrace": 101, "mount": 165, "reboot": 169, "init_module": 175, "keyctl": 250, "unshare": 272, "setns": 308,
+      "bpf": 321, "kexec_load": 246}
+libc = ctypes.CDLL(None, use_errno=True)
+libc.syscall.restype = ctypes.c_long
+r = libc.syscall(NR[sys.argv[1]], 0, 0, 0, 0, 0, 0)
+print(sys.argv[1], "returned", r, "errno", ctypes.get_errno())
+N
+chmod +x seccomp_run.py workload.py probe.py
+[ -f profile.json ] || cat > profile.json <<'N'
+{"defaultAction": "SCMP_ACT_ALLOW", "syscalls": []}
+N
+[ -f app.profile ] || cat > app.profile <<'N'
+# AppArmor profile for /usr/bin/webapp (TODO)
+N

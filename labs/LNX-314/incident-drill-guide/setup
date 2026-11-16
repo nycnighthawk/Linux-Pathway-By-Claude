@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+[ -f report.txt ] || cat > report.txt <<'N'
+# Incident drill report. Fill every key (key=value, one per line).
+scenario=
+first_signal_source=
+first_signal_time=
+containment_first_step=
+quarantine_by_label=
+evidence_checkpoint_taken=
+evidence_store=
+credentials_rotated=
+persistence_checked=
+time_to_detect_min=
+time_to_contain_min=
+rule_gaps_found=
+N
+[ -f notes.txt ] || : > notes.txt

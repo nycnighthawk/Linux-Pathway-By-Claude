@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+K1=$(printf 'lab-key-one-0123456789abcdef!!!!' | head -c 32 | base64 -w0)
+K2=$(printf 'lab-key-two-0123456789abcdef!!!!' | head -c 32 | base64 -w0)
+cat > encryption-config.yaml <<N
+# SPDX-License-Identifier: MIT
+apiVersion: apiserver.config.k8s.io/v1
+kind: EncryptionConfiguration
+resources:
+  - resources: [secrets]
+    providers:
+      - aescbc:
+          keys:
+            - {name: key2, secret: $K2}
+            - {name: key1, secret: $K1}
+      - identity: {}
+N
+cat > decrypt.sh <<'N'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+f=${1:-record.bin}
+prefix=$(head -c 200 "$f" | LC_ALL=C grep -a -o '^k8s:enc:aescbc:v1:[a-z0-9]*:')
+name=$(echo "$prefix" | cut -d: -f5)
+secret=$(python3 - "$name" <<'P'
+import sys, yaml
+c = yaml.safe_load(open("encryption-config.yaml"))
+for k in c["resources"][0]["providers"][0]["aescbc"]["keys"]:
+    if k["name"] == sys.argv[1]: print(k["secret"])
+P
+)
+khex=$(echo "$secret" | base64 -d | od -An -tx1 | tr -d ' \n')
+n=${#prefix}
+iv=$(tail -c +$((n + 1)) "$f" | head -c 16 | od -An -tx1 | tr -d ' \n')
+tail -c +$((n + 17)) "$f" | openssl enc -d -aes-256-cbc -K "$khex" -iv "$iv"
+N
+chmod +x decrypt.sh
+printf 'a\nb\nc\nd\n' > rotation.txt

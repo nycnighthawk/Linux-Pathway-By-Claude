@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f report.txt ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+case "$(get scenario)" in cryptomining|token-theft|metadata-theft|privileged-pod|rbac-escalation) ok scenario ;; *) fail "scenario must be cryptomining, token-theft, metadata-theft, privileged-pod or rbac-escalation" ;; esac
+case "$(get first_signal_source)" in node-sensor|audit-log|flow-logs|cloud-detection|admission-log) ok first_signal_source ;; *) fail "first_signal_source must be node-sensor, audit-log, flow-logs, cloud-detection or admission-log" ;; esac
+get first_signal_time | grep -Eq '^[0-9]{2}:[0-9]{2}(:[0-9]{2})?$' && ok first_signal_time || fail "first_signal_time must look like HH:MM or HH:MM:SS"
+case "$(get containment_first_step)" in label-quarantine|revoke-credentials|cordon-node|delete-pod) ok containment_first_step ;; *) fail "containment_first_step must be label-quarantine, revoke-credentials, cordon-node or delete-pod" ;; esac
+[ "$(get containment_first_step)" != delete-pod ] && ok "deleting the Pod is not the first step" || fail "capture evidence and contain before you delete the Pod"
+for k in quarantine_by_label evidence_checkpoint_taken credentials_rotated persistence_checked; do case "$(get $k)" in yes|no) ok $k ;; *) fail "$k must be yes or no" ;; esac; done
+[ -n "$(get evidence_store)" ] && ok evidence_store || fail "evidence_store must name where the artefacts were written (a place the workload cannot reach)"
+for k in time_to_detect_min time_to_contain_min rule_gaps_found; do get $k | grep -Eq '^[0-9]+$' && ok $k || fail "$k must be an integer"; done
+[ "$(wc -l < notes.txt)" -ge 5 ] && ok "notes.txt has the commands and findings" || fail "notes.txt needs at least five lines (commands you ran and what you saw)"
+exit $bad

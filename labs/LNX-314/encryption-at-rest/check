@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f record.bin ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+python3 - <<'PY' || bad=1
+import sys, yaml, base64
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+try:
+    c = yaml.safe_load(open("encryption-config.yaml"))
+    prov = c["resources"][0]["providers"]
+    names = [list(p)[0] for p in prov]
+    chk(c["resources"][0]["resources"] == ["secrets"] or "secrets" in c["resources"][0]["resources"], "secrets are covered")
+    chk(names[0] in ("aescbc", "secretbox"), "first provider (used for writes) is aescbc or secretbox, not identity")
+    chk(names[-1] == "identity", "identity stays last so old plaintext values remain readable")
+    keys = prov[0][names[0]]["keys"]
+    chk(len(keys) == 2, "two keys listed (new first, old kept to read old data)")
+    ok_len = True
+    for k in keys:
+        try: ok_len &= len(base64.b64decode(k["secret"])) == 32
+        except Exception: ok_len = False
+    chk(ok_len, "both keys are base64 for 32 bytes")
+    chk(keys[0]["name"] != "key1" and keys[1]["name"] == "key1", "new key first, key1 second")
+    chk(keys[0]["secret"] != keys[1]["secret"], "the new key differs from key1")
+except Exception as e:
+    print("FAIL:", repr(e)); bad = 1
+steps = [l.strip().lower() for l in open("rotation.txt") if l.strip() and not l.lstrip().startswith("#")]
+chk(steps == ["a", "b", "c", "d"], "rotation order is a, b, c, d (got: %s)" % ",".join(steps))
+sys.exit(bad)
+PY
+out=$(./decrypt.sh record.bin 2>/dev/null)
+echo "$out" | grep -q '"namespace":"shop"' && echo "$out" | grep -q 'czNjcjN0LXB3' && ok "decrypt.sh recovers the stored Secret from the etcd value" || fail "decrypt.sh does not print the decrypted Secret JSON"
+exit $bad

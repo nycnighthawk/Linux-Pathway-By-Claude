@@ -1,0 +1,27 @@
+title: 'Quiz: Cluster setup and metadata protection'
+questions:
+- id: warn-vs-fail
+  prompt: In a kube-bench report, what does a FAIL mean?
+  choices: [The tool crashed, The audit ran and the required condition was not met, The check is manual and was skipped, The benchmark does not apply to the platform]
+  answer: [1]
+  explain: 'A) wrong: a crash gives an error, not a result line. B) correct: the audit executed and the setting is not as the benchmark requires. C) wrong: manual items normally show as warn. D) wrong: non-applicable items are usually shown as info or are removed by choosing the right target.'
+- id: managed-target
+  prompt: Your control plane is a managed service and you run self-hosted etcd on separate machines. Which scan scope is right?
+  choices: [Worker node target only, Worker node target plus the etcd checks on the etcd machines, Control plane target on the managed service, None; managed services need no checks]
+  answer: [1]
+  explain: 'A) wrong: etcd would be left unchecked. B) correct: scan every component you operate and rely on provider documents for the rest. C) wrong: you cannot run the checks on provider machines. D) wrong: your own etcd and workers remain your responsibility.'
+- id: forward-hook
+  prompt: Pod traffic to the metadata address leaves the node through its uplink. Which nftables hook should drop it?
+  choices: [input, forward, prerouting only, none; the kernel blocks link-local addresses]
+  answer: [1]
+  explain: 'A) wrong: input sees traffic addressed to the node itself. B) correct: routed traffic that merely crosses the node passes the forward hook. C) wrong: prerouting can match but is not where filtering of forwarded packets is normally done, and it also sees host traffic. D) wrong: nothing blocks it by default.'
+- id: kubelet-settings
+  prompt: Which kubelet settings close the unauthenticated command-execution path? (select two)
+  choices: [Anonymous authentication off, Authorization mode Webhook, readOnlyPort 10255, protectKernelDefaults false]
+  answer: [0, 1]
+  explain: 'A) correct: unauthenticated callers are rejected. B) correct: authenticated callers still need permission from the API server. C) wrong: this enables an unauthenticated read-only port. D) wrong: unrelated to access control.'
+- id: hop-limit
+  prompt: Why does an IMDS hop limit of one help against a pod that fetches node credentials?
+  choices: [It encrypts the response, The token reply from the metadata service is dropped after crossing the extra network hop a pod adds, It disables the endpoint on the node, It requires a stronger password]
+  answer: [1]
+  explain: 'A) wrong: it does not encrypt anything. B) correct: traffic originating in a pod network namespace is one hop further than the node. C) wrong: the node itself still uses the endpoint. D) wrong: there is no password.'

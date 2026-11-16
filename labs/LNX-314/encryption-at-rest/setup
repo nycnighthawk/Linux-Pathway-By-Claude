@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+command -v openssl >/dev/null || { echo "openssl is required"; exit 1; }
+K1=$(printf 'lab-key-one-0123456789abcdef!!!!' | head -c 32 | base64 -w0)
+if [ ! -f record.bin ]; then
+  KHEX=$(printf 'lab-key-one-0123456789abcdef!!!!' | head -c 32 | od -An -tx1 | tr -d ' \n')
+  IV=00112233445566778899aabbccddeeff
+  { printf 'k8s:enc:aescbc:v1:key1:'; python3 -c 'import sys;sys.stdout.buffer.write(bytes.fromhex(sys.argv[1]))' "$IV"; printf '{"kind":"Secret","metadata":{"name":"db","namespace":"shop"},"data":{"password":"czNjcjN0LXB3"}}' | openssl enc -aes-256-cbc -K "$KHEX" -iv "$IV"; } > record.bin
+fi
+[ -f encryption-config.yaml ] || cat > encryption-config.yaml <<N
+# SPDX-License-Identifier: MIT
+# The API server's current encryption configuration. It has two faults; see the README.
+apiVersion: apiserver.config.k8s.io/v1
+kind: EncryptionConfiguration
+resources:
+  - resources: [secrets]
+    providers:
+      - identity: {}
+      - aescbc:
+          keys:
+            - {name: key1, secret: $K1}
+N
+[ -f decrypt.sh ] || printf '#!/usr/bin/env bash\n# TODO: print the plaintext of the etcd value in record.bin using the key named in its prefix\nexit 1\n' > decrypt.sh
+chmod +x decrypt.sh
+[ -f rotation.txt ] || cat > rotation.txt <<'N'
+# Put the letters of the rotation steps in the correct order, one letter per line (leave out the wrong steps).
+# a) add key2 as the LAST key on every API server and restart or reload each of them
+# b) move key2 to the FIRST position on every API server and restart or reload each of them
+# c) rewrite every Secret so it is stored with key2
+# d) remove key1 from the configuration
+# e) delete key1 from the configuration on one server only and restart it
+# f) move key2 to the first position on one server only
+N

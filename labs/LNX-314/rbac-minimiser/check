@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f rbac.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+try:
+    docs = [d for d in yaml.safe_load_all(open("rbac.yaml")) if d]
+except Exception as e:
+    print("FAIL: rbac.yaml is not valid YAML:", e); sys.exit(1)
+SUBJ = ("ServiceAccount", "deployer", "shop")
+def subj_match(s):
+    return s.get("kind") == "ServiceAccount" and s.get("name") == "deployer" and s.get("namespace") == "shop"
+roles = {}
+for d in docs:
+    if d.get("kind") in ("Role", "ClusterRole"):
+        roles[(d["kind"], (d["metadata"].get("namespace") if d["kind"] == "Role" else None), d["metadata"]["name"])] = d.get("rules") or []
+def rules_for(ns):
+    out = []
+    for d in docs:
+        k = d.get("kind")
+        if k not in ("RoleBinding", "ClusterRoleBinding"): continue
+        if not any(subj_match(s) for s in d.get("subjects") or []): continue
+        ref = d["roleRef"]
+        if k == "ClusterRoleBinding":
+            out += roles.get((ref["kind"], None, ref["name"]), [])
+            if ref["name"] == "cluster-admin": out += [{"apiGroups": ["*"], "resources": ["*"], "verbs": ["*"]}]
+        else:
+            if d["metadata"].get("namespace") != ns: continue
+            key = (ref["kind"], ns if ref["kind"] == "Role" else None, ref["name"])
+            out += roles.get(key, [])
+            if ref["name"] == "cluster-admin": out += [{"apiGroups": ["*"], "resources": ["*"], "verbs": ["*"]}]
+    return out
+def allowed(ns, verb, group, resource, name=None):
+    for r in rules_for(ns):
+        if verb not in r.get("verbs", []) and "*" not in r.get("verbs", []): continue
+        if group not in r.get("apiGroups", []) and "*" not in r.get("apiGroups", []): continue
+        if resource not in r.get("resources", []) and "*" not in r.get("resources", []): continue
+        rn = r.get("resourceNames")
+        if rn and name not in rn: continue
+        return True
+    return False
+must = [
+ ("shop", "get", "apps", "deployments", "web"),
+ ("shop", "patch", "apps", "deployments", "web"),
+ ("shop", "get", "apps", "replicasets", None),
+ ("shop", "list", "apps", "replicasets", None),
+ ("shop", "watch", "apps", "replicasets", None),
+ ("shop", "get", "", "pods", None),
+ ("shop", "list", "", "pods", None),
+ ("shop", "watch", "", "pods", None),
+ ("shop", "get", "", "configmaps", "app-config"),
+]
+mustnot = [
+ ("shop", "create", "apps", "deployments", "web"),
+ ("shop", "delete", "apps", "deployments", "web"),
+ ("shop", "patch", "apps", "deployments", "api"),
+ ("shop", "get", "", "secrets", None),
+ ("shop", "list", "", "secrets", None),
+ ("shop", "get", "", "configmaps", "other"),
+ ("shop", "create", "", "pods/exec", None),
+ ("shop", "create", "", "pods", None),
+ ("shop", "create", "rbac.authorization.k8s.io", "rolebindings", None),
+ ("shop", "create", "", "serviceaccounts/token", None),
+ ("kube-system", "get", "", "pods", None),
+ ("kube-system", "get", "", "secrets", None),
+ ("other", "patch", "apps", "deployments", "web"),
+]
+for t in must: chk(allowed(*t), "allowed: %s %s/%s %s in %s" % (t[1], t[2] or "core", t[3], t[4] or "*", t[0]))
+for t in mustnot: chk(not allowed(*t), "denied:  %s %s/%s %s in %s" % (t[1], t[2] or "core", t[3], t[4] or "*", t[0]))
+wild = any("*" in (r.get("verbs", []) + r.get("resources", []) + r.get("apiGroups", [])) for rl in roles.values() for r in rl)
+chk(not wild, "no wildcards in verbs, resources or API groups")
+chk(not any(d.get("kind") == "ClusterRoleBinding" for d in docs), "no ClusterRoleBinding")
+chk(not any((d.get("roleRef") or {}).get("name") == "cluster-admin" for d in docs), "cluster-admin is not referenced")
+sys.exit(bad)
+PY

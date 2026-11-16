@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f workloads.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def load(f):
+    try: return [d for d in yaml.safe_load_all(open(f)) if d]
+    except Exception as e: print("FAIL: %s: %s" % (f, e)); sys.exit(1)
+# 1. identities
+sas = {d["metadata"]["name"]: d["spec"]["template"]["spec"].get("serviceAccountName", "default") for d in load("workloads.yaml") if d["kind"] == "Deployment"}
+chk(sas.get("api") == "api" and sas.get("web") == "web", "api and web run as their own service accounts (api, web)")
+# 2. STRICT mTLS for namespace db
+pa = [d for d in load("peerauth.yaml") if d.get("kind") == "PeerAuthentication"]
+strict = [d for d in pa if d["metadata"].get("namespace") == "db" and (d["spec"].get("mtls") or {}).get("mode") == "STRICT" and not d["spec"].get("selector")]
+chk(len(strict) == 1, "a namespace-wide PeerAuthentication STRICT in namespace db")
+# 3. a mini evaluator for Istio AuthorizationPolicy (selector app=db in namespace db)
+pols = [d for d in load("authz.yaml") if d.get("kind") == "AuthorizationPolicy" and d["metadata"].get("namespace") == "db"]
+def applies(p):
+    sel = (p["spec"].get("selector") or {}).get("matchLabels")
+    return sel is None or sel.get("app") == "db"
+def rule_match(r, req):
+    for f in r.get("from", []):
+        s = f.get("source", {})
+        if "principals" in s and req["principal"] not in s["principals"]: return False
+        if "namespaces" in s and req["ns"] not in s["namespaces"]: return False
+    for t in r.get("to", []):
+        o = t.get("operation", {})
+        if "ports" in o and str(req["port"]) not in [str(x) for x in o["ports"]]: return False
+    return True
+def allowed(req):
+    ps = [p for p in pols if applies(p)]
+    for p in ps:
+        if p["spec"].get("action") == "DENY" and any(rule_match(r, req) for r in p["spec"].get("rules", [{}]) if r is not None):
+            return False
+    allows = [p for p in ps if p["spec"].get("action", "ALLOW") == "ALLOW"]
+    if not allows: return True
+    for p in allows:
+        for r in p["spec"].get("rules", []):
+            if rule_match(r, req): return True
+    return False
+def R(principal, ns, port, mtls=True):
+    return {"principal": principal, "ns": ns, "port": port, "mtls": mtls}
+def verdict(req):
+    if not req["mtls"]: return False  # STRICT
+    return allowed(req)
+API = "cluster.local/ns/shop/sa/api"; WEB = "cluster.local/ns/shop/sa/web"; MON = "cluster.local/ns/monitoring/sa/prometheus"; DEF = "cluster.local/ns/shop/sa/default"
+chk(verdict(R(API, "shop", 5432)), "api may connect to the database on 5432")
+chk(not verdict(R(WEB, "shop", 5432)), "web may not connect to the database")
+chk(not verdict(R(DEF, "shop", 5432)), "the default service account may not connect")
+chk(not verdict(R(API, "shop", 5432, mtls=False)), "plain text is refused (STRICT)")
+chk(verdict(R(MON, "monitoring", 9187)), "Prometheus may scrape the exporter on 9187")
+chk(not verdict(R(MON, "monitoring", 5432)), "Prometheus may not use the database port")
+chk(not verdict(R(API, "shop", 9187)), "api may not use the exporter port")
+chk(len(pols) >= 1 and all(p["spec"].get("selector", {}).get("matchLabels", {}).get("app") == "db" for p in pols), "policies select the db workload")
+chk(not any(r == {} for p in pols for r in p["spec"].get("rules", [])), "no allow-all (empty) rule")
+sys.exit(bad)
+PY

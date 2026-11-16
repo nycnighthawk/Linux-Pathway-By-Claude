@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > netenv <<'N'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# netenv up|down: a "pod" namespace, an "imds" namespace that plays the cloud metadata service and an internal service
+SUDO=""; [ "$(id -u)" -ne 0 ] && SUDO=sudo
+down() {
+  $SUDO pkill -f "http.server 80 --bind" 2>/dev/null
+  for n in pod imds; do $SUDO ip netns del $n 2>/dev/null; done
+  $SUDO ip link del v-pod-h 2>/dev/null; $SUDO ip link del v-imds-h 2>/dev/null
+  $SUDO nft delete table ip nodeguard 2>/dev/null
+  return 0
+}
+up() {
+  down
+  $SUDO sysctl -qw net.ipv4.ip_forward=1
+  for n in pod imds; do $SUDO ip netns add $n; $SUDO ip -n $n link set lo up; done
+  $SUDO ip link add v-pod-h type veth peer name eth0 netns pod
+  $SUDO ip addr add 10.20.0.1/24 dev v-pod-h; $SUDO ip link set v-pod-h up
+  $SUDO ip -n pod addr add 10.20.0.2/24 dev eth0; $SUDO ip -n pod link set eth0 up
+  $SUDO ip -n pod route add default via 10.20.0.1
+  $SUDO ip link add v-imds-h type veth peer name eth0 netns imds
+  $SUDO ip addr add 10.30.0.1/24 dev v-imds-h; $SUDO ip link set v-imds-h up
+  $SUDO ip -n imds addr add 10.30.0.2/24 dev eth0
+  $SUDO ip -n imds addr add 169.254.169.254/32 dev eth0
+  $SUDO ip -n imds link set eth0 up
+  $SUDO ip -n imds route add default via 10.30.0.1
+  $SUDO ip route add 169.254.169.254/32 dev v-imds-h
+  $SUDO sh -c 'echo 0 > /proc/sys/net/ipv4/conf/all/rp_filter; echo 0 > /proc/sys/net/ipv4/conf/default/rp_filter; echo 0 > /proc/sys/net/ipv4/conf/v-imds-h/rp_filter; echo 0 > /proc/sys/net/ipv4/conf/v-pod-h/rp_filter'
+  mkdir -p /tmp/imds-www && echo "role-credentials" > /tmp/imds-www/index.html
+  $SUDO ip netns exec imds sh -c 'cd /tmp/imds-www && nohup python3 -m http.server 80 --bind 0.0.0.0 >/dev/null 2>&1 &'
+  sleep 1
+}
+case "${1:-}" in up) up ;; down) down ;; *) echo "usage: netenv up|down"; exit 2 ;; esac
+N
+chmod +x netenv
+[ -f block.nft ] || cat > block.nft <<'N'
+# Load with: sudo nft -f block.nft
+# TODO: create table "ip nodeguard" with a forward chain that stops pods from reaching the metadata address
+table ip nodeguard {
+}
+N
+[ -f kubelet.yaml ] || cat > kubelet.yaml <<'N'
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+authentication:
+  anonymous:
+    enabled: true
+  webhook:
+    enabled: false
+authorization:
+  mode: AlwaysAllow
+readOnlyPort: 10255
+protectKernelDefaults: false
+rotateCertificates: false
+N
