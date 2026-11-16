@@ -4,7 +4,7 @@ questions:
   prompt: What is QOM?
   choices:
   - A disk image format
-  - QEMU's object model: registered types with inheritance, properties and a runtime object tree
+  - 'QEMU object model: registered types with inheritance, properties and a runtime object tree'
   - A network protocol
   - A kernel scheduler
   answer: [1]
