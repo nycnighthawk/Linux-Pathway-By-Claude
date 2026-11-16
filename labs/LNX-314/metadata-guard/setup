@@ -12,6 +12,11 @@ down() {
   for n in pod imds; do $SUDO ip netns del $n 2>/dev/null; done
   $SUDO ip link del v-pod-h 2>/dev/null; $SUDO ip link del v-imds-h 2>/dev/null
   $SUDO nft delete table ip nodeguard 2>/dev/null
+  if command -v iptables >/dev/null 2>&1; then
+    for i in v-pod-h v-imds-h; do
+      $SUDO iptables -D FORWARD -i $i -j ACCEPT 2>/dev/null; $SUDO iptables -D FORWARD -o $i -j ACCEPT 2>/dev/null
+    done
+  fi
   return 0
 }
 up() {
@@ -30,6 +35,13 @@ up() {
   $SUDO ip -n imds route add default via 10.30.0.1
   $SUDO ip route add 169.254.169.254/32 dev v-imds-h
   $SUDO sh -c 'echo 0 > /proc/sys/net/ipv4/conf/all/rp_filter; echo 0 > /proc/sys/net/ipv4/conf/default/rp_filter; echo 0 > /proc/sys/net/ipv4/conf/v-imds-h/rp_filter; echo 0 > /proc/sys/net/ipv4/conf/v-pod-h/rp_filter'
+  # Docker-enabled hosts (CI runners) set the iptables FORWARD policy to DROP; allow the lab links explicitly.
+  # An nft drop in the lab's own table still wins, because every hook that matches is evaluated.
+  if command -v iptables >/dev/null 2>&1; then
+    for i in v-pod-h v-imds-h; do
+      $SUDO iptables -I FORWARD -i $i -j ACCEPT 2>/dev/null; $SUDO iptables -I FORWARD -o $i -j ACCEPT 2>/dev/null
+    done
+  fi
   mkdir -p /tmp/imds-www && echo "role-credentials" > /tmp/imds-www/index.html
   $SUDO ip netns exec imds sh -c 'cd /tmp/imds-www && nohup python3 -m http.server 80 --bind 0.0.0.0 >/dev/null 2>&1 &'
   sleep 1
