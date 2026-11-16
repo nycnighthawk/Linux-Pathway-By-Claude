@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > pipeline.yaml <<'N'
+source:
+  image: base.qcow2
+  sha256: ""
+  seed: none
+targets:
+  libvirt:
+    format: qcow2
+    from_source: true
+    smoke: []
+  virtualbox:
+    format: raw
+    from_source: false
+    smoke: [login]
+  kubevirt:
+    kind: containerDisk
+    image: registry.example.test/vm/base:latest
+    disk_path: /disk/base.qcow2
+    owner_uid: 0
+    smoke: []
+N

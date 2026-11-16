@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+iommu_enabled=?
+device_class=?
+pci_address=?
+iommu_group=?
+group_members=?
+all_members_assigned=?
+acs_override_used=?
+bound_driver_after=?
+guest_sees_device=?
+guest_driver_works=?
+reset_works=?
+host_recovered=?
+N

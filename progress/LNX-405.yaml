@@ -1,0 +1,55 @@
+item: LNX-405
+label: 'Capstone: Build and Run a Hypervisor Stack'
+branch: build/LNX-405
+state: done
+started: '2026-11-16'
+updated: '2026-11-16'
+phases:
+  synth:
+    state: done
+    units: 6
+    done:
+    - LNX-405-T01
+    - LNX-405-T02
+    - LNX-405-T03
+    - LNX-405-T04
+    - LNX-405-T05
+    - LNX-405-T06
+  brief:
+    state: done
+    units: 0
+    done: []
+  milestones:
+    state: done
+    units: 6
+    done:
+    - LNX-405-T01
+    - LNX-405-T02
+    - LNX-405-T03
+    - LNX-405-T04
+    - LNX-405-T05
+    - LNX-405-T06
+  labs:
+    state: done
+    units: 6
+    done:
+    - LNX-405-T01
+    - LNX-405-T02
+    - LNX-405-T03
+    - LNX-405-T04
+    - LNX-405-T05
+    - LNX-405-T06
+  checks:
+    state: done
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-16 started
+- '2026-11-16 synth: LNX-405-T01, LNX-405-T02, LNX-405-T03, LNX-405-T04, LNX-405-T05, LNX-405-T06'
+- '2026-11-16 brief: done'
+- '2026-11-16 milestones: LNX-405-T01, LNX-405-T02, LNX-405-T03, LNX-405-T04, LNX-405-T05, LNX-405-T06'
+- '2026-11-16 labs: LNX-405-T01, LNX-405-T02, LNX-405-T03, LNX-405-T04, LNX-405-T05, LNX-405-T06'
+- '2026-11-16 checks: done'
+- 2026-11-16 finished
+finished: '2026-11-16'

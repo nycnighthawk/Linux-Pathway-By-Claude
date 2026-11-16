@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > layout.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+M, G = 1 << 20, 1 << 30
+KNOWN = ("blk", "net", "rng")
+
+def layout(cfg):
+    ram = cfg["ram_mib"]
+    devs = cfg["devices"]
+    if ram < 64 or ram % 2:
+        raise ValueError("bad RAM size")
+    if len(devs) > 8 or len(set(devs)) != len(devs) or any(d not in KNOWN for d in devs):
+        raise ValueError("bad device list")
+    below = min(ram * M, 3 * G)
+    regions = [(0, below)]
+    if ram * M > 3 * G:
+        regions.append((4 * G, ram * M - 3 * G))
+    out = [{"name": d, "base": 0xD0000000 + 0x1000 * i, "size": 4096, "irq": 5 + i} for i, d in enumerate(devs)]
+    parts = ["console=ttyS0", "reboot=k", "panic=1"]
+    if "blk" in devs:
+        parts.append("root=" + cfg["root"])
+    parts += ["virtio_mmio.device=4K@0x%x:%d" % (d["base"], d["irq"]) for d in out]
+    return {"ram": regions, "devices": out, "cmdline": " ".join(parts)}
+N

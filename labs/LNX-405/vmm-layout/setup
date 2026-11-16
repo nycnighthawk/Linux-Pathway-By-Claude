@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > layout.py <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+"""Plan the guest memory map and kernel command line of a tiny x86_64 VMM.
+
+layout(cfg) -> {"ram": [(start, size), ...], "devices": [{"name", "base", "size", "irq"}], "cmdline": str}
+
+cfg = {"ram_mib": int, "devices": ["blk", "net", ...], "root": "/dev/vda"}   (devices in the order given)
+
+Rules (a simplified model of a VMM such as Firecracker's; layout details to verify):
+  * RAM is in MiB, at least 64 and a multiple of 2.
+  * The 32-bit MMIO gap is 3 GiB .. 4 GiB (0xC0000000 .. 0x100000000). RAM that fits below 3 GiB is one region at 0.
+    RAM beyond 3 GiB is placed at 4 GiB (0x100000000) as a second region, so ram == [(0, below), (4 GiB, above)].
+    If ram_mib <= 3072 there is only the first region.
+  * Virtio-mmio devices are 4096 bytes each, placed consecutively starting at 0xD0000000 in the given order,
+    with irq numbers 5, 6, 7, ... in the same order. At most 8 devices; each name must be "blk", "net" or "rng";
+    a name may not repeat. Otherwise raise ValueError.
+  * cmdline is the pieces joined by single spaces, in this order:
+      "console=ttyS0", "reboot=k", "panic=1", "root=" + cfg["root"] (omit if there is no "blk" device),
+      then for every device in order "virtio_mmio.device=4K@0x{base:x}:{irq}".
+"""
+
+def layout(cfg):
+    raise NotImplementedError
+N

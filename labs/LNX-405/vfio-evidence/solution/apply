@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+iommu_enabled=yes
+device_class=nic
+pci_address=0000:03:00.0
+iommu_group=14
+group_members=1
+all_members_assigned=yes
+acs_override_used=no
+bound_driver_after=vfio-pci
+guest_sees_device=yes
+guest_driver_works=yes
+reset_works=yes
+host_recovered=yes
+N

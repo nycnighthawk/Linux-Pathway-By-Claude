@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+try:
+    from layout import layout
+except Exception as x:
+    print("FAIL: cannot import layout.layout:", x); sys.exit(1)
+G = 1 << 30; M = 1 << 20
+res = []
+def t(n, f):
+    try: ok = bool(f())
+    except Exception: ok = False
+    res.append((n, ok))
+def raises(cfg):
+    try: layout(cfg); return False
+    except ValueError: return True
+a = lambda: layout({"ram_mib": 512, "devices": ["blk", "net"], "root": "/dev/vda"})
+t("512 MiB is one region", lambda: a()["ram"] == [(0, 512 * M)])
+t("devices are placed from 0xD0000000 with irqs from 5", lambda: a()["devices"] == [{"name": "blk", "base": 0xD0000000, "size": 4096, "irq": 5}, {"name": "net", "base": 0xD0001000, "size": 4096, "irq": 6}])
+t("command line", lambda: a()["cmdline"] == "console=ttyS0 reboot=k panic=1 root=/dev/vda virtio_mmio.device=4K@0xd0000000:5 virtio_mmio.device=4K@0xd0001000:6")
+t("exactly 3 GiB stays below the gap", lambda: layout({"ram_mib": 3072, "devices": ["rng"], "root": "/dev/vda"})["ram"] == [(0, 3 * G)])
+t("8 GiB splits around the gap", lambda: layout({"ram_mib": 8192, "devices": ["blk"], "root": "/dev/vda"})["ram"] == [(0, 3 * G), (4 * G, 5 * G)])
+t("no root argument without a block device", lambda: "root=" not in layout({"ram_mib": 128, "devices": ["net", "rng"], "root": "/dev/vda"})["cmdline"])
+t("device order and irqs follow the input", lambda: [(d["name"], d["irq"]) for d in layout({"ram_mib": 128, "devices": ["rng", "blk", "net"], "root": "/dev/vda"})["devices"]] == [("rng", 5), ("blk", 6), ("net", 7)])
+t("too little RAM is refused", lambda: raises({"ram_mib": 32, "devices": [], "root": "/dev/vda"}))
+t("odd RAM is refused", lambda: raises({"ram_mib": 129, "devices": [], "root": "/dev/vda"}))
+t("unknown device is refused", lambda: raises({"ram_mib": 128, "devices": ["gpu"], "root": "/dev/vda"}))
+t("duplicate device is refused", lambda: raises({"ram_mib": 128, "devices": ["blk", "blk"], "root": "/dev/vda"}))
+t("more than 8 devices is refused", lambda: raises({"ram_mib": 128, "devices": ["rng"] * 9, "root": "/dev/vda"}))
+t("no devices gives a short command line", lambda: layout({"ram_mib": 128, "devices": [], "root": "/dev/vda"})["cmdline"] == "console=ttyS0 reboot=k panic=1")
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N
