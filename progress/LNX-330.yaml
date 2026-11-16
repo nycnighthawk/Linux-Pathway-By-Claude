@@ -11,24 +11,28 @@ phases:
     done:
     - LNX-330-T01
     - LNX-330-T02
+    - LNX-330-T03
   lessons:
     state: in-progress
     units: 11
     done:
     - LNX-330-T01
     - LNX-330-T02
+    - LNX-330-T03
   quizzes:
     state: in-progress
     units: 11
     done:
     - LNX-330-T01
     - LNX-330-T02
+    - LNX-330-T03
   labs:
     state: in-progress
     units: 11
     done:
     - LNX-330-T01
     - LNX-330-T02
+    - LNX-330-T03
   checks:
     state: todo
     units: 0
@@ -44,3 +48,7 @@ log:
 - '2026-11-16 lessons: LNX-330-T02'
 - '2026-11-16 quizzes: LNX-330-T02'
 - '2026-11-16 labs: LNX-330-T02'
+- '2026-11-16 synth: LNX-330-T03'
+- '2026-11-16 lessons: LNX-330-T03'
+- '2026-11-16 quizzes: LNX-330-T03'
+- '2026-11-16 labs: LNX-330-T03'
