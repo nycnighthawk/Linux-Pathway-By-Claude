@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+rm -rf repo
+git init -q -b main repo
+cd repo
+git config user.name "Lab User"
+git config user.email "lab@example.org"
+git config commit.gpgsign false
+printf 'int parse(void);\n' > foo.h
+git add foo.h && git commit -q -m "foo: add header"
+git tag base
+git checkout -q -b topic
+printf '#include "foo.h"\nint parse(void) { return 0; }\n' > foo.c
+git add foo.c && git commit -q -m "foo: add parser skeleton"
+printf '#include "foo.h"\nint parse(void) { return 1; }\n' > foo.c
+git commit -q -am "foo: make parser return a status"
+printf 'foo parser\n==========\n' > foo.rst
+git add foo.rst && git commit -q -m "docs: describe the foo parser"
+cat > send.sh <<'N'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Produce the second version of the series in ./outgoing (do not send mail).
+# TODO: make this a proper v2 submission. See README.md for the requirements.
+set -eu
+rm -rf outgoing
+git format-patch base..topic -o outgoing
+N
+chmod +x send.sh
