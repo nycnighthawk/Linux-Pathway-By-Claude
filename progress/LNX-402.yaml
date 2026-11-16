@@ -1,0 +1,30 @@
+item: LNX-402
+label: 'Capstone: Cloud-Native Platform'
+branch: build/LNX-402
+state: in-progress
+started: '2026-11-16'
+updated: '2026-11-16'
+phases:
+  synth:
+    state: todo
+    units: 8
+    done: []
+  brief:
+    state: todo
+    units: 0
+    done: []
+  milestones:
+    state: todo
+    units: 8
+    done: []
+  labs:
+    state: todo
+    units: 8
+    done: []
+  checks:
+    state: todo
+    units: 0
+    done: []
+parked: null
+log:
+- 2026-11-16 started
