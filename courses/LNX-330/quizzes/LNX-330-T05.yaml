@@ -10,7 +10,7 @@ questions:
   answer: [2]
   explain: 'A) wrong. B) wrong. C) correct. D) wrong, no such class.'
 - id: wild
-  prompt: In MAINTAINERS, F: drivers/net/* matches which of these files?
+  prompt: 'In MAINTAINERS, an F: entry of drivers/net/* matches which of these files?'
   choices:
   - drivers/net/Makefile
   - drivers/net/foo/core.c
@@ -19,7 +19,7 @@ questions:
   answer: [0]
   explain: 'A) correct: the star stays within one directory level. B) wrong, it is one level deeper. C) wrong. D) wrong.'
 - id: exclude
-  prompt: What does an X: line in a MAINTAINERS section do?
+  prompt: 'What does an X: line in a MAINTAINERS section do?'
   choices:
   - It marks the section obsolete
   - It excludes matching files from that section
