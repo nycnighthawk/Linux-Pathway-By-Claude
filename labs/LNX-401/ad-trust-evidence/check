@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "ad_forest_level", "type": "enum", "values": ["2008", "2012", "2016", "2025"], "hint": "one of 2008, 2012, 2016, 2025", "sample": "2016"}, {"key": "time_skew_seconds", "type": "num", "min": 0, "max": 3600, "hint": "a number of seconds from 0 to 3600", "sample": "0.4"}, {"key": "join_method", "type": "enum", "values": ["sssd", "winbind"], "hint": "sssd or winbind", "sample": "sssd"}, {"key": "keytab_enctypes", "type": "int", "min": 1, "max": 8, "hint": "integer from 1 to 8", "sample": "2"}, {"key": "ad_user_ssh_login", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "ad_user_ticket_login", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "group_access_rule", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "trust_type", "type": "enum", "values": ["forest", "external"], "hint": "forest or external", "sample": "forest"}, {"key": "trust_direction", "type": "enum", "values": ["one-way", "two-way"], "hint": "one-way or two-way", "sample": "one-way"}, {"key": "cross_realm_login", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "id_range_overlap", "type": "yes", "must": "no", "hint": "must be no", "sample": "no"}, {"key": "dns_forwarder_recorded", "type": "yes", "must": "yes", "hint": "must be yes", "sample": "yes"}, {"key": "issues_found", "type": "int", "min": 0, "max": 50, "hint": "integer from 0 to 50", "sample": "2"}], "rules": [{"name": "clock skew within the Kerberos limit", "needs": ["time_skew_seconds"], "expr": "v['time_skew_seconds'] <= 300", "msg": "Kerberos allows 300 seconds by default; fix time first"}, {"name": "a one-way trust still has a login test", "needs": ["trust_direction", "cross_realm_login"], "expr": "v['cross_realm_login'] == 'yes'", "msg": "prove the login in the allowed direction"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N

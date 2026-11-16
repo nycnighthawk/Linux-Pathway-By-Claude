@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+ad_forest_level=2016
+time_skew_seconds=0.4
+join_method=sssd
+keytab_enctypes=2
+ad_user_ssh_login=yes
+ad_user_ticket_login=yes
+group_access_rule=yes
+trust_type=forest
+trust_direction=one-way
+cross_realm_login=yes
+id_range_overlap=no
+dns_forwarder_recorded=yes
+issues_found=2
+N

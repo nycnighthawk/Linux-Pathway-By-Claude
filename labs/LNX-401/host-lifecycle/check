@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+try:
+    from lifecycle import plan
+except Exception as x:
+    print("FAIL: cannot import lifecycle.plan:", x); sys.exit(1)
+c = {"name": "app1", "family": "rhel", "roles": ["idm-client"], "ring": "canary"}
+m = {"name": "app2", "family": "debian", "roles": ["idm-client"], "ring": "main"}
+i = {"name": "ipa1", "family": "rhel", "roles": ["idm-server"], "ring": "main"}
+H = [c, m, i]
+res = []
+def run(a, h):
+    try: return plan(a, h, H)
+    except NotImplementedError: return None
+    except Exception as x: return "error: %s" % x
+def t(n, ok): res.append((n, bool(ok)))
+t("provision steps", run("provision", m) == ["image", "register-inventory", "join-directory", "baseline", "scan", "register-monitoring"])
+t("patch canary", run("patch", c) == ["snapshot-pin", "update", "health-check"])
+t("patch main waits for the canary", run("patch", m) == ["wait-canary-healthy", "snapshot-pin", "update", "health-check"])
+t("upgrade", run("upgrade", m) == ["backup", "dry-run", "upgrade", "reboot", "baseline", "scan", "health-check"])
+t("upgrade of an IdM server checks replicas first", (run("upgrade", i) or [None])[0] == "check-replicas")
+t("decommission order", run("decommission", m) == ["drain", "remove-monitoring", "revoke-certs", "remove-principal", "remove-dns", "remove-inventory", "wipe"])
+t("decommission of an IdM server checks replicas first", (run("decommission", i) or [None])[0] == "check-replicas")
+try:
+    plan("reinstall", m, H); t("unknown action raises ValueError", False)
+except ValueError:
+    t("unknown action raises ValueError", True)
+except Exception:
+    t("unknown action raises ValueError", False)
+t("no step is repeated in decommission", len(set(run("decommission", m) or [])) == 7)
+t("plan returns a new list each call", run("provision", m) is not run("provision", m))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

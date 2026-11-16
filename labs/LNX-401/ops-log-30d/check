@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import json, re, sys
+SPEC = json.loads(r'''{"keys": [{"key": "days_logged", "type": "int", "min": 1, "max": 120, "hint": "integer, at least 30 to pass the rule below", "sample": "30"}, {"key": "alerts_fired", "type": "int", "min": 0, "max": 100000, "hint": "non-negative integer", "sample": "41"}, {"key": "alerts_actioned", "type": "int", "min": 0, "max": 100000, "hint": "non-negative integer", "sample": "17"}, {"key": "alerts_missing", "type": "int", "min": 0, "max": 1000, "hint": "non-negative integer", "sample": "3"}, {"key": "manual_actions", "type": "int", "min": 0, "max": 10000, "hint": "non-negative integer", "sample": "9"}, {"key": "actions_automated", "type": "int", "min": 0, "max": 10000, "hint": "non-negative integer", "sample": "6"}, {"key": "patch_rings_run", "type": "int", "min": 0, "max": 50, "hint": "integer", "sample": "4"}, {"key": "login_success_pct", "type": "num", "min": 0, "max": 100, "hint": "percent 0 to 100", "sample": "99.7"}, {"key": "login_objective_pct", "type": "num", "min": 50, "max": 100, "hint": "percent 50 to 100", "sample": "99.5"}, {"key": "weekly_handovers", "type": "int", "min": 0, "max": 20, "hint": "integer", "sample": "4"}, {"key": "incidents", "type": "int", "min": 0, "max": 1000, "hint": "non-negative integer", "sample": "2"}], "rules": [{"name": "a full month was logged", "needs": ["days_logged"], "expr": "v['days_logged'] >= 30", "msg": "at least 30 days of entries"}, {"name": "actioned alerts do not exceed fired alerts", "needs": ["alerts_fired", "alerts_actioned"], "expr": "v['alerts_actioned'] <= v['alerts_fired']", "msg": "you cannot action more alerts than fired"}, {"name": "automation does not exceed manual actions", "needs": ["manual_actions", "actions_automated"], "expr": "v['actions_automated'] <= v['manual_actions']", "msg": "count only manual actions you automated"}, {"name": "one handover per week", "needs": ["days_logged", "weekly_handovers"], "expr": "v['weekly_handovers'] >= v['days_logged'] // 7", "msg": "write a handover each week"}, {"name": "objective met or explained by an incident", "needs": ["login_success_pct", "login_objective_pct", "incidents"], "expr": "v['login_success_pct'] >= v['login_objective_pct'] or v['incidents'] >= 1", "msg": "a missed objective needs at least one reviewed incident"}]}''')
+try:
+    lines = open("evidence.txt").read().splitlines()
+except OSError:
+    print("FAIL: evidence.txt is missing; run setup"); sys.exit(1)
+raw = {}
+for ln in lines:
+    if "=" in ln and not ln.lstrip().startswith("#"):
+        k, v = ln.split("=", 1); raw[k.strip()] = v.strip()
+bad = 0; v = {}
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+for k in SPEC["keys"]:
+    key, t, val = k["key"], k["type"], raw.get(k["key"], "")
+    try:
+        if t == "int":
+            x = int(val); assert k.get("min", -10**9) <= x <= k.get("max", 10**9)
+        elif t == "num":
+            x = float(val); assert k.get("min", -1e18) <= x <= k.get("max", 1e18)
+        elif t == "enum":
+            x = val; assert val in k["values"]
+        elif t == "yes":
+            x = val; assert val in ("yes", "no") and (k.get("must") is None or val == k["must"])
+        elif t == "text":
+            x = val; assert len(val) >= k.get("min", 3) and val != "?"
+        v[key] = x; print("ok:   %s = %s" % (key, val))
+    except (ValueError, AssertionError, KeyError):
+        fail("%s: %s" % (key, k["hint"]))
+for r in SPEC.get("rules", []):
+    if all(r_k in v for r_k in r["needs"]):
+        try:
+            if eval(r["expr"], {"v": v}): print("ok:   " + r["name"])
+            else: fail(r["name"] + ": " + r["msg"])
+        except Exception as e:
+            fail(r["name"] + ": " + str(e))
+sys.exit(bad)
+N

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > lifecycle.py <<'N'
+# SPDX-License-Identifier: MIT
+STEPS = {
+    "provision": ["image", "register-inventory", "join-directory", "baseline", "scan", "register-monitoring"],
+    "upgrade": ["backup", "dry-run", "upgrade", "reboot", "baseline", "scan", "health-check"],
+    "decommission": ["drain", "remove-monitoring", "revoke-certs", "remove-principal", "remove-dns", "remove-inventory", "wipe"],
+}
+
+def plan(action, host, hosts):
+    if action == "patch":
+        steps = ["snapshot-pin", "update", "health-check"]
+        if host.get("ring") != "canary":
+            steps.insert(0, "wait-canary-healthy")
+    elif action in STEPS:
+        steps = list(STEPS[action])
+    else:
+        raise ValueError("unknown action: %s" % action)
+    if action in ("upgrade", "decommission") and "idm-server" in host.get("roles", []):
+        steps.insert(0, "check-replicas")
+    return steps
+N

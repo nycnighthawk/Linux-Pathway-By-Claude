@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Mechanical consistency checks on a blameless review. Judgement about the cause stays with you.
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import re, sys
+from datetime import datetime
+try:
+    L = [l.rstrip() for l in open("review.txt") if l.strip()]
+except OSError:
+    print("FAIL: review.txt is missing; run setup"); sys.exit(1)
+F = {}
+for l in L:
+    k, _, v = l.partition(":"); F.setdefault(k.strip(), []).append(v.strip())
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+ts = lambda s: datetime.strptime(s, "%Y-%m-%dT%H:%M")
+try:
+    s, d, r = (ts(F[k][0]) for k in ("start", "detected", "resolved"))
+    t("start <= detected <= resolved", s <= d <= r)
+    t("ttd_minutes matches start to detected", int(F["ttd_minutes"][0]) == (d - s).total_seconds() // 60)
+    t("ttr_minutes matches detected to resolved", int(F["ttr_minutes"][0]) == (r - d).total_seconds() // 60)
+except Exception as x:
+    t("times and durations parse (%s)" % x, False)
+tl = [m.group(1) for v in F.get("timeline", []) for m in [re.match(r"(\d{4}-\d\d-\d\dT\d\d:\d\d) ", v)] if m]
+t("timeline has at least 3 entries in time order", len(tl) >= 3 and tl == sorted(tl) and len(tl) == len(F.get("timeline", [])))
+t("severity is 1 to 4", F.get("severity", ["0"])[0] in ("1", "2", "3", "4"))
+t("impact is stated with a number", bool(re.search(r"\d", " ".join(F.get("impact", [])))))
+causes = {c.split()[0] for c in F.get("cause", []) if c.split()}
+t("at least two causes (a contributing factor, not a single culprit)", len(causes) >= 2)
+acts = []
+for a in F.get("action", []):
+    m = re.match(r"(A\d+) owner=(\S*) due=(\S*) covers=(\S*) type=(\S*) text=(.*)", a)
+    if m: acts.append(m.groups())
+t("every action line is well formed", len(acts) == len(F.get("action", [])) and acts != [])
+t("every action has an owner", all(a[1] for a in acts))
+t("every due date is a date", all(re.match(r"\d{4}-\d\d-\d\d$", a[2]) for a in acts))
+t("every cause is covered by an action", causes <= {c for a in acts for c in a[3].split(",")})
+t("action types are prevent, detect or mitigate", all(a[4] in ("prevent", "detect", "mitigate") for a in acts))
+t("actions are specific (6 words or more, not about care)", all(len(a[5].split()) >= 6 and "careful" not in a[5].lower() for a in acts))
+t("at least one detect or mitigate action", any(a[4] in ("detect", "mitigate") for a in acts))
+blame = re.compile(r"\b(forgot|stupid|careless|lazy|fault|should have known|negligen)", re.I)
+t("causes name conditions, not blame", not any(blame.search(c) for c in F.get("cause", [])))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N
