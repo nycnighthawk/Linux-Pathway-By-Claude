@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+latest_stable=7.3.4
+eol_stable=7.2
+longterm_count=6
+oldest_longterm=5.10
+mainline_phase=rc
+fix_cc_tag=Cc: stable@vger.kernel.org
+base_tree=git://git.example.org/pub/scm/linux/kernel/git/widget/widget-next.git
+mailing_list=netdev@vger.kernel.org widget-devel@example.org
+first_6_6_tag=v6.6.140
+N

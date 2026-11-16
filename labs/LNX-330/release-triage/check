@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f releases.json ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+eval "$(python3 - <<'N'
+import json
+r = json.load(open("releases.json"))["releases"]
+st = [x for x in r if x["moniker"] == "stable"]
+lt = [x for x in r if x["moniker"] == "longterm"]
+mm = lambda v: ".".join(v.split(".")[:2])
+print("W_STABLE=%s" % max((x for x in st if not x["iseol"]), key=lambda x: tuple(int(p) for p in x["version"].split(".")))["version"])
+print("W_EOL=%s" % mm([x for x in st if x["iseol"]][0]["version"]))
+print("W_LTN=%d" % len(lt))
+print("W_OLD=%s" % mm(min(lt, key=lambda x: tuple(int(p) for p in x["version"].split(".")))["version"]))
+print("W_PHASE=%s" % ("rc" if "-rc" in [x for x in r if x["moniker"] == "mainline"][0]["version"] else "release"))
+N
+)"
+[ "$(get latest_stable)" = "$W_STABLE" ] && ok "latest stable $W_STABLE" || fail "latest_stable: the newest stable that is not end of life"
+[ "$(get eol_stable)" = "$W_EOL" ] && ok "end-of-life stable branch $W_EOL" || fail "eol_stable: the stable entry with iseol true, as major.minor"
+[ "$(get longterm_count)" = "$W_LTN" ] && ok "longterm count $W_LTN" || fail "longterm_count: count the longterm entries"
+[ "$(get oldest_longterm)" = "$W_OLD" ] && ok "oldest longterm $W_OLD" || fail "oldest_longterm: lowest version among longterm, as major.minor"
+[ "$(get mainline_phase)" = "$W_PHASE" ] && ok "mainline is in phase $W_PHASE" || fail "mainline_phase: rc if the mainline version has -rc"
+get fix_cc_tag | grep -Eqi '^Cc: *<?stable@vger\.kernel\.org>?$' && ok "stable Cc tag" || fail "fix_cc_tag must be: Cc: stable@vger.kernel.org"
+[ "$(get base_tree)" = "git://git.example.org/pub/scm/linux/kernel/git/widget/widget-next.git" ] && ok "base tree from the matching entry" || fail "base_tree: the T: URL (without the word git) of the entry whose F: covers drivers/net/widget/"
+get mailing_list | grep -q 'netdev@vger.kernel.org' && ok "netdev list" || fail "mailing_list: include the netdev list (and the driver list)"
+[ "$(get first_6_6_tag)" = "v6.6.140" ] && ok "first 6.6 tag v6.6.140" || fail "first_6_6_tag: the lowest v6.6.x in tags.txt"
+exit $bad
