@@ -6,21 +6,25 @@ started: '2026-11-16'
 updated: '2026-11-16'
 phases:
   synth:
-    state: todo
+    state: in-progress
     units: 12
-    done: []
+    done:
+    - LNX-332-T01
   lessons:
-    state: todo
+    state: in-progress
     units: 12
-    done: []
+    done:
+    - LNX-332-T01
   quizzes:
-    state: todo
+    state: in-progress
     units: 12
-    done: []
+    done:
+    - LNX-332-T01
   labs:
-    state: todo
+    state: in-progress
     units: 12
-    done: []
+    done:
+    - LNX-332-T01
   checks:
     state: todo
     units: 0
@@ -28,3 +32,7 @@ phases:
 parked: null
 log:
 - 2026-11-16 started
+- '2026-11-16 synth: LNX-332-T01'
+- '2026-11-16 lessons: LNX-332-T01'
+- '2026-11-16 quizzes: LNX-332-T01'
+- '2026-11-16 labs: LNX-332-T01'

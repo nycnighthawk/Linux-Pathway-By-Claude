@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from eptwalk import translate
+# guest tables: top at gpa frame 1, bottom at frame 2, data at frame 3, second data frame 4 (hole in EPT)
+G = {1: [2, None, None, None], 2: [3, 4, None, None]}
+# EPT: root id 'r'; maps gpa frames 0..3 (top idx = gpa>>6 &3, bottom idx = gpa>>4 &3)
+# gpa frame f (0..15): top = f>>2, bottom = f&3
+E = {"r": ["a", None, None, None], "a": [10, 11, 12, 13]}   # frames 0..3 -> host 10..13; frame 4+ unmapped
+r = translate(0x01, 1, G, "r", E)
+exp_ok = ("ok", (13 << 4) | 1, 8)
+res = [("full walk: result and 8 references", r == exp_ok)]
+r = translate(0x11, 1, G, "r", E)   # bottom idx 1 -> frame 4, unmapped in EPT
+res.append(("EPT violation on the data page", r[0] == "ept_violation" and r[1] == (4 << 4) | 1 and r[2] == 7))
+r = translate(0x41, 1, G, "r", E)   # top idx 1 -> None
+res.append(("guest fault on a not-present entry", r == ("guest_fault", 0x41, 3)))
+E2 = {"r": ["a", None, None, None], "a": [10, None, 12, 13]}  # frame 1 (top table) unmapped in EPT
+r = translate(0x01, 1, G, "r", E2)
+res.append(("EPT violation on a guest page-table page", r[0] == "ept_violation" and r[1] == (1 << 4) and r[2] == 2))
+r = translate(0x01, 1, {1: [2, None, None, None], 2: [None, None, 3, None]}, "r", E)
+res.append(("a second guest address, other entry", r[0] == "guest_fault"))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n)
+    bad |= (not ok)
+sys.exit(bad)
+N
