@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > guest.config <<'N'
+# SPDX-License-Identifier: MIT
+CONFIG_VIRTIO_PCI=y
+CONFIG_VIRTIO_BLK=y
+CONFIG_VIRTIO_NET=y
+CONFIG_SERIAL_8250=y
+CONFIG_SERIAL_8250_CONSOLE=y
+# CONFIG_DEBUG_INFO is not set
+# CONFIG_KASAN is not set
+# CONFIG_KVM is not set
+# CONFIG_VHOST_NET is not set
+N

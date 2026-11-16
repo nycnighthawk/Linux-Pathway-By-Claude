@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}/repo"
+bad=0
+fail() { echo "FAIL: $1"; bad=1; }
+git checkout -q topic
+./send.sh >/dev/null 2>&1 || { fail "send.sh failed"; exit 1; }
+cover=$(ls outgoing/*cover-letter.patch 2>/dev/null | head -1)
+[ -n "$cover" ] && echo "ok:   cover letter exists" || { fail "no cover letter"; exit 1; }
+n=$(ls outgoing/*.patch | grep -vc cover-letter)
+[ "$n" -eq 3 ] && echo "ok:   three patches" || fail "expected 3 patches, found $n"
+grep -q '^Subject: \[PATCH v2 0/3\]' "$cover" && echo "ok:   cover subject is [PATCH v2 0/3]" || fail "cover subject must start with [PATCH v2 0/3]"
+for i in 1 2 3; do
+  f=$(ls outgoing/*000$i-*.patch 2>/dev/null | head -1)
+  [ -n "$f" ] && grep -q "^Subject: \[PATCH v2 $i/3\]" "$f" && grep -q '^Signed-off-by: Lab User <lab@example.org>' "$f" || fail "patch $i needs [PATCH v2 $i/3] and a Signed-off-by"
+done
+grep -q 'SUBJECT HERE\|BLURB HERE' "$cover" && fail "cover letter still has placeholders"
+grep -q 'Changes in v2' "$cover" && echo "ok:   changelog present" || fail "cover letter needs a 'Changes in v2' section"
+grep -q '^base-commit: ' "$cover" || grep -q '^base-commit: ' outgoing/*0003-*.patch && echo "ok:   base-commit recorded" || fail "record the base with --base"
+grep -q '^To: .*maint@example.org' "$cover" && grep -q '^Cc: .*list@example.org' "$cover" && echo "ok:   To and Cc set" || fail "cover must have To: maint@example.org and Cc: list@example.org"
+rm -rf ../apply && git clone -q . ../apply -b main 2>/dev/null && (cd ../apply && git config user.name T && git config user.email t@example.org && git checkout -q base 2>/dev/null; git am -q ../repo/outgoing/*0001-*.patch ../repo/outgoing/*0002-*.patch ../repo/outgoing/*0003-*.patch) && echo "ok:   series applies on base with git am" || fail "git am failed"
+exit $bad

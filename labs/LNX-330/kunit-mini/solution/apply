@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("test_sat.c").read()
+new = '''static void overflow_up(struct kunit *test)
+{
+	KUNIT_EXPECT_EQ(test, saturating_add(INT_MAX, 1), INT_MAX);
+	KUNIT_EXPECT_EQ(test, saturating_add(INT_MAX - 5, 10), INT_MAX);
+}
+
+static void overflow_down(struct kunit *test)
+{
+	KUNIT_EXPECT_EQ(test, saturating_add(INT_MIN, -1), INT_MIN);
+	KUNIT_EXPECT_EQ(test, saturating_add(INT_MIN + 5, -10), INT_MIN);
+}
+
+static void edges(struct kunit *test)
+{
+	KUNIT_EXPECT_EQ(test, saturating_add(INT_MAX - 3, 2), INT_MAX - 1);
+	KUNIT_EXPECT_EQ(test, saturating_add(INT_MAX - 3, 3), INT_MAX);
+	KUNIT_EXPECT_EQ(test, saturating_add(INT_MIN + 3, -3), INT_MIN);
+}
+
+'''
+s = s.replace("/* TODO", new + "/* TODO", 1)
+s = s.replace("\tKUNIT_CASE(add_small),", "\tKUNIT_CASE(add_small),\n\tKUNIT_CASE(overflow_up),\n\tKUNIT_CASE(overflow_down),\n\tKUNIT_CASE(edges),")
+open("test_sat.c", "w").write(s)
+N

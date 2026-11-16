@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("seals.c").read()
+a = s.index("\t/* TODO 1")
+b = s.index("\tif (ftruncate")
+s = s[:a] + '''\tif (fd < 0) {
+\t\tif (errno == ENOSYS) {
+\t\t\tprintf("ok 1 # SKIP memfd_create not supported\\n");
+\t\t\tprintf("ok 2 # SKIP memfd_create not supported\\n");
+\t\t\treturn KSFT_SKIP;
+\t\t}
+\t\tperror("memfd_create");
+\t\treturn KSFT_FAIL;
+\t}
+
+''' + s[b:]
+a = s.index("\t/* TODO 2")
+b = s.index("\treturn fails")
+s = s[:a] + '''\tfcntl(fd, F_ADD_SEALS, F_SEAL_GROW | F_SEAL_SHRINK);
+\terrno = 0;
+\treport(1, ftruncate(fd, 8192) == -1 && errno == EPERM,
+\t       "growing is refused after F_SEAL_GROW");
+
+\tfcntl(fd, F_ADD_SEALS, F_SEAL_WRITE);
+\terrno = 0;
+\treport(2, write(fd, "x", 1) == -1 && errno == EPERM,
+\t       "write is refused after F_SEAL_WRITE");
+
+''' + s[b:]
+open("seals.c", "w").write(s)
+N

@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > kunit_mini.h <<'N'
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* A toy imitation of the KUnit API: cases, suites, EXPECT macros, TAP output. */
+#include <stdio.h>
+struct kunit { int failed; };
+struct kunit_case { const char *name; void (*run_case)(struct kunit *test); };
+struct kunit_suite { const char *name; struct kunit_case *test_cases; };
+#define KUNIT_CASE(f) { .name = #f, .run_case = f }
+#define KUNIT_EXPECT_EQ(test, left, right) do { \
+	long long l_ = (left), r_ = (right); \
+	if (l_ != r_) { (test)->failed = 1; \
+		printf("    # %s:%d: expected %s == %s (%lld vs %lld)\n", \
+		       __FILE__, __LINE__, #left, #right, l_, r_); } \
+} while (0)
+#define kunit_test_suite(s) \
+int main(void) { \
+	int i, bad = 0, n = 0; \
+	printf("TAP version 14\n# Subtest: %s\n", (s).name); \
+	for (i = 0; (s).test_cases[i].run_case; i++) { \
+		struct kunit t = { 0 }; \
+		(s).test_cases[i].run_case(&t); \
+		n++; bad += t.failed; \
+		printf("%s %d %s\n", t.failed ? "not ok" : "ok", n, (s).test_cases[i].name); \
+	} \
+	printf("# %d of %d cases failed\n", bad, n); \
+	return bad ? 1 : 0; \
+}
+N
+cat > sat.h <<'N'
+/* SPDX-License-Identifier: GPL-2.0-only */
+int saturating_add(int a, int b);
+N
+cat > sat.c <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+#include <limits.h>
+#include "sat.h"
+/* Add two ints, clamping to INT_MAX or INT_MIN instead of overflowing. */
+int saturating_add(int a, int b)
+{
+	if (b > 0 && a > INT_MAX - b)
+		return INT_MAX;
+	if (b < 0 && a < INT_MIN - b)
+		return INT_MIN;
+	return a + b;
+}
+N
+cat > test_sat.c <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+#include <limits.h>
+#include "kunit_mini.h"
+#include "sat.h"
+
+static void add_small(struct kunit *test)
+{
+	KUNIT_EXPECT_EQ(test, saturating_add(1, 2), 3);
+}
+
+/* TODO: add cases that would catch a wrong overflow check on either side,
+ * and a wrong boundary (the exact edge value). check mutates sat.c four ways;
+ * your suite must fail on every mutant and pass on the real code. */
+
+static struct kunit_case sat_cases[] = {
+	KUNIT_CASE(add_small),
+	{}
+};
+static struct kunit_suite sat_suite = { .name = "saturating_add", .test_cases = sat_cases };
+kunit_test_suite(sat_suite)
+N

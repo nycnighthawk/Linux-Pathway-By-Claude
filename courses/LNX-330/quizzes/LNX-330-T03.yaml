@@ -1,0 +1,65 @@
+title: 'Quiz: Boot testing with QEMU and virtme-ng'
+questions:
+- id: console
+  prompt: A QEMU kernel boot shows no output at all. Which kernel argument is the most likely fix?
+  choices:
+  - quiet
+  - console=ttyS0
+  - rootwait
+  - nokaslr
+  answer: [1]
+  explain: 'A) wrong, it hides messages. B) correct: the kernel needs a console device that QEMU maps to the serial output. C) wrong. D) wrong.'
+- id: exitcode
+  prompt: With isa-debug-exit, the guest writes 0x10 to the port. What exit status does QEMU return?
+  choices:
+  - '16'
+  - '17'
+  - '32'
+  - '33'
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: (0x10 << 1) | 1 = 33.'
+- id: nopanicok
+  prompt: A kernel with no root filesystem panics saying it cannot mount root. For a smoke test this is
+  choices:
+  - A failed boot
+  - Evidence that the kernel reached the point of looking for userspace
+  - A QEMU bug
+  - A GDB problem
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: noreboot
+  prompt: What do panic=-1 and -no-reboot achieve together?
+  choices:
+  - They make the kernel ignore panics
+  - A panic causes an immediate reboot request that QEMU turns into an exit
+  - They enable KVM
+  - They disable the serial console
+  answer: [1]
+  explain: 'A) wrong. B) correct: the run ends instead of looping. C) wrong. D) wrong.'
+- id: tcg
+  prompt: A test passes locally but hangs on a CI runner. Which is a likely cause?
+  choices:
+  - The runner has no /dev/kvm, so QEMU falls back to the slower TCG
+  - The kernel image is too small
+  - virtio is disabled in QEMU
+  - GDB is attached
+  answer: [0]
+  explain: 'A) correct: timeouts tuned for native speed fail. B) wrong. C) wrong. D) wrong.'
+- id: virtme
+  prompt: How does virtme-ng give the guest a full userland without building an image?
+  choices:
+  - It copies the host disk into memory
+  - It shares the host filesystem read-only with a writable overlay
+  - It downloads a distribution
+  - It uses no userland
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: nokaslr
+  prompt: GDB breakpoints on kernel functions never hit. Which kernel argument fixes address mismatches?
+  choices:
+  - nosmp
+  - nokaslr
+  - noapic
+  - nomodeset
+  answer: [1]
+  explain: 'A) wrong. B) correct: randomised base addresses stop matching vmlinux symbols. C) wrong. D) wrong.'

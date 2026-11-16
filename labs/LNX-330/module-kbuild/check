@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $1"; bad=1; }
+out=$(make -s -C mod KDIR="$PWD/fakek" 2>&1) || { echo "$out"; fail "make failed"; exit 1; }
+n=$(echo "$out" | grep -c '^MODULE ')
+[ "$n" -eq 1 ] && echo "ok:   exactly one module is built" || fail "expected one module, found $n"
+echo "$out" | grep -qx 'MODULE hello objs=main.o util.o' && echo "ok:   module hello is linked from main.o and util.o" || fail "need module hello made of main.o and util.o (obj-m := hello.o plus hello-y)"
+cc=$(echo "$out" | grep '^CCFLAGS')
+echo "$cc" | grep -q -- '-DDEBUG' && echo "ok:   -DDEBUG is set" || fail "ccflags-y must add -DDEBUG"
+echo "$cc" | grep -Eq -- '-I(\$\(src\)|\$\(M\)|[^ ]*/)?include|-I[^ ]*include' && echo "ok:   include/ directory is on the path" || fail "ccflags-y must add -I<module dir>/include"
+echo "$out" | grep -q '^WARNING: modpost' && fail "modpost warns: every module needs MODULE_LICENSE" || echo "ok:   no modpost licence warning"
+echo "$out" | grep -q '^ERROR' && fail "$(echo "$out" | grep '^ERROR')"
+make -s -C mod clean KDIR="$PWD/fakek" >/dev/null 2>&1 && echo "ok:   make clean works" || fail "make clean failed"
+exit $bad

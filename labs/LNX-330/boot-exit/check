@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $1"; bad=1; }
+as --32 -o boot.o boot.S 2>as.log || { cat as.log; fail "boot.S does not assemble"; exit 1; }
+ld -m elf_i386 -Ttext 0x7c00 --oformat binary -o boot.bin boot.o || { fail "link failed"; exit 1; }
+size=$(stat -c %s boot.bin)
+[ "$size" -eq 512 ] || fail "boot.bin is $size bytes, a boot sector is exactly 512"
+rm -f serial.txt
+timeout 15 qemu-system-x86_64 -display none -no-reboot -accel tcg -m 32 \
+  -drive format=raw,file=boot.bin \
+  -serial file:serial.txt \
+  -device isa-debug-exit,iobase=0xf4,iosize=0x04 >/dev/null 2>&1
+rc=$?
+[ -f serial.txt ] && grep -q "BOOT OK" serial.txt && echo "ok:   serial shows BOOT OK" || fail "COM1 output lacks BOOT OK"
+case $rc in
+  33) echo "ok:   QEMU exited with status 33" ;;
+  124) fail "QEMU was still running after 15 s: the guest never signalled exit" ;;
+  *) fail "QEMU exit status was $rc, expected 33" ;;
+esac
+exit $bad

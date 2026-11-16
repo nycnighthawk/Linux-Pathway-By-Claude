@@ -1,0 +1,56 @@
+title: 'Quiz: KUnit (UML)'
+questions:
+- id: assertexpect
+  prompt: When should a test use KUNIT_ASSERT instead of KUNIT_EXPECT?
+  choices:
+  - When later lines would crash if the condition fails, such as after an allocation
+  - Always
+  - Never
+  - Only for strings
+  answer: [0]
+  explain: 'A) correct: ASSERT ends the case. B) wrong. C) wrong. D) wrong.'
+- id: uml
+  prompt: Why does kunit.py use UML by default?
+  choices:
+  - It runs the kernel as a user process, quickly and without virtualisation or hardware
+  - It supports all drivers
+  - It is the only supported architecture
+  - It replaces the compiler
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: static
+  prompt: How can a KUnit test reach a static function in the file under test?
+  choices:
+  - It cannot
+  - By including the .c file in the test file
+  - By exporting it with EXPORT_SYMBOL_GPL
+  - By using kselftest
+  answer: [1]
+  explain: 'A) wrong. B) correct, this is allowed for tests. C) wrong, not necessary. D) wrong.'
+- id: output
+  prompt: What output format do KUnit results use?
+  choices:
+  - XML
+  - TAP (Test Anything Protocol)
+  - Binary
+  - JSON only
+  answer: [1]
+  explain: 'A) wrong. B) correct, with nested subtests. C) wrong. D) wrong.'
+- id: arch
+  prompt: A test exercises architecture-specific assembly. Which option runs it on the right CPU model?
+  choices:
+  - --arch=<name>, which uses QEMU
+  - --raw_output
+  - --jobs
+  - --kunitconfig
+  answer: [0]
+  explain: 'A) correct. B) wrong, prints unfiltered output. C) wrong. D) wrong.'
+- id: quality
+  prompt: How can you check that a test suite is effective?
+  choices:
+  - Count its lines
+  - Introduce a deliberate bug in the code and confirm a test fails
+  - Run it twice
+  - Check that it prints ok
+  answer: [1]
+  explain: 'A) wrong. B) correct, mutation testing. C) wrong. D) wrong, a passing suite proves nothing alone.'

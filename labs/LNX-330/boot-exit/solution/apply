@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+python3 - <<'N'
+s = open("boot.S").read()
+s = s.replace("hang:\n", "\tmov $0xf4, %dx\n\tmov $0x10, %al\n\tout %al, %dx\nhang:\n", 1)
+open("boot.S", "w").write(s)
+N

@@ -1,0 +1,56 @@
+title: 'Quiz: kselftest'
+questions:
+- id: exit
+  prompt: Which exit code means a kselftest was skipped?
+  choices:
+  - '0'
+  - '1'
+  - '4'
+  - '127'
+  answer: [2]
+  explain: 'A) wrong, pass. B) wrong, fail. C) correct. D) wrong.'
+- id: noenosys
+  prompt: A system call under test returns ENOSYS on an older kernel. What should the test do?
+  choices:
+  - Report a failure
+  - Skip, because the feature does not exist there
+  - Crash on purpose
+  - Retry forever
+  answer: [1]
+  explain: 'A) wrong, noise for a legitimately missing feature. B) correct. C) wrong. D) wrong.'
+- id: install
+  prompt: What does the kselftest-install target produce?
+  choices:
+  - A kernel image
+  - A directory with built tests and a runner script for a machine without a compiler
+  - A signed module
+  - A patch series
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: harness
+  prompt: Why does kselftest_harness.h fork each test?
+  choices:
+  - To save memory
+  - So a crash fails one case and the remaining cases still run
+  - To use more CPUs
+  - To hide output
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: choose
+  prompt: Which layer fits a test that checks mmap semantics through the real system call?
+  choices:
+  - KUnit on UML
+  - kselftest
+  - checkpatch
+  - sparse
+  answer: [1]
+  explain: 'A) wrong, it tests internal functions. B) correct. C) wrong. D) wrong.'
+- id: configfile
+  prompt: What is the config file in a selftest directory for?
+  choices:
+  - It lists kernel configuration options the tests need, so CI builds a suitable kernel
+  - It stores test results
+  - It sets the compiler
+  - It holds the licence
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

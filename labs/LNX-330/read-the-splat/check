@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import re, sys
+kv = {}
+for line in open("report.txt"):
+    line = line.strip()
+    if line and not line.startswith("#") and "=" in line:
+        k, v = line.split("=", 1)
+        kv[k.strip()] = v.strip()
+bad = 0
+def chk(key, ok, hint):
+    global bad
+    if ok(kv.get(key, "")): print("ok:   " + key)
+    else: print("FAIL: %s (%s)" % (key, hint)); bad = 1
+chk("kasan_bug_type", lambda v: v == "slab-use-after-free", "the word after 'KASAN:' in the BUG line")
+chk("kasan_function", lambda v: v.split("+")[0] == "foo_read", "the function in the BUG line")
+chk("kasan_access_size", lambda v: v == "8", "bytes read, from the 'Read of size' line")
+chk("kasan_alloc_function", lambda v: v.split("+")[0] == "foo_probe", "driver function under 'Allocated by'")
+chk("kasan_free_function", lambda v: v.split("+")[0] == "foo_remove", "driver function under 'Freed by'")
+locks = {kv.get("lockdep_lock_a", ""), kv.get("lockdep_lock_b", "")}
+chk("lockdep_lock_a", lambda v: locks == {"&foo->lock", "&bar->lock"}, "the two locks in the cycle, as printed, one per key")
+chk("lockdep_lock_b", lambda v: locks == {"&foo->lock", "&bar->lock"} and kv.get("lockdep_lock_a") != v, "the other lock")
+chk("lockdep_function_waiting", lambda v: v.split("+")[0] == "foo_notify", "where the task tries to acquire the second lock")
+chk("console_loglevel_for_warnings_and_worse", lambda v: v == "5", "messages with a level below this number print; KERN_WARNING is 4")
+chk("dyndbg_command", lambda v: "module foo" in v and "+p" in v and "dynamic_debug/control" in v, "echo '<query> +p' > the dynamic_debug control file")
+chk("ftrace_commands", lambda v: "function_graph" in v and "foo_read" in v and "current_tracer" in v, "select the tracer and the function to graph")
+sys.exit(bad)
+N

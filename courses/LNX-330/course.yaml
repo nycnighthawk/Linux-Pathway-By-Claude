@@ -1,0 +1,209 @@
+id: LNX-330
+title: 'Kernel Development I: Workflow & Tooling'
+summary: 'The kernel contribution workflow end to end: the release process and stable branches, Kconfig and cross-compiling,
+  boot testing in QEMU, in-tree and out-of-tree modules, the checking tools (checkpatch, get_maintainer, sparse, Coccinelle),
+  patch series by mail with b4, KUnit and kselftest, the debugging instruments (printk, dynamic debug, ftrace, KASAN, lockdep),
+  git bisect, and the shape of a real upstream review cycle.'
+hours: 40
+coverage: full
+outcomes:
+- Read the release cycle and choose the right kernel branch for a task
+- Configure and cross-compile a minimal guest kernel and explain why a requested option can vanish
+- Boot a kernel in QEMU and report pass or fail from the guest to the host
+- Build in-tree and out-of-tree modules and explain loading, versioning and taint
+- Run the patch checking tools and find the right recipients
+- Prepare, version and send a patch series by email and collect review trailers
+- Write unit tests (KUnit) and interface tests (kselftest) with correct skip and fail behaviour
+- Read KASAN and lockdep reports and use printk, dynamic debug and ftrace
+- Bisect a regression with a scripted oracle and plan a revision from review comments
+modules:
+- id: process-config
+  title: Release process, configuration and test machines
+  lessons:
+  - topic: LNX-330-T01
+    title: Kernel tree, releases, stable/LTS, maintainers
+    file: lessons/LNX-330-T01.md
+    minutes: 45
+  - topic: LNX-330-T02
+    title: Kconfig, defconfig, localmodconfig, cross-compiling
+    file: lessons/LNX-330-T02.md
+    minutes: 60
+  - topic: LNX-330-T03
+    title: Boot testing with QEMU and virtme-ng
+    file: lessons/LNX-330-T03.md
+    minutes: 55
+- id: build-submit
+  title: Modules, checks and patch submission
+  lessons:
+  - topic: LNX-330-T04
+    title: In-tree and out-of-tree modules
+    file: lessons/LNX-330-T04.md
+    minutes: 55
+  - topic: LNX-330-T05
+    title: checkpatch, get_maintainer, sparse, Coccinelle
+    file: lessons/LNX-330-T05.md
+    minutes: 50
+  - topic: LNX-330-T06
+    title: format-patch, b4, send-email, list etiquette
+    file: lessons/LNX-330-T06.md
+    minutes: 55
+- id: test-debug
+  title: Testing, debugging and review
+  lessons:
+  - topic: LNX-330-T07
+    title: KUnit (UML)
+    file: lessons/LNX-330-T07.md
+    minutes: 55
+  - topic: LNX-330-T08
+    title: kselftest
+    file: lessons/LNX-330-T08.md
+    minutes: 50
+  - topic: LNX-330-T09
+    title: printk, dynamic debug, ftrace, KASAN, lockdep
+    file: lessons/LNX-330-T09.md
+    minutes: 60
+  - topic: LNX-330-T10
+    title: git bisect a regression
+    file: lessons/LNX-330-T10.md
+    minutes: 50
+  - topic: LNX-330-T11
+    title: A real upstream review cycle
+    file: lessons/LNX-330-T11.md
+    minutes: 35
+labs:
+- id: release-triage
+  topic: LNX-330-T01
+  title: Triage a kernel release listing
+  env: C
+  license: MIT
+  minutes: 35
+  packages:
+  - python3
+- id: kconfig-fragment
+  topic: LNX-330-T02
+  title: Write a Kconfig fragment for a guest kernel
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - python3
+- id: boot-exit
+  topic: LNX-330-T03
+  title: A boot sector that reports its own result
+  env: V
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - binutils
+  - qemu-system-x86
+- id: module-kbuild
+  topic: LNX-330-T04
+  title: An out-of-tree module Makefile
+  env: C
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - make
+- id: whom-to-cc
+  topic: LNX-330-T05
+  title: Work out who to send a patch to
+  env: C
+  license: MIT
+  minutes: 30
+  packages:
+  - python3
+- id: patch-series
+  topic: LNX-330-T06
+  title: Prepare version 2 of a patch series
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - git
+- id: kunit-mini
+  topic: LNX-330-T07
+  title: Write a test suite that catches bugs
+  env: C
+  license: GPL-2.0-only
+  minutes: 45
+  packages:
+  - gcc
+  - libc6-dev
+- id: ksft-seals
+  topic: LNX-330-T08
+  title: A kselftest-style test with skip and fail paths
+  env: V
+  license: GPL-2.0-only
+  minutes: 45
+  packages:
+  - gcc
+  - libc6-dev
+- id: read-the-splat
+  topic: LNX-330-T09
+  title: Read a KASAN report and a lockdep splat
+  env: C
+  license: MIT
+  minutes: 40
+  packages:
+  - python3
+- id: bisect-run
+  topic: LNX-330-T10
+  title: Find a regression with git bisect run
+  env: C
+  license: GPL-2.0-only
+  minutes: 40
+  packages:
+  - git
+- id: review-cycle
+  topic: LNX-330-T11
+  title: Plan version 2 from a review thread
+  env: C
+  license: MIT
+  minutes: 30
+  packages:
+  - python3
+quizzes:
+- id: LNX-330-T01
+  topic: LNX-330-T01
+  title: 'Quiz: Kernel tree, releases, stable/LTS, maintainers'
+  file: quizzes/LNX-330-T01.yaml
+- id: LNX-330-T02
+  topic: LNX-330-T02
+  title: 'Quiz: Kconfig, defconfig, localmodconfig, cross-compiling'
+  file: quizzes/LNX-330-T02.yaml
+- id: LNX-330-T03
+  topic: LNX-330-T03
+  title: 'Quiz: Boot testing with QEMU and virtme-ng'
+  file: quizzes/LNX-330-T03.yaml
+- id: LNX-330-T04
+  topic: LNX-330-T04
+  title: 'Quiz: In-tree and out-of-tree modules'
+  file: quizzes/LNX-330-T04.yaml
+- id: LNX-330-T05
+  topic: LNX-330-T05
+  title: 'Quiz: checkpatch, get_maintainer, sparse, Coccinelle'
+  file: quizzes/LNX-330-T05.yaml
+- id: LNX-330-T06
+  topic: LNX-330-T06
+  title: 'Quiz: format-patch, b4, send-email, list etiquette'
+  file: quizzes/LNX-330-T06.yaml
+- id: LNX-330-T07
+  topic: LNX-330-T07
+  title: 'Quiz: KUnit (UML)'
+  file: quizzes/LNX-330-T07.yaml
+- id: LNX-330-T08
+  topic: LNX-330-T08
+  title: 'Quiz: kselftest'
+  file: quizzes/LNX-330-T08.yaml
+- id: LNX-330-T09
+  topic: LNX-330-T09
+  title: 'Quiz: printk, dynamic debug, ftrace, KASAN, lockdep'
+  file: quizzes/LNX-330-T09.yaml
+- id: LNX-330-T10
+  topic: LNX-330-T10
+  title: 'Quiz: git bisect a regression'
+  file: quizzes/LNX-330-T10.yaml
+- id: LNX-330-T11
+  topic: LNX-330-T11
+  title: 'Quiz: A real upstream review cycle'
+  file: quizzes/LNX-330-T11.yaml

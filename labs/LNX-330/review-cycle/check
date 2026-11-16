@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+kv = {}
+for line in open("plan.txt"):
+    line = line.strip()
+    if line and not line.startswith("#") and "=" in line:
+        k, v = line.split("=", 1); kv[k.strip()] = v.strip()
+want = {"C1": "fix", "C2": "fix", "C3": "fix", "C4": "defer", "C5": "accept", "C6": "ignore"}
+hint = {"C1": "split the patch as the maintainer asked", "C2": "a style nit is simply fixed",
+        "C3": "a real bug found by a reviewer", "C4": "good idea, wrong series",
+        "C5": "an approval, not a request", "C6": "no technical content"}
+bad = 0
+for k, v in want.items():
+    if kv.get(k) == v: print("ok:   " + k)
+    else: print("FAIL: %s (%s)" % (k, hint[k])); bad = 1
+if kv.get("carry_trailer", "").replace(" ", "") == "patch2:grace@example.org": print("ok:   carry_trailer")
+else: print("FAIL: carry_trailer (whose approval covers which patch, and does that patch change?)"); bad = 1
+try: ok = int(kv.get("wait_hours", "")) >= 24
+except ValueError: ok = False
+print("ok:   wait_hours" if ok else "FAIL: wait_hours (the maintainer asked for a day)"); bad |= (not ok)
+sys.exit(bad)
+N

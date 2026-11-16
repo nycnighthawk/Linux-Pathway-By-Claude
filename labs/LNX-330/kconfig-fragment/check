@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f Kconfig.mini ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'N'
+import re, sys
+syms = {}
+cur = None
+for line in open("Kconfig.mini"):
+    line = line.rstrip("\n")
+    m = re.match(r"config (\w+)", line)
+    if m:
+        cur = syms.setdefault(m.group(1), {"prompt": False, "deps": "y", "sel": [], "default": False})
+        continue
+    if cur is None: continue
+    s = line.strip()
+    if s.startswith("bool"): cur["prompt"] = '"' in s
+    elif s.startswith("depends on"): cur["deps"] = s[len("depends on"):].strip()
+    elif s.startswith("select"): cur["sel"].append(s.split()[1])
+    elif s.startswith("default y"): cur["default"] = True
+req = {}
+lines = []
+for raw in open("guest.config"):
+    raw = raw.strip()
+    m = re.match(r"CONFIG_(\w+)=y$", raw)
+    n = re.match(r"# CONFIG_(\w+) is not set$", raw)
+    if m: req[m.group(1)] = True; lines.append((m.group(1), True))
+    elif n: req[n.group(1)] = False; lines.append((n.group(1), False))
+def ev(expr, v):
+    if expr.strip() == "y": return True
+    e = re.sub(r"\b([A-Z0-9_]+)\b", lambda m: "v.get('%s', False)" % m.group(1), expr).replace("&&", " and ").replace("||", " or ").replace("!", " not ")
+    return bool(eval(e, {"v": v}))
+v = {}
+for _ in range(10):
+    nv = {}
+    for s, d in syms.items():
+        ok = ev(d["deps"], v)
+        if d["prompt"] and s in req: val = req[s]
+        else: val = d["default"]
+        nv[s] = val and ok
+    for s, d in syms.items():
+        if nv[s]:
+            for t in d["sel"]: nv[t] = True
+    if nv == v: break
+    v = nv
+bad = 0
+def ok(m): print("ok:   " + m)
+def fail(m):
+    global bad; bad = 1; print("FAIL: " + m)
+unknown = [s for s, _ in lines if s not in syms]
+for s in unknown: fail("CONFIG_%s is not a symbol in Kconfig.mini" % s)
+promptless = [s for s, _ in lines if s in syms and not syms[s]["prompt"]]
+for s in promptless: fail("CONFIG_%s has no prompt: it cannot be set directly, only by select" % s)
+for want in ("VIRTIO_BLK", "VIRTIO_NET", "SERIAL_8250_CONSOLE"):
+    ok("%s is y in the resolved config" % want) if v.get(want) else fail("%s resolved to n: enable its parents too" % want)
+for off in ("DEBUG_INFO", "KASAN", "KVM", "VHOST_NET"):
+    ok("%s is off" % off) if not v.get(off) else fail("%s must be off in the guest" % off)
+dropped = [s for s, val in lines if s in syms and v.get(s, False) != val]
+for s in dropped: fail("the request for CONFIG_%s did not survive resolution (unmet dependency)" % s)
+if not dropped and lines: ok("every line of the fragment survives resolution")
+if not lines: fail("guest.config has no CONFIG_ lines")
+sys.exit(bad)
+N

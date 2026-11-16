@@ -1,0 +1,56 @@
+title: 'Quiz: format-patch, b4, send-email, list etiquette'
+questions:
+- id: version
+  prompt: Which option labels a series as the second version in the subject lines?
+  choices:
+  - '-v2'
+  - '--second'
+  - '-n 2'
+  - '--cover-letter'
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong, that adds message 0.'
+- id: base
+  prompt: What does git format-patch --base record?
+  choices:
+  - The author name
+  - A base-commit line telling reviewers and bots what the series applies to
+  - The mailing list
+  - The licence
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+- id: sob
+  prompt: What does a Signed-off-by line certify?
+  choices:
+  - That tests passed
+  - That the author has the right to submit the code under the project licence
+  - That a maintainer approved it
+  - That it builds on all architectures
+  answer: [1]
+  explain: 'A) wrong. B) correct, per the Developer Certificate of Origin. C) wrong. D) wrong.'
+- id: mailclient
+  prompt: Why is git send-email preferred over pasting a patch into a mail client?
+  choices:
+  - Mail clients often wrap lines or alter whitespace, breaking the patch
+  - It is faster to type
+  - It hides the sender
+  - It signs the patch cryptographically
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: reply
+  prompt: How should you reply to review comments on a list?
+  choices:
+  - Top-post and quote everything
+  - Inline under the relevant quoted lines, trimming the rest, in plain text
+  - By private mail
+  - With an HTML message
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong, keep it public. D) wrong.'
+- id: b4am
+  prompt: What does b4 am do for a maintainer?
+  choices:
+  - Sends a series
+  - Downloads a series by message-id from the archive, adds review trailers and makes a mailbox for git am
+  - Runs checkpatch
+  - Reboots the test machine
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'

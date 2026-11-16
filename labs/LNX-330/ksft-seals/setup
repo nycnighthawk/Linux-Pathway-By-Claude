@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > seals.c <<'N'
+// SPDX-License-Identifier: GPL-2.0-only
+/* A kselftest-style test: exit 0 pass, 1 fail, 4 skip; TAP on stdout. */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#define KSFT_PASS 0
+#define KSFT_FAIL 1
+#define KSFT_SKIP 4
+
+static int fails;
+
+static void report(int n, int ok, const char *name)
+{
+	printf("%sok %d %s\n", ok ? "" : "not ", n, name);
+	if (!ok)
+		fails++;
+}
+
+int main(void)
+{
+	int fd;
+
+	printf("TAP version 13\n1..2\n");
+	fd = memfd_create("lab", MFD_ALLOW_SEALING);
+	/* TODO 1: if the kernel lacks memfd_create (errno ENOSYS), print
+	 * "ok 1 # SKIP ..." and "ok 2 # SKIP ...", then return KSFT_SKIP.
+	 * Any other failure of memfd_create is a FAIL (return KSFT_FAIL). */
+
+	if (ftruncate(fd, 4096))
+		return KSFT_FAIL;
+
+	/* TODO 2: add F_SEAL_GROW | F_SEAL_SHRINK with fcntl(F_ADD_SEALS).
+	 * Test 1 passes when growing the file with ftruncate now fails with EPERM. */
+	report(1, 1, "growing is refused after F_SEAL_GROW");
+
+	/* TODO 3: add F_SEAL_WRITE. Test 2 passes when write() now fails with EPERM. */
+	report(2, 1, "write is refused after F_SEAL_WRITE");
+
+	return fails ? KSFT_FAIL : KSFT_PASS;
+}
+N

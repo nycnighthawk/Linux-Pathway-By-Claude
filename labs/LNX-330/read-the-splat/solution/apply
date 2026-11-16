@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > report.txt <<'N'
+kasan_bug_type=slab-use-after-free
+kasan_function=foo_read
+kasan_access_size=8
+kasan_alloc_function=foo_probe
+kasan_free_function=foo_remove
+lockdep_lock_a=&foo->lock
+lockdep_lock_b=&bar->lock
+lockdep_function_waiting=foo_notify
+console_loglevel_for_warnings_and_worse=5
+dyndbg_command=echo 'module foo +p' > /sys/kernel/debug/dynamic_debug/control
+ftrace_commands=echo foo_read > set_graph_function; echo function_graph > current_tracer
+N

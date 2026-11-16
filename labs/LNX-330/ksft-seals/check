@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+bad=0
+fail() { echo "FAIL: $1"; bad=1; }
+cc -Wall -o seals seals.c 2>cc.log || { cat cc.log; fail "seals.c does not compile"; exit 1; }
+cat > shim.c <<'N'
+#define _GNU_SOURCE
+#include <dlfcn.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <sys/types.h>
+int memfd_create(const char *name, unsigned int flags)
+{
+	static int (*real)(const char *, unsigned int);
+	if (getenv("SHIM_ENOSYS")) { errno = ENOSYS; return -1; }
+	if (!real) real = dlsym(RTLD_NEXT, "memfd_create");
+	return real(name, flags);
+}
+int fcntl(int fd, int cmd, ...)
+{
+	static int (*real)(int, int, ...);
+	va_list ap; va_start(ap, cmd); long arg = va_arg(ap, long); va_end(ap);
+	if (getenv("SHIM_NOSEALS") && cmd == F_ADD_SEALS) return 0;
+	if (!real) real = dlsym(RTLD_NEXT, "fcntl");
+	return real(fd, cmd, arg);
+}
+N
+cc -shared -fPIC -o shim.so shim.c -ldl || { fail "could not build the shim"; exit 1; }
+./seals >real.out; rc=$?
+if [ $rc -eq 0 ] && grep -q '^ok 1' real.out && grep -q '^ok 2' real.out; then echo "ok:   real kernel: both tests pass, exit 0"; else cat real.out; fail "on a working kernel expected ok 1, ok 2 and exit 0 (got exit $rc)"; fi
+SHIM_ENOSYS=1 LD_PRELOAD=$PWD/shim.so ./seals >skip.out; rc=$?
+if [ $rc -eq 4 ] && grep -q '# SKIP' skip.out && ! grep -q '^not ok' skip.out; then echo "ok:   missing memfd_create gives SKIP and exit 4"; else cat skip.out; fail "ENOSYS must print '# SKIP' lines and exit 4 (got $rc)"; fi
+SHIM_NOSEALS=1 LD_PRELOAD=$PWD/shim.so ./seals >noseal.out; rc=$?
+if [ $rc -eq 1 ] && grep -q '^not ok' noseal.out; then echo "ok:   broken sealing is reported as a failure, exit 1"; else cat noseal.out; fail "when sealing does not work the test must print not ok and exit 1 (got $rc)"; fi
+exit $bad

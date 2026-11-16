@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}/repo"
+bad=0
+fail() { echo "FAIL: $1"; bad=1; }
+git bisect reset >/dev/null 2>&1 || true
+git checkout -q main
+# independent ground truth: first commit whose parse works and result is wrong
+truth=""
+for c in $(git rev-list --reverse main); do
+  git checkout -q "$c"
+  if bash -n app.sh 2>/dev/null && [ "$(bash app.sh 6)" != 42 ]; then truth=$c; break; fi
+done
+git checkout -q main
+first=$(git rev-list --max-parents=0 main)
+git checkout -q "$first"; ./test.sh >/dev/null 2>&1; r=$?
+[ $r -eq 0 ] && echo "ok:   test.sh calls the first commit good" || fail "test.sh must exit 0 on a good commit (got $r)"
+git checkout -q "$truth"; ./test.sh >/dev/null 2>&1; r=$?
+if [ $r -ne 0 ] && [ $r -ne 125 ] && [ $r -lt 128 ]; then echo "ok:   test.sh calls the culprit bad"; else fail "test.sh must exit 1 on a bad commit (got $r)"; fi
+broken=$(git log --format=%H --grep='app: change 9$' main | head -1)
+git checkout -q "$broken"; ./test.sh >/dev/null 2>&1; r=$?
+[ $r -eq 125 ] && echo "ok:   test.sh skips a commit that does not parse" || fail "test.sh must exit 125 when app.sh does not parse (got $r)"
+git checkout -q main
+a=$(grep -v '^#' answer.txt | tr -d '[:space:]')
+[ "$a" = "$truth" ] && echo "ok:   answer.txt names the first bad commit" || fail "answer.txt must contain the full hash of the first bad commit"
+exit $bad

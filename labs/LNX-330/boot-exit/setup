@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}"
+cat > boot.S <<'N'
+# SPDX-License-Identifier: GPL-2.0-only
+# A 512-byte boot sector for x86 QEMU. It prints a message on COM1.
+	.code16
+	.globl _start
+_start:
+	cli
+	xor %ax, %ax
+	mov %ax, %ds
+	mov $msg, %si
+print:
+	lodsb
+	test %al, %al
+	jz done
+	mov $0x3f8, %dx
+	out %al, %dx
+	jmp print
+done:
+	# TODO: report success to the host through the isa-debug-exit device
+	# (I/O port 0xf4). A guest value V makes QEMU exit with status (V << 1) | 1.
+	# The harness wants host exit status 33.
+hang:
+	hlt
+	jmp hang
+msg:	.asciz "BOOT OK\n"
+	.org 510
+	.word 0xaa55
+N

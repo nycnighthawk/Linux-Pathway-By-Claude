@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > releases.json <<'N'
+{"releases": [
+ {"moniker": "mainline", "version": "7.4-rc3", "iseol": false, "released": {"isodate": "2026-11-15"}},
+ {"moniker": "stable", "version": "7.3.4", "iseol": false, "released": {"isodate": "2026-11-10"}},
+ {"moniker": "stable", "version": "7.2.15", "iseol": true, "released": {"isodate": "2026-11-01"}},
+ {"moniker": "longterm", "version": "6.18.63", "iseol": false, "released": {"isodate": "2026-11-10"}},
+ {"moniker": "longterm", "version": "6.12.117", "iseol": false, "released": {"isodate": "2026-11-10"}},
+ {"moniker": "longterm", "version": "6.6.162", "iseol": false, "released": {"isodate": "2026-11-06"}},
+ {"moniker": "longterm", "version": "6.1.192", "iseol": false, "released": {"isodate": "2026-11-06"}},
+ {"moniker": "longterm", "version": "5.15.225", "iseol": false, "released": {"isodate": "2026-11-06"}},
+ {"moniker": "longterm", "version": "5.10.274", "iseol": false, "released": {"isodate": "2026-11-06"}},
+ {"moniker": "linux-next", "version": "next-20261113", "iseol": false, "released": {"isodate": "2026-11-13"}}
+]}
+N
+cat > maintainers.txt <<'N'
+WIDGET NETWORK DRIVER
+M:	Ada Example <ada@example.org>
+R:	Ben Example <ben@example.org>
+L:	netdev@vger.kernel.org
+L:	widget-devel@example.org
+S:	Maintained
+W:	https://example.org/widget
+T:	git git://git.example.org/pub/scm/linux/kernel/git/widget/widget-next.git
+F:	drivers/net/widget/
+F:	include/linux/widget.h
+
+GADGET USB DRIVER
+M:	Cy Example <cy@example.org>
+L:	linux-usb@vger.kernel.org
+S:	Odd Fixes
+T:	git git://git.example.org/pub/scm/linux/kernel/git/gadget/gadget.git
+F:	drivers/usb/gadget/
+N
+cat > tags.txt <<'N'
+# git tag --contains <fix>   (sorted by version)
+v6.6.140
+v6.6.141
+v6.6.142
+v6.12.88
+v6.12.89
+v6.13
+v6.13.1
+v6.14
+N
+[ -f report.txt ] || cat > report.txt <<'N'
+# key=value
+latest_stable=
+eol_stable=
+longterm_count=
+oldest_longterm=
+mainline_phase=
+fix_cc_tag=
+base_tree=
+mailing_list=
+first_6_6_tag=
+N

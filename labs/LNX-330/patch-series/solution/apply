@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}/repo"
+cat > send.sh <<'N'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+rm -rf outgoing
+git format-patch -v2 --cover-letter -s --base=base \
+  --to=maint@example.org --cc=list@example.org -o outgoing base..topic
+c=$(ls outgoing/*cover-letter.patch)
+sed -i 's/\*\*\* SUBJECT HERE \*\*\*/foo: add a parser with a status return/; s/\*\*\* BLURB HERE \*\*\*/This series adds the foo parser and documents it.\n\nChanges in v2:\n- split the status change into its own patch/' "$c"
+N

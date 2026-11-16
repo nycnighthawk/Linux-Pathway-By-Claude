@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -eu
+cd "${LAB_DIR:-.}/repo"
+cat > test.sh <<'N'
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+bash -n app.sh 2>/dev/null || exit 125
+[ "$(bash app.sh 6)" = 42 ] || exit 1
+exit 0
+N
+chmod +x test.sh
+git bisect start main good >/dev/null
+git bisect run ./test.sh >/dev/null
+git rev-parse refs/bisect/bad > answer.txt
+git bisect reset >/dev/null 2>&1
