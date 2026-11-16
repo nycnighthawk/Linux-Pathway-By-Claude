@@ -1,0 +1,27 @@
+title: 'Quiz: SR-IOV virtual functions'
+questions:
+- id: pf-vf
+  prompt: Which statement about PF and VF is correct?
+  choices: [The PF is a lightweight function assigned to guests, The PF is fully featured and host-managed, while each VF is a lightweight function that can be assigned to a guest, VFs control the PF, Only one VF can exist per PF]
+  answer: [1]
+  explain: 'A) wrong: reversed. B) correct. C) wrong. D) wrong: a device can offer dozens or hundreds.'
+- id: numvfs
+  prompt: A PF has 8 VFs enabled and you want 4. What must you do?
+  choices: [Write 4 to sriov_numvfs directly, Write 0 and then 4, Unplug the card, Delete the VFs one by one]
+  answer: [1]
+  explain: 'A) wrong: the kernel refuses to change a non-zero count. B) correct. C) wrong. D) wrong.'
+- id: policy
+  prompt: Which per-VF settings stop a guest from impersonating other hosts? (select two)
+  choices: [spoofchk on, A fixed MAC and a VLAN set from the PF, trust on, A larger max_tx_rate]
+  answer: [0, 1]
+  explain: 'A) correct: frames with another source MAC or VLAN are dropped. B) correct: the host decides the identity. C) wrong: trust lets the VF change its MAC and use promiscuous mode. D) wrong.'
+- id: visibility
+  prompt: Why can tcpdump on the host miss a guest's SR-IOV traffic?
+  choices: [Traffic is encrypted, The data path bypasses the host network stack, VFs have no MAC, tcpdump cannot read PCI]
+  answer: [1]
+  explain: 'A) wrong. B) correct: use switchdev mode with representors and offload to restore host-side visibility. C) wrong. D) wrong.'
+- id: migration
+  prompt: How is a guest with a VF usually migrated today?
+  choices: [Ordinary live migration works unchanged, A virtio standby carries traffic while the VF is unplugged, then a VF is plugged back in on the destination, Shut the guest down permanently, Copy the VF's registers with rsync]
+  answer: [1]
+  explain: 'A) wrong. B) correct: failover pairing, or vendor VFIO migration on specific hardware. C) wrong. D) wrong.'

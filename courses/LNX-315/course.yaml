@@ -42,6 +42,10 @@ modules:
     title: VFIO PCI passthrough and IOMMU groups
     file: lessons/LNX-315-T01.md
     minutes: 55
+  - topic: LNX-315-T02
+    title: SR-IOV virtual functions for NICs and GPUs
+    file: lessons/LNX-315-T02.md
+    minutes: 45
 labs:
 - id: vfio-plan-guide
   topic: LNX-315-T01
@@ -49,8 +53,18 @@ labs:
   env: H
   license: MIT
   minutes: 40
+- id: sriov-plan-guide
+  topic: LNX-315-T02
+  title: Size an SR-IOV deployment and write its host configuration
+  env: H
+  license: MIT
+  minutes: 35
 quizzes:
 - id: LNX-315-T01
   topic: LNX-315-T01
   title: 'Quiz: VFIO PCI passthrough and IOMMU groups'
   file: quizzes/LNX-315-T01.yaml
+- id: LNX-315-T02
+  topic: LNX-315-T02
+  title: 'Quiz: SR-IOV virtual functions for NICs and GPUs'
+  file: quizzes/LNX-315-T02.yaml

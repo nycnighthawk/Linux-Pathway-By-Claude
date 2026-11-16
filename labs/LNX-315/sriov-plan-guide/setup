@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > device-info.txt <<'N'
+# Facts for the exercise (what the datasheet and sysfs would show)
+pf_interface=ens1f0
+pf_pci=0000:3b:00.0
+sriov_totalvfs=64
+total_queue_pairs=128          # shared by all enabled VFs, split evenly by the driver
+workload=12 VMs, each needs a VF with at least 8 queue pairs
+vf_policy=VF 0: MAC 52:54:00:aa:00:00, VLAN 120, tx rate cap 10000 Mbit/s, spoof checking on, trust off, link state auto
+N
+[ -f report.txt ] || cat > report.txt <<'N'
+vfs_to_enable=
+max_vfs_with_8_queues=
+queues_per_vf=
+N
+[ -f vf-setup.sh ] || printf '#!/usr/bin/env bash\n# TODO: enable the VFs and apply the VF 0 policy\n' > vf-setup.sh
+[ -f pool-network.xml ] || echo "<!-- TODO: libvirt network that exposes the VFs of the PF as a hostdev pool -->" > pool-network.xml
