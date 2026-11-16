@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from armimg import parse_header
+want = {
+ "Image.a": dict(text_offset=0, image_size=0x1a40000, big_endian=False, page_size=4096, placement_anywhere=True),
+ "Image.b": dict(text_offset=0x80000, image_size=0x2100000, big_endian=False, page_size=65536, placement_anywhere=False),
+ "Image.c": dict(text_offset=0, image_size=0x900000, big_endian=True, page_size=16384, placement_anywhere=True),
+}
+bad = 0
+for f, w in want.items():
+    try: got = parse_header(open(f, "rb").read())
+    except Exception as e: got = repr(e)
+    ok = got == w
+    print(("ok:   " if ok else "FAIL: ") + f + ("" if ok else "  got %r" % (got,)))
+    bad |= (not ok)
+for f, data in (("Image.bad", open("Image.bad", "rb").read()), ("a 10-byte file", b"\0" * 10)):
+    try: parse_header(data); ok = False
+    except ValueError: ok = True
+    except Exception: ok = False
+    print(("ok:   " if ok else "FAIL: ") + f + " is rejected with ValueError")
+    bad |= (not ok)
+sys.exit(bad)
+N
