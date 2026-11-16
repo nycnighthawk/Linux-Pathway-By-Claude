@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+[ -f runtimeclass.yaml ] || echo "# TODO: RuntimeClass gvisor" > runtimeclass.yaml
+[ -f pod.yaml ] || cat > pod.yaml <<'N'
+# SPDX-License-Identifier: MIT
+apiVersion: v1
+kind: Pod
+metadata: {name: build-job, namespace: builds}
+spec:
+  containers:
+    - name: build
+      image: registry.example/builder:2
+      resources:
+        requests: {cpu: 500m, memory: 256Mi}
+        limits: {cpu: "1", memory: 512Mi}
+N
+[ -f containerd-snippet.toml ] || echo "# TODO: containerd runtime entry for the gVisor handler" > containerd-snippet.toml
+[ -f require-sandbox.yaml ] || echo "# TODO: ValidatingAdmissionPolicy and binding for the builds namespace" > require-sandbox.yaml
+[ -f answer.txt ] || printf 'effective_cpu_m=0\neffective_memory_mi=0\n' > answer.txt

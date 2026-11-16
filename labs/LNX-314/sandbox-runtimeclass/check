@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+cd "${LAB_DIR:-.}"
+[ -f pod.yaml ] || { echo "FAIL: run setup first"; exit 1; }
+python3 - <<'PY'
+import sys, yaml
+bad = 0
+def chk(c, m):
+    global bad
+    print(("ok:   " if c else "FAIL: ") + m)
+    if not c: bad = 1
+def load(f):
+    try: return [d for d in yaml.safe_load_all(open(f)) if d]
+    except Exception as e: print("FAIL: %s: %s" % (f, e)); sys.exit(1)
+try:
+    rc = load("runtimeclass.yaml")[0]
+    chk(rc["kind"] == "RuntimeClass" and rc["apiVersion"] == "node.k8s.io/v1", "node.k8s.io/v1 RuntimeClass")
+    chk(rc["metadata"]["name"] == "gvisor" and rc["handler"] == "runsc", "name gvisor, handler runsc")
+    ov = rc.get("overhead", {}).get("podFixed", {})
+    chk(ov.get("cpu") == "250m" and ov.get("memory") == "120Mi", "overhead podFixed cpu 250m and memory 120Mi")
+    sc = rc.get("scheduling", {})
+    chk(sc.get("nodeSelector") == {"sandbox": "gvisor"}, "scheduling nodeSelector sandbox=gvisor")
+    tol = sc.get("tolerations") or []
+    chk(any(t.get("key") == "sandbox" and t.get("value") == "gvisor" and t.get("effect") == "NoSchedule" for t in tol), "toleration for the sandbox=gvisor:NoSchedule taint")
+except Exception as e:
+    chk(False, "runtimeclass.yaml incomplete (%r)" % (e,))
+p = load("pod.yaml")[0]
+chk(p["spec"].get("runtimeClassName") == "gvisor", "the build Pod selects runtimeClassName gvisor")
+txt = open("containerd-snippet.toml").read()
+chk("[plugins.\"io.containerd.grpc.v1.cri\".containerd.runtimes.runsc]" in txt or "[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runsc]" in txt, "a containerd runtime table named runsc")
+chk("io.containerd.runsc.v1" in txt, "runtime_type io.containerd.runsc.v1")
+try:
+    docs = load("require-sandbox.yaml")
+    pol = [d for d in docs if d["kind"] == "ValidatingAdmissionPolicy"][0]
+    bnd = [d for d in docs if d["kind"] == "ValidatingAdmissionPolicyBinding"][0]
+    ex = " ".join(v["expression"] for v in pol["spec"]["validations"])
+    chk("runtimeClassName" in ex and "gvisor" in ex, "the policy requires runtimeClassName gvisor")
+    chk("Deny" in bnd["spec"]["validationActions"], "binding action Deny")
+    sel = bnd["spec"].get("matchResources", {}).get("namespaceSelector", {})
+    chk("builds" in str(sel), "binding targets the builds namespace")
+except Exception as e:
+    chk(False, "require-sandbox.yaml incomplete (%r)" % (e,))
+a = dict(l.split("=", 1) for l in open("answer.txt").read().split() if "=" in l)
+chk(a.get("effective_cpu_m") == "750", "effective CPU request is 750m (500m + 250m overhead)")
+chk(a.get("effective_memory_mi") == "376", "effective memory request is 376Mi (256Mi + 120Mi overhead)")
+sys.exit(bad)
+PY

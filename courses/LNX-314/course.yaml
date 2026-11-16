@@ -67,6 +67,10 @@ modules:
     title: Falco and audit logs
     file: lessons/LNX-314-T07.md
     minutes: 55
+  - topic: LNX-314-T08
+    title: gVisor/Kata RuntimeClass
+    file: lessons/LNX-314-T08.md
+    minutes: 45
 labs:
 - id: metadata-guard
   topic: LNX-314-T01
@@ -122,6 +126,14 @@ labs:
   minutes: 35
   packages:
   - python3-yaml
+- id: sandbox-runtimeclass
+  topic: LNX-314-T08
+  title: A gVisor RuntimeClass
+  env: V
+  license: MIT
+  minutes: 25
+  packages:
+  - python3-yaml
 quizzes:
 - id: LNX-314-T01
   topic: LNX-314-T01
@@ -151,3 +163,7 @@ quizzes:
   topic: LNX-314-T07
   title: 'Quiz: Falco and audit logs'
   file: quizzes/LNX-314-T07.yaml
+- id: LNX-314-T08
+  topic: LNX-314-T08
+  title: 'Quiz: gVisor/Kata RuntimeClass'
+  file: quizzes/LNX-314-T08.yaml

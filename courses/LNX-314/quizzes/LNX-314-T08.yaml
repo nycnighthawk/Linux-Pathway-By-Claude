@@ -1,0 +1,27 @@
+title: 'Quiz: Sandboxed runtimes and RuntimeClass'
+questions:
+- id: design
+  prompt: What is the isolation boundary in gVisor?
+  choices: [A hypervisor with a guest kernel, A user-space kernel that implements system calls and talks to the host through a narrow interface, A seccomp profile only, A separate network namespace]
+  answer: [1]
+  explain: 'A) wrong: that describes Kata. B) correct: the Sentry. C) wrong: seccomp is used on the Sentry itself, but is not the whole design. D) wrong.'
+- id: overhead
+  prompt: A RuntimeClass declares overhead of 250m CPU and 120Mi memory. A Pod requests 500m and 256Mi. What does the scheduler use?
+  choices: [500m and 256Mi, 750m and 376Mi, 250m and 120Mi, 1 CPU and 512Mi]
+  answer: [1]
+  explain: 'A) wrong: overhead is added. B) correct. C) wrong: that is only the overhead. D) wrong: those are not the numbers given.'
+- id: missing-handler
+  prompt: A Pod names a RuntimeClass whose handler is not configured on the node it lands on. What happens?
+  choices: [It runs with the default runtime, The container fails to start and an event reports the error, The scheduler picks another handler, The API server rejects the Pod at creation]
+  answer: [1]
+  explain: 'A) wrong: that would silently drop the isolation. B) correct. C) wrong. D) wrong: the API server does not know node configuration; use the scheduling field to keep Pods on suitable nodes.'
+- id: choose
+  prompt: Which workloads justify a sandboxed runtime? (select two)
+  choices: [Customer-submitted build jobs, A multi-tenant cluster where tenants are separate companies, Your own stateless web service with a reviewed image, A kubelet-level DaemonSet that needs host access]
+  answer: [0, 1]
+  explain: 'A) correct: untrusted code. B) correct. C) wrong: ordinary hardening is usually enough. D) wrong: a sandbox blocks the host access it needs.'
+- id: not-covered
+  prompt: What does a sandbox NOT protect against?
+  choices: [A kernel vulnerability reachable through system calls, A leaked service account token used through the API, A tenant reading another tenant's memory via the kernel, A container escape through a runtime bug in the host kernel]
+  answer: [1]
+  explain: 'A) covered. B) correct: credentials and RBAC are unrelated to the kernel boundary. C) covered. D) covered.'
