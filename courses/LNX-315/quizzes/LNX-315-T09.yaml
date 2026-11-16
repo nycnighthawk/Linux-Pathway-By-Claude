@@ -1,0 +1,27 @@
+title: 'Quiz: KubeVirt and OpenShift Virtualization'
+questions:
+- id: launcher
+  prompt: What runs inside a virt-launcher pod?
+  choices: [The Kubernetes scheduler, libvirt and the QEMU process for one VM, A copy of etcd, The CDI importer]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong: CDI runs its own pods.'
+- id: vm-vs-vmi
+  prompt: Which object holds the durable definition and run strategy?
+  choices: [VirtualMachineInstance, VirtualMachine, DataVolume, VirtualMachineInstanceMigration]
+  answer: [1]
+  explain: 'A) wrong: it is the running instance. B) correct. C) wrong: it describes a disk import. D) wrong: it describes one migration.'
+- id: migration
+  prompt: Which are requirements or blockers for live migration? (select two)
+  choices: [Shared storage with a shared access mode, A passed-through PCI device blocks it, Masquerade networking is forbidden, The VM must use SATA]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+- id: cdi
+  prompt: What does a DataVolume do?
+  choices: [Defines a source and populates a claim before the VM starts, Replaces the node agent, Starts the VM, Sets the CPU model]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+- id: console
+  prompt: Who may open a guest console through virtctl?
+  choices: [Anyone on the network, Users the Kubernetes RBAC allows for the VM subresources, Only the node admin, Nobody]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'

@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > vm.yaml <<'N'
+kind: VirtualMachine
+apiVersion: kubevirt.io/v1
+metadata: {name: web1, namespace: demo}
+spec:
+  runStrategy: Always
+  instancetype: {name: u1.medium}
+  preference: {name: debian}
+  dataVolumeTemplates:
+  - metadata: {name: web1-root}
+    spec:
+      source: {http: {url: "https://images.example.org/debian-12.qcow2"}}
+      storage:
+        accessModes: [ReadWriteMany]
+        resources: {requests: {storage: 20Gi}}
+  template:
+    metadata:
+      labels: {app: web}
+    spec:
+      domain:
+        devices:
+          disks:
+          - {name: root, disk: {bus: virtio}}
+          - {name: seed, disk: {bus: virtio}}
+          interfaces:
+          - {name: default, masquerade: {}}
+      networks:
+      - {name: default, pod: {}}
+      volumes:
+      - name: root
+        dataVolume: {name: web1-root}
+      - name: seed
+        cloudInitNoCloud:
+          userData: |
+            #cloud-config
+            ssh_pwauth: false
+            packages: [qemu-guest-agent]
+N
+cat > migrate.yaml <<'N'
+kind: VirtualMachineInstanceMigration
+apiVersion: kubevirt.io/v1
+metadata: {name: migrate-web1, namespace: demo}
+spec: {vmiName: web1}
+N
+cat > report.txt <<'N'
+vm_object_vs_vmi_durable=vm
+launcher_pod_holds=libvirt and QEMU, the disks and the network plumbing
+migration_needs_shared_storage=yes
+passthrough_pci_blocks_migration=yes
+console_access_controlled_by=Kubernetes RBAC on the VM subresources
+N

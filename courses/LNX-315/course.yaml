@@ -76,6 +76,13 @@ modules:
     title: 'Image pipelines: Packer, virt-builder, cloud-init for KVM and VirtualBox'
     file: lessons/LNX-315-T08.md
     minutes: 55
+- id: platform-migration
+  title: Platform and migration
+  lessons:
+  - topic: LNX-315-T09
+    title: 'KubeVirt and OpenShift Virtualization: VMs on Kubernetes'
+    file: lessons/LNX-315-T09.md
+    minutes: 60
 labs:
 - id: vfio-plan-guide
   topic: LNX-315-T01
@@ -132,6 +139,15 @@ labs:
   - qemu-utils
   - python3
   - python3-yaml
+- id: kubevirt-vm-manifest
+  topic: LNX-315-T09
+  title: Write and check KubeVirt manifests
+  env: V
+  license: MIT
+  minutes: 40
+  packages:
+  - python3
+  - python3-yaml
 quizzes:
 - id: LNX-315-T01
   topic: LNX-315-T01
@@ -165,3 +181,7 @@ quizzes:
   topic: LNX-315-T08
   title: 'Quiz: Image pipelines: Packer, virt-builder, cloud-init for KVM and VirtualBox'
   file: quizzes/LNX-315-T08.yaml
+- id: LNX-315-T09
+  topic: LNX-315-T09
+  title: 'Quiz: KubeVirt and OpenShift Virtualization: VMs on Kubernetes'
+  file: quizzes/LNX-315-T09.yaml

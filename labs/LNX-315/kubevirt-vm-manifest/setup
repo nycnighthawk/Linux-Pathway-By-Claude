@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > requirements.txt <<'N'
+Write KubeVirt manifests for a small web VM (checked offline with PyYAML; no cluster needed):
+vm.yaml, kind VirtualMachine (apiVersion kubevirt.io/v1):
+- name web1 in namespace demo, runStrategy Always (not the old running field)
+- instance type u1.medium and preference debian (reference them, do not hand-copy cpu or memory)
+- a dataVolumeTemplate named web1-root, source http https://images.example.org/debian-12.qcow2, 20Gi storage, ReadWriteMany access mode (needed for live migration)
+- the template uses that data volume as disk "root" with bus virtio
+- a cloudInitNoCloud volume "seed" whose userData starts with #cloud-config and sets no password
+- one interface on the pod network with masquerade binding
+- label app=web on the VM template metadata so a Service can select it
+migrate.yaml, kind VirtualMachineInstanceMigration: moves the VMI web1 in namespace demo.
+report.txt: answer the questions.
+N
+[ -f report.txt ] || cat > report.txt <<'N'
+# Fill every key (key=value).
+vm_object_vs_vmi_durable=
+launcher_pod_holds=
+migration_needs_shared_storage=
+passthrough_pci_blocks_migration=
+console_access_controlled_by=
+N
+[ -f vm.yaml ] || echo "# TODO" > vm.yaml
+[ -f migrate.yaml ] || echo "# TODO" > migrate.yaml
