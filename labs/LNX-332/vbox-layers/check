@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
+set -u
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import sys
+from layers import layer_of, violations
+res = []
+res.append(("vmm file", layer_of("src/VBox/VMM/VMMR3/PGM.cpp") == ("vmm", 2)))
+res.append(("iprt header", layer_of("include/iprt/string.h") == ("iprt", 0)))
+res.append(("storage counts as devices layer", layer_of("src/VBox/Storage/VDI.cpp") == ("devices", 3)))
+res.append(("longest prefix wins", layer_of("src/VBox/Main/xidl/VirtualBox.xidl") == ("main", 4)))
+res.append(("unknown path", layer_of("doc/manual/user.xml") == ("unknown", None)))
+E = [
+ ("src/VBox/Devices/Network/DevE1000.cpp", "src/VBox/VMM/include/PDMInternal.h"),     # down: fine
+ ("src/VBox/VMM/VMMR3/VM.cpp", "src/VBox/Main/include/MachineImpl.h"),               # up: violation
+ ("src/VBox/Main/src-server/MachineImpl.cpp", "include/iprt/thread.h"),               # down: fine
+ ("src/VBox/Runtime/common/misc/thread.cpp", "src/VBox/VMM/include/VMInternal.h"),    # up: violation
+ ("src/VBox/Frontends/VBoxManage/VBoxManage.cpp", "src/VBox/Main/include/Global.h"),  # down
+ ("src/VBox/Main/Foo.cpp", "doc/readme.txt"),                                         # unknown ignored
+ ("src/VBox/Devices/Foo.cpp", "src/VBox/Storage/Bar.h"),                              # same layer fine
+]
+v = violations(E)
+res.append(("violations found in input order", v == [E[1], E[3]]))
+res.append(("no edges", violations([]) == []))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n)
+    bad |= (not ok)
+sys.exit(bad)
+N
