@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f host-state.txt ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+get() { grep -E "^$1=" report.txt | head -1 | cut -d= -f2- | sed 's/^ *//;s/ *$//'; }
+[ "$(get root_cause_owner_of_vmx)" = kvm ] && ok "KVM already holds VMX operation" || fail "root_cause_owner_of_vmx must be kvm"
+get secure_boot_issue | grep -Eqi 'sign|key|mok|verif' && ok "unsigned out-of-tree module on a Secure Boot host" || fail "secure_boot_issue must mention the unsigned module, signature or MOK key"
+[ "$(get fix_modprobe_option)" = enable_virt_at_load ] && ok "option enable_virt_at_load" || fail "fix_modprobe_option must be enable_virt_at_load"
+[ "$(get fix_modprobe_value)" = 0 ] && ok "value 0 (virtualization enabled on first guest, not at load)" || fail "fix_modprobe_value must be 0"
+[ "$(get fix_allows_simultaneous_guests)" = no ] && ok "the option does not allow simultaneous guests" || fail "fix_allows_simultaneous_guests must be no"
+get simultaneous_option | grep -Eqi 'kvm backend|kvm-backed|backend' && ok "KVM backend for VirtualBox for simultaneous guests" || fail "simultaneous_option must name the VirtualBox KVM backend"
+[ "$(get same_disk_image_in_both)" = no ] && ok "never open one image in both stacks" || fail "same_disk_image_in_both must be no"
+get verify_before_production | grep -Eqi 'test|benchmark|rollback|qualif|verify' && ok "verification plan stated" || fail "verify_before_production must mention testing, benchmark or rollback"
+grep -Eq '^options +kvm +enable_virt_at_load=0 *$' kvm-lazy.conf && ok "modprobe file sets the option on the kvm module" || fail "kvm-lazy.conf needs the line: options kvm enable_virt_at_load=0"
+exit $bad

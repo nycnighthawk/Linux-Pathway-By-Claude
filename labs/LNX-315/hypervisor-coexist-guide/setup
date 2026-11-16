@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > host-state.txt <<'N'
+# Captured on workstation ws-17 (Intel, kernel 6.12, Secure Boot on)
+$ lsmod | grep -E 'kvm|vbox'
+kvm_intel             421888  0
+kvm                  1368064  1 kvm_intel
+$ ls /dev/kvm
+/dev/kvm
+$ VBoxManage startvm win11 --type headless
+VBoxManage: error: VirtualBox can't operate in VMX root mode. Please disable the KVM kernel extension, recompile your kernel and reload the vboxdrv kernel module (VERR_VMX_IN_VMX_ROOT_MODE).
+$ virsh list --all
+ Id   Name     State
+ -    web-qa   shut off
+$ journalctl -k | grep -i vbox
+vboxdrv: loading out-of-tree module taints kernel.
+vboxdrv: module verification failed: signature and/or required key missing
+N
+cat > goals.txt <<'N'
+Goal 1: explain the failure and fix it without removing KVM, so the libvirt guest web-qa still works later.
+Goal 2: the team wants win11 (VirtualBox) and web-qa (libvirt) running at the same time within a quarter.
+N
+[ -f report.txt ] || cat > report.txt <<'N'
+# Fill every key (key=value).
+root_cause_owner_of_vmx=
+secure_boot_issue=
+fix_modprobe_option=
+fix_modprobe_value=
+fix_allows_simultaneous_guests=
+simultaneous_option=
+same_disk_image_in_both=
+verify_before_production=
+N
+[ -f kvm-lazy.conf ] || echo "# TODO modprobe.d file" > kvm-lazy.conf
