@@ -1,0 +1,32 @@
+title: 'Quiz: Syscalls, errno, glibc vs raw, strace'
+questions:
+- id: errno-after
+  prompt: When may you rely on the value of errno?
+  choices: [After any call, Only right after a call that reported failure, Only after a call that succeeded, Never in a threaded program]
+  answer: [1]
+  explain: 'A) wrong: success does not reset it, so it may hold an old value. B) correct. C) wrong. D) wrong: errno is thread-local in glibc.'
+- id: clobber
+  prompt: A failing open is followed by a logging call and then by strerror(errno), and the message names the wrong cause. What is the fix?
+  choices: [Call strerror twice, Save errno in a local variable immediately after the failing call, Set errno to 0 first, Use syscall() instead]
+  answer: [1]
+  explain: 'A) wrong. B) correct: the logging call may have changed it. C) wrong: that destroys the value you need. D) wrong: a raw call still sets errno through the library.'
+- id: vdso
+  prompt: A program reads the clock a million times per second, yet strace shows no clock_gettime calls. Why?
+  choices: [strace is broken, The vDSO serves the call in user space without entering the kernel, The calls are cached by the shell, clock_gettime is not a system call on Linux at all]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong: there is a kernel call behind it, used when the vDSO cannot serve it.'
+- id: raw
+  prompt: Which are valid reasons to call syscall() directly? (select two)
+  choices: [The kernel has a new call with no glibc wrapper yet, A tool must avoid library interposition, It is faster than the wrapper in all cases, It checks argument types for you]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: it does the same work. D) wrong: every argument is passed as a long, so types are not checked.'
+- id: inject
+  prompt: Which strace option forces a chosen call to fail with a given error, to test an error path?
+  choices: [-c, -yy, -e inject=, -T]
+  answer: [2]
+  explain: 'A) wrong: it counts calls. B) wrong: it decorates descriptors. C) correct. D) wrong: it shows call times.'
+- id: eintr
+  prompt: read returns -1 with errno EINTR. What does it mean?
+  choices: [The file is corrupt, A signal handler ran before any data was read; the call may be retried, The descriptor is closed, The process lacks permission]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong: that would be EBADF. D) wrong: that would be EACCES or EPERM.'

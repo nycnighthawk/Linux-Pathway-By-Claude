@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+[ -f opener.c ] || { echo "FAIL: run setup first"; exit 1; }
+bad=0
+ok() { echo "ok:   $*"; }
+fail() { echo "FAIL: $*"; bad=1; }
+if gcc -Wall -Werror -o opener opener.c 2>cc.log; then ok "compiles with -Wall -Werror"; else fail "does not compile: $(head -3 cc.log)"; exit 1; fi
+grep -q log_note opener.c && ok "log call kept" || fail "keep the log_note call"
+out=$(./opener /nonexistent/file 2>&1 >/dev/null); rc=$?
+echo "$out" | grep -q "No such file or directory" && ok "missing path: ENOENT text" || fail "missing path must say 'No such file or directory'"
+[ $rc -eq 1 ] && ok "exit 1 on failure" || fail "exit status must be 1 on failure (got $rc)"
+out=$(./opener /tmp 2>&1 >/dev/null)
+echo "$out" | grep -q "Is a directory" && ok "directory: EISDIR text" || fail "a directory must say 'Is a directory'"
+f=$(mktemp); out=$(./opener "$f" 2>&1); rc=$?; rm -f "$f"
+[ $rc -eq 0 ] && echo "$out" | grep -q opened && ok "success path" || fail "success path must print opened and exit 0"
+exit $bad
