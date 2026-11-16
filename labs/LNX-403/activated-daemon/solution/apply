@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > daemon.py <<'N'
+# SPDX-License-Identifier: MIT
+import os, select, signal, socket, sys
+
+def notify(msg):
+    path = os.environ.get("NOTIFY_SOCKET")
+    if not path:
+        return
+    if path.startswith("@"):
+        path = "\0" + path[1:]
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    try:
+        s.sendto(msg, path)
+    finally:
+        s.close()
+
+def main():
+    if os.environ.get("LISTEN_PID") != str(os.getpid()) or int(os.environ.get("LISTEN_FDS", "0")) < 1:
+        sys.exit(2)
+    ls = socket.socket(fileno=3)
+    ls.setblocking(False)
+    rd, wr = os.pipe()
+    os.set_blocking(wr, False)
+    signal.signal(signal.SIGTERM, lambda *_: os.write(wr, b"x"))
+    ep = select.epoll()
+    ep.register(ls.fileno(), select.EPOLLIN)
+    ep.register(rd, select.EPOLLIN)
+    clients = {}
+    notify(b"READY=1")
+    while True:
+        for fd, ev in ep.poll():
+            if fd == rd:
+                notify(b"STOPPING=1")
+                for c in clients.values():
+                    c.close()
+                ls.close()
+                sys.exit(0)
+            if fd == ls.fileno():
+                while True:
+                    try:
+                        c, _ = ls.accept()
+                    except BlockingIOError:
+                        break
+                    c.setblocking(False)
+                    clients[c.fileno()] = c
+                    ep.register(c.fileno(), select.EPOLLIN)
+            else:
+                c = clients[fd]
+                try:
+                    data = c.recv(4096)
+                except BlockingIOError:
+                    continue
+                if not data:
+                    ep.unregister(fd); c.close(); del clients[fd]
+                else:
+                    c.send(data.upper())
+
+if __name__ == "__main__":
+    main()
+N

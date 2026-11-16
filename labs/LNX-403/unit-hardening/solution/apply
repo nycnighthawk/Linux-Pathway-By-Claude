@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > pingd.service <<'N'
+[Unit]
+Description=Ping responder
+Requires=pingd.socket
+After=network.target
+
+[Service]
+Type=notify
+DynamicUser=yes
+StateDirectory=pingd
+ExecStart=/usr/bin/pingd
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+MemoryDenyWriteExecute=yes
+N
+cat > pingd.socket <<'N'
+[Socket]
+ListenStream=127.0.0.1:7007
+
+[Install]
+WantedBy=sockets.target
+N

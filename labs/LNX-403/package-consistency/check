@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -u
+export LC_ALL=C
+cd "${LAB_DIR:-.}"
+exec python3 - <<'N'
+import re, sys, yaml
+res = []
+def t(n, ok): res.append((n, bool(ok)))
+rd = lambda p: open(p).read()
+v = rd("VERSION").strip()
+spec, chg, ctl, cont = rd("pingd.spec"), rd("debian/changelog"), rd("debian/control"), rd("Containerfile")
+fp = yaml.safe_load(rd("io.example.Pingd.yaml"))
+m = re.search(r"^Version:\s*(\S+)", spec, re.M); t("spec Version equals VERSION", m and m.group(1) == v)
+m = re.search(r"^\* .* - (\d[^-\s]*)-\d+", spec, re.M); t("spec changelog top entry equals VERSION", m and m.group(1) == v)
+m = re.match(r"pingd \((\d[^-)]*)-", chg); t("debian changelog top entry equals VERSION", m and m.group(1) == v)
+src = [s for mod in fp["modules"] for s in mod.get("sources", [])]
+t("flatpak source archive names VERSION", any(("pingd-%s.tar" % v) in s.get("url", "") for s in src))
+t("flatpak source has a checksum", all(s.get("sha256") for s in src if s.get("type") == "archive"))
+m = re.search(r'image\.version="([^"]+)"', cont); t("image version label equals VERSION", m and m.group(1) == v)
+t("debian control has a Depends line with substitution", "${shlibs:Depends}" in ctl)
+t("image base is pinned (not latest)", re.search(r"^FROM\s+\S+:(?!latest)\S+", cont, re.M) is not None)
+t("image uses a multi-stage build", len(re.findall(r"^FROM\s", cont, re.M)) >= 2)
+t("image runs as a non-root user", re.search(r"^USER\s+(?!root\b)\S+", cont, re.M) is not None)
+t("licence is stated in the spec and in a Debian copyright file", "License:" in spec and __import__("os").path.exists("debian/copyright"))
+bad = 0
+for n, ok in res:
+    print(("ok:   " if ok else "FAIL: ") + n); bad |= (not ok)
+sys.exit(bad)
+N

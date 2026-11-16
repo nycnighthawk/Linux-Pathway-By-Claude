@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+set -eu
+cd "${LAB_DIR:-.}"
+cat > evidence.txt <<'N'
+cpu_model=example-cpu
+cores_online=8
+governor_performance=yes
+load_tool=wrk
+sample_hz=99
+profile_seconds=60
+stacks_resolved=yes
+top_frame_pct=24
+runs_before=5
+requests_per_sec_before=41200
+requests_per_sec_after=48900
+spread_pct=3
+N

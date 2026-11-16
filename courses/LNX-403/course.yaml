@@ -1,0 +1,85 @@
+id: LNX-403
+title: 'Capstone: Ship a Linux Service'
+summary: A graded, multi-stage project for the developer pathway. You write a socket-activated epoll daemon that reports readiness
+  to systemd, put fuzzing and sanitizers into CI, package it as RPM, DEB, Flatpak and an OCI image with one version, harden
+  its unit, profile it with flame graphs, and keep it released for weeks while real users report issues. Four stages are graded
+  in CI; two are guided evidence stages.
+hours: 80
+coverage: full
+outcomes:
+- Write a service that adopts a passed socket, serves many clients from one event loop, and reports readiness and shutdown
+- Build a fuzz target, a replay corpus and a sanitizer lane into CI so crashes fail the build and are kept as regression tests
+- Keep four package formats consistent from one version and one licence statement
+- Harden a systemd unit to least privilege and read its exposure
+- Profile a service on a quiet machine, change one thing and prove the gain exceeds the noise
+- Run a public release process with signed tags, a changelog, issue triage and a security policy
+modules:
+- id: stages
+  title: Stages
+  lessons:
+  - topic: LNX-403-T01
+    title: 'Milestone 1: an epoll daemon with sd_notify and socket activation'
+    file: lessons/LNX-403-T01.md
+    minutes: 240
+  - topic: LNX-403-T02
+    title: 'Milestone 2: fuzzing and sanitizers in CI'
+    file: lessons/LNX-403-T02.md
+    minutes: 240
+  - topic: LNX-403-T03
+    title: 'Milestone 3: packages in four formats'
+    file: lessons/LNX-403-T03.md
+    minutes: 240
+  - topic: LNX-403-T04
+    title: 'Milestone 4: a hardened systemd unit'
+    file: lessons/LNX-403-T04.md
+    minutes: 240
+  - topic: LNX-403-T05
+    title: 'Milestone 5: profiling and flame graphs'
+    file: lessons/LNX-403-T05.md
+    minutes: 240
+  - topic: LNX-403-T06
+    title: 'Milestone 6: releases and user issues over time'
+    file: lessons/LNX-403-T06.md
+    minutes: 240
+labs:
+- id: activated-daemon
+  topic: LNX-403-T01
+  title: A socket-activated epoll daemon
+  env: C
+  license: MIT
+  minutes: 60
+- id: fuzz-ci
+  topic: LNX-403-T02
+  title: A fuzzer in miniature and a CI job that uses one
+  env: C
+  license: MIT
+  minutes: 60
+  packages:
+  - python3-yaml
+- id: package-consistency
+  topic: LNX-403-T03
+  title: Four package formats that agree
+  env: C
+  license: MIT
+  minutes: 60
+  packages:
+  - python3-yaml
+- id: unit-hardening
+  topic: LNX-403-T04
+  title: Harden a service unit
+  env: V
+  license: MIT
+  minutes: 45
+- id: flamegraph-evidence
+  topic: LNX-403-T05
+  title: Profile the service and act on a flame graph
+  env: S
+  license: MIT
+  minutes: 90
+- id: release-history-evidence
+  topic: LNX-403-T06
+  title: Releases and user issues over several weeks
+  env: O
+  license: MIT
+  minutes: 60
+quizzes: []
