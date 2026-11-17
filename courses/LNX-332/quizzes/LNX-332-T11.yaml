@@ -3,45 +3,45 @@ questions:
 - id: why
   prompt: Why would a VMM use KVM instead of its own kernel driver?
   choices:
+  - It disables snapshots
   - No out-of-tree module to maintain, and coexistence with other KVM users
   - It makes guests smaller
   - It removes the need for device models
-  - It disables snapshots
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: unmapped
   prompt: An exit reason has no mapping in the backend. What should happen?
   choices:
-  - Report it loudly with the raw reason
-  - Ignore it silently
   - Treat it as HLT
   - Restart the host
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - Report it loudly with the raw reason
+  - Ignore it silently
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: io
   prompt: For a KVM_EXIT_IO read, what must the backend do?
   choices:
-  - Write the value returned by the device handler into the kvm_run data area before resuming
   - Nothing
+  - Write the value returned by the device handler into the kvm_run data area before resuming
   - Reboot the VM
   - Close the vCPU descriptor
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: dirty
   prompt: What is a dirty-state mask for?
   choices:
   - Transferring only the register state the VMM needs, when it needs it
-  - Cleaning the disk
-  - Counting guests
   - Encrypting RAM
+  - Counting guests
+  - Cleaning the disk
   answer: [0]
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: hang
   prompt: A guest hangs on boot only on the new backend. What is a likely cause?
   choices:
-  - A CPUID leaf or MSR the backend exposes differently, leading the guest to a bad code path
-  - The monitor is off
   - The keyboard layout
+  - The monitor is off
   - The ISO label
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - A CPUID leaf or MSR the backend exposes differently, leading the guest to a bad code path
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'

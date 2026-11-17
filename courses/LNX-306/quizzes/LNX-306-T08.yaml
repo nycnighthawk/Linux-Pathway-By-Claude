@@ -3,13 +3,13 @@ questions:
 - id: inhibitor
   prompt: What does an inhibitor in a Leapp report mean?
   choices:
-  - A problem that blocks the upgrade until it is resolved
-  - A package that is faster than the old one
   - A warning that can always be ignored
+  - A package that is faster than the old one
   - A kind of firewall rule
+  - A problem that blocks the upgrade until it is resolved
   answer:
-  - 0
-  explain: 'A) correct: the upgrade will not start. B) wrong: unrelated. C) wrong: informational items can be, inhibitors cannot. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: informational items can be, inhibitors cannot. B) wrong: unrelated. C) wrong: unrelated. D) correct: the upgrade will not start.'
 - id: preupgrade
   prompt: What does leapp preupgrade do?
   choices:
@@ -23,40 +23,40 @@ questions:
 - id: clean
   prompt: The report shows no inhibitors. What does that prove?
   choices:
+  - The application will work unchanged
   - Nothing is guaranteed; the assessment cannot simulate the whole upgrade, so it still needs a backup and ideally a rehearsal
   - The upgrade will certainly succeed
-  - The application will work unchanged
   - No reboot is needed
   answer:
-  - 0
-  explain: 'A) correct: it lowers risk only. B) wrong: no guarantee. C) wrong: applications can break. D) wrong: a reboot is part of the process.'
+  - 1
+  explain: 'A) wrong: applications can break. B) correct: it lowers risk only. C) wrong: no guarantee. D) wrong: a reboot is part of the process.'
 - id: answers
   prompt: Why must required questions be answered before the upgrade phase?
   choices:
-  - The upgrade phase runs unattended and cannot stop to ask
-  - Answers make the download faster
-  - They change the BIOS
   - Questions are optional
+  - Answers make the download faster
+  - The upgrade phase runs unattended and cannot stop to ask
+  - They change the BIOS
   answer:
-  - 0
-  explain: 'A) correct: decisions are recorded ahead of time. B) wrong: unrelated. C) wrong: unrelated. D) wrong: missing answers block the run.'
+  - 2
+  explain: 'A) wrong: missing answers block the run. B) wrong: unrelated. C) correct: decisions are recorded ahead of time. D) wrong: unrelated.'
 - id: watchdog
   prompt: Why disable hardware watchdogs and health checks during an upgrade?
   choices:
   - A busy host that is not feeding the watchdog may be reset in the middle of the package transaction
+  - They are not needed after the upgrade
   - They use too much disk
   - They are not compatible with TLS
-  - They are not needed after the upgrade
   answer:
   - 0
-  explain: 'A) correct: an interruption can leave the machine unbootable. B) wrong: unrelated. C) wrong: unrelated. D) wrong: they should be re-enabled afterwards.'
+  explain: 'A) correct: an interruption can leave the machine unbootable. B) wrong: they should be re-enabled afterwards. C) wrong: unrelated. D) wrong: unrelated.'
 - id: rebuild
   prompt: When is a rebuild preferable to an in-place upgrade?
   choices:
-  - When the host is stateless or built from code, drifted or poorly understood, or the distribution does not support in-place paths
-  - When the host holds unique data and has no snapshot
-  - Never
   - Only for Windows
+  - When the host is stateless or built from code, drifted or poorly understood, or the distribution does not support in-place paths
+  - Never
+  - When the host holds unique data and has no snapshot
   answer:
-  - 0
-  explain: 'A) correct: replacing is cheap and clean there. B) wrong: that is a case for in-place with a backup. C) wrong: it is often best. D) wrong: it applies to Linux too.'
+  - 1
+  explain: 'A) wrong: it applies to Linux too. B) correct: replacing is cheap and clean there. C) wrong: it is often best. D) wrong: that is a case for in-place with a backup.'

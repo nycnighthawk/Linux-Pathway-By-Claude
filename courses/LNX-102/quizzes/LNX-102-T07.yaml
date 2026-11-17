@@ -3,10 +3,10 @@ questions:
 - id: zone
   prompt: What does changing the time zone affect?
   choices:
-  - The system clock
-  - Only how time is displayed
-  - The hardware clock
   - NTP servers
+  - Only how time is displayed
+  - The system clock
+  - The hardware clock
   answer:
   - 1
   explain: The clock counts UTC; the zone only changes display.
@@ -23,40 +23,40 @@ questions:
 - id: tracking
   prompt: Which command shows the current offset?
   choices:
-  - chronyc tracking
   - timedatectl set-ntp
+  - chronyc tracking
   - hwclock -w
   - date -s
   answer:
-  - 0
+  - 1
   explain: chronyc tracking reports offset, stratum and frequency.
 - id: allow
   prompt: Which directive lets clients in a network use this host as a server?
   choices:
-  - allow
   - serve
-  - bindaddress
   - peer
+  - bindaddress
+  - allow
   answer:
-  - 0
-  explain: allow 192.168.10.0/24 permits those clients.
+  - 3
+  explain: 'chrony serves time to nobody by default. An allow line such as allow 192.168.10.0/24 opens the NTP server to that subnet; you also need UDP 123 open in the firewall.'
 - id: rtc
   prompt: Why is the hardware clock usually kept in UTC?
   choices:
+  - It is faster
   - It avoids zone and daylight-saving errors
   - It is required by chrony
-  - It is faster
   - BIOS needs it
   answer:
-  - 0
+  - 1
   explain: UTC does not change with zones or DST.
 - id: validate
   prompt: How do you parse a chrony config without starting the daemon?
   choices:
-  - chronyd -p -f file
   - chronyc reload
+  - chronyd -p -f file
   - systemctl try-restart chronyd
   - ntpq -p
   answer:
-  - 0
+  - 1
   explain: -p prints the parsed configuration; -f names the file.

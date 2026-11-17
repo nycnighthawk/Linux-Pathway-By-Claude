@@ -7,21 +7,21 @@ questions:
   explain: 'A) wrong: RBAC has no precedence. B) correct: it is purely additive. C) wrong: no deny rules exist. D) wrong: no conflict resolution.'
 - id: secrets-list
   prompt: A role grants only list on secrets. What does it allow?
-  choices: [Seeing secret names only, Reading secret contents, Nothing, Deleting secrets]
-  answer: [1]
-  explain: 'A) wrong: list returns full objects. B) correct: list and watch disclose data. C) wrong: it grants access. D) wrong: delete is a separate verb.'
+  choices: [Nothing, Seeing secret names only, Reading secret contents, Deleting secrets]
+  answer: [2]
+  explain: 'A) wrong: it grants access. B) wrong: list returns full objects. C) correct: list and watch disclose data. D) wrong: delete is a separate verb.'
 - id: cert-revoke
   prompt: Why are client certificates a weak choice for human users?
-  choices: [They cannot carry group names, They cannot be revoked before they expire, They need OIDC, They are not supported by kubectl]
-  answer: [1]
-  explain: 'A) wrong: the O field carries groups. B) correct: the API server has no revocation list. C) wrong: unrelated. D) wrong: kubectl supports them.'
+  choices: [They cannot carry group names, They are not supported by kubectl, They need OIDC, They cannot be revoked before they expire]
+  answer: [3]
+  explain: 'A) wrong: the O field carries groups. B) wrong: kubectl supports them. C) wrong: unrelated. D) correct: the API server has no revocation list.'
 - id: sa
   prompt: Best practice for a pod that never calls the Kubernetes API?
-  choices: [Use the default ServiceAccount with edit rights, Set automountServiceAccountToken false, Mount a Secret token manually, Bind it to cluster-admin]
-  answer: [1]
-  explain: 'A) wrong: over-privileged. B) correct: no credential is exposed. C) wrong: long-lived token. D) wrong: worst case.'
+  choices: [Bind it to cluster-admin, Use the default ServiceAccount with edit rights, Mount a Secret token manually, Set automountServiceAccountToken false]
+  answer: [3]
+  explain: 'A) wrong: worst case. B) wrong: over-privileged. C) wrong: long-lived token. D) correct: no credential is exposed.'
 - id: expiry
   prompt: Which commands help with kubeadm certificate expiry? (select two)
-  choices: [kubeadm certs check-expiration, kubeadm certs renew all, kubeadm token create, kubectl certificate revoke]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct, followed by a restart of control-plane pods. C) wrong: node join tokens. D) wrong: no such command.'
+  choices: [kubectl certificate revoke, kubeadm certs renew all, kubeadm certs check-expiration, kubeadm token create]
+  answer: [2, 1]
+  explain: 'A) wrong: no such command. B) correct, followed by a restart of control-plane pods. C) correct. D) wrong: node join tokens.'

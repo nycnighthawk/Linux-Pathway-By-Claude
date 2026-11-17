@@ -3,31 +3,31 @@ questions:
 - id: why-upcall
   prompt: Why does mount.cifs rely on cifs.upcall for Kerberos?
   choices:
+  - The kernel cannot read credential caches or contact a KDC, so a user-space helper builds the SPNEGO blob
   - It is only used for NTLM
   - Kerberos is not supported by SMB
-  - The kernel cannot read credential caches or contact a KDC, so a user-space helper builds the SPNEGO blob
   - The helper encrypts the disk
   answer:
-  - 2
+  - 0
   explain: The kernel asks request-key for a cifs.spnego key and the helper does the Kerberos work. SMB supports Kerberos,
     the helper is not about disks, and it handles Kerberos, not just NTLM.
 - id: cruid
   prompt: What does cruid= select?
   choices:
+  - The file owner
+  - The server port
   - The compression level
   - The uid whose credential cache the helper reads
-  - The server port
-  - The file owner
   answer:
-  - 1
+  - 3
   explain: cruid names the credential owner; uid= governs apparent ownership. The other options are unrelated.
 - id: multiuser
   prompt: What does the multiuser option change?
   choices:
-  - It disables signing
-  - Each local user gets an SMB session with their own credentials and the server enforces access
-  - All users share one session
   - It enables SMB1
+  - Each local user gets an SMB session with their own credentials and the server enforces access
+  - It disables signing
+  - All users share one session
   answer:
   - 1
   explain: multiuser creates per-user sessions, implies noperm, and works only with sec= values needing no password at that
@@ -35,32 +35,32 @@ questions:
 - id: cname
   prompt: Mounting //files/projects where files is a CNAME fails with Required key not available. Best fix?
   choices:
-  - Enable --trust-dns
-  - Use NTLM forever
-  - Mount by IP
   - Use the canonical name or register the alias as a service principal on the server
+  - Use NTLM forever
+  - Enable --trust-dns
+  - Mount by IP
   answer:
-  - 3
+  - 0
   explain: The client requests a ticket for the alias, which has no key. trust-dns lets DNS pick the server, NTLM hides the
     fault until it is disabled, and an IP has no principal at all.
 - id: expiry
   prompt: A cron job mounts successfully for a day then fails. Most likely cause?
   choices:
-  - The ticket in the credential cache expired
-  - Wrong dialect
-  - SELinux
   - The share was deleted
+  - Wrong dialect
+  - The ticket in the credential cache expired
+  - SELinux
   answer:
-  - 0
+  - 2
   explain: Tickets last about ten hours by default and the kernel cannot renew them. Give the job a keytab-backed identity
     or a renewal mechanism.
 - id: seal
   prompt: Which option requests SMB3 encryption on a mount?
   choices:
-  - nobrl
-  - actimeo=0
-  - seal
   - fsc
+  - nobrl
+  - seal
+  - actimeo=0
   answer:
   - 2
   explain: seal asks for encryption and needs SMB 3.0 or later. nobrl disables byte-range locks, actimeo sets attribute caching
@@ -68,10 +68,10 @@ questions:
 - id: signing
   prompt: A client sets client signing = mandatory against a server that offers none. Result?
   choices:
-  - It works over NetBIOS
-  - Negotiation fails
   - It encrypts instead
   - It silently downgrades
+  - Negotiation fails
+  - It works over NetBIOS
   answer:
-  - 1
+  - 2
   explain: A mandatory-signing client refuses an unsigned session, which surfaces as a protocol negotiation error.

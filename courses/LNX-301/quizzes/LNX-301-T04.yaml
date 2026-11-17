@@ -4,14 +4,14 @@ questions:
   prompt: In 'realm join', which tool actually creates the computer account and keytab?
   choices:
   - sssd
-  - adcli, driven by realmd
   - authselect
+  - adcli, driven by realmd
   - chronyd
   answer:
-  - 1
-  explain: 'A (wrong): SSSD consumes the result; it does not enrol the host. B (correct): realmd discovers the domain
-    and configures; adcli performs the account creation and keytab handling. C (wrong): It writes PAM and nsswitch
-    files. D (wrong): It keeps time and has nothing to do with enrolment.'
+  - 2
+  explain: 'A (wrong): SSSD consumes the result; it does not enrol the host. B (wrong): It writes PAM and nsswitch
+    files. C (correct): realmd discovers the domain
+    and configures; adcli performs the account creation and keytab handling. D (wrong): It keeps time and has nothing to do with enrolment.'
 - id: discover-fails
   prompt: '''realm discover ad.example.com'' returns nothing on a freshly built client. What do you check first?'
   choices:
@@ -51,35 +51,35 @@ questions:
 - id: enctype
   prompt: '''realm join'' fails with ''KDC has no support for encryption type''. Which approach is preferable first?'
   choices:
-  - Reset the join or machine account password so AES keys exist, and only then relax the client policy
-  - Disable Kerberos on the client
-  - Set the crypto policy to LEGACY permanently
   - Delete /etc/krb5.keytab
+  - Disable Kerberos on the client
+  - Reset the join or machine account password so AES keys exist, and only then relax the client policy
+  - Set the crypto policy to LEGACY permanently
   answer:
-  - 0
-  explain: 'A (correct): Fix the weak keys on the server side before lowering client security. B (wrong): Without
-    Kerberos there is no join. C (wrong): This is a last resort with a security cost. D (wrong): The join creates
-    the keytab; deleting it changes nothing about the KDC.'
+  - 2
+  explain: 'A (wrong): The join creates
+    the keytab; deleting it changes nothing about the KDC. B (wrong): Without
+    Kerberos there is no join. C (correct): Fix the weak keys on the server side before lowering client security. D (wrong): This is a last resort with a security cost.'
 - id: hostname
   prompt: Why does a /etc/hosts line mapping the host name to 127.0.1.1 cause trouble for joins on Debian-family
     systems?
   choices:
-  - The host builds principals and DNS records from a name that does not resolve to its real address
   - It disables IPv6
-  - It makes chrony stop
+  - The host builds principals and DNS records from a name that does not resolve to its real address
   - It changes the NetBIOS domain
-  answer:
-  - 0
-  explain: 'A (correct): The join and Kerberos depend on a consistent FQDN and address. B (wrong): The line has
-    no such effect. C (wrong): Time sync is unaffected. D (wrong): NetBIOS domain names come from the directory.'
-- id: samba-gc
-  prompt: A Samba AD DC does not implement a Windows-style global catalog on port 3268. How does SSSD cope?
-  choices:
-  - It cannot be used with Samba
-  - It falls back to the LDAP port 389, and ad_enable_gc = False avoids the delay
-  - It requires winbind on the client
-  - It disables Kerberos
+  - It makes chrony stop
   answer:
   - 1
-  explain: 'A (wrong): SSSD works with Samba DCs routinely. B (correct): The fallback means lookups still work;
-    disabling GC avoids the wasted attempt. C (wrong): SSSD does not need winbind. D (wrong): Kerberos is unaffected.'
+  explain: 'A (wrong): The line has
+    no such effect. B (correct): The join and Kerberos depend on a consistent FQDN and address. C (wrong): NetBIOS domain names come from the directory. D (wrong): Time sync is unaffected.'
+- id: samba-gc
+  prompt: Clients read POSIX IDs from a Samba AD DC, whose global catalog lacks the RFC 2307 attributes by default. How is SSSD set up?
+  choices:
+  - It disables Kerberos
+  - Set ad_enable_gc = False so SSSD reads the IDs over LDAP on port 389
+  - It requires winbind on the client
+  - It cannot be used with Samba
+  answer:
+  - 1
+  explain: 'A (wrong): Kerberos is unaffected. B (correct): Plain LDAP carries the POSIX
+    attributes that the catalog lacks. C (wrong): SSSD does not need winbind. D (wrong): SSSD works with Samba DCs routinely.'

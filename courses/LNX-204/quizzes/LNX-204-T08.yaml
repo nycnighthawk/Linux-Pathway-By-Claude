@@ -3,10 +3,10 @@ questions:
 - id: baseline-trust
   prompt: What is the weakest point of a file-integrity tool?
   choices:
-  - The configuration language
-  - Report colours
-  - A baseline or binary that the attacker can rewrite, or taken on an already compromised host
   - Hash speed
+  - The configuration language
+  - A baseline or binary that the attacker can rewrite, or taken on an already compromised host
+  - Report colours
   answer:
   - 2
   explain: If the database or tool is writable by the attacker, they can regenerate or fake it. Speed and format are minor.
@@ -15,28 +15,28 @@ questions:
   choices:
   - Changed entries were found (bit 4)
   - A configuration error
-  - Four hosts failed
   - Four files were added
+  - Four hosts failed
   answer:
   - 0
   explain: 'The exit status is a bit mask: 1 added, 2 removed, 4 changed; larger values signal errors.'
 - id: exclude
   prompt: Why exclude /var/log from monitoring?
   choices:
+  - AIDE cannot read them
   - They are on tmpfs
   - They change constantly, and the noise would hide real changes
   - Logs are secret
-  - AIDE cannot read them
   answer:
-  - 1
+  - 2
   explain: Monitor files that should not change. Volatile areas make reports unreadable.
 - id: update
   prompt: When should the baseline be updated?
   choices:
   - After a reviewed, legitimate change such as patching, with the new database stored safely
   - After every check automatically
-  - Before the host is built
   - Never
+  - Before the host is built
   answer:
   - 0
   explain: Updating blindly would absorb an intruder's changes; reviewing each diff keeps the baseline meaningful.
@@ -44,9 +44,9 @@ questions:
   prompt: How does AIDE differ from an audit watch?
   choices:
   - They are identical
+  - AIDE shows that and how a file changed between checks; audit records who did it when it happens
   - AIDE runs in the kernel
   - AIDE says who, audit says what
-  - AIDE shows that and how a file changed between checks; audit records who did it when it happens
   answer:
-  - 3
+  - 1
   explain: 'The two complement each other: detection of difference versus attribution of events.'

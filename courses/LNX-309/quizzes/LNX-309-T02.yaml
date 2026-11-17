@@ -3,60 +3,60 @@ questions:
 - id: protocolc
   prompt: What does DRBD protocol C guarantee?
   choices:
-  - A write completes only after both nodes have it on disk, so no acknowledged write is lost on failover
-  - Writes are never replicated
-  - Writes are acknowledged before they reach any disk
-  - Only the first write is replicated
+  - A write completes once it reaches the local disk and the peer's buffer
+  - A write completes on the local disk and is sent to the peer later
+  - A write completes only after both nodes have it on disk
+  - A write completes once the peer has acknowledged the metadata only
   answer:
-  - 0
-  explain: 'A) correct: it is synchronous, at the cost of latency. B) wrong: DRBD replicates. C) wrong: that is unsafe. D) wrong: all writes are replicated.'
+  - 2
+  explain: 'A) wrong: that is protocol B. B) wrong: that is protocol A, asynchronous. C) correct: protocol C is synchronous, so no acknowledged write is lost. D) wrong: protocol C waits for the data itself.'
 - id: roles
   prompt: Why does the Pacemaker DRBD resource define separate monitor operations for the Promoted and Unpromoted roles?
   choices:
-  - Pacemaker must tell the roles apart, which needs different intervals for each
-  - DRBD has no other way to be monitored
-  - It halves network traffic
-  - The roles are the same
+  - The Promoted role is never monitored, so only one operation is needed
+  - Separate operations halve the replication traffic between the nodes
+  - DRBD refuses a monitor operation unless a role is named
+  - Pacemaker must tell the roles apart, which needs a different interval for each
   answer:
-  - 0
-  explain: 'A) correct: duplicate intervals would make operations ambiguous. B) wrong: unrelated. C) wrong: unrelated. D) wrong: they differ.'
+  - 3
+  explain: 'A) wrong: both roles are monitored. B) wrong: monitoring does not change replication traffic. C) wrong: the reason is Pacemaker''s need to distinguish roles. D) correct: two monitors with the same interval would clash.'
 - id: dlm
   prompt: What does the distributed lock manager do when a node drops out of a GFS2 cluster?
   choices:
-  - It freezes lock activity until the cluster has fenced the node, so a hung node cannot write
-  - It lets every node write freely
-  - It deletes the journal
-  - It converts the file system to ext4
+  - It freezes lock activity until the cluster has fenced the node
+  - It hands the failed node's locks to the survivors at once
+  - It lets the survivors write freely and reconciles later
+  - It unmounts GFS2 on every node until an administrator acts
   answer:
   - 0
-  explain: 'A) correct: safety needs a certainly-dead node. B) wrong: that would corrupt data. C) wrong: unrelated. D) wrong: unrelated.'
+  explain: 'A) correct: a hung node must not be able to keep writing. B) wrong: it waits for fencing before recovering locks. C) wrong: that would corrupt the file system. D) wrong: lock activity pauses; the file system stays mounted.'
 - id: splitbrain
   prompt: After a DRBD split brain, what usually has to happen?
   choices:
-  - One side is chosen as the survivor and the other side discards its changes and resynchronises
-  - Both sides merge automatically
-  - The cluster reboots every node
-  - Nothing, DRBD repairs it silently
+  - Both sides merge their changes automatically on reconnection
+  - One side is chosen as the survivor and the other discards its changes and resyncs
+  - The side with more recent writes always wins without any action
+  - DRBD rolls both sides back to the last common checkpoint
   answer:
-  - 0
-  explain: 'A) correct: the histories diverged, so one must be thrown away. B) wrong: block-level data cannot be merged. C) wrong: does not repair. D) wrong: it refuses to connect.'
+  - 1
+  explain: 'A) wrong: DRBD has no merge for diverged data. B) correct: DRBD cannot merge two diverged histories. C) wrong: the default policy needs a decision. D) wrong: there is no such rollback.'
 - id: backup
   prompt: Why is DRBD replication not a substitute for backups?
   choices:
+  - DRBD replicates only metadata, so file contents are not copied
+  - The peer is read-only and cannot be used for a restore
   - A deleted or corrupted file is replicated to the peer immediately
-  - DRBD cannot write to disks
-  - Backups are slower
-  - Replication is encrypted
+  - Replication stops when the disk is more than half full
   answer:
-  - 0
-  explain: 'A) correct: replication copies mistakes. B) wrong: it can. C) wrong: irrelevant. D) wrong: irrelevant.'
+  - 2
+  explain: 'A) wrong: it replicates every block. B) wrong: the point is the lack of history, not read access. C) correct: replication copies mistakes as faithfully as good data. D) wrong: there is no such limit.'
 - id: choice
   prompt: A service can run on only one node at a time. Which design is usually best?
   choices:
+  - GFS2 on two DRBD primaries so either node can take over
+  - XFS mounted on both nodes at once over shared storage
+  - Nightly rsync to a standby with a manual switch
   - DRBD with an ordinary file system and one primary, under Pacemaker
-  - GFS2 on two primaries
-  - A shared file system mounted on both nodes without a lock manager
-  - No replication at all
   answer:
-  - 0
-  explain: 'A) correct: simplest safe design. B) wrong: needless complexity. C) wrong: corrupts data. D) wrong: nothing to fail over to.'
+  - 3
+  explain: 'A) wrong: dual primary adds cost the service does not need. B) wrong: a local file system mounted twice is corrupted. C) wrong: that loses up to a day of data and has no failover. D) correct: a single primary needs no cluster file system.'

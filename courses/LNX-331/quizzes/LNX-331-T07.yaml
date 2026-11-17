@@ -5,52 +5,52 @@ questions:
   choices:
   - A block on disk
   - A name in a directory, pointing to an inode or marked negative
-  - An open file with a position
   - A mounted filesystem
+  - An open file with a position
   answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong, that is struct file. D) wrong, that is the super_block.'
+  explain: 'A) wrong. B) correct. C) wrong, that is the super_block. D) wrong, that is struct file.'
 - id: lookup
   prompt: What does a filesystem lookup operation do?
   choices:
-  - Reads file data
-  - Finds a name in a directory and attaches the matching inode to the dentry
   - Mounts the device
   - Writes back dirty pages
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - Finds a name in a directory and attaches the matching inode to the dentry
+  - Reads file data
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: errors
   prompt: Reading a path whose middle component is a regular file should fail with
   choices:
   - ENOENT
+  - EPERM
   - ENOTDIR
   - EISDIR
-  - EPERM
-  answer: [1]
-  explain: 'A) wrong, that is for a missing name. B) correct. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong, that is for a missing name. B) wrong. C) correct. D) wrong.'
 - id: pagecache
   prompt: Why are repeated reads of a file fast?
   choices:
-  - The disk is fast
-  - The page cache keeps file data in memory
   - Dentries hold the data
   - The superblock caches it
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong, they hold names. D) wrong.'
+  - The disk is fast
+  - The page cache keeps file data in memory
+  answer: [3]
+  explain: 'A) wrong, they hold names. B) wrong. C) wrong. D) correct.'
 - id: fuse
   prompt: What is the main trade-off of FUSE?
   choices:
   - It needs a kernel module for each filesystem
-  - It is easier and safer to write but slower than an in-kernel filesystem
   - It cannot be mounted
   - It only works for read-only data
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - It is easier and safer to write but slower than an in-kernel filesystem
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: hostile
   prompt: Why must a filesystem driver validate on-disk block numbers and lengths?
   choices:
-  - For speed
-  - Because an untrusted or corrupted image can otherwise cause out-of-bounds access or crashes
   - The VFS requires a log message
   - To save memory
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - For speed
+  - Because an untrusted or corrupted image can otherwise cause out-of-bounds access or crashes
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'

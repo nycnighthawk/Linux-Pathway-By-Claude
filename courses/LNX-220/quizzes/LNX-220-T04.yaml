@@ -3,12 +3,12 @@ questions:
 - id: batch
   prompt: Which command prints a backtrace of a crashing program without an interactive session?
   choices:
-  - gdb -batch -ex run -ex bt ./prog
-  - gdb ./prog bt
   - valgrind --bt ./prog
   - ldd ./prog
+  - gdb ./prog bt
+  - gdb -batch -ex run -ex bt ./prog
   answer:
-  - 0
+  - 3
   explain: -batch runs the listed commands and exits. Without -ex the word bt is treated as a program argument, valgrind has
     no --bt mode, and ldd lists libraries only.
 - id: core
@@ -25,33 +25,33 @@ questions:
 - id: coredumpctl
   prompt: On a systemd host, which tool lists and opens stored crash dumps?
   choices:
-  - journalctl --core
-  - ulimit -c
   - coredumpctl
+  - journalctl --core
   - readelf --cores
+  - ulimit -c
   answer:
-  - 2
+  - 0
   explain: coredumpctl queries systemd-coredump and can start gdb on a dump. journalctl has no core mode, ulimit -c only sets
     a size limit and readelf does not manage dumps.
 - id: vg
   prompt: Which valgrind finding means memory that was allocated and never freed and is no longer reachable?
   choices:
   - still reachable
-  - invalid read
   - conditional jump on uninitialised value
   - definitely lost
+  - invalid read
   answer:
-  - 3
+  - 2
   explain: Definitely lost blocks have no pointer left. Still reachable blocks are held at exit by a pointer, invalid read
     is an access error and the conditional jump message is about uninitialised data.
 - id: hang
   prompt: A daemon stops responding. Which command shows where every thread is blocked?
   choices:
-  - gdb -p PID, then thread apply all bt
   - gdb -p PID, then info locals
-  - valgrind -p PID
   - gcore PID and delete it
+  - valgrind -p PID
+  - gdb -p PID, then thread apply all bt
   answer:
-  - 0
+  - 3
   explain: thread apply all bt prints each thread's stack, the first step on a hang. info locals shows variables of one frame
     only, valgrind cannot attach to a running process, and gcore alone creates a dump but reads nothing.

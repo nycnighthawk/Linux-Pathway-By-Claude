@@ -3,45 +3,44 @@ questions:
 - id: param
   prompt: Which file shows whether Intel nested virtualisation is enabled?
   choices:
-  - /sys/module/kvm_intel/parameters/nested
+  - /dev/kvm
   - /proc/nested
   - /etc/kvm.conf
-  - /dev/kvm
+  - /sys/module/kvm_intel/parameters/nested
   answer:
-  - 0
-  explain: 'A) correct: Y or 1 means on. B) wrong: no such file. C) wrong: no such file. D) wrong: exists regardless.'
+  - 3
+  explain: 'A) wrong: exists regardless. B) wrong: no such file. C) wrong: no such file. D) correct: Y or 1 means on.'
 - id: named
   prompt: The L1 guest uses a named CPU model and has no vmx flag. Why?
   choices:
   - Nesting is disabled
   - A named model lists only its own features and omits vmx unless required
-  - Firecracker is installed
   - QEMU is too old
+  - Firecracker is installed
   answer:
   - 1
-  explain: 'A) wrong: L0 may have it on. B) correct: use host-passthrough or require the feature. C) wrong: unrelated.
-    D) wrong: not the cause.'
+  explain: 'A) wrong: L0 may have it on. B) correct: use host-passthrough or require the feature. C) wrong: not the cause. D) wrong: unrelated.'
 - id: cost
   prompt: Which workload suffers most in an L2 guest?
   choices:
-  - A tight CPU loop
-  - I/O-heavy or page-table-heavy work, because exits pass through L0
-  - Idle guest
   - A guest that only sleeps
+  - A tight CPU loop
+  - Idle guest
+  - I/O-heavy or page-table-heavy work, because exits pass through L0
   answer:
-  - 1
-  explain: 'A) wrong: ordinary instructions do not trap. B) correct: each exit costs several transitions. C) wrong:
-    nothing runs. D) wrong: few exits.'
+  - 3
+  explain: 'A) wrong: few exits. B) wrong: ordinary instructions do not trap. C) wrong:
+    nothing runs. D) correct: each exit costs several transitions.'
 - id: jailer
   prompt: What does the Firecracker jailer add?
   choices:
+  - Live migration
   - A GUI
   - Chroot, namespaces, cgroups and dropped privileges around the VMM process
-  - Live migration
   - Windows support
   answer:
-  - 1
-  explain: 'A) wrong: no. B) correct: defence in depth beyond KVM. C) wrong: not offered. D) wrong: not supported.'
+  - 2
+  explain: 'A) wrong: not offered. B) wrong: no. C) correct: defence in depth beyond KVM. D) wrong: not supported.'
 - id: clones
   prompt: Two restored microVM clones produce identical random values. Why?
   choices:
@@ -56,11 +55,10 @@ questions:
 - id: devices
   prompt: Which is NOT offered by Firecracker?
   choices:
-  - virtio-net
   - virtio-block
+  - virtio-net
   - GPU passthrough
   - vsock
   answer:
   - 2
-  explain: 'A) wrong: offered. B) wrong: offered. C) correct: not offered, the device set is deliberately tiny.
-    D) wrong: offered.'
+  explain: 'A) wrong: offered. B) wrong: offered. C) correct: not offered, the device set is deliberately tiny. D) wrong: offered.'

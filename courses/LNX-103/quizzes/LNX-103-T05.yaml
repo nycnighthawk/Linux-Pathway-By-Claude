@@ -3,42 +3,42 @@ questions:
 - id: levels
   prompt: How many disks does RAID 5 need at minimum?
   choices:
-  - '5'
-  - '2'
   - '3'
+  - '2'
+  - '5'
   - '4'
   answer:
-  - 2
+  - 0
   explain: RAID 5 stripes with one disk of parity, so three disks.
 - id: create
   prompt: Which command creates a RAID 1 array of two devices?
   choices:
   - mdadm --build
-  - mdadm --assemble
   - mdadm --grow
   - mdadm --create /dev/md0 --level=1 --raid-devices=2 A B
+  - mdadm --assemble
   answer:
-  - 3
-  explain: --create with --level and --raid-devices.
+  - 2
+  explain: 'mdadm --create names the new array device, --level=1 asks for mirroring and --raid-devices=2 says how many members follow. The other choices either use the wrong mode or omit the level.'
 - id: detail
   prompt: Which command shows an array's state and failed members?
   choices:
-  - lsblk
-  - mkfs
-  - pvs
   - mdadm --detail /dev/md0
+  - mkfs
+  - lsblk
+  - pvs
   answer:
-  - 3
+  - 0
   explain: --detail reports State, Active Devices and Failed Devices.
 - id: proc
   prompt: Which file shows resync progress?
   choices:
-  - /proc/mdstat
   - /etc/mdstat
-  - /sys/mdstat
   - /var/log/md
+  - /sys/mdstat
+  - /proc/mdstat
   answer:
-  - 0
+  - 3
   explain: /proc/mdstat lists arrays and rebuild progress.
 - id: replace
   prompt: What is the order to replace a failed disk?
@@ -49,24 +49,24 @@ questions:
   - Reformat the array
   answer:
   - 1
-  explain: mdadm --fail, --remove, then --add.
+  explain: 'Mark the disk failed (mdadm --fail), take it out of the array (--remove), add the replacement (--add), then watch /proc/mdstat until the rebuild finishes. Removing a disk the array still counts as active is refused.'
 - id: conf
   prompt: Why record the array in mdadm.conf?
   choices:
-  - Stable names and assembly at boot
   - Needed by mkfs
-  - Enables TRIM
+  - Stable names and assembly at boot
   - Sets RAID level
+  - Enables TRIM
   answer:
-  - 0
+  - 1
   explain: Use mdadm --detail --scan and update the initramfs.
 - id: raid-not-backup
   prompt: Does RAID replace backup?
   choices:
-  - 'Yes'
-  - Only RAID 6
   - Only with LVM
+  - Only RAID 6
   - No, it protects against disk failure only
+  - 'Yes'
   answer:
-  - 3
+  - 2
   explain: Deletion, corruption and site loss are copied across members.

@@ -4,11 +4,11 @@ questions:
   prompt: Which condition is least likely to be checked before a realm join, yet causes many failures?
   choices:
   - The number of users
-  - The colour of the console
   - Clock within five minutes and DNS SRV records reachable through a DC
   - The CPU model
+  - The colour of the console
   answer:
-  - 2
+  - 1
   explain: Kerberos rejects skewed clocks and discovery uses SRV records, so these are the usual causes. The others have no
     effect on joining.
 - id: idmap-rid
@@ -25,9 +25,9 @@ questions:
 - id: default-domain
   prompt: 'Why is idmap config * : backend = tdb needed even if the real domain uses rid?'
   choices:
-  - rid cannot be used with SSSD
   - It is only cosmetic
   - tdb is faster
+  - rid cannot be used with SSSD
   - The default domain covers local and well-known SIDs and needs a writable back-end
   answer:
   - 3
@@ -47,30 +47,30 @@ questions:
 - id: tool
   prompt: Which command checks the machine's trust secret with a domain controller on a winbind member?
   choices:
+  - realm list
   - sss_cache -E
   - wbinfo -t
-  - realm list
   - getent passwd
   answer:
-  - 1
+  - 2
   explain: wbinfo -t tests the trust secret. getent passwd resolves names, realm list shows realmd status, and sss_cache invalidates
     the SSSD cache.
 - id: rejoin
   prompt: A host powered off for three months now rejects every AD login. Most probable cause?
   choices:
-  - The machine account password was rotated while it was away
   - SELinux relabel
-  - The DC was demoted
+  - The machine account password was rotated while it was away
   - A user typo
+  - The DC was demoted
   answer:
-  - 0
+  - 1
   explain: Machine passwords rotate roughly every 30 days; an old secret breaks the secure channel. sssctl domain-status or
     net ads testjoin shows it, and rejoin fixes it. A typo affects one user, not all.
 - id: clone
   prompt: Why join a VM template before cloning is a mistake?
   choices:
-  - Kerberos forbids more than one host
   - DNS cannot hold cloned names
+  - Kerberos forbids more than one host
   - It makes the image larger
   - All clones share one machine account and keys and fight over it
   answer:

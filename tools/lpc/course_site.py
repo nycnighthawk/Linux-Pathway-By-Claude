@@ -65,16 +65,18 @@ def _pk(cid: str, kind: str, ident: str) -> str:
 
 
 def _lesson_link_fn(cid, lessons, labs, quizzes, from_dir):
-    """Map lab:/quiz:/lesson: links to relative page paths. from_dir is one of lessons, quizzes, labs."""
+    """Map lab:/quiz:/lesson: links to relative page paths. from_dir is one of lessons, quizzes, labs, course."""
     def fn(url: str):
         if url.startswith("lab:") and url[4:] in labs:
-            return ("../labs/" if from_dir != "labs" else "") + f"{url[4:]}.html"
+            return (("labs/" if from_dir == "course" else "../labs/") if from_dir != "labs" else "") + f"{url[4:]}.html"
         if url.startswith("quiz:") and url[5:] in quizzes:
-            return ("../quizzes/" if from_dir != "quizzes" else "") + f"{url[5:]}.html"
+            return (("quizzes/" if from_dir == "course" else "../quizzes/") if from_dir != "quizzes" else "") + f"{url[5:]}.html"
         if url.startswith("lesson:") and url[7:] in lessons:
-            return ("../lessons/" if from_dir != "lessons" else "") + f"{lessons[url[7:]]['file'].split('/')[-1][:-3]}.html"
+            return (("lessons/" if from_dir == "course" else "../lessons/") if from_dir != "lessons" else "") + f"{lessons[url[7:]]['file'].split('/')[-1][:-3]}.html"
         if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", url) and not url.startswith(("http:", "https:", "mailto:")):
             return None
+        if re.match(r"^(\.\./)?brief\.md(#.*)?$", url):                # capstone brief, rendered as brief.html
+            return ("../" if from_dir != "course" else "") + "brief.html" + url.partition("#")[1] + url.partition("#")[2]
         return default_link(url)
     return fn
 
@@ -215,6 +217,16 @@ def _build_course(root: Path, base: Path, cid: str, d: dict, tax: dict) -> None:
         toc = _toc(heads + [(2, "grade", "Grade it")])
         (cdir / "labs" / f"{lab['id']}.html").write_text(_page(lab["title"], body, 2, crumbs_sub, toc, d["title"]), encoding="utf-8")
 
+    # capstone brief (rubric, resources, fallbacks)
+    brief_src = root / "courses" / cid / "brief.md"
+    if brief_src.is_file():
+        heads = []
+        text = re.sub(r"\A\s*# .*\n", "", brief_src.read_text(encoding="utf-8"))
+        content = render_md(text, _lesson_link_fn(cid, lessons, labs, quizzes, "course"), heads)
+        btitle = f"{cid} capstone brief"
+        (cdir / "brief.html").write_text(_page(btitle, f"<h1>{E(btitle)}</h1>" + content, 1, '<a href="../index.html">Courses</a> / '
+                                               f'<a href="index.html">{E(cid)}</a>', _toc(heads), d["title"]), encoding="utf-8")
+
     # course outline
     mods = []
     for m in d["modules"]:
@@ -234,6 +246,8 @@ def _build_course(root: Path, base: Path, cid: str, d: dict, tax: dict) -> None:
             + (f'<span class="chip">pathways: {E(", ".join((tax.get("pathways") or {}).keys()))}</span>' if tax.get("pathways") else "") + "</div>"
             + _bar(keys)
             + (f'<p class="fb wrong">This course is a work in progress: only some topics have lessons yet.</p>' if d.get("coverage") == "partial" else "")
+            + ('<p><a class="btn" href="brief.html">Read the capstone brief: scenario, rubric, resources and fallbacks</a></p>'
+               if (root / "courses" / cid / "brief.md").is_file() else "")
             + "<h2>Outcomes</h2><ul>" + "".join(f"<li>{E(o)}</li>" for o in d["outcomes"]) + "</ul>"
             + ("<h2>Certification references</h2><ul class=\"plain\">" + certs + "</ul>" if certs else "")
             + "<h2>Lessons</h2>" + "".join(mods)

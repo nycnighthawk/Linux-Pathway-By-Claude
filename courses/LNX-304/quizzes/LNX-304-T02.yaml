@@ -3,23 +3,23 @@ questions:
 - id: control
   prompt: Which file in debian/ declares the packages needed to build the source?
   choices:
-  - rules
   - control (the Build-Depends field of the source stanza)
-  - changelog
+  - rules
   - copyright
+  - changelog
   answer:
-  - 1
-  explain: 'A) wrong: rules is the build makefile. B) correct: Build-Depends lives in the source stanza of control. C) wrong: changelog gives the version and distribution. D) wrong: copyright records licences.'
+  - 0
+  explain: 'A) correct: Build-Depends lives in the source stanza of control. B) wrong: rules is the build makefile. C) wrong: copyright records licences. D) wrong: changelog gives the version and distribution.'
 - id: tilde
   prompt: How does dpkg order 1.0~rc1 against 1.0?
   choices:
-  - 1.0~rc1 is newer
-  - They are equal
   - 1.0~rc1 is older, because the tilde sorts before everything
+  - They are equal
+  - 1.0~rc1 is newer
   - The comparison is an error
   answer:
-  - 2
-  explain: 'A) wrong: the tilde lowers the rank. B) wrong: the strings differ and so do the ranks. C) correct: it is the standard way to mark a pre-release. D) wrong: it is a valid version.'
+  - 0
+  explain: 'A) correct: it is the standard way to mark a pre-release. B) wrong: the strings differ and so do the ranks. C) wrong: the tilde lowers the rank. D) wrong: it is a valid version.'
 - id: conffile
   prompt: A packaged /etc file and the local copy both changed. What does dpkg do on upgrade?
   choices:
@@ -33,30 +33,30 @@ questions:
 - id: sbuild
   prompt: Why build with sbuild instead of dpkg-buildpackage on a workstation?
   choices:
+  - It signs packages automatically
   - It builds faster
   - The chroot has only build-essential and the declared Build-Depends, so hidden dependencies fail
-  - It signs packages automatically
   - Debian policy requires it for every package
   answer:
-  - 1
-  explain: 'A) wrong: speed is not the aim. B) correct: a clean room exposes an incomplete Build-Depends. C) wrong: signing is a separate step. D) wrong: it is the archive builders'' practice, not a policy for every local build.'
+  - 2
+  explain: 'A) wrong: signing is a separate step. B) wrong: speed is not the aim. C) correct: a clean room exposes an incomplete Build-Depends. D) wrong: it is the archive builders'' practice, not a policy for every local build.'
 - id: scripts
   prompt: What does a maintainer script such as postinst receive as its first argument?
   choices:
-  - The number of installed instances
-  - An action word such as configure, upgrade, remove or purge
   - The package size
+  - An action word such as configure, upgrade, remove or purge
   - Nothing
+  - The number of installed instances
   answer:
   - 1
-  explain: 'A) wrong: that is the RPM convention. B) correct: dpkg passes an action word. C) wrong: size is not passed. D) wrong: the action is always passed.'
+  explain: 'A) wrong: size is not passed. B) correct: dpkg passes an action word. C) wrong: the action is always passed. D) wrong: that is the RPM convention.'
 - id: dh
   prompt: What does a minimal debian/rules with the line "dh $@" do?
   choices:
   - Nothing until you add every target
   - It runs debhelper's standard build sequence; you override only the steps you need
-  - It only builds the source package
   - It installs the package on the host
+  - It only builds the source package
   answer:
   - 1
-  explain: 'A) wrong: dh supplies the default sequence. B) correct: override_dh_ targets replace single steps. C) wrong: it drives the binary build sequence. D) wrong: it builds into debian/ staging only.'
+  explain: 'A) wrong: dh supplies the default sequence. B) correct: override_dh_ targets replace single steps. C) wrong: it builds into debian/ staging only. D) wrong: it drives the binary build sequence.'

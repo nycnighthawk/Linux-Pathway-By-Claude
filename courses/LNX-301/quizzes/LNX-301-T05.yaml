@@ -4,25 +4,24 @@ questions:
   prompt: What is the risk of letting ordinary users join machines through ms-DS-MachineAccountQuota?
   choices:
   - None; it is the recommended approach
-  - Any user can create computer objects, which then appear in the directory with an identity the user controls
-  - It disables Kerberos on the new machines
   - It only works for Linux
+  - It disables Kerberos on the new machines
+  - Any user can create computer objects, which then appear in the directory with an identity the user controls
   answer:
-  - 1
-  explain: 'A (wrong): Microsoft discourages it. B (correct): The default quota lets each user add several machines,
-    widening the attack surface. C (wrong): The accounts are valid Kerberos principals. D (wrong): The quota applies
-    to any joiner.'
+  - 3
+  explain: 'A (wrong): Microsoft discourages it. B (wrong): The quota applies
+    to any joiner. C (wrong): The accounts are valid Kerberos principals. D (correct): The default quota lets each user add several machines,
+    widening the attack surface.'
 - id: delegated-join
   prompt: Which join identity best fits the least-privilege principle?
   choices:
   - A domain admin
-  - A service account delegated 'create computer objects' on one OU
   - The built-in guest account
   - Any user with the quota
+  - A service account delegated 'create computer objects' on one OU
   answer:
-  - 1
-  explain: 'A (wrong): Far more power than enrolment needs. B (correct): It can enrol machines and nothing else.
-    C (wrong): Guests cannot create computer objects. D (wrong): Broad, uncontrolled, discouraged.'
+  - 3
+  explain: 'A (wrong): Far more power than enrolment needs. B (wrong): Guests cannot create computer objects. C (wrong): Broad, uncontrolled, discouraged. D (correct): It can enrol machines and nothing else.'
 - id: otp-join
   prompt: What does a one-time-password join add?
   choices:
@@ -40,40 +39,40 @@ questions:
   prompt: Before setting ad_gpo_access_control to enforcing across a fleet, what is wise?
   choices:
   - Run a pilot in permissive mode and read what would have been denied
+  - Set the clock forward
   - Delete the GPOs
   - Disable SSSD
-  - Set the clock forward
   answer:
   - 0
   explain: 'A (correct): Permissive logs the decisions without blocking, so surprises appear before they lock users
-    out. B (wrong): GPOs belong to the Windows team. C (wrong): The setting lives in SSSD. D (wrong): Time is not
-    part of the decision.'
+    out. B (wrong): Time is not
+    part of the decision. C (wrong): GPOs belong to the Windows team. D (wrong): The setting lives in SSSD.'
 - id: ldap-signing
   prompt: A script using 'ldapsearch -x' with a simple bind fails with 'Strong(er) authentication required' against
     a domain controller. Why?
   choices:
-  - The DC enforces LDAP signing, so the script must use SASL/GSSAPI or LDAPS
   - The DC is out of disk
   - The base DN is wrong
   - The user is in Protected Users
+  - The DC enforces LDAP signing, so the script must use SASL/GSSAPI or LDAPS
   answer:
-  - 0
-  explain: 'A (correct): A simple bind over a clear channel is rejected when signing is required. B (wrong): That
-    would not give an authentication message. C (wrong): A wrong base gives a no-such-object result. D (wrong):
-    That affects Kerberos and NTLM, not this error.'
+  - 3
+  explain: 'A (wrong): That
+    would not give an authentication message. B (wrong): A wrong base gives a no-such-object result. C (wrong):
+    That affects Kerberos and NTLM, not this error. D (correct): A simple bind over a clear channel is rejected when signing is required.'
 - id: stale-object
   prompt: A rebuilt host called app01 fails to join with 'Insufficient access' although the join account works for
     new names. What probably happened?
   choices:
-  - An old APP01$ object exists elsewhere in the directory, outside the delegated OU
-  - The host's clock is slow
   - SSSD cache is full
+  - The host's clock is slow
   - The OU name has an upper-case letter
+  - An old APP01$ object exists elsewhere in the directory, outside the delegated OU
   answer:
-  - 0
-  explain: 'A (correct): The account cannot modify an object it was not delegated; ask the AD team to move or delete
-    it. B (wrong): Skew gives a Kerberos error. C (wrong): The cache is local and unrelated. D (wrong): DNs are
-    case-insensitive.'
+  - 3
+  explain: 'A (wrong): The cache is local and unrelated. B (wrong): Skew gives a Kerberos error. C (wrong): DNs are
+    case-insensitive. D (correct): The account cannot modify an object it was not delegated; ask the AD team to move or delete
+    it.'
 - id: rc4
   prompt: Why can a long-running Linux server suddenly fail after Windows hardening removes RC4?
   choices:

@@ -7,9 +7,9 @@ questions:
   explain: 'A) wrong: a bridge is a switch. B) correct: it is a virtual cable, often with one end moved into a namespace. C) wrong. D) wrong.'
 - id: masq
   prompt: Why is a masquerade rule needed for containers on a private subnet to reach the Internet?
-  choices: [To encrypt traffic, To replace the private source address with the host address so replies can return, To enable ARP, To create the bridge]
-  answer: [1]
-  explain: 'A) wrong. B) correct: the outside cannot route to the private subnet. C) wrong. D) wrong.'
+  choices: [To enable ARP, To encrypt traffic, To create the bridge, To replace the private source address with the host address so replies can return]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: the outside cannot route to the private subnet.'
 - id: dnat-local
   prompt: A published port works from other machines but not from the host itself. Why?
   choices: [The container is down, DNAT exists only in prerouting, which does not see locally generated traffic, The bridge has no address, Conntrack is disabled]
@@ -17,11 +17,11 @@ questions:
   explain: 'A) wrong: remote access works. B) correct: add an output-hook rule or use the bridge address. C) wrong: that would break other paths. D) wrong: NAT would not work at all.'
 - id: debug
   prompt: Pings between two namespaces work but outbound traffic fails. Which checks fit? (select two)
-  choices: [net.ipv4.ip_forward is 1, The forward chain policy and rule counters, The container image tag, The kubelet version]
-  answer: [0, 1]
-  explain: 'A) correct: routing must be on. B) correct: a drop policy or zero counters locate the fault. C) wrong. D) wrong.'
+  choices: [The container image tag, The kubelet version, net.ipv4.ip_forward is 1, The forward chain policy and rule counters]
+  answer: [2, 3]
+  explain: 'A) wrong. B) wrong. C) correct: routing must be on. D) correct: a drop policy or zero counters locate the fault.'
 - id: ipam
   prompt: Two containers on one bridge intermittently lose connectivity. Both use 10.10.0.2. What is the cause?
-  choices: [MTU mismatch, Duplicate addresses because two tools allocate from the same subnet, A full conntrack table, Wrong DNS]
-  answer: [1]
-  explain: 'A) wrong. B) correct: ARP answers flip between MAC addresses; use one IPAM per bridge. C) wrong. D) wrong.'
+  choices: [Wrong DNS, MTU mismatch, Duplicate addresses because two tools allocate from the same subnet, A full conntrack table]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: ARP answers flip between MAC addresses; use one IPAM per bridge. D) wrong.'

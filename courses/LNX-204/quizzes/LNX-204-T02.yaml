@@ -14,55 +14,55 @@ questions:
 - id: editor-risk
   prompt: Why is permitting sudo vim /etc/app/app.conf effectively a root shell?
   choices:
-  - sudo cannot run editors
   - vim runs slowly as root
-  - The editor can run shell commands and write any file, so the rule grants far more than the file
   - vim logs nothing
+  - sudo cannot run editors
+  - The editor can run shell commands and write any file, so the rule grants far more than the file
   answer:
-  - 2
+  - 3
   explain: Interactive programs with escapes turn a file rule into arbitrary command execution. Speed and logging are not the issue, and sudo
     can run any program.
 - id: sudoedit
   prompt: What does sudoedit do differently?
   choices:
-  - Runs the editor as root on the real file
   - Edits sudoers only
   - Disables logging for the edit
   - Runs the editor as the user on a temporary copy and writes it back with privilege
+  - Runs the editor as root on the real file
   answer:
-  - 3
+  - 2
   explain: The editor never gets root, so shell escapes lose their power. Running the editor as root is exactly what it avoids, and it is not
     limited to sudoers.
 - id: visudo
   prompt: Why edit sudoers with visudo?
   choices:
+  - It checks syntax before installing the file, preventing a lockout
   - It is the only program allowed to read it
   - It adds NOPASSWD automatically
-  - It checks syntax before installing the file, preventing a lockout
   - It encrypts the file
   answer:
-  - 2
+  - 0
   explain: A syntax error in a privileged policy file can lock every administrator out; visudo validates first. It does not encrypt, other tools
     can read the file, and it adds no tags.
 - id: wildcard
   prompt: What is wrong with the rule /bin/cat /var/log/* ?
   choices:
-  - The star also matches ../ sequences and spaces, so other files can be read
-  - It needs NOPASSWD
   - Nothing, wildcards stop at directory boundaries
+  - It needs NOPASSWD
+  - The star also matches ../ sequences and spaces, so other files can be read
   - cat cannot be used with sudo
   answer:
-  - 0
+  - 2
   explain: Sudo wildcards in arguments are shell-style and are not path-aware, so traversal and extra arguments pass. They do not stop at directories,
     and cat works fine.
 - id: env-reset
   prompt: Which setting keeps LD_PRELOAD and similar variables out of a privileged command?
   choices:
-  - env_reset with a short env_keep list
-  - visiblepw
   - timestamp_timeout=0
   - requiretty
+  - visiblepw
+  - env_reset with a short env_keep list
   answer:
-  - 0
+  - 3
   explain: Environment sanitising is env_reset plus a tight keep list. visiblepw concerns password prompts, requiretty concerns terminals, and
     the timeout concerns re-authentication.

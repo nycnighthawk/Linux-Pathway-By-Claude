@@ -3,60 +3,60 @@ questions:
 - id: layers
   prompt: What are the LVM layers from disk upward?
   choices:
-  - PV, VG, LV
-  - LV, VG, PV
-  - VG, PV, LV
   - PE, LE, VG
+  - LV, VG, PV
+  - PV, VG, LV
+  - VG, PV, LV
   answer:
-  - 0
+  - 2
   explain: Physical volumes join a volume group, which is carved into logical volumes.
 - id: extend
   prompt: Which command extends an LV and its file system in one step?
   choices:
-  - lvextend -r -L +5G vg/lv
-  - lvcreate -r
-  - vgextend -r
   - resize2fs -L
+  - lvcreate -r
+  - lvextend -r -L +5G vg/lv
+  - vgextend -r
   answer:
-  - 0
+  - 2
   explain: -r (--resizefs) calls the file system resize tool.
 - id: pvcreate
   prompt: What does pvcreate do?
   choices:
+  - Creates a VG
   - Writes LVM metadata on a device
   - Creates a file system
-  - Creates a VG
   - Mounts an LV
   answer:
-  - 0
+  - 1
   explain: It labels the device and reserves a metadata area.
 - id: snap
   prompt: What happens when a classic snapshot fills its copy-on-write space?
   choices:
+  - The origin stops
+  - The snapshot becomes invalid
   - It grows automatically always
   - Nothing
-  - The snapshot becomes invalid
-  - The origin stops
   answer:
-  - 2
+  - 1
   explain: An overfull snapshot is dropped; size it for the expected change.
 - id: thin
   prompt: What does thin provisioning allow?
   choices:
-  - Encrypted LVs
   - No snapshots
-  - Volumes whose total size exceeds the pool
+  - Encrypted LVs
   - Smaller metadata
+  - Volumes whose total size exceeds the pool
   answer:
-  - 2
+  - 3
   explain: Overcommit is possible, so monitor pool data and metadata usage.
 - id: vgs
   prompt: Which command lists free space in a VG?
   choices:
-  - df
   - fdisk -l
-  - vgs
   - lsblk -f
+  - vgs
+  - df
   answer:
   - 2
-  explain: vgs shows VSize and VFree.
+  explain: 'vgs prints one line per volume group, with VSize for the total and VFree for the space not yet given to logical volumes. vgdisplay shows the same in a longer form; lvs lists the volumes, not free space.'

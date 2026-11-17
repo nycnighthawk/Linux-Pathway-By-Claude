@@ -3,35 +3,34 @@ questions:
 - id: components
   prompt: Which fail2ban component decides how a failure is recognised in a log line?
   choices:
-  - The action
+  - The recidive jail
   - The filter, with its failregex
   - The jail's bantime
-  - The recidive jail
+  - The action
   answer:
   - 1
-  explain: 'A) wrong: actions run the ban and unban commands. B) correct: failregex lines containing <HOST> do the recognising.
-    C) wrong: bantime sets duration. D) wrong: recidive watches repeat bans.'
+  explain: 'A) wrong: recidive watches repeat bans. B) correct: failregex lines containing <HOST> do the recognising. C) wrong: bantime sets duration. D) wrong: actions run the ban and unban commands.'
 - id: regex-test
   prompt: What does fail2ban-regex tell you?
   choices:
-  - How many lines of a log a filter matches, which it misses, and which addresses it found
   - Whether the firewall is running
-  - The bans currently active
   - Whether SSH is exposed
+  - The bans currently active
+  - How many lines of a log a filter matches, which it misses, and which addresses it found
   answer:
-  - 0
-  explain: 'A) correct: it replays a log against a filter offline. B) wrong: it does not inspect the firewall. C) wrong: that is fail2ban-client
-    status. D) wrong: it does not scan.'
+  - 3
+  explain: 'A) wrong: it does not inspect the firewall. B) wrong: it does not scan. C) wrong: that is fail2ban-client
+    status. D) correct: it replays a log against a filter offline.'
 - id: proxy
   prompt: A jail on a site behind a load balancer bans the balancer. What is the correct fix?
   choices:
-  - Increase maxretry to 1000
-  - Log the real client address from X-Forwarded-For and add the balancer to ignoreip
   - Ban the whole network
+  - Log the real client address from X-Forwarded-For and add the balancer to ignoreip
+  - Increase maxretry to 1000
   - Move the jail to the balancer's loopback
   answer:
   - 1
-  explain: 'A) wrong: it only delays the same ban. B) correct: the jail must see the true client. C) wrong: this makes it worse. D) wrong:
+  explain: 'A) wrong: this makes it worse. B) correct: the jail must see the true client. C) wrong: it only delays the same ban. D) wrong:
     it does not change what the log contains.'
 - id: sid
   prompt: Which sid range is appropriate for local Suricata rules?
@@ -47,33 +46,33 @@ questions:
 - id: buffer
   prompt: Why write http.uri; content:"/admin/config.php" instead of a content match over the whole stream?
   choices:
+  - It disables reassembly
   - It makes the rule match faster and only in the decoded request URI, which cuts false positives
   - It encrypts the match
   - It is required by the YAML parser
-  - It disables reassembly
   answer:
-  - 0
-  explain: 'A) correct: the app-layer buffer limits the search to the decoded field. B) wrong: matching never encrypts. C) wrong: rules
-    are not YAML. D) wrong: reassembly is a stream feature.'
+  - 1
+  explain: 'A) wrong: reassembly is a stream feature. B) correct: the app-layer buffer limits the search to the decoded field. C) wrong: matching never encrypts. D) wrong: rules
+    are not YAML.'
 - id: tls
   prompt: What can a passive sensor still use when an attack travels in TLS 1.3?
   choices:
-  - The full payload
-  - Metadata such as destination, SNI where visible, certificate or client fingerprints, DNS and flow behaviour
-  - The server's private key
   - Nothing at all
+  - The server's private key
+  - Metadata such as destination, SNI where visible, certificate or client fingerprints, DNS and flow behaviour
+  - The full payload
   answer:
-  - 1
-  explain: 'A) wrong: payloads are encrypted. B) correct: detection moves to metadata. C) wrong: the sensor never has it. D) wrong:
-    metadata and DNS are still visible.'
+  - 2
+  explain: 'A) wrong:
+    metadata and DNS are still visible. B) wrong: the sensor never has it. C) correct: detection moves to metadata. D) wrong: payloads are encrypted.'
 - id: inline
   prompt: What is the safest way to move from alerting to dropping with Suricata?
   choices:
-  - Switch every rule to drop at once
-  - Review alert-only data for a week, then convert reviewed rules to drop one at a time
   - Disable the rule update job
   - Block all traffic by default
+  - Review alert-only data for a week, then convert reviewed rules to drop one at a time
+  - Switch every rule to drop at once
   answer:
-  - 1
-  explain: 'A) wrong: a false positive then drops production traffic. B) correct: staged promotion limits blast radius. C) wrong: stale
-    rules miss threats. D) wrong: this is an outage.'
+  - 2
+  explain: 'A) wrong: stale
+    rules miss threats. B) wrong: this is an outage. C) correct: staged promotion limits blast radius. D) wrong: a false positive then drops production traffic.'

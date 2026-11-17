@@ -3,19 +3,19 @@ questions:
 - id: san
   prompt: Which certificate field do modern clients use to check the host name?
   choices:
+  - subjectAltName
   - The common name
   - The issuer
-  - subjectAltName
   - The serial number
   answer:
-  - 2
+  - 0
   explain: Clients check SAN entries and ignore the CN when SAN exists. A CN-only certificate is rejected.
 - id: chain
   prompt: Curl fails with a missing issuer but browsers work. Likely cause?
   choices:
+  - SELinux
   - The key is too short
   - Wrong port
-  - SELinux
   - The server forgot to send the intermediate; browsers fetch it
   answer:
   - 3
@@ -23,40 +23,40 @@ questions:
 - id: verify-off
   prompt: Which practice is the most common TLS bug?
   choices:
-  - Using TLS 1.3
   - Short lifetimes
-  - Disabling certificate verification in client code
   - Using ECDSA
+  - Using TLS 1.3
+  - Disabling certificate verification in client code
   answer:
-  - 2
+  - 3
   explain: Flags such as -k or verify=False remove the authentication that TLS is for.
 - id: renew
   prompt: A renewed certificate is on disk but clients see the old one. Why?
   choices:
-  - DNS cache
-  - The CA revoked it
   - The service was not reloaded and still holds the old certificate in memory
+  - The CA revoked it
+  - DNS cache
   - Wrong SAN
   answer:
-  - 2
+  - 0
   explain: Many daemons read certificates at start, so renewal needs a reload; check with s_client against the live port.
 - id: private-ca
   prompt: What is the risk of adding a private root to the system trust store?
   choices:
+  - None
+  - It disables TLS 1.3
   - That CA can vouch for any domain on that host unless name constraints are used
   - It slows TLS
-  - It disables TLS 1.3
-  - None
   answer:
-  - 0
+  - 2
   explain: Trust anchors are not scoped by default; constraints or application-level pinning limit scope.
 - id: checkend
   prompt: Which command exits non-zero if a certificate expires within two weeks?
   choices:
-  - openssl rand
-  - openssl x509 -checkend 1209600 -noout -in cert.pem
   - openssl verify
   - openssl s_server
+  - openssl rand
+  - openssl x509 -checkend 1209600 -noout -in cert.pem
   answer:
-  - 1
+  - 3
   explain: x509 -checkend takes seconds. The others verify chains, run a test server or generate bytes.

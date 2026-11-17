@@ -3,70 +3,70 @@ questions:
 - id: syn-rst
   prompt: In a capture, a SYN is answered by an RST. What does that mean?
   choices:
+  - DNS failed
+  - The link is down
   - Nothing listens or a reject rule answered
   - The packet was lost
-  - The link is down
-  - DNS failed
   answer:
-  - 0
+  - 2
   explain: A reset is an explicit refusal; silence points to a drop.
 - id: mtr-middle
   prompt: An mtr report shows loss on hop 4 only, none on later hops. What is the likely reason?
   choices:
-  - The destination is down
-  - Asymmetric routing
   - ICMP rate limiting at hop 4
+  - The destination is down
   - A broken link at hop 4
+  - Asymmetric routing
   answer:
-  - 2
+  - 0
   explain: Routers often deprioritise replies to probes while forwarding traffic normally.
 - id: dig-aa
   prompt: What does the aa flag in a dig reply mean?
   choices:
   - DNSSEC validated
-  - Recursion was refused
   - The answer came from the authoritative server
+  - Recursion was refused
   - The answer was cached
   answer:
-  - 2
+  - 1
   explain: Cached answers lack aa; ad marks DNSSEC validation.
 - id: nn
   prompt: Why use tcpdump -nn while troubleshooting?
   choices:
-  - It enables promiscuous mode
   - It skips name and port lookups that slow output and add traffic
   - It captures more packets
   - It decrypts traffic
+  - It enables promiscuous mode
   answer:
-  - 1
+  - 0
   explain: -n stops address lookups and -nn also stops port-name lookups.
 - id: read-pcap
   prompt: Which option reads a saved capture instead of the live network?
   choices:
+  - -i file
+  - -w file
   - -c file
   - -r file
-  - -w file
-  - -i file
   answer:
-  - 1
-  explain: -w writes, -r reads.
+  - 3
+  explain: 'tcpdump -r FILE reads packets from a saved capture instead of an interface, so you can filter and inspect it again later. Its partner -w FILE writes raw packets to a file.'
 - id: mtu
   prompt: Which test finds a path MTU problem?
   choices:
-  - ping -M do -s 1472 host
-  - ping -f host
   - mtr -n host
+  - ping -M do -s 1472 host
   - dig +tcp
+  - ping -f host
   answer:
-  - 0
+  - 1
   explain: The don't-fragment bit with a large payload fails where the path MTU is smaller.
 - id: getent
   prompt: Which command shows what applications see when resolving a name?
   choices:
-  - getent hosts name
-  - dig name
   - nslookup name
   - host -a name
+  - getent hosts name
+  - dig name
   answer:
-  - 0
+  - 2
   explain: getent follows the name service switch; dig asks DNS only.

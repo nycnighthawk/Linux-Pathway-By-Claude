@@ -3,33 +3,33 @@ questions:
 - id: clearpart
   prompt: What is the danger of "clearpart --all --initlabel" with no drive filter?
   choices:
-  - It only clears the boot disk
-  - It can wipe every disk the installer sees, including data disks
   - It forces a reboot
   - It disables SELinux
+  - It can wipe every disk the installer sees, including data disks
+  - It only clears the boot disk
   answer:
-  - 1
-  explain: 'A) wrong: it is not limited to one disk by default. B) correct: pair it with ignoredisk --only-use and --drives. C) wrong: unrelated. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) correct: pair it with ignoredisk --only-use and --drives. D) wrong: it is not limited to one disk by default.'
 - id: rootpw
   prompt: Which is the safest root setting in an answer file?
   choices:
-  - rootpw --plaintext changeme
+  - A shared password in the URL
   - rootpw --lock together with an SSH key for a named administrator
   - An empty root password
-  - A shared password in the URL
+  - rootpw --plaintext changeme
   answer:
   - 1
-  explain: 'A) wrong: a readable shared secret. B) correct: no password to steal; access by key. C) wrong: anyone can log in. D) wrong: URLs are logged.'
+  explain: 'A) wrong: URLs are logged. B) correct: no password to steal; access by key. C) wrong: anyone can log in. D) wrong: a readable shared secret.'
 - id: ksdelivery
   prompt: How do you tell Anaconda to use a Kickstart file served over HTTP?
   choices:
-  - ks=http://... in /etc/fstab
+  - It cannot be done
   - The kernel argument inst.ks=http://server/path/ks.cfg
   - A DNS TXT record only
-  - It cannot be done
+  - ks=http://... in /etc/fstab
   answer:
   - 1
-  explain: 'A) wrong: fstab is not read by the installer. B) correct: inst.ks takes URLs, nfs and hd locations. C) wrong: no such mechanism. D) wrong: it is the usual method.'
+  explain: 'A) wrong: it is the usual method. B) correct: inst.ks takes URLs, nfs and hd locations. C) wrong: no such mechanism. D) wrong: fstab is not read by the installer.'
 - id: preseedtime
   prompt: Why can a preseed file fetched over the network fail to answer the network questions?
   choices:
@@ -43,20 +43,20 @@ questions:
 - id: autoinstallsafe
   prompt: Why does Ubuntu autoinstall wait for confirmation unless the autoinstall kernel argument is present?
   choices:
-  - A bug in Subiquity
   - A safety feature, so that an installation that would erase disks needs explicit consent
   - To download updates
   - To pick a language
+  - A bug in Subiquity
   answer:
-  - 1
-  explain: 'A) wrong: it is deliberate. B) correct: the argument is the consent. C) wrong: unrelated. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: the argument is the consent. B) wrong: unrelated. C) wrong: unrelated. D) wrong: it is deliberate.'
 - id: handoff
   prompt: What should the answer file hand over to at the end?
   choices:
-  - Nothing; it should configure everything
   - Configuration management or cloud-init, which converge repeatedly
   - A manual checklist
   - The BIOS
+  - Nothing; it should configure everything
   answer:
-  - 1
-  explain: 'A) wrong: the installer runs once and is hard to test. B) correct: keep the file minimal and let repeatable tools do the rest. C) wrong: not repeatable. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: keep the file minimal and let repeatable tools do the rest. B) wrong: not repeatable. C) wrong: unrelated. D) wrong: the installer runs once and is hard to test.'

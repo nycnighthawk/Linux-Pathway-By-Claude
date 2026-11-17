@@ -3,8 +3,8 @@ questions:
 - id: set-flags
   prompt: What does set -u do?
   choices:
-  - Exits on any failed command
   - Disables globbing
+  - Exits on any failed command
   - Makes expanding an unset variable an error
   - Unsets all variables
   answer:
@@ -13,12 +13,12 @@ questions:
 - id: e-limit
   prompt: In which case does set -e NOT stop the script?
   choices:
-  - The command prints to stderr
   - The failing command is the condition of an if or part of an || list
-  - The command is a pipeline
   - The command runs in a function
+  - The command prints to stderr
+  - The command is a pipeline
   answer:
-  - 1
+  - 0
   explain: Commands tested by if, while, && and || are exempt, which is why strict mode is not a substitute for error handling.
 - id: pipefail
   prompt: What does set -o pipefail change?
@@ -33,40 +33,40 @@ questions:
 - id: quote-glob
   prompt: Which line copies every .log file safely, including names with spaces?
   choices:
-  - cp $dir/*.log $dest
-  - cp $(ls $dir/*.log) $dest
   - cp "$dir/*.log" "$dest"
+  - cp $(ls $dir/*.log) $dest
   - cp -- "$dir"/*.log "$dest"/
+  - cp $dir/*.log $dest
   answer:
-  - 3
+  - 2
   explain: Quote the variable parts and leave the glob outside the quotes; -- protects names that start with a dash.
 - id: sc2086
   prompt: What does ShellCheck code SC2086 warn about?
   choices:
   - A deprecated backtick
-  - An unquoted variable that may split or glob
   - A missing shebang
+  - An unquoted variable that may split or glob
   - An unused variable
   answer:
-  - 1
+  - 2
   explain: Double-quote to prevent globbing and word splitting.
 - id: local-assign
   prompt: Why is local x=$(cmd) flagged?
   choices:
-  - It makes x global
   - It forbids pipes
-  - local returns 0 and hides the status of cmd
   - It runs cmd twice
+  - local returns 0 and hides the status of cmd
+  - It makes x global
   answer:
   - 2
   explain: Declare first (local x), then assign (x=$(cmd)) so the substitution's status is visible to set -e.
 - id: disable-code
   prompt: What is the right way to silence one ShellCheck finding?
   choices:
-  - Delete the offending line
   - Add set +e
   - A directive comment on that line with a reason
   - Disable the code for the whole project
+  - Delete the offending line
   answer:
-  - 2
+  - 1
   explain: 'A narrow, explained # shellcheck disable=SCnnnn keeps other findings active.'

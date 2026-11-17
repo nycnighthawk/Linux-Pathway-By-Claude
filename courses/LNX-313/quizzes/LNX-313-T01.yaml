@@ -2,9 +2,9 @@ title: 'Quiz: Pod design'
 questions:
 - id: native-sidecar
   prompt: How is a native sidecar declared?
-  choices: [In initContainers with restartPolicy Always, In containers with a special label, As a separate Pod, With an admission annotation only]
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  choices: [With an admission annotation only, In initContainers with restartPolicy Always, As a separate Pod, In containers with a special label]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: stop-order
   prompt: In what order are containers stopped when the Pod is deleted?
   choices: [Application containers first, then sidecars in reverse declaration order, Sidecars first, All at the same instant, Init containers first]
@@ -12,16 +12,16 @@ questions:
   explain: 'A) correct: the helper outlives the application so it can drain. B) wrong. C) wrong. D) wrong.'
 - id: effective
   prompt: Init requests 200m before a 100m sidecar, a 900m init follows the sidecar, app needs 500m. What is the effective CPU request?
-  choices: [500m, 600m, 1000m, 1700m]
-  answer: [2]
-  explain: 'A) wrong. B) wrong: that is the steady state. C) correct: 900m plus the 100m sidecar already running. D) wrong.'
+  choices: [1000m, 500m, 1700m, 600m]
+  answer: [0]
+  explain: 'A) correct: 900m plus the 100m sidecar already running. B) wrong. C) wrong. D) wrong: that is the steady state.'
 - id: idempotent
   prompt: Why must init containers be idempotent?
-  choices: [They can run again if the Pod sandbox is recreated or the container retries, They run in parallel, They share a process namespace, They are scheduled separately]
+  choices: [They can run again if the Pod sandbox is recreated or the container retries, They are scheduled separately, They run in parallel, They share a process namespace]
   answer: [0]
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: job
   prompt: What problem do native sidecars remove for Jobs? (select two)
-  choices: [A long-running helper keeping the Pod alive after the main container exits, The need for scripts that kill the helper, Image pulls, Node selection]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+  choices: [A long-running helper keeping the Pod alive after the main container exits, Image pulls, Node selection, The need for scripts that kill the helper]
+  answer: [0, 3]
+  explain: 'A) correct. B) wrong. C) wrong. D) correct.'

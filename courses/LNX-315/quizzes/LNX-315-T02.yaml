@@ -7,19 +7,19 @@ questions:
   explain: 'A) wrong: reversed. B) correct. C) wrong. D) wrong: a device can offer dozens or hundreds.'
 - id: numvfs
   prompt: A PF has 8 VFs enabled and you want 4. What must you do?
-  choices: [Write 4 to sriov_numvfs directly, Write 0 and then 4, Unplug the card, Delete the VFs one by one]
-  answer: [1]
-  explain: 'A) wrong: the kernel refuses to change a non-zero count. B) correct. C) wrong. D) wrong.'
+  choices: [Unplug the card, Delete the VFs one by one, Write 0 and then 4, Write 4 to sriov_numvfs directly]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong: the kernel refuses to change a non-zero count.'
 - id: policy
   prompt: Which per-VF settings stop a guest from impersonating other hosts? (select two)
-  choices: [spoofchk on, A fixed MAC and a VLAN set from the PF, trust on, A larger max_tx_rate]
-  answer: [0, 1]
-  explain: 'A) correct: frames with another source MAC or VLAN are dropped. B) correct: the host decides the identity. C) wrong: trust lets the VF change its MAC and use promiscuous mode. D) wrong.'
+  choices: [trust on, A larger max_tx_rate, spoofchk on, A fixed MAC and a VLAN set from the PF]
+  answer: [2, 3]
+  explain: 'A) wrong: trust lets the VF change its MAC and use promiscuous mode. B) wrong. C) correct: frames with another source MAC or VLAN are dropped. D) correct: the host decides the identity.'
 - id: visibility
   prompt: Why can tcpdump on the host miss a guest's SR-IOV traffic?
-  choices: [Traffic is encrypted, The data path bypasses the host network stack, VFs have no MAC, tcpdump cannot read PCI]
-  answer: [1]
-  explain: 'A) wrong. B) correct: use switchdev mode with representors and offload to restore host-side visibility. C) wrong. D) wrong.'
+  choices: [tcpdump cannot read PCI, Traffic is encrypted, VFs have no MAC, The data path bypasses the host network stack]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: use switchdev mode with representors and offload to restore host-side visibility.'
 - id: migration
   prompt: How is a guest with a VF usually migrated today?
   choices: [Ordinary live migration works unchanged, A virtio standby carries traffic while the VF is unplugged, then a VF is plugged back in on the destination, Shut the guest down permanently, Copy the VF's registers with rsync]

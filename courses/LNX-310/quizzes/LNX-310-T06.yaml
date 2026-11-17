@@ -3,35 +3,35 @@ questions:
 - id: auth-challenge
   prompt: What does a 401 with a WWW-Authenticate Bearer header from GET /v2/ tell the client?
   choices:
-  - That the image does not exist
-  - That TLS failed
-  - Where to get a token and for which service and scope
   - That the registry is down
+  - Where to get a token and for which service and scope
+  - That TLS failed
+  - That the image does not exist
   answer:
-  - 2
-  explain: 'A) Wrong: a missing image is a 404 on a manifest. B) Wrong: TLS failures happen before HTTP. C) Correct: realm, service and scope parameters drive the token request. D) Wrong: a down registry
-    does not answer with this header.'
+  - 1
+  explain: 'A) Wrong: a down registry
+    does not answer with this header. B) Correct: realm, service and scope parameters drive the token request. C) Wrong: TLS failures happen before HTTP. D) Wrong: a missing image is a 404 on a manifest.'
 - id: copy-all
   prompt: Why does skopeo copy of a multi-arch tag need --all to keep every platform?
   choices:
+  - Without it the copy is read-only
   - --all enables compression
   - --all disables signatures
-  - Without it the copy is read-only
   - Without it only the host platform's manifest is copied
   answer:
   - 3
-  explain: 'A) Wrong: compression is controlled by other options. B) Wrong: signature handling is separate. C) Wrong: nothing about read-only. D) Correct: the default copies a single-platform image and
+  explain: 'A) Wrong: nothing about read-only. B) Wrong: compression is controlled by other options. C) Wrong: signature handling is separate. D) Correct: the default copies a single-platform image and
     loses the index.'
 - id: preserve-digests
   prompt: What does --preserve-digests guarantee?
   choices:
-  - The image is signed
   - Tags are copied too
-  - The manifest bytes and therefore the digest stay unchanged, or the copy fails
+  - The image is signed
   - Layers are recompressed with zstd
+  - The manifest bytes and therefore the digest stay unchanged, or the copy fails
   answer:
-  - 2
-  explain: 'A) Wrong: signing is --sign-by. B) Wrong: tags are part of the destination name only. C) Correct: it fails rather than convert formats. D) Wrong: recompression would change digests.'
+  - 3
+  explain: 'A) Wrong: tags are part of the destination name only. B) Wrong: signing is --sign-by. C) Wrong: recompression would change digests. D) Correct: it fails rather than convert formats.'
 - id: prefix-location
   prompt: In a registries.conf [[registry]] block, what do prefix and location do?
   choices:
@@ -46,21 +46,21 @@ questions:
 - id: mirror-digest
   prompt: When is pull-from-mirror = "digest-only" appropriate?
   choices:
+  - When the mirror lacks TLS
   - When tags must always be refreshed
   - When pulling from Docker Hub only
   - When a mirror is trusted only for content addressed by digest
-  - When the mirror lacks TLS
   answer:
-  - 2
-  explain: 'A) Wrong: digest-only mirrors are skipped for tags. B) Wrong: it applies to any registry. C) Correct: digest pulls are verified so a stale mirror cannot serve the wrong content. D) Wrong: TLS
-    use is an independent setting.'
+  - 3
+  explain: 'A) Wrong: TLS
+    use is an independent setting. B) Wrong: digest-only mirrors are skipped for tags. C) Wrong: it applies to any registry. D) Correct: digest pulls are verified so a stale mirror cannot serve the wrong content.'
 - id: short-names
   prompt: What risk does short-name-mode = enforcing reduce?
   choices:
   - Slow pulls
+  - An ambiguous short name being satisfied by an untrusted registry
   - Large images
   - Expired certificates
-  - An ambiguous short name being satisfied by an untrusted registry
   answer:
-  - 3
-  explain: 'A) Wrong: speed is unaffected. B) Wrong: image size is unrelated. C) Wrong: certificate validity is checked separately. D) Correct: it prompts or fails instead of silently choosing.'
+  - 1
+  explain: 'A) Wrong: speed is unaffected. B) Correct: it prompts or fails instead of silently choosing. C) Wrong: image size is unrelated. D) Wrong: certificate validity is checked separately.'

@@ -33,6 +33,38 @@ Each milestone page lists the lessons from earlier courses it relies on. Read th
 
 Pass is 70. Anything that cannot be shown (for example a stage you could not run) must be said plainly with the reason; unconfirmed claims are marked "(to verify)" and are not marked down for that.
 
+## Score levels
+
+Each rubric area is marked at one of four levels, so two markers reach the same number.
+
+| Level | Share of the area's points | What it looks like |
+|---|---:|---|
+| Full | 100% | Everything in the Full marks column, with evidence a stranger can check |
+| Most | 70% | It works, but one element of Full marks is missing or its evidence is thin |
+| Some | 40% | A design or partial build exists, but the working evidence is missing |
+| None | 0% | Not attempted, or the evidence does not support the claim |
+
+A substitute from the fallback table below is marked the same way, but cannot score above Most for that area.
+
+## Resources and time budget
+
+These are planning estimates, not limits. Record your actual figures in the README.
+
+| Item | Estimate |
+|---|---|
+| Lab host | 16 GB RAM, 8 cores and about 100 GB of disk for kernel trees and two build directories (x86_64 and arm64) |
+| Time | about 100 hours: milestone 1 about 25, 2 about 15, 3 about 15, 4 about 15 plus weeks of waiting, 5 about 15, 6 about 15 of work over at least two days of running |
+| Board | any low-cost arm64 board with a 3.3 V serial console, about 50 to 100 US dollars |
+| Fuzzing | a host that can run several VMs for two days; a spare desktop is enough |
+
+## If you cannot run a milestone
+
+| Milestone | Substitute | Area affected |
+|---|---|---|
+| 4 Public review | If no reply arrives in time, submit the archive link and your v2 prepared from a mock review by a peer; a real reply still earns more | Public review |
+| 5 Real board | Boot on QEMU `virt` with a board-like device tree and explain three things real hardware would change | Real board |
+| 6 Multi-day campaign | Run at least twelve hours on your own machine with the same configuration and triage what you find | Fuzzing campaign |
+
 ## Rules
 
 - Original work. You may follow vendor and project documentation but write your own code and prose.

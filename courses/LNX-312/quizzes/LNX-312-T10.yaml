@@ -2,26 +2,26 @@ title: 'Quiz: MetalLB and BGP'
 questions:
 - id: l2-lb
   prompt: What does MetalLB layer-2 mode provide for one address?
-  choices: [Failover with a single owner node at a time, ECMP load balancing, BGP sessions, Encryption]
-  answer: [0]
-  explain: 'A) correct. B) wrong: that is BGP mode. C) wrong. D) wrong.'
+  choices: [BGP sessions, Encryption, ECMP load balancing, Failover with a single owner node at a time]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong: that is BGP mode. D) correct.'
 - id: strict-arp
   prompt: kube-proxy runs in IPVS mode and layer-2 mode misbehaves. What setting is required?
-  choices: [strictARP true, ndots 2, hostNetwork on speakers, externalTrafficPolicy Cluster]
-  answer: [0]
-  explain: 'A) correct: otherwise every node answers ARP for every address. B) wrong. C) wrong. D) wrong.'
+  choices: [ndots 2, strictARP true, externalTrafficPolicy Cluster, hostNetwork on speakers]
+  answer: [1]
+  explain: 'A) wrong. B) correct: otherwise every node answers ARP for every address. C) wrong. D) wrong.'
 - id: local
   prompt: Which are effects of externalTrafficPolicy Local with BGP? (select two)
-  choices: [The client source address is preserved, Only nodes with ready endpoints announce the address, All nodes announce, Traffic is NATed twice]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+  choices: [The client source address is preserved, All nodes announce, Only nodes with ready endpoints announce the address, Traffic is NATed twice]
+  answer: [0, 2]
+  explain: 'A) correct. B) wrong. C) correct. D) wrong.'
 - id: filter
   prompt: Why put a prefix filter on the router side?
-  choices: [A mistaken announcement from a node cannot hijack other networks, It speeds up ARP, It enables BFD, It is needed for IPv6 only]
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  choices: [It is needed for IPv6 only, It enables BFD, A mistaken announcement from a node cannot hijack other networks, It speeds up ARP]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: ecmp
   prompt: Which kernel or router setting spreads different connections between two hosts over several paths?
-  choices: [A multipath hash policy that includes L4 ports, Lower MTU, Larger ARP cache, Disabling BGP]
-  answer: [0]
-  explain: 'A) correct: address-only hashing keeps all flows on one path. B) wrong. C) wrong. D) wrong.'
+  choices: [Lower MTU, Larger ARP cache, Disabling BGP, A multipath hash policy that includes L4 ports]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: address-only hashing keeps all flows on one path.'

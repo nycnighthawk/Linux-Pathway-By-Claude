@@ -3,66 +3,63 @@ questions:
 - id: kernel
   prompt: What do a system container and its host share?
   choices:
-  - The kernel
   - The init system
-  - The root filesystem
+  - The kernel
   - The hardware clock only
+  - The root filesystem
   answer:
-  - 0
-  explain: 'A) correct: containers use host kernel namespaces, so isolation depends on it. B) wrong: the container
-    runs its own init. C) wrong: it has its own tree. D) wrong: it shares much more.'
+  - 1
+  explain: 'A) wrong: the container
+    runs its own init. B) correct: containers use host kernel namespaces, so isolation depends on it. C) wrong: it shares much more. D) wrong: it has its own tree.'
 - id: userns
   prompt: What does PrivateUsers=pick (user namespace) change?
   choices:
-  - Nothing visible
-  - Root inside maps to an unprivileged range outside
   - It enables Boot=yes
   - It limits memory
+  - Nothing visible
+  - Root inside maps to an unprivileged range outside
   answer:
-  - 1
-  explain: 'A) wrong: it changes who root is. B) correct: an escape does not give host root. C) wrong: separate
-    setting. D) wrong: that is MemoryMax.'
+  - 3
+  explain: 'A) wrong: separate
+    setting. B) wrong: that is MemoryMax. C) wrong: it changes who root is. D) correct: an escape does not give host root.'
 - id: where
   prompt: Where do nspawn resource limits belong?
   choices:
-  - In the .nspawn [Exec] section
   - In a drop-in for systemd-nspawn@NAME.service
   - In /etc/fstab
   - In /proc
+  - In the .nspawn [Exec] section
   answer:
-  - 1
-  explain: 'A) wrong: limits are unit properties. B) correct: MemoryMax=, TasksMax= and Delegate= are service settings.
-    C) wrong: unrelated. D) wrong: not persistent.'
+  - 0
+  explain: 'A) correct: MemoryMax=, TasksMax= and Delegate= are service settings. B) wrong: unrelated. C) wrong: not persistent. D) wrong: limits are unit properties.'
 - id: incus
   prompt: What is Incus?
   choices:
-  - A systemd tool
-  - A community fork of LXD that manages containers and VMs through one API
   - A container image format
+  - A systemd tool
   - A Kubernetes distribution
+  - A community fork of LXD that manages containers and VMs through one API
   answer:
-  - 1
-  explain: 'A) wrong: not systemd. B) correct: forked in 2023 after Canonical took LXD in-house. C) wrong: not that.
-    D) wrong: no.'
+  - 3
+  explain: 'A) wrong: not that. B) wrong: not systemd. C) wrong: no. D) correct: forked in 2023 after Canonical took LXD in-house.'
 - id: choose
   prompt: Which workload suits a VM rather than a system container?
   choices:
-  - A Debian build tree
-  - Hostile tenants or a guest needing its own kernel
   - Many small trusted services
+  - Hostile tenants or a guest needing its own kernel
   - A test of package installs
+  - A Debian build tree
   answer:
   - 1
-  explain: 'A) wrong: a container is fine. B) correct: shared kernel is too weak a boundary. C) wrong: containers
-    are denser. D) wrong: a container is fine.'
+  explain: 'A) wrong: containers
+    are denser. B) correct: shared kernel is too weak a boundary. C) wrong: a container is fine. D) wrong: a container is fine.'
 - id: meminfo
   prompt: A Java service in a container sizes its heap from the host's memory. Why?
   choices:
-  - Java ignores limits
+  - The container is privileged
   - /proc/meminfo shows host values unless lxcfs or limit-aware software corrects it
   - The cgroup is v1
-  - The container is privileged
+  - Java ignores limits
   answer:
   - 1
-  explain: 'A) wrong: not Java-specific. B) correct: cgroup limits are not visible there by default. C) wrong: unrelated.
-    D) wrong: unrelated.'
+  explain: 'A) wrong: unrelated. B) correct: cgroup limits are not visible there by default. C) wrong: unrelated. D) wrong: not Java-specific.'

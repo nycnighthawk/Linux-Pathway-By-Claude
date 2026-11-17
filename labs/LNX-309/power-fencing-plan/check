@@ -18,7 +18,7 @@ eq ssh_login_device_in_production never
 eq level1 bmc
 eq level2 switched_pdu
 eq dual_psu_outlets_same_level yes
-eq two_node_delay_on node_to_sacrifice
+eq two_node_delay_on node_to_keep
 eq test_device_command "pcs stonith fence"
 eq test_real_failure cut_cluster_link_or_block_corosync
 eq bad_test local_interface_down_only

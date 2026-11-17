@@ -4,19 +4,19 @@ questions:
   prompt: Why should exactly one tool manage an interface?
   choices:
   - It saves memory
+  - The kernel allows one manager
   - Two managers overwrite each other's addresses and routes
   - Only one tool can read YAML
-  - The kernel allows one manager
   answer:
-  - 1
+  - 2
   explain: Competing managers fight over the same state, giving settings that change by themselves.
 - id: netplan-try
   prompt: Which command applies a netplan change and rolls it back unless you confirm?
   choices:
   - netplan generate
-  - netplan get
-  - netplan try
   - netplan apply
+  - netplan try
+  - netplan get
   answer:
   - 2
   explain: try applies, then reverts after a timeout without confirmation.
@@ -24,29 +24,29 @@ questions:
   prompt: After nmcli connection modify, what makes the change take effect on a running link?
   choices:
   - Nothing, it is immediate
-  - Rebooting only
   - nmcli device delete
   - nmcli connection up <profile>
+  - Rebooting only
   answer:
-  - 3
+  - 2
   explain: modify edits the stored profile; reactivating it applies the change.
 - id: netplan-root
   prompt: How do you render netplan into a scratch directory without touching the host?
   choices:
-  - netplan set DIR
   - netplan generate --root-dir DIR
   - netplan apply --dry-run
+  - netplan set DIR
   - netplan try --root DIR
   answer:
-  - 1
+  - 0
   explain: --root-dir makes generate read and write below that directory.
 - id: keyfile-perm
   prompt: What ownership and mode must NetworkManager keyfiles have?
   choices:
   - root, 0600
-  - any owner, 0644
-  - root, 0666
   - user, 0700
+  - root, 0666
+  - any owner, 0644
   answer:
   - 0
   explain: Profiles may contain secrets, so NetworkManager refuses files with open permissions.
@@ -65,8 +65,8 @@ questions:
   choices:
   - nmcli device show eth0
   - ip rule
-  - netplan status eth0 --raw
   - networkctl status eth0
+  - netplan status eth0 --raw
   answer:
-  - 3
+  - 2
   explain: networkctl status lists addresses, gateway, DNS and the unit that matched.

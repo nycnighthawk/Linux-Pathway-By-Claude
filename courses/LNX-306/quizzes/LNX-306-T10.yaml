@@ -13,50 +13,50 @@ questions:
 - id: ephemeral
   prompt: What is the danger of storing important data on an ephemeral disk?
   choices:
-  - It is lost when the machine is deallocated or moved
   - It is always encrypted
+  - It is lost when the machine is deallocated or moved
   - It cannot be read
   - It is slower than network storage in every case
   answer:
-  - 0
-  explain: 'A) correct: use it only for disposable data such as swap or caches. B) wrong: unrelated. C) wrong: readable while attached. D) wrong: often faster.'
+  - 1
+  explain: 'A) wrong: unrelated. B) correct: use it only for disposable data such as swap or caches. C) wrong: readable while attached. D) wrong: often faster.'
 - id: userdata
   prompt: Why avoid secrets in user data?
   choices:
-  - Anything that can reach the metadata service can read it, and the platform stores it
+  - It slows the boot
   - User data is limited to 3 lines
   - cloud-init ignores secrets
-  - It slows the boot
+  - Anything that can reach the metadata service can read it, and the platform stores it
   answer:
-  - 0
-  explain: 'A) correct: use a secret manager and the instance role. B) wrong: no such limit. C) wrong: it does not. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: no such limit. C) wrong: it does not. D) correct: use a secret manager and the instance role.'
 - id: imds
   prompt: What does requiring tokens on the metadata service defend against?
   choices:
-  - Simple server-side request forgery that tries to fetch role credentials with a plain GET
-  - Disk failure
-  - DNS outages
   - Kernel updates
+  - DNS outages
+  - Disk failure
+  - Simple server-side request forgery that tries to fetch role credentials with a plain GET
   answer:
-  - 0
-  explain: 'A) correct: a token needs a PUT with a header that a forged request usually cannot make. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) wrong: unrelated. D) correct: a token needs a PUT with a header that a forged request usually cannot make.'
 - id: role
   prompt: What is the advantage of an instance role over static access keys?
   choices:
   - Credentials are issued by the platform, short-lived and bound to the instance, so nothing long-lived is stored
-  - Roles have no permissions
   - Roles work only offline
+  - Roles have no permissions
   - Keys are faster
   answer:
   - 0
-  explain: 'A) correct: nothing to leak from disk or repositories. B) wrong: they carry permissions, kept minimal. C) wrong: unrelated. D) wrong: unrelated.'
+  explain: 'A) correct: nothing to leak from disk or repositories. B) wrong: unrelated. C) wrong: they carry permissions, kept minimal. D) wrong: unrelated.'
 - id: rollout
   prompt: How do you roll a new image out to an auto scaling group?
   choices:
-  - Change the template to the new image and replace instances gradually
-  - Log in to each machine and upgrade by hand
-  - Edit the running instances' disks
   - Delete the group
+  - Log in to each machine and upgrade by hand
+  - Change the template to the new image and replace instances gradually
+  - Edit the running instances' disks
   answer:
-  - 0
-  explain: 'A) correct: rolling replacement with health checks. B) wrong: that creates drift. C) wrong: unsafe. D) wrong: causes an outage.'
+  - 2
+  explain: 'A) wrong: causes an outage. B) wrong: that creates drift. C) correct: rolling replacement with health checks. D) wrong: unsafe.'

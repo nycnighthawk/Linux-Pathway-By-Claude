@@ -3,12 +3,12 @@ questions:
 - id: daemons
   prompt: Which daemon serves file and print requests for SMB clients and forks one process per connection?
   choices:
-  - winbindd
-  - samba-tool
   - smbd
+  - samba-tool
+  - winbindd
   - nmbd
   answer:
-  - 2
+  - 0
   explain: smbd handles negotiation, authentication and file/print operations. nmbd only answers NetBIOS names and browsing,
     winbindd maps domain accounts to Unix ids, and samba-tool is an administration command, not a daemon.
 - id: shadow
@@ -26,32 +26,32 @@ questions:
 - id: testparm
   prompt: What does testparm -s do?
   choices:
-  - Lists connected clients
-  - Parses smb.conf and prints the effective configuration, failing on errors
   - Starts a test share for clients
   - Restarts smbd
+  - Parses smb.conf and prints the effective configuration, failing on errors
+  - Lists connected clients
   answer:
-  - 1
+  - 2
   explain: testparm validates syntax and prints the resulting parameters. It starts nothing and restarts nothing; connected
     clients are listed by smbstatus.
 - id: acl-xattr
   prompt: With vfs objects = acl_xattr, where is the Windows security descriptor kept?
   choices:
+  - In a database on the client
   - In the file's three mode digits
   - In the security.NTACL extended attribute of each file
   - In /etc/samba/smb.conf
-  - In a database on the client
   answer:
-  - 1
+  - 2
   explain: acl_xattr stores the full descriptor in an extended attribute, so the filesystem must support xattrs. smb.conf
     holds configuration, not per-file ACLs; clients keep nothing; the mode bits cannot express deny entries or inheritance.
 - id: denied
   prompt: A share has valid users = @staff and create mask = 0660, alice authenticates fine, yet cannot write. The directory
     is root:root 0755. What is the cause?
   choices:
-  - SMB signing blocks writes
   - nmbd is not running
   - valid users must list individual names
+  - SMB signing blocks writes
   - create mask only affects new files; the directory itself denies alice
   answer:
   - 3
@@ -60,12 +60,12 @@ questions:
 - id: proto
   prompt: What is the safest response when an old scanner only speaks SMB1?
   choices:
-  - Lower server min protocol to NT1 for all shares
-  - Open port 139 to the internet
-  - Disable signing
   - Isolate it on a separate exception (another instance or an SFTP/HTTPS upload) with a review date
+  - Disable signing
+  - Open port 139 to the internet
+  - Lower server min protocol to NT1 for all shares
   answer:
-  - 3
+  - 0
   explain: SMB1 carries known remote exploits, so enabling it globally exposes every client. Disabling signing weakens all
     sessions, and exposing 139 widens the attack surface without fixing the dialect issue.
 - id: mac
@@ -73,8 +73,8 @@ questions:
   choices:
   - streams_xattr before fruit
   - fruit before streams_xattr, enabled globally
-  - fruit only on one share
   - Either order works
+  - fruit only on one share
   answer:
   - 1
   explain: fruit must be listed before streams_xattr, and because clients negotiate the Apple extensions on first connection

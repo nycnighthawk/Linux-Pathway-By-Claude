@@ -3,70 +3,70 @@ questions:
 - id: strace-cost
   prompt: Why can strace be dangerous on a busy production process?
   choices:
-  - It deletes files
   - ptrace stops the process on every call, slowing it heavily
-  - It needs a reboot
   - It only works on idle hosts
+  - It needs a reboot
+  - It deletes files
   answer:
-  - 1
+  - 0
   explain: Tracing every syscall via ptrace can slow a process by an order of magnitude and change timing.
 - id: failed-calls
   prompt: Which option shows only failing system calls?
   choices:
   - -c
-  - -e status=failed
-  - -T
   - -p
+  - -T
+  - -e status=failed
   answer:
-  - 1
+  - 3
   explain: -e status=failed filters to calls that returned an error, ideal for missing files and permissions.
 - id: flame-width
   prompt: In a flame graph, what does a frame's width show?
   choices:
-  - Elapsed time on the x axis
-  - Share of samples containing that function
-  - Memory used
   - The number of threads
+  - Memory used
+  - Share of samples containing that function
+  - Elapsed time on the x axis
   answer:
-  - 1
+  - 2
   explain: Width is the proportion of stack samples; the x axis is not time.
 - id: perf-limit
   prompt: What does perf record not show well?
   choices:
   - CPU-bound hot functions
-  - Where threads wait off-CPU on locks or I/O
-  - Call stacks with frame pointers
   - Cache misses
+  - Call stacks with frame pointers
+  - Where threads wait off-CPU on locks or I/O
   answer:
-  - 1
+  - 3
   explain: Sampling on-CPU time misses blocked time; use off-CPU analysis from eBPF tracing.
 - id: tracepoint
   prompt: Why prefer a tracepoint to a kprobe in a script you will keep?
   choices:
-  - It is slower
   - It is a stable kernel interface, internal functions may change
-  - It needs no privileges
   - It prints more
+  - It needs no privileges
+  - It is slower
   answer:
-  - 1
+  - 0
   explain: Tracepoints are maintained interfaces; kprobes on internal functions break across versions.
 - id: bpftrace-agg
   prompt: What does @[comm] = count() do?
   choices:
-  - Prints every event
-  - Counts events per process name in a kernel map
   - Kills the process
   - Records a core dump
+  - Prints every event
+  - Counts events per process name in a kernel map
   answer:
-  - 1
+  - 3
   explain: Maps aggregate in the kernel and only the summary is printed, giving low overhead.
 - id: short-lived
   prompt: Which tool finds short-lived processes that pidstat misses?
   choices:
-  - execsnoop
   - free
-  - df
   - uptime
+  - execsnoop
+  - df
   answer:
-  - 0
+  - 2
   explain: execsnoop traces every exec, so it catches processes that start and exit between samples.

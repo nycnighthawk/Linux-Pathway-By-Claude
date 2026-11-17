@@ -13,32 +13,32 @@ questions:
 - id: dig-vs-getent
   prompt: Why can dig succeed while an application cannot resolve the name?
   choices:
-  - dig uses a faster cache
+  - dig asks DNS only and ignores the switch and /etc/hosts
   - dig bypasses the firewall
   - dig is always right
-  - dig asks DNS only and ignores the switch and /etc/hosts
+  - dig uses a faster cache
   answer:
-  - 3
+  - 0
   explain: getent hosts follows the name service switch like an application does.
 - id: tilde
   prompt: What does Domains=~lab.test do in systemd-resolved?
   choices:
-  - Blocks lab.test
-  - Enables DNSSEC for lab.test
-  - Caches lab.test forever
   - Routes lab.test queries to that link's server without adding a search suffix
+  - Enables DNSSEC for lab.test
+  - Blocks lab.test
+  - Caches lab.test forever
   answer:
-  - 3
+  - 0
   explain: A tilde marks a routing-only domain.
 - id: resolvectl
   prompt: Which command shows which server and domains each link uses?
   choices:
-  - resolvectl status
-  - resolvectl flush-caches
-  - dig +trace
   - getent hosts
+  - resolvectl flush-caches
+  - resolvectl status
+  - dig +trace
   answer:
-  - 0
+  - 2
   explain: status lists global and per-link DNS servers and domains.
 - id: nxdomain
   prompt: What does NXDOMAIN mean?
@@ -63,10 +63,10 @@ questions:
 - id: generated
   prompt: Which file should you change instead of editing a generated resolv.conf?
   choices:
-  - The symlink target by hand
   - /etc/hosts
-  - /etc/services
+  - The symlink target by hand
   - The manager's configuration or a resolved drop-in
+  - /etc/services
   answer:
-  - 3
+  - 2
   explain: Generated files are overwritten; configure the owner (NetworkManager, networkd or resolved).

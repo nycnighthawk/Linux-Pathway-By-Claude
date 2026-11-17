@@ -87,6 +87,9 @@ def _validate(data, schema: dict, where: str) -> list[Issue]:
 
 
 # ------------------------------------------------------------------ check
+LETTERED = re.compile(r"(?:(?<=^)|(?<=[\s'\"]))([A-H])(?:\)|(?= \((?:correct|wrong|right|incorrect)))", re.I)
+
+
 def _strip_fences(md: str) -> str:
     return re.sub(r"^```.*?^```", "", md, flags=re.S | re.M)
 
@@ -178,6 +181,7 @@ def _check_course(root: Path, cid: str, strict: bool) -> list[Issue]:
             elif not (f.parent / url.split("#")[0]).resolve().is_relative_to(base.resolve()) or not (f.parent / url.split("#")[0]).exists():
                 err(w, f"link {url}: file not found in the course")
 
+    positions: dict[int, int] = {}
     for q in quizzes.values():                                         # quiz keys
         qf = base / q.get("file", "")
         qw = f"courses/{cid}/{q.get('file')}"
@@ -202,6 +206,20 @@ def _check_course(root: Path, cid: str, strict: bool) -> list[Issue]:
                 err(qw, f"questions/{k}/answer: {ans} is not a set of valid choice indexes (0..{n - 1})")
             if ans and n and len(ans) >= n:
                 err(qw, f"questions/{k}/answer: every choice is marked correct")
+            if len(ans) == 1 and isinstance(ans[0], int):
+                positions[ans[0]] = positions.get(ans[0], 0) + 1
+            explain = str(qu.get("explain") or "")
+            if 0 < len(explain.split()) < 6:
+                issues.append(Issue("warn", qw, f"{qid}: explanation is under six words; say why the answer is right"))
+            marks = list(LETTERED.finditer(explain))
+            if n and [m.group(1).upper() for m in marks] == [chr(65 + i) for i in range(n)]:
+                said = {i for i, m in enumerate(marks) if explain[m.end():].lstrip(" (").lower().startswith(("correct", "right"))}
+                if said != set(ans):
+                    err(qw, f"{qid}: lettered explanation calls {sorted(said)} correct but the answer key is {sorted(ans)}")
+    total = sum(positions.values())
+    if total >= 20 and max(positions.values()) > 0.45 * total:
+        top = max(positions, key=positions.get)
+        issues.append(Issue("warn", where, f"{positions[top]} of {total} single-answer questions put the answer at position {top}; shuffle the choices"))
 
     for lab_id, lab in labs.items():                                   # lab layout and licence
         d = lab_dir(root, cid, lab_id)

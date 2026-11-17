@@ -3,13 +3,13 @@ questions:
 - id: repomd
   prompt: Which file does a dnf client read first, and which is therefore the one to sign?
   choices:
-  - primary.xml.gz
-  - repodata/repomd.xml
   - the .repo file
   - the largest package
+  - repodata/repomd.xml
+  - primary.xml.gz
   answer:
-  - 1
-  explain: 'A) wrong: it is listed by repomd.xml. B) correct: it lists the other metadata files and their checksums. C) wrong: that is client configuration. D) wrong: packages are fetched later.'
+  - 2
+  explain: 'A) wrong: that is client configuration. B) wrong: packages are fetched later. C) correct: it lists the other metadata files and their checksums. D) wrong: it is listed by repomd.xml.'
 - id: update
   prompt: What is createrepo_c --update for?
   choices:
@@ -23,13 +23,13 @@ questions:
 - id: pulpchain
   prompt: In Pulp 3, what does a distribution do?
   choices:
-  - Downloads content from upstream
-  - Maps a stable URL path to a publication
-  - Stores private keys
   - Builds packages
+  - Stores private keys
+  - Maps a stable URL path to a publication
+  - Downloads content from upstream
   answer:
-  - 1
-  explain: 'A) wrong: that is a remote and a sync. B) correct: moving the distribution to another publication is the rollback. C) wrong: signing services do that. D) wrong: Pulp manages content, not builds.'
+  - 2
+  explain: 'A) wrong: Pulp manages content, not builds. B) wrong: signing services do that. C) correct: moving the distribution to another publication is the rollback. D) wrong: that is a remote and a sync.'
 - id: ondemand
   prompt: What is the trade-off of the Pulp on_demand policy?
   choices:
@@ -53,10 +53,10 @@ questions:
 - id: flat
   prompt: How does a client source entry for a flat Debian repository end?
   choices:
-  - With the suite name
   - With ./ in place of a suite and component
   - With a port number
+  - With the suite name
   - With .rpm
   answer:
-  - 1
-  explain: 'A) wrong: that is the dists layout. B) correct: the slash form means Packages and Release sit in that directory. C) wrong: not part of the syntax. D) wrong: that is the other family.'
+  - 0
+  explain: 'A) correct: the slash form means Packages and Release sit in that directory. B) wrong: not part of the syntax. C) wrong: that is the dists layout. D) wrong: that is the other family.'

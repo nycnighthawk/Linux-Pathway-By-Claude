@@ -3,85 +3,83 @@ questions:
 - id: who-does-what
   prompt: Which component decides where getpwnam() looks for a user?
   choices:
+  - sshd_config
   - PAM
   - nsswitch.conf, which lists the sources in order
-  - sshd_config
   - krb5.conf
   answer:
-  - 1
-  explain: 'A (wrong): PAM handles authentication, account, password and session tasks, not name lookups. B (correct):
-    The Name Service Switch tells libc which modules (files, sss, and so on) to ask, in sequence. C (wrong): sshd
-    uses the lookups; it does not define them. D (wrong): It configures Kerberos clients, not identity lookups.'
+  - 2
+  explain: 'A (wrong): sshd
+    uses the lookups; it does not define them. B (wrong): PAM handles authentication, account, password and session tasks, not name lookups. C (correct):
+    The Name Service Switch tells libc which modules (files, sss, and so on) to ask, in sequence. D (wrong): It configures Kerberos clients, not identity lookups.'
 - id: authselect
   prompt: What does 'authselect select sssd with-mkhomedir' change?
   choices:
-  - sssd.conf, the SSSD daemon and the domain
   - The generated PAM stacks and nsswitch.conf for the chosen profile and features
   - The kernel's UID range
+  - sssd.conf, the SSSD daemon and the domain
   - Only the home directory permissions
   answer:
-  - 1
-  explain: 'A (wrong): authselect never configures the daemon. B (correct): It writes PAM and nsswitch files only;
-    SSSD must be configured and running separately. C (wrong): UID ranges are a different mechanism. D (wrong):
+  - 0
+  explain: 'A (correct): It writes PAM and nsswitch files only;
+    SSSD must be configured and running separately. B (wrong): UID ranges are a different mechanism. C (wrong): authselect never configures the daemon. D (wrong):
     The feature adds a session module that creates homes; the profile changes much more.'
 - id: sssd-conf-mode
   prompt: SSSD refuses to start with a configuration file that is readable by other users. What mode is expected
     for /etc/sssd/sssd.conf?
   choices:
-  - '0644'
-  - 0600 owned by root
   - '0777'
   - Any mode, if SELinux is enforcing
+  - 0600 owned by root
+  - '0644'
   answer:
-  - 1
-  explain: 'A (wrong): World-readable files can hold bind passwords and SSSD rejects them. B (correct): The file
-    may contain secrets, so it must be accessible to root only. C (wrong): Even less restrictive and equally rejected.
-    D (wrong): SSSD checks the mode itself.'
+  - 2
+  explain: 'A (wrong): Even less restrictive and equally rejected. B (wrong): SSSD checks the mode itself. C (correct): The file
+    may contain secrets, so it must be accessible to root only. D (wrong): World-readable files can hold bind passwords and SSSD rejects them.'
 - id: tls-setting
   prompt: Which SSSD LDAP option makes a missing or invalid server certificate fatal?
   choices:
-  - ldap_tls_reqcert = demand
   - ldap_tls_reqcert = never
-  - cache_credentials = true
   - enumerate = false
+  - ldap_tls_reqcert = demand
+  - cache_credentials = true
   answer:
-  - 0
-  explain: 'A (correct): This requires a valid certificate and fails otherwise. B (wrong): This disables verification
-    entirely. C (wrong): This stores a password hash for offline logins. D (wrong): This only stops full listing
-    of users.'
+  - 2
+  explain: 'A (wrong): This disables verification
+    entirely. B (wrong): This only stops full listing
+    of users. C (correct): This requires a valid certificate and fails otherwise. D (wrong): This stores a password hash for offline logins.'
 - id: cache-staleness
   prompt: An administrator adds Alice to a group but sudo -l on a client shows no change for an hour. What is the
     likely reason?
   choices:
-  - The cached group entry has not yet expired (entry_cache_timeout); invalidate it with sss_cache -u or wait
   - PAM must be restarted
-  - nsswitch.conf was edited
   - The KDC is down
+  - nsswitch.conf was edited
+  - The cached group entry has not yet expired (entry_cache_timeout); invalidate it with sss_cache -u or wait
   answer:
-  - 0
-  explain: 'A (correct): SSSD answers from its cache until the entry is stale or invalidated. B (wrong): PAM modules
-    are loaded per process; no restart is involved. C (wrong): A changed order would affect every lookup, not one
-    group. D (wrong): Group membership comes from the identity provider, not from the KDC.'
+  - 3
+  explain: 'A (wrong): PAM modules
+    are loaded per process; no restart is involved. B (wrong): Group membership comes from the identity provider, not from the KDC. C (wrong): A changed order would affect every lookup, not one
+    group. D (correct): SSSD answers from its cache until the entry is stale or invalidated.'
 - id: nullok
   prompt: Why do compliance baselines remove 'nullok' from pam_unix lines?
   choices:
   - It slows logins
-  - It allows accounts with empty passwords to authenticate
-  - It disables account locking
   - It stops pam_sss from working
+  - It disables account locking
+  - It allows accounts with empty passwords to authenticate
   answer:
-  - 1
-  explain: 'A (wrong): Performance is not the concern. B (correct): nullok permits an empty password, so a blank
-    account becomes a login. C (wrong): Locking is handled by pam_faillock. D (wrong): They are independent modules.'
+  - 3
+  explain: 'A (wrong): Performance is not the concern. B (wrong): They are independent modules. C (wrong): Locking is handled by pam_faillock. D (correct): nullok permits an empty password, so a blank
+    account becomes a login.'
 - id: offline
   prompt: What makes an offline login possible with SSSD?
   choices:
+  - Enabling enumeration
   - cache_credentials, which stores a salted hash after a successful online login
   - Copying /etc/shadow from the server
   - Setting ldap_tls_reqcert to never
-  - Enabling enumeration
   answer:
-  - 0
-  explain: 'A (correct): SSSD checks the typed password against that hash when no server is reachable. B (wrong):
-    SSSD users have no entry in the local shadow file. C (wrong): The TLS setting has no bearing on offline mode.
-    D (wrong): Enumeration lists users; it does not store credentials.'
+  - 1
+  explain: 'A (wrong): Enumeration lists users; it does not store credentials. B (correct): SSSD checks the typed password against that hash when no server is reachable. C (wrong):
+    SSSD users have no entry in the local shadow file. D (wrong): The TLS setting has no bearing on offline mode.'

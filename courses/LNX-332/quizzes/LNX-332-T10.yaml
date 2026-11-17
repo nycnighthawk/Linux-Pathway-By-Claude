@@ -3,45 +3,45 @@ questions:
 - id: build
   prompt: Which build system does the VirtualBox tree use?
   choices:
-  - kBuild (kmk)
   - Bazel
-  - Meson only
+  - kBuild (kmk)
   - Ant
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - Meson only
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: svc
   prompt: What does VBoxSVC hold?
   choices:
-  - The registry of machines and global settings
   - The guest RAM
-  - The vCPU registers
   - The disk blocks
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - The registry of machines and global settings
+  - The vCPU registers
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: driver
   prompt: What is the role of vboxdrv?
   choices:
   - A small ring-0 driver giving the VM process privileged access to hardware virtualization
-  - The GUI
-  - The file system
   - The SDK
+  - The file system
+  - The GUI
   answer: [0]
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: api
   prompt: How are the Main API headers and language bindings produced?
   choices:
-  - Generated from an XML interface definition
-  - Written by hand for each language
   - Copied from QEMU
   - Not produced
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - Written by hand for each language
+  - Generated from an XML interface definition
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: broke
   prompt: The vboxdrv module fails to build after a host kernel update. What is the usual cause?
   choices:
-  - A kernel interface changed and the module sources need a newer drop or a patch
-  - The guest is too big
   - The GUI crashed
+  - A kernel interface changed and the module sources need a newer drop or a patch
   - The network is down
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - The guest is too big
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'

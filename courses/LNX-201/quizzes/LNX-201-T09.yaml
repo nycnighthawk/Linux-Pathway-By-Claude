@@ -3,40 +3,40 @@ questions:
 - id: roles
   prompt: In 802.1X, which role does the access point or switch play?
   choices:
-  - Supplicant
   - Authentication server
-  - Certificate authority
+  - Supplicant
   - Authenticator
+  - Certificate authority
   answer:
-  - 3
+  - 2
   explain: The client is the supplicant; RADIUS is the authentication server.
 - id: ca-cert
   prompt: Why set 802-1x.ca-cert in an enterprise profile?
   choices:
+  - So the client validates the server and rejects rogue access points
   - So the client can sign certificates
   - So the password is stored
   - To enable WPA3
-  - So the client validates the server and rejects rogue access points
   answer:
-  - 3
+  - 0
   explain: Without server validation a lookalike network can harvest credentials.
 - id: rfkill
   prompt: Which command shows whether a radio is soft or hard blocked?
   choices:
+  - nmcli connection show
   - wpa_cli status
   - rfkill list
   - iw reg get
-  - nmcli connection show
   answer:
-  - 1
+  - 2
   explain: rfkill reports software and hardware blocks.
 - id: regdomain
   prompt: What does a wrong regulatory domain commonly cause?
   choices:
   - Slow DNS
   - Some channels are missing from scans
-  - Passwords fail
   - No DHCP
+  - Passwords fail
   answer:
   - 1
   explain: The domain limits channels and transmit power.
@@ -44,17 +44,17 @@ questions:
   prompt: What is the main difference between personal and enterprise mode?
   choices:
   - Personal needs RADIUS
-  - Personal shares one passphrase; enterprise authenticates each user or device individually
-  - Personal is encrypted, enterprise is not
   - Enterprise uses WEP
+  - Personal is encrypted, enterprise is not
+  - Personal shares one passphrase; enterprise authenticates each user or device individually
   answer:
-  - 1
+  - 3
   explain: Enterprise uses 802.1X with EAP and a RADIUS server.
 - id: one-command
   prompt: Which settings must be given in one nmcli command for a PEAP profile?
   choices:
-  - Only the password
   - Only the CA path
+  - Only the password
   - The SSID and band
   - key-mgmt, eap, phase2-auth and identity
   answer:
@@ -63,10 +63,10 @@ questions:
 - id: baseline
   prompt: What do hardening baselines ask for on servers with radios?
   choices:
-  - WEP enabled
+  - Open networks only
   - Monitor mode
   - Wireless adapters disabled
-  - Open networks only
+  - WEP enabled
   answer:
   - 2
   explain: Disable radios you do not need, for example with nmcli radio all off.

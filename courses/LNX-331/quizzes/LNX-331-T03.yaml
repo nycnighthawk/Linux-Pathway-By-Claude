@@ -3,54 +3,54 @@ questions:
 - id: ids
   prompt: How does a PCI driver tell the kernel which devices it handles?
   choices:
-  - By a pci_device_id table of vendor and device IDs, exported with MODULE_DEVICE_TABLE
-  - By a hard-coded slot number
-  - By the module file name
   - By writing to /dev/mem
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - By a hard-coded slot number
+  - By a pci_device_id table of vendor and device IDs, exported with MODULE_DEVICE_TABLE
+  - By the module file name
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: readl
   prompt: Why use readl instead of dereferencing the mapped pointer?
   choices:
-  - It is shorter
-  - It supplies the right barriers and byte order for device registers
   - The pointer is invalid
   - It disables interrupts
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - It supplies the right barriers and byte order for device registers
+  - It is shorter
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: poll
   prompt: What is wrong with a while loop that polls a status bit with no limit?
   choices:
-  - Nothing
-  - A stuck device hangs the CPU forever, so bound the loop and return -ETIMEDOUT
   - It uses too much memory
+  - A stuck device hangs the CPU forever, so bound the loop and return -ETIMEDOUT
+  - Nothing
   - It is not allowed in user space
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: busaddr
   prompt: Which address is programmed into a device DMA register?
   choices:
-  - The kernel virtual address
-  - The bus address returned by the DMA API
   - The user-space pointer
+  - The bus address returned by the DMA API
+  - The kernel virtual address
   - The BAR number
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: posted
   prompt: What does a flush read after a register write guarantee?
   choices:
-  - The write has reached the device
   - The interrupt is acknowledged
   - The DMA is finished
+  - The write has reached the device
   - Nothing
-  answer: [0]
-  explain: 'A) correct: PCI writes are posted. B) wrong. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: PCI writes are posted. D) wrong.'
 - id: msi
   prompt: What does pci_alloc_irq_vectors with PCI_IRQ_ALL_TYPES do?
   choices:
-  - Allocates DMA memory
+  - Registers the driver
   - Obtains interrupt vectors of the best available type (MSI-X, MSI or legacy)
   - Maps a BAR
-  - Registers the driver
+  - Allocates DMA memory
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'

@@ -3,19 +3,19 @@ questions:
 - id: layers
   prompt: Which tool downloads package indexes and resolves dependencies?
   choices:
-  - apt
   - dpkg
-  - dpkg-query
   - dpkg-deb
+  - apt
+  - dpkg-query
   answer:
-  - 0
+  - 2
   explain: apt fetches and solves; dpkg only unpacks and records installed packages.
 - id: hold-state
   prompt: What does hi in the first columns of dpkg -l mean?
   choices:
+  - Hidden package
   - Half installed
   - Held and removed
-  - Hidden package
   - Held and installed
   answer:
   - 3
@@ -23,50 +23,50 @@ questions:
 - id: force-downgrade
   prompt: From which priority does apt install a version even if it means a downgrade?
   choices:
-  - '100'
   - '1000'
   - '990'
   - '500'
+  - '100'
   answer:
-  - 1
+  - 0
   explain: A priority of 1000 or more forces installation, even replacing a newer version.
 - id: negative
   prompt: What does a pin priority below zero do?
   choices:
-  - Marks it manual
-  - Holds the installed copy
-  - Forbids the version
   - Makes it the default
+  - Forbids the version
+  - Holds the installed copy
+  - Marks it manual
   answer:
-  - 2
+  - 1
   explain: A negative priority prevents the version from being installed.
 - id: policy
   prompt: Which command shows installed, candidate and priorities for a package?
   choices:
-  - dpkg -s foo
   - apt list foo
   - apt-cache policy foo
   - apt show foo
+  - dpkg -s foo
   answer:
-  - 2
+  - 1
   explain: apt-cache policy lists each version with its priority and source.
 - id: backports
   prompt: How do you install one package from bookworm-backports without moving the rest of the system?
   choices:
-  - apt install -t bookworm-backports foo
+  - dpkg -i foo
   - apt full-upgrade
   - apt-mark hold foo
-  - dpkg -i foo
+  - apt install -t bookworm-backports foo
   answer:
-  - 0
+  - 3
   explain: -t chooses a target release for that command; backports stay at low priority otherwise.
 - id: hold-tradeoff
   prompt: What is a downside of apt-mark hold?
   choices:
-  - It deletes the package
-  - It changes the architecture
   - It disables dpkg
   - It can hide security fixes and block dependent upgrades
+  - It changes the architecture
+  - It deletes the package
   answer:
-  - 3
+  - 1
   explain: A held package stays old, so record an owner and an end date for each hold.

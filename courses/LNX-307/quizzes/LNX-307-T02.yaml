@@ -3,71 +3,71 @@ questions:
 - id: first-line
   prompt: Why is the first line of vmstat 1 discarded?
   choices:
+  - It contains errors
   - It is a header
   - It is the average since boot
-  - It contains errors
   - It is always zero
   answer:
-  - 1
+  - 2
   explain: The first sample is the since-boot average; later lines are per-interval rates.
 - id: iostat-await
   prompt: Which iostat column best shows what an application experiences per I/O?
   choices:
   - '%util'
-  - r_await or w_await
-  - rkB/s
   - svctm
+  - rkB/s
+  - r_await or w_await
   answer:
-  - 1
+  - 3
   explain: await is queue time plus service time in milliseconds. %util is the fraction of time with a request in flight and
     misleads on parallel devices.
 - id: swap-cols
   prompt: Which vmstat columns show memory saturation?
   choices:
-  - us and sy
   - si and so
   - bi and bo only
   - in and cs
+  - us and sy
   answer:
-  - 1
+  - 0
   explain: Sustained swap-in and swap-out means the machine is paging because memory is short.
 - id: which-process
   prompt: Disk is busy. Which command names the process doing the I/O?
   choices:
-  - iostat -xz 1
-  - pidstat -d 1
-  - vmstat 1
   - sar -n DEV 1
+  - pidstat -d 1
+  - iostat -xz 1
+  - vmstat 1
   answer:
   - 1
   explain: pidstat -d reports per-process disk throughput. iostat shows devices, vmstat the whole system.
 - id: sar-history
   prompt: How do you view CPU use from 15:00 to 15:30 on the 14th?
   choices:
-  - sar -u -f /var/log/sa/sa14 -s 15:00:00 -e 15:30:00
   - vmstat -s 15:00
-  - iostat -c 14
+  - sar -u -f /var/log/sa/sa14 -s 15:00:00 -e 15:30:00
   - top -b -n 14
+  - iostat -c 14
   answer:
-  - 0
+  - 1
   explain: sar reads the recorded daily file; -s and -e bound the window. The others show only live data.
 - id: free-memory
   prompt: Which figure in free shows memory usable by new work without swapping?
   choices:
   - free
+  - shared
   - buff/cache
   - available
-  - shared
   answer:
-  - 2
+  - 3
   explain: available estimates what can be reclaimed; low free memory is normal because the kernel caches.
 - id: steal
   prompt: A guest shows high %st. What does it mean?
   choices:
+  - Swap is too small
+  - A process is stealing files
   - The disk is failing
   - The hypervisor is giving CPU time to others
-  - A process is stealing files
-  - Swap is too small
   answer:
-  - 1
+  - 3
   explain: Steal is time the guest wanted CPU but the hypervisor ran something else.

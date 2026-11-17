@@ -3,43 +3,43 @@ questions:
 - id: header
   prompt: What happens if user-data has no #cloud-config first line?
   choices:
-  - It is still parsed as configuration
-  - It is not treated as cloud-config, so its keys are ignored (or it is run as a script if it starts with #!)
-  - The instance does not boot
   - cloud-init is removed
+  - The instance does not boot #!)
+  - It is still parsed as configuration
+  - It is not treated as cloud-config, so its keys are ignored (or it is run as a script if it starts with
   answer:
-  - 1
-  explain: 'A) wrong: the header selects the handler. B) correct: the type is detected from the first line. C) wrong: boot continues. D) wrong: nothing is removed.'
+  - 3
+  explain: 'A) wrong: nothing is removed. B) wrong: boot continues. C) wrong: the header selects the handler. D) correct: the type is detected from the first line.'
 - id: instanceid
   prompt: Why did ten cloned VMs skip their runcmd entries?
   choices:
   - runcmd is deprecated
   - They shared the instance-id, so cloud-init believed it had already run on that instance
-  - The disks were full
   - YAML forbids lists
+  - The disks were full
   answer:
   - 1
-  explain: 'A) wrong: it works. B) correct: per-instance modules key on the id. C) wrong: unrelated. D) wrong: lists are fine.'
+  explain: 'A) wrong: it works. B) correct: per-instance modules key on the id. C) wrong: lists are fine. D) wrong: unrelated.'
 - id: nocloud
   prompt: How does cloud-init find a NoCloud seed on a volume?
   choices:
   - By the file name seed.iso
+  - By DNS
   - By the volume label cidata (or CIDATA) with user-data and meta-data files
   - By the MAC address
-  - By DNS
   answer:
-  - 1
-  explain: 'A) wrong: names do not matter. B) correct: the label is the key. C) wrong: unrelated. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: names do not matter. B) wrong: unrelated. C) correct: the label is the key. D) wrong: unrelated.'
 - id: secrets
   prompt: Why are passwords in user-data a problem?
   choices:
-  - YAML cannot hold them
   - Any process on the instance, and anyone who can read the instance configuration, can read them
   - They slow boot
+  - YAML cannot hold them
   - They are removed at boot
   answer:
-  - 1
-  explain: 'A) wrong: it can. B) correct: it is served by the metadata service and stored by the platform. C) wrong: unrelated. D) wrong: they persist.'
+  - 0
+  explain: 'A) correct: it is served by the metadata service and stored by the platform. B) wrong: unrelated. C) wrong: it can. D) wrong: they persist.'
 - id: clean
   prompt: What does cloud-init clean --logs prepare for?
   choices:
@@ -53,10 +53,10 @@ questions:
 - id: validate
   prompt: Which command checks a user-data file against the schema before booting?
   choices:
-  - cloud-init status
-  - cloud-init schema --config-file user-data
-  - cloud-id
   - cloud-init query
+  - cloud-init schema --config-file user-data
+  - cloud-init status
+  - cloud-id
   answer:
   - 1
-  explain: 'A) wrong: reports run state. B) correct: it catches type and indentation errors. C) wrong: names the datasource. D) wrong: reads instance data.'
+  explain: 'A) wrong: reads instance data. B) correct: it catches type and indentation errors. C) wrong: reports run state. D) wrong: names the datasource.'

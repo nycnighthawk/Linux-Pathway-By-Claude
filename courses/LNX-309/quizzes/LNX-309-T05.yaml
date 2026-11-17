@@ -3,60 +3,60 @@ questions:
 - id: rpo
   prompt: What does the recovery point objective describe?
   choices:
-  - The longest tolerable window of lost data, measured backwards from the disaster
-  - The longest tolerable time to restore service
-  - The number of servers at the recovery site
-  - The size of the backup
+  - The longest tolerable window of lost data, measured back from the disaster
+  - The longest tolerable time to restore service after a disaster
+  - The total size of the backup set kept at the recovery site
+  - The share of servers that must be running at the recovery site
   answer:
   - 0
-  explain: 'A) correct: it sets how fresh the copy must be. B) wrong: that is the RTO. C) wrong: unrelated. D) wrong: unrelated.'
+  explain: 'A) correct: RPO is about data, RTO about time. B) wrong: that is the recovery time objective. C) wrong: RPO is a time window, not a size. D) wrong: that is capacity, not RPO.'
 - id: untested
   prompt: Why is a backup that was never restored a risk?
   choices:
-  - It may be incomplete, undecryptable or stale, and you only find out during the disaster
-  - Backups cannot be restored
-  - It uses too much disk
-  - It is illegal
+  - Untested backups are deleted by most retention policies
+  - It may be incomplete or undecryptable, found out too late
+  - A backup cannot be restored until it has been tested once
+  - Untested backups take more disk than tested ones
   answer:
-  - 0
-  explain: 'A) correct: restores are the only proof. B) wrong: they can be. C) wrong: irrelevant. D) wrong: irrelevant.'
+  - 1
+  explain: 'A) wrong: retention does not depend on testing. B) correct: only a restore proves a backup. C) wrong: untested backups may restore; the risk is not knowing. D) wrong: testing does not change the size.'
 - id: tabletop
   prompt: What does a tabletop exercise test?
   choices:
-  - Roles, decisions, contacts and order of steps, by walking through a scenario without touching systems
-  - Hardware failure rates
-  - Disk throughput
-  - TLS versions
+  - The speed of the restore path under real load
+  - Whether backups are complete and decryptable
+  - Roles, decisions and contacts, walked through on paper
+  - Hardware failure rates in the recovery site
   answer:
-  - 0
-  explain: 'A) correct: cheap and finds gaps in people and process. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: that needs a live drill. B) wrong: that needs a real restore. C) correct: it rehearses the people side of recovery. D) wrong: a discussion cannot measure that.'
 - id: failback
   prompt: Why is failback often harder than failover?
   choices:
-  - Roles have swapped and data has diverged, so the original site must be resynchronised before it becomes authoritative again
-  - Failback needs no planning
-  - The recovery site is always switched off
-  - DNS cannot be changed back
+  - DNS records cannot be pointed back once they have changed
+  - The recovery site is switched off as soon as failover ends
+  - Failback is never rehearsed, so it is always manual
+  - Data has diverged and the old site must resync first
   answer:
-  - 0
-  explain: 'A) correct: plan and rehearse it. B) wrong: it needs planning. C) wrong: not necessarily. D) wrong: it can be changed.'
+  - 3
+  explain: 'A) wrong: DNS can be changed back. B) wrong: it must keep running until failback. C) wrong: it can and should be rehearsed. D) correct: it must catch up before it becomes authoritative.'
 - id: immutable
   prompt: Which backup property best resists ransomware?
   choices:
-  - An offline or immutable copy that administrator credentials on the primary cannot delete or encrypt
-  - A backup on the same server
-  - A backup with a long file name
-  - A weekly email
+  - An offline or immutable copy that admins cannot delete
+  - A backup on a second disk in the same server
+  - A backup encrypted with a key stored on the primary
+  - A daily snapshot kept on the same storage array
   answer:
   - 0
-  explain: 'A) correct: the attacker must not reach the last good copy. B) wrong: lost with the server. C) wrong: irrelevant. D) wrong: irrelevant.'
+  explain: 'A) correct: ransomware usually holds those credentials. B) wrong: the attacker reaches it with the same access. C) wrong: the attacker can delete or re-encrypt it. D) wrong: snapshots can be deleted with array credentials.'
 - id: report
   prompt: What belongs in a drill report?
   choices:
-  - Scenario, timeline, measured RTO and RPO against targets, defects found, owners and dates for fixes
-  - Only the word "success"
-  - Only the list of attendees
-  - The password list
+  - The list of attendees and a statement that the drill passed
+  - Timeline, measured RTO and RPO, defects and owners
+  - The credentials used during the drill, for next time
+  - Screenshots of each console, with no written analysis
   answer:
-  - 0
-  explain: 'A) correct: it is the evidence and the improvement plan. B) wrong: no evidence. C) wrong: no result. D) wrong: never store passwords there.'
+  - 1
+  explain: 'A) wrong: it lacks measurements and actions. B) correct: a report must lead to fixes. C) wrong: credentials never belong in a report. D) wrong: evidence without analysis drives no fixes.'

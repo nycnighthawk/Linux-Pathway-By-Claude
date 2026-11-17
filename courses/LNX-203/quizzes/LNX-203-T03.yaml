@@ -4,9 +4,9 @@ questions:
   prompt: After run cmd in bats, where is the exit status?
   choices:
   - $rc
-  - $result
-  - $status
   - $?
+  - $status
+  - $result
   answer:
   - 2
   explain: run stores the status in $status and the output in $output; $? would reflect run itself.
@@ -14,11 +14,11 @@ questions:
   prompt: Which variable gives a fresh directory for each test?
   choices:
   - TMPDIR
+  - BATS_FILE_TMPDIR
   - BATS_RUN_TMPDIR
   - BATS_TEST_TMPDIR
-  - BATS_FILE_TMPDIR
   answer:
-  - 2
+  - 3
   explain: BATS_FILE_TMPDIR is shared by all tests in a file, so per-test isolation needs BATS_TEST_TMPDIR.
 - id: test-fails
   prompt: When does an @test fail?
@@ -43,8 +43,8 @@ questions:
 - id: mutation
   prompt: How do you check that a test suite can fail?
   choices:
-  - Add more assertions at random
   - Delete the oldest test
+  - Add more assertions at random
   - Break the code on purpose and confirm a test fails
   - Run it twice
   answer:
@@ -55,18 +55,18 @@ questions:
   choices:
   - bats --filter 'rotate' test/
   - bats -r test/
-  - bats --tap test/
   - bats --count test/
+  - bats --tap test/
   answer:
   - 0
   explain: --filter selects tests by regular expression on the name.
 - id: stderr
   prompt: How do you capture stderr separately from stdout with run?
   choices:
-  - run --separate-stderr cmd
   - run -e cmd
-  - run 2>&1 cmd
   - run --stderr cmd
+  - run --separate-stderr cmd
+  - run 2>&1 cmd
   answer:
-  - 0
+  - 2
   explain: By default run merges both into $output; the flag adds $stderr.

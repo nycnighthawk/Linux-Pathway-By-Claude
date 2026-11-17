@@ -2,26 +2,26 @@ title: 'Quiz: Managed Kubernetes'
 questions:
 - id: responsibility
   prompt: Which is the customer's responsibility in all three managed services?
-  choices: [Running etcd, Backing up application data in persistent volumes, Patching the API server, Renewing control-plane certificates]
-  answer: [1]
-  explain: 'A) wrong: provider. B) correct: the provider backs up the control plane, not your data. C) wrong: provider. D) wrong: provider.'
+  choices: [Patching the API server, Renewing control-plane certificates, Running etcd, Backing up application data in persistent volumes]
+  answer: [3]
+  explain: 'A) wrong: provider. B) wrong: provider. C) wrong: provider. D) correct: the provider backs up the control plane, not your data.'
 - id: auth-plugin
   prompt: Why does kubectl against a managed cluster need the provider CLI?
-  choices: [To install nodes, The kubeconfig calls an external credential plugin to get a token, To download images, To run etcdctl]
-  answer: [1]
-  explain: 'A) wrong. B) correct: client-go credential plugins fetch cloud tokens. C) wrong. D) wrong: etcd is not reachable.'
+  choices: [To install nodes, To download images, To run etcdctl, The kubeconfig calls an external credential plugin to get a token]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong: etcd is not reachable. D) correct: client-go credential plugins fetch cloud tokens.'
 - id: workload-identity
   prompt: What is the main benefit of workload identity federation?
-  choices: [Faster pods, Pods obtain short-lived cloud credentials without stored keys, Free load balancers, Automatic RBAC]
-  answer: [1]
-  explain: 'A) wrong. B) correct: projected token exchanged for scoped credentials. C) wrong. D) wrong.'
+  choices: [Faster pods, Automatic RBAC, Free load balancers, Pods obtain short-lived cloud credentials without stored keys]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: projected token exchanged for scoped credentials.'
 - id: hardening
   prompt: Which are sensible hardening steps for a managed cluster? (select two)
-  choices: [Restrict or privatise the API endpoint, Block pod access to the instance metadata service, Leave audit logging off to save cost, Share one admin kubeconfig]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct: stops pods borrowing node credentials. C) wrong: you need audit data. D) wrong: no accountability.'
+  choices: [Leave audit logging off to save cost, Share one admin kubeconfig, Restrict or privatise the API endpoint, Block pod access to the instance metadata service]
+  answer: [2, 3]
+  explain: 'A) wrong: you need audit data. B) wrong: no accountability. C) correct. D) correct: stops pods borrowing node credentials.'
 - id: lifecycle
   prompt: A Kubernetes minor reaches the end of standard support on a managed service. What may happen?
-  choices: [Nothing ever, The cluster is upgraded automatically or moves to paid extended support, The control plane is deleted immediately, The provider keeps patching it free forever]
-  answer: [1]
-  explain: 'A) wrong. B) correct: depends on provider and settings. C) wrong: not immediately. D) wrong.'
+  choices: [Nothing ever, The provider keeps patching it free forever, The cluster is upgraded automatically or moves to paid extended support, The control plane is deleted immediately]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: depends on provider and settings. D) wrong: not immediately.'

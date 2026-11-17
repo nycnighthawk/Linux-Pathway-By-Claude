@@ -15,25 +15,25 @@ questions:
   prompt: 'You set ''user: [alice, bob]'' on an ipagroup task with state present. Carol was added by hand earlier.
     What happens?'
   choices:
+  - Carol becomes admin
+  - The task fails
   - Carol stays because lists are merged
   - Carol is removed because the list replaces the membership
-  - The task fails
-  - Carol becomes admin
   answer:
-  - 1
-  explain: 'A (wrong): Without action: member the list is treated as the full membership. B (correct): Use action:
-    member to add or remove only the listed users. C (wrong): It runs successfully. D (wrong): No such effect.'
+  - 3
+  explain: 'A (wrong): No such effect. B (wrong): It runs successfully. C (wrong): Without action: member the list is treated as the full membership. D (correct): Use action:
+    member to add or remove only the listed users.'
 - id: secrets
   prompt: Where should ipaadmin_password come from?
   choices:
   - A literal in the playbook
+  - An environment file committed next to the playbook
   - A vaulted variable referenced with Jinja, or better a keytab for a narrow automation account
   - The hostname
-  - An environment file committed next to the playbook
   answer:
-  - 1
-  explain: 'A (wrong): Secrets in Git are a leak. B (correct): The secret stays out of plain text. C (wrong): Not
-    a secret. D (wrong): Still in the repository.'
+  - 2
+  explain: 'A (wrong): Secrets in Git are a leak. B (wrong): Still in the repository. C (correct): The secret stays out of plain text. D (wrong): Not
+    a secret.'
 - id: fqcn
   prompt: Why write freeipa.ansible_freeipa.ipahbacrule rather than ipahbacrule?
   choices:
@@ -48,34 +48,34 @@ questions:
 - id: drift
   prompt: How does a scheduled '--check --diff' run help?
   choices:
-  - It repairs problems automatically
-  - It reports any difference between Git and the domain, so manual edits show up as drift
   - It speeds up replication
+  - It reports any difference between Git and the domain, so manual edits show up as drift
   - It rotates the CA
+  - It repairs problems automatically
   answer:
   - 1
-  explain: 'A (wrong): Check mode changes nothing. B (correct): Changed tasks in check mode identify drift. C (wrong):
-    Unrelated. D (wrong): Unrelated.'
+  explain: 'A (wrong):
+    Unrelated. B (correct): Changed tasks in check mode identify drift. C (wrong): Unrelated. D (wrong): Check mode changes nothing.'
 - id: no-hbac-allow
   prompt: 'What does ipaserver_no_hbac_allow: true do?'
   choices:
-  - It skips creating the default allow_all HBAC rule at install
-  - It disables Kerberos
   - It removes sudo
+  - It disables Kerberos
   - It disables the web UI
+  - It skips creating the default allow_all HBAC rule at install
   answer:
-  - 0
-  explain: 'A (correct): The domain starts default-deny for HBAC. B (wrong): No. C (wrong): No. D (wrong): No.'
+  - 3
+  explain: 'A (wrong): No. B (wrong): No. C (wrong): No. D (correct): The domain starts default-deny for HBAC.'
 - id: where-run
   prompt: Where do the ansible-freeipa modules need to run?
   choices:
+  - Only inside a container without network
   - On a host with the IPA Python libraries, normally an IdM server or enrolled client, with the target set to one
     server
   - Only on the control node laptop with no IPA packages
   - On every client at once for objects
-  - Only inside a container without network
   answer:
-  - 0
-  explain: 'A (correct): The modules reuse the IPA code, which must be present on the managed node. B (wrong): They
-    fail with import errors. C (wrong): Objects need one change on one server; replication propagates it. D (wrong):
-    They need the server API.'
+  - 1
+  explain: 'A (wrong):
+    They need the server API. B (correct): The modules reuse the IPA code, which must be present on the managed node. C (wrong): They
+    fail with import errors. D (wrong): Objects need one change on one server; replication propagates it.'

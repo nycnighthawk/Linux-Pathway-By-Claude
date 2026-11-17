@@ -33,6 +33,39 @@ Each milestone page lists the lessons from earlier courses it relies on. Read th
 
 Pass is 70. Anything that cannot be shown (for example a stage you could not run) must be said plainly with the reason; unconfirmed claims are marked "(to verify)" and are not marked down for that.
 
+## Score levels
+
+Each rubric area is marked at one of four levels, so two markers reach the same number.
+
+| Level | Share of the area's points | What it looks like |
+|---|---:|---|
+| Full | 100% | Everything in the Full marks column, with evidence a stranger can check |
+| Most | 70% | It works, but one element of Full marks is missing or its evidence is thin |
+| Some | 40% | A design or partial build exists, but the working evidence is missing |
+| None | 0% | Not attempted, or the evidence does not support the claim |
+
+A substitute from the fallback table below is marked the same way, but cannot score above Most for that area.
+
+## Resources and time budget
+
+These are planning estimates, not limits. Record your actual figures in the README.
+
+| Item | Estimate |
+|---|---|
+| Lab host | 32 GB RAM and 8 cores with hardware virtualisation and nested virtualisation enabled |
+| Time | about 120 hours: milestone 1 about 40, 2 about 20, 3 about 15, 4 about 10, 5 about 20 plus weeks of waiting, 6 about 15 |
+| Hardware | milestone 4 needs a spare PCIe device in its own IOMMU group, such as a second network card |
+| VirtualBox | milestone 2 needs a host where VirtualBox and KVM can share the processor (see LNX-315-T07); sources for VirtualBox are thinner than for libvirt, so check every command against current Oracle documents |
+
+## If you cannot run a milestone
+
+| Milestone | Substitute | Area affected |
+|---|---|---|
+| 2 VirtualBox target | Convert and smoke-test the VirtualBox image on a separate host or nested guest, or document why the target was dropped and test the two others | Image pipeline |
+| 3 Shared hardware | Measure on your own host with isolated CPUs and report the noise floor; the target may be relaxed if you state it first | Latency tuning |
+| 4 Real device | Pass through an emulated device inside a nested guest with a virtual IOMMU and explain what differs on bare metal | VFIO |
+| 5 Upstream review | If no reply arrives in time, submit the archive link and a v2 prepared from a mock review by a peer | Upstream test |
+
 ## Rules
 
 - Original work. You may follow vendor and project documentation but write your own code and prose.

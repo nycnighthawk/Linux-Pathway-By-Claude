@@ -4,68 +4,67 @@ questions:
   prompt: Which component opens /dev/kvm and emulates the guest's chipset and devices?
   choices:
   - The kvm kernel module
+  - virsh
   - QEMU
   - libvirtd
-  - virsh
   answer:
-  - 1
-  explain: 'A) wrong: it exposes the device but does no device emulation. B) correct: it opens /dev/kvm, runs each
-    vCPU thread and emulates the machine and its devices. C) wrong: it manages definitions and starts QEMU, it does
-    not emulate. D) wrong: it is only a client of libvirt.'
+  - 2
+  explain: 'A) wrong: it exposes the device but does no device emulation. B) wrong: it is only a client of libvirt. C) correct: it opens /dev/kvm, runs each
+    vCPU thread and emulates the machine and its devices. D) wrong: it manages definitions and starts QEMU, it does
+    not emulate.'
 - id: session
   prompt: A normal user runs virsh list --all and sees no guests, but root created some. Most likely cause?
   choices:
-  - The guests crashed
-  - virsh connected to qemu:///session, a per-user instance
-  - libvirt deletes guests at logout
   - KVM is disabled
+  - virsh connected to qemu:///session, a per-user instance
+  - The guests crashed
+  - libvirt deletes guests at logout
   answer:
   - 1
-  explain: 'A) wrong: a crash would show the guest as shut off, not hide it. B) correct: the default URI for non-root
-    users is the session instance; use -c qemu:///system. C) wrong: it does not. D) wrong: that would affect starting
-    guests, not listing them.'
+  explain: 'A) wrong: that would affect starting
+    guests, not listing them. B) correct: the default URI for non-root
+    users is the session instance; use -c qemu:///system. C) wrong: a crash would show the guest as shut off, not hide it. D) wrong: it does not.'
 - id: type-qemu
   prompt: dumpxml shows <domain type='qemu'> on a host with a CPU that supports virtualisation. What does it mean?
   choices:
   - The guest uses KVM acceleration
-  - The guest runs in pure emulation, very slowly
   - The guest is a container
   - The guest is transient
+  - The guest runs in pure emulation, very slowly
   answer:
-  - 1
-  explain: 'A) wrong: that is type=''kvm''. B) correct: type ''qemu'' means no hardware acceleration was used, usually
-    because /dev/kvm was unavailable at creation. C) wrong: containers use other drivers. D) wrong: persistence
-    is unrelated to the type attribute.'
+  - 3
+  explain: 'A) wrong: that is type=''kvm''. B) wrong: containers use other drivers. C) wrong: persistence
+    is unrelated to the type attribute. D) correct: type ''qemu'' means no hardware acceleration was used, usually
+    because /dev/kvm was unavailable at creation.'
 - id: destroy
   prompt: What does virsh destroy web1 do?
   choices:
-  - Deletes the guest and its disk
-  - Powers the guest off immediately, like pulling the plug
   - Sends an ACPI shutdown request
   - Pauses the vCPUs
+  - Powers the guest off immediately, like pulling the plug
+  - Deletes the guest and its disk
   answer:
-  - 1
-  explain: 'A) wrong: that is undefine with --remove-all-storage. B) correct: it is a hard stop that can leave filesystems
-    inconsistent, the definition and disk stay. C) wrong: that is virsh shutdown. D) wrong: that is virsh suspend.'
+  - 2
+  explain: 'A) wrong: that is virsh shutdown. B) wrong: that is virsh suspend. C) correct: it is a hard stop that can leave filesystems
+    inconsistent, the definition and disk stay. D) wrong: that is undefine with --remove-all-storage.'
 - id: variant
   prompt: Why pass --os-variant to virt-install?
   choices:
-  - It selects the hypervisor
-  - It lets libosinfo choose suitable defaults such as device models and buses
   - It sets the root password
   - It enables nested virtualisation
+  - It selects the hypervisor
+  - It lets libosinfo choose suitable defaults such as device models and buses
   answer:
-  - 1
-  explain: 'A) wrong: the hypervisor comes from the connection URI. B) correct: the database holds per-OS recommendations,
-    listed by osinfo-query os. C) wrong: it does not. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: it does not. B) wrong: unrelated. C) wrong: the hypervisor comes from the connection URI. D) correct: the database holds per-OS recommendations,
+    listed by osinfo-query os.'
 - id: machine
   prompt: Why use pc-q35-9.2 instead of plain q35 in the XML?
   choices:
-  - The versioned type keeps the virtual hardware stable across QEMU upgrades
-  - It makes the guest faster
-  - Plain q35 is invalid
   - It enables huge pages
+  - The versioned type keeps the virtual hardware stable across QEMU upgrades
+  - Plain q35 is invalid
+  - It makes the guest faster
   answer:
-  - 0
-  explain: 'A) correct: the unversioned alias moves with the installed QEMU and can change the guest''s hardware.
-    B) wrong: speed is not affected. C) wrong: it is accepted, just not stable. D) wrong: unrelated.'
+  - 1
+  explain: 'A) wrong: unrelated. B) correct: the unversioned alias moves with the installed QEMU and can change the guest''s hardware. C) wrong: it is accepted, just not stable. D) wrong: speed is not affected.'

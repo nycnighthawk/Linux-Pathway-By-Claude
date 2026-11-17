@@ -2,14 +2,14 @@ title: 'Quiz: Supply chain security'
 questions:
 - id: tag-digest
   prompt: Why should production manifests reference images by digest?
-  choices: [Digests are shorter, A tag can be moved to different content but a digest names exactly one content, Digests are faster to pull, Tags are not allowed by Kubernetes]
-  answer: [1]
-  explain: 'A) wrong. B) correct: it makes what you verified equal to what runs. C) wrong. D) wrong: tags work, they are just mutable.'
+  choices: [Digests are shorter, Digests are faster to pull, A tag can be moved to different content but a digest names exactly one content, Tags are not allowed by Kubernetes]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: it makes what you verified equal to what runs. D) wrong: tags work, they are just mutable.'
 - id: identity
   prompt: Which pair must a keyless verification policy pin?
-  choices: [The image size and tag, The certificate identity and the OIDC issuer, The registry name and region, The signer's IP address]
-  answer: [1]
-  explain: 'A) wrong. B) correct: otherwise any signer with any identity passes. C) wrong. D) wrong: not part of the certificate.'
+  choices: [The certificate identity and the OIDC issuer, The image size and tag, The registry name and region, The signer's IP address]
+  answer: [0]
+  explain: 'A) correct: otherwise any signer with any identity passes. B) wrong. C) wrong. D) wrong: not part of the certificate.'
 - id: signed-malware
   prompt: What does the SolarWinds compromise show about signing?
   choices: [Signing is useless, A valid signature proves who signed, not that the build environment was clean, Signatures cannot be forged, Only unsigned artefacts are attacked]
@@ -17,11 +17,11 @@ questions:
   explain: 'A) wrong: signing still defeats tampering after the build. B) correct: build integrity and provenance need their own controls (SLSA). C) wrong. D) wrong.'
 - id: sbom-use
   prompt: What is an SBOM best used for? (select two)
-  choices: [Listing which images contain a vulnerable package after an announcement, Checking licences against policy, Proving the code has no bugs, Replacing signatures]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong: it is an inventory. D) wrong: it says what is inside, not who built it.'
+  choices: [Replacing signatures, Proving the code has no bugs, Checking licences against policy, Listing which images contain a vulnerable package after an announcement]
+  answer: [3, 2]
+  explain: 'A) wrong: it says what is inside, not who built it. B) wrong: it is an inventory. C) correct. D) correct.'
 - id: admission-blind
   prompt: Which is NOT covered by an admission-time signature check?
-  choices: [A new Pod, A Deployment update that changes the image, A Pod that was already running before the policy was installed, A Job that creates Pods]
+  choices: [A new Pod, A Job that creates Pods, A Pod that was already running before the policy was installed, A Deployment update that changes the image]
   answer: [2]
-  explain: 'A) covered. B) covered: the new Pods are admitted again. C) correct: admission acts on writes, so old Pods need a background scan or a restart. D) covered.'
+  explain: 'A) covered. B) covered. C) correct: admission acts on writes, so old Pods need a background scan or a restart. D) covered: the new Pods are admitted again.'

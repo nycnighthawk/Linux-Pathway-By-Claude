@@ -2,14 +2,14 @@ title: 'Quiz: NetworkPolicy'
 questions:
 - id: open-default
   prompt: A Pod is selected by no NetworkPolicy. What traffic does it accept?
-  choices: [All traffic, only same-namespace traffic, none, only traffic from nodes]
-  answer: [0]
-  explain: 'A) correct: isolation starts when a policy selects the Pod. B) wrong. C) wrong. D) wrong.'
+  choices: [only traffic from nodes, All traffic, only same-namespace traffic, none]
+  answer: [1]
+  explain: 'A) wrong. B) correct: isolation starts when a policy selects the Pod. C) wrong. D) wrong.'
 - id: and-or
   prompt: A from list has one item with namespaceSelector and podSelector together. How are they combined?
-  choices: [AND within one item, OR, AND only for ipBlock, They are rejected]
-  answer: [0]
-  explain: 'A) correct. B) wrong: OR applies between separate items. C) wrong. D) wrong.'
+  choices: [They are rejected, AND only for ipBlock, AND within one item, OR]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong: OR applies between separate items.'
 - id: additive
   prompt: Two policies select the same Pod and allow different peers. What is allowed?
   choices: [The union of both, The intersection, Only the older policy, Nothing]
@@ -17,11 +17,11 @@ questions:
   explain: 'A) correct: policies are additive. B) wrong. C) wrong. D) wrong.'
 - id: deny-dns
   prompt: After a default-deny egress policy, every name lookup fails. What is missing?
-  choices: [An egress rule to the cluster DNS Pods on port 53, An ingress rule on the web Pod, A new CNI, An IPPool]
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  choices: [An ingress rule on the web Pod, An egress rule to the cluster DNS Pods on port 53, An IPPool, A new CNI]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: enforcement
   prompt: Which are true? (select two)
-  choices: [A plugin that does not implement the API ignores NetworkPolicy objects, The standard API has no deny action, L7 rules need no proxy, Policies are ordered by name]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+  choices: [L7 rules need no proxy, A plugin that does not implement the API ignores NetworkPolicy objects, Policies are ordered by name, The standard API has no deny action]
+  answer: [1, 3]
+  explain: 'A) wrong. B) correct. C) wrong. D) correct.'

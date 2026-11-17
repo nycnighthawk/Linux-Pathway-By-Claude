@@ -2,14 +2,14 @@ title: 'Quiz: CNI'
 questions:
 - id: ns
   prompt: Which party creates the container's network namespace in the CNI model?
-  choices: [The plugin during ADD, The container runtime before calling the plugin, The kubelet's CNI daemon, kube-proxy]
-  answer: [1]
-  explain: 'A) wrong: the plugin joins the namespace it is given in CNI_NETNS. B) correct. C) wrong. D) wrong.'
+  choices: [The kubelet's CNI daemon, kube-proxy, The container runtime before calling the plugin, The plugin during ADD]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong: the plugin joins the namespace it is given in CNI_NETNS.'
 - id: del
   prompt: Why must a plugin's DEL succeed even if parts of the attachment are already gone?
-  choices: [Runtimes call DEL on partial failures and after crashes, DEL is optional, Kubernetes never calls DEL, It is faster]
-  answer: [0]
-  explain: 'A) correct: failing DEL leaves pods stuck terminating. B) wrong. C) wrong. D) wrong.'
+  choices: [It is faster, Runtimes call DEL on partial failures and after crashes, DEL is optional, Kubernetes never calls DEL]
+  answer: [1]
+  explain: 'A) wrong. B) correct: failing DEL leaves pods stuck terminating. C) wrong. D) wrong.'
 - id: lexical
   prompt: Two configuration files exist in /etc/cni/net.d. Which does the runtime use?
   choices: [Both at once, The first in lexical order, The newest, The largest]
@@ -17,11 +17,11 @@ questions:
   explain: 'A) wrong: a conflist chains plugins explicitly. B) correct. C) wrong. D) wrong.'
 - id: chain
   prompt: In a conflist, how do plugins cooperate? (select two)
-  choices: [ADD runs in order and passes the previous result as prevResult, DEL runs in reverse order, All run in parallel, They share memory]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+  choices: [All run in parallel, DEL runs in reverse order, They share memory, ADD runs in order and passes the previous result as prevResult]
+  answer: [3, 1]
+  explain: 'A) wrong. B) correct. C) wrong. D) correct.'
 - id: notready
   prompt: A fresh node stays NotReady after kubeadm init. What explains it?
-  choices: [No valid CNI configuration yet, etcd is down, The scheduler is slow, DNS is cached]
-  answer: [0]
-  explain: 'A) correct: the runtime reports the network as not ready. B) wrong. C) wrong. D) wrong.'
+  choices: [The scheduler is slow, etcd is down, No valid CNI configuration yet, DNS is cached]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: the runtime reports the network as not ready. D) wrong.'

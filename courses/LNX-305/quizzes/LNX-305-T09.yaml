@@ -3,29 +3,29 @@ questions:
 - id: modules
   prompt: Why does the copy module not work on a Windows target?
   choices:
-  - Windows forbids file copies
-  - It needs a licence
   - Core modules are Python, and Windows hosts have no Python for Ansible; use win_copy
   - It works but is slow
+  - It needs a licence
+  - Windows forbids file copies
   answer:
-  - 2
+  - 0
   explain: Windows targets run PowerShell modules from collections such as ansible.windows, named with a win_ prefix.
 - id: libs
   prompt: Which Python library does the psrp connection plugin need on the control node?
   choices:
+  - pypsrp
   - paramiko
   - pexpect
   - pywinrm
-  - pypsrp
   answer:
-  - 3
+  - 0
   explain: psrp uses pypsrp. The winrm plugin uses pywinrm.
 - id: ssh-support
   prompt: From which ansible-core release is SSH to Windows officially supported?
   choices:
-  - '2.0'
-  - '2.18'
   - '2.8'
+  - '2.18'
+  - '2.0'
   - '2.4'
   answer:
   - 1
@@ -47,8 +47,8 @@ questions:
   choices:
   - Slower connections
   - A man-in-the-middle can impersonate the host and capture credentials
-  - Nothing important
   - Disabled facts
+  - Nothing important
   answer:
   - 1
   explain: Without certificate validation the control node trusts any server. Use a certificate issued by your CA and keep
@@ -57,8 +57,8 @@ questions:
   prompt: Which of these breaks Kerberos authentication from a controller?
   choices:
   - Using handlers
-  - Using a loop
   - Using YAML
+  - Using a loop
   - Clock skew of more than a few minutes, missing krb5 configuration or DNS problems
   answer:
   - 3

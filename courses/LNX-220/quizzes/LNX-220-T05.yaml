@@ -3,10 +3,10 @@ questions:
 - id: asan
   prompt: What does AddressSanitizer report with an allocation stack and an access stack?
   choices:
-  - Data races between threads
+  - Uninitialised stack reads only
   - Memory errors such as heap buffer overflow and use after free
   - Signed integer overflow
-  - Uninitialised stack reads only
+  - Data races between threads
   answer:
   - 1
   explain: ASan checks addresses against shadow memory. Data races belong to ThreadSanitizer, integer overflow to UBSan and
@@ -15,19 +15,19 @@ questions:
   prompt: Which combination can be built in one binary?
   choices:
   - -fsanitize=address,thread
-  - -fsanitize=thread,memory
   - -fsanitize=address,undefined
+  - -fsanitize=thread,memory
   - -fsanitize=memory,address
   answer:
-  - 2
+  - 1
   explain: ASan and UBSan are designed to coexist. TSan, MSan and ASan each need their own runtime and shadow layout and cannot
     be combined.
 - id: leak
   prompt: LeakSanitizer fails to start in a container. What is the usual cause and workaround?
   choices:
-  - The kernel lacks shadow memory, so rebuild with -O3
-  - libc is static, so install glibc
   - The program has no main
+  - libc is static, so install glibc
+  - The kernel lacks shadow memory, so rebuild with -O3
   - ptrace is blocked, so set ASAN_OPTIONS=detect_leaks=0 or allow SYS_PTRACE
   answer:
   - 3
@@ -47,10 +47,10 @@ questions:
 - id: static
   prompt: What is the relationship between static analysers and sanitizers?
   choices:
-  - Sanitizers make static analysis unnecessary
-  - Static tools cover paths no test executed but may give false positives; sanitizers see only executed paths but are precise
   - Static analysers run the program under test
+  - Static tools cover paths no test executed but may give false positives; sanitizers see only executed paths but are precise
   - They find exactly the same bugs
+  - Sanitizers make static analysis unnecessary
   answer:
   - 1
   explain: The two are complementary. Sanitizers are exact for the paths that run, static analysis reasons about paths that

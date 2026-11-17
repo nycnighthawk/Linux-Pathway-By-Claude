@@ -4,35 +4,35 @@ questions:
   prompt: Why is membership of the docker group equivalent to root on the host?
   choices:
   - The group can edit /etc/shadow
+  - The daemon runs as root and will start a privileged container that mounts the host filesystem
   - The group may load kernel modules directly
   - Group members get sudo automatically
-  - The daemon runs as root and will start a privileged container that mounts the host filesystem
   answer:
-  - 3
-  explain: 'A) Wrong: the group has no file ACL on shadow. B) Wrong: module loading happens through a privileged container, not the group itself. C) Wrong: no sudo rule is created. D) Correct: API access
-    lets you create containers with host mounts and privileges.'
+  - 1
+  explain: 'A) Wrong: the group has no file ACL on shadow. B) Correct: API access
+    lets you create containers with host mounts and privileges. C) Wrong: module loading happens through a privileged container, not the group itself. D) Wrong: no sudo rule is created.'
 - id: secret-mount
   prompt: Which instruction passes a secret to one RUN step without leaving it in the image?
   choices:
   - RUN --mount=type=secret,id=npm,target=/root/.npmrc
-  - ARG NPM_TOKEN
-  - ENV NPM_TOKEN
   - COPY .npmrc /root/.npmrc
+  - ENV NPM_TOKEN
+  - ARG NPM_TOKEN
   answer:
   - 0
-  explain: 'A) Correct: the secret exists only for that step and is not stored in a layer. B) Wrong: ARG values appear in docker history. C) Wrong: ENV persists in the image configuration. D) Wrong: COPY
-    stores the file in a layer.'
+  explain: 'A) Correct: the secret exists only for that step and is not stored in a layer. B) Wrong: COPY
+    stores the file in a layer. C) Wrong: ENV persists in the image configuration. D) Wrong: ARG values appear in docker history.'
 - id: cache-driver
   prompt: Which buildx driver do you need to export a registry cache and build multi-platform images?
   choices:
-  - docker (the default with the classic store)
-  - none; any driver works
   - remote with no daemon
   - docker-container
+  - none; any driver works
+  - docker (the default with the classic store)
   answer:
-  - 3
-  explain: 'A) Wrong: the built-in docker driver has limited exporter support. B) Wrong: drivers differ in capability. C) Wrong: remote needs a reachable BuildKit daemon. D) Correct: it runs a separate
-    BuildKit that supports cache exporters and multi-platform output.'
+  - 1
+  explain: 'A) Wrong: remote needs a reachable BuildKit daemon. B) Correct: it runs a separate
+    BuildKit that supports cache exporters and multi-platform output. C) Wrong: drivers differ in capability. D) Wrong: the built-in docker driver has limited exporter support.'
 - id: depends-health
   prompt: 'What does depends_on with condition: service_healthy guarantee?'
   choices:
@@ -48,13 +48,13 @@ questions:
   prompt: Why can a published container port remain reachable after ufw deny incoming?
   choices:
   - Published ports use UDP only
+  - Containers ignore netfilter
   - Docker adds NAT and accept rules in its own chains ahead of the host's rules
   - ufw does not support TCP
-  - Containers ignore netfilter
   answer:
-  - 1
-  explain: 'A) Wrong: port publishing works for TCP and UDP. B) Correct: use 127.0.0.1 publishing or DOCKER-USER rules to control it. C) Wrong: ufw handles TCP normally. D) Wrong: container traffic traverses
-    netfilter.'
+  - 2
+  explain: 'A) Wrong: port publishing works for TCP and UDP. B) Wrong: container traffic traverses
+    netfilter. C) Correct: use 127.0.0.1 publishing or DOCKER-USER rules to control it. D) Wrong: ufw handles TCP normally.'
 - id: cache-order
   prompt: Which ordering gives the best Docker build cache reuse for an application?
   choices:

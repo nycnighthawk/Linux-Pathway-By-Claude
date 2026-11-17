@@ -3,10 +3,10 @@ questions:
 - id: deps
   prompt: How does a Makefile learn which headers each object includes?
   choices:
-  - 'make scans the C sources itself for #include lines'
+  - The .PHONY declaration lists them
   - Prerequisites are discovered from file timestamps alone
   - The compiler writes dependency files with -MMD -MP and the Makefile includes them
-  - The .PHONY declaration lists them
+  - 'make scans the C sources itself for #include lines'
   answer:
   - 2
   explain: gcc and clang can emit .d files as a by-product of compiling, and -include makes them part of the graph. make has
@@ -37,10 +37,10 @@ questions:
 - id: meson
   prompt: Which Meson workflow is correct?
   choices:
-  - meson build then make
-  - meson setup build, meson compile -C build, meson test -C build
   - cmake -S . -B build, then meson install
+  - meson setup build, meson compile -C build, meson test -C build
   - ./configure && make
+  - meson build then make
   answer:
   - 1
   explain: Meson configures with setup, builds with compile (which drives Ninja) and tests with test. 'meson build' is the
@@ -49,10 +49,10 @@ questions:
   prompt: A program is relinked on every make run although nothing changed. What is the likeliest cause?
   choices:
   - The compiler is too old
-  - Parallel builds are enabled
   - A phony or never-created file is listed as a prerequisite of the program
   - The sources contain tabs
+  - Parallel builds are enabled
   answer:
-  - 2
+  - 1
   explain: make treats a prerequisite that does not exist as newer than the target, so the target is always out of date. Compiler
     age and tabs in sources are unrelated, and -j changes order, not whether a target is considered stale.

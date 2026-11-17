@@ -33,6 +33,38 @@ Each milestone page lists the lessons from earlier courses it relies on. Read th
 
 Pass is 70. Anything that cannot be shown (for example a stage you could not run) must be said plainly with the reason; unconfirmed claims are marked "(to verify)" and are not marked down for that.
 
+## Score levels
+
+Each rubric area is marked at one of four levels, so two markers reach the same number.
+
+| Level | Share of the area's points | What it looks like |
+|---|---:|---|
+| Full | 100% | Everything in the Full marks column, with evidence a stranger can check |
+| Most | 70% | It works, but one element of Full marks is missing or its evidence is thin |
+| Some | 40% | A design or partial build exists, but the working evidence is missing |
+| None | 0% | Not attempted, or the evidence does not support the claim |
+
+A substitute from the fallback table below is marked the same way, but cannot score above Most for that area.
+
+## Resources and time budget
+
+These are planning estimates, not limits. Record your actual figures in the README.
+
+| Item | Estimate |
+|---|---|
+| Lab host | 64 GB RAM, 8 cores, 500 GB SSD for about eleven small VMs (two IdM, one Samba DC, six members, repository, monitoring); with 32 GB, run four members instead of six and say so |
+| Time | about 120 hours: milestone 1 about 30, 2 about 15, 3 about 25, 4 about 20 spread over thirty days, 5 about 15, 6 about 15 |
+| Cloud | free-tier or smallest instances; set a spending alert before milestone 5 and expect a few tens of US dollars at most |
+| Windows | an evaluation licence of Windows Server is enough for milestone 2 |
+
+## If you cannot run a milestone
+
+| Milestone | Substitute | Area affected |
+|---|---|---|
+| 2 Genuine AD | Use the Samba DC as the trust partner, record the same layered tests, and explain what a Windows forest would add | Identity correctness |
+| 4 Thirty days | Run fourteen days with the same objectives, log and handovers, and say what a longer run would show | Operations |
+| 5 Public cloud | Use a local cloud image with cloud-init and a mock provider layer, keeping the provider and estate parts apart | Cloud extension |
+
 ## Rules
 
 - Original work. You may follow vendor documentation but write your own code and prose.

@@ -3,55 +3,55 @@ questions:
 - id: entry
   prompt: What is the entry point of a libFuzzer harness?
   choices:
-  - int main(int argc, char **argv) reading stdin only
   - void fuzz(char *s)
   - int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
+  - int main(int argc, char **argv) reading stdin only
   - int test_main(void)
   answer:
-  - 2
+  - 1
   explain: libFuzzer calls this fixed function with each generated input, and AFL++ accepts the same harness. The other signatures
     are not recognised.
 - id: cov
   prompt: Which gcc flag instruments a build for gcov?
   choices:
+  - --coverage
   - -fsanitize=fuzzer
   - -pg only
   - -Wcoverage
-  - --coverage
   answer:
-  - 3
+  - 0
   explain: --coverage means -fprofile-arcs -ftest-coverage plus linking the gcov runtime. -fsanitize=fuzzer is for fuzzing,
     -pg is for gprof, and -Wcoverage does not exist.
 - id: meaning
   prompt: A project reaches 95 percent line coverage. What can you conclude?
   choices:
-  - That 95 percent of lines were executed by the tests, not that their results were checked
-  - That the code has no bugs
-  - That fuzzing is unnecessary
   - That all branches were taken
+  - That 95 percent of lines were executed by the tests, not that their results were checked
+  - That fuzzing is unnecessary
+  - That the code has no bugs
   answer:
-  - 0
+  - 1
   explain: Coverage measures execution. A line can run without any assertion on it, line coverage says nothing about branches
     or inputs, and untested input spaces remain.
 - id: crash
   prompt: A fuzzer finds a crash. What is the best next step?
   choices:
-  - Delete the corpus and restart
   - Minimise and keep the reproducer, fix the bug and add the input to the regression tests
-  - Disable the sanitizer
+  - Delete the corpus and restart
   - Increase -max_len
+  - Disable the sanitizer
   answer:
-  - 1
+  - 0
   explain: A saved reproducer turns a random find into a permanent test. Deleting the corpus loses progress, disabling the
     sanitizer hides defects, and a longer max length does not address the bug.
 - id: checksum
   prompt: Why does a fuzzer make little progress on a format with a checksum?
   choices:
-  - Checksums use too much memory
-  - Fuzzers cannot read binary files
   - Mutated inputs almost always fail the checksum before reaching deeper code
+  - Fuzzers cannot read binary files
   - Coverage instrumentation breaks checksums
+  - Checksums use too much memory
   answer:
-  - 2
+  - 0
   explain: Blind mutation invalidates the checksum, so the parser rejects the input early. Harnesses skip or recompute it.
     Memory use, binary input and instrumentation are not the obstacle.

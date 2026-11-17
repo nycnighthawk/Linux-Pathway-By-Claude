@@ -14,12 +14,12 @@ questions:
   prompt: What does FUTEX_WAIT do with the expected value?
   choices:
   - It stores it
-  - It sleeps the caller only if the word still has that value, checked atomically
   - It wakes all waiters
+  - It sleeps the caller only if the word still has that value, checked atomically
   - It ignores it
   answer:
-  - 1
-  explain: 'A) wrong. B) correct: that removes the lost wake-up race. C) wrong. D) wrong.'
+  - 2
+  explain: 'A) wrong. B) wrong. C) correct: that removes the lost wake-up race. D) wrong.'
 - id: volatile
   prompt: Does volatile make a shared flag safe between threads?
   choices:
@@ -33,30 +33,30 @@ questions:
 - id: publish
   prompt: Which pair correctly publishes data through a flag? (select one pair)
   choices:
-  - Relaxed store then relaxed load
-  - Release store then acquire load
   - Acquire store then release load
+  - Release store then acquire load
   - Plain store then plain load
+  - Relaxed store then relaxed load
   answer:
   - 1
-  explain: 'A) wrong: no ordering. B) correct. C) wrong: the orders are reversed. D) wrong: a data race.'
+  explain: 'A) wrong: the orders are reversed. B) correct. C) wrong: a data race. D) wrong: no ordering.'
 - id: falseshare
   prompt: Two threads update adjacent counters and throughput collapses. What is the likely cause?
   choices:
-  - The counters share a cache line
-  - The kernel limits threads to one CPU
-  - The mutex is recursive
   - The memory is swapped
+  - The kernel limits threads to one CPU
+  - The counters share a cache line
+  - The mutex is recursive
   answer:
-  - 0
-  explain: 'A) correct: false sharing; pad each counter to its own line. B) wrong. C) wrong. D) wrong.'
+  - 2
+  explain: 'A) wrong. B) wrong. C) correct: false sharing; pad each counter to its own line. D) wrong.'
 - id: order
   prompt: Thread 1 locks A then B; thread 2 locks B then A. What is the fix?
   choices:
-  - Use recursive mutexes
   - Always take the locks in one agreed order
-  - Use sleep between the locks
   - Use volatile
+  - Use recursive mutexes
+  - Use sleep between the locks
   answer:
-  - 1
-  explain: A) wrong. B) correct. C) wrong. D) wrong.
+  - 0
+  explain: A) correct. B) wrong. C) wrong. D) wrong.

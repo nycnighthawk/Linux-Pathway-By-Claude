@@ -3,22 +3,22 @@ questions:
 - id: destdir
   prompt: What does DESTDIR do in make install?
   choices:
-  - Sets the compiled-in prefix
-  - Selects the compiler
   - Enables shared libraries
   - Moves where files land without changing compiled-in paths
+  - Sets the compiled-in prefix
+  - Selects the compiler
   answer:
-  - 3
+  - 1
   explain: PREFIX is compiled in; DESTDIR only redirects the install into a staging tree.
 - id: soname
   prompt: Which name does a linked program record?
   choices:
   - The linker name libfoo.so
   - The package name
-  - The soname, for example libfoo.so.1
   - The real name libfoo.so.1.4.2
+  - The soname, for example libfoo.so.1
   answer:
-  - 2
+  - 3
   explain: The soname changes only when the binary interface breaks.
 - id: order
   prompt: Which is the correct loader search order?
@@ -33,40 +33,40 @@ questions:
 - id: devel
   prompt: A configure script says a header is missing. What is the usual fix?
   choices:
-  - Use LD_PRELOAD
-  - Disable the test
   - Install the -devel or -dev package
   - Copy the header by hand
+  - Disable the test
+  - Use LD_PRELOAD
   answer:
-  - 2
+  - 0
   explain: Development packages ship headers and the linker-name symlink.
 - id: ldconfig
   prompt: When must you run ldconfig?
   choices:
-  - After installing a library into a directory the loader cache covers
-  - After every file edit
-  - Before compiling
   - Only on boot
+  - Before compiling
+  - After every file edit
+  - After installing a library into a directory the loader cache covers
   answer:
-  - 0
+  - 3
   explain: It rebuilds the soname links and /etc/ld.so.cache.
 - id: runpath
   prompt: Which flag embeds a run path relative to the executable?
   choices:
+  - -fPIC
+  - -L../lib
   - -soname
   - -Wl,-rpath,'$ORIGIN/../lib'
-  - -L../lib
-  - -fPIC
   answer:
-  - 1
+  - 3
   explain: $ORIGIN is the directory of the executable, so the tree stays relocatable.
 - id: ldd-safety
   prompt: Why avoid ldd on an untrusted program?
   choices:
-  - It changes the cache
-  - Some versions run the program's loader on it; use readelf -d instead
-  - It deletes libraries
   - It needs root
+  - It deletes libraries
+  - Some versions run the program's loader on it; use readelf -d instead
+  - It changes the cache
   answer:
-  - 1
+  - 2
   explain: readelf -d reads the dynamic section without executing anything.

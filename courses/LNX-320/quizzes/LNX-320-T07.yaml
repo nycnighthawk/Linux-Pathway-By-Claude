@@ -3,34 +3,34 @@ questions:
 - id: eof
   prompt: A reader on a pipe never sees end of file although the writer has closed its end. What is the likely cause?
   choices:
+  - The reader is non-blocking
   - The pipe is full
   - Another process still holds a copy of the write end
-  - The reader is non-blocking
   - PIPE_BUF is too small
   answer:
-  - 1
-  explain: 'A) wrong. B) correct: close unused ends everywhere. C) wrong. D) wrong.'
+  - 2
+  explain: 'A) wrong. B) wrong. C) correct: close unused ends everywhere. D) wrong.'
 - id: scm
   prompt: What does SCM_RIGHTS do?
   choices:
+  - Seals memory
   - Passes credentials
   - Passes open descriptors to the receiver as new descriptors for the same open file descriptions
   - Changes file permissions
-  - Seals memory
   answer:
-  - 1
-  explain: 'A) wrong: that is SCM_CREDENTIALS. B) correct. C) wrong. D) wrong.'
+  - 2
+  explain: 'A) wrong. B) wrong: that is SCM_CREDENTIALS. C) correct. D) wrong.'
 - id: peercred
   prompt: Which statements about SO_PEERCRED are correct? (select two)
   choices:
-  - The kernel supplies the peer PID, UID and GID
   - It reflects the peer at the time of connect
-  - The client can set any values it likes
+  - The kernel supplies the peer PID, UID and GID
   - It works only on TCP
+  - The client can set any values it likes
   answer:
-  - 0
   - 1
-  explain: 'A) correct. B) correct: the peer may change identity later. C) wrong. D) wrong: it is for Unix sockets.'
+  - 0
+  explain: 'A) correct: the peer may change identity later. B) correct. C) wrong: it is for Unix sockets. D) wrong.'
 - id: toctou
   prompt: A server checks a length in shared memory and then copies using the same field. What is the risk?
   choices:
@@ -44,20 +44,20 @@ questions:
 - id: eventfd
   prompt: What does reading an eventfd (not in semaphore mode) return?
   choices:
-  - One byte
   - The accumulated 64-bit counter, which is reset to zero
   - The number of waiters
   - The file size
+  - One byte
   answer:
-  - 1
-  explain: A) wrong. B) correct. C) wrong. D) wrong.
+  - 0
+  explain: A) correct. B) wrong. C) wrong. D) wrong.
 - id: seqpacket
   prompt: Why choose SOCK_SEQPACKET for a message protocol?
   choices:
+  - It needs no bind
   - It keeps message boundaries and is connection-oriented and ordered
   - It is faster than shared memory
-  - It needs no bind
   - It passes no descriptors
   answer:
-  - 0
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong: it can pass them.'
+  - 1
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong: it can pass them.'

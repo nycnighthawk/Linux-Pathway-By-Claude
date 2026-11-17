@@ -3,61 +3,61 @@ questions:
 - id: exit-127
   prompt: A container exits at once with code 127. What is the usual meaning?
   choices:
-  - It received SIGTERM
-  - The command or its interpreter was not found
   - It was OOM killed
+  - The command or its interpreter was not found
   - It ran out of PIDs
+  - It received SIGTERM
   answer:
   - 1
-  explain: 'A) Wrong: SIGTERM is 143. B) Correct: a typo, a missing binary in a minimal image or a missing shebang interpreter. C) Wrong: OOM kills show 137. D) Wrong: PID exhaustion gives fork errors,
-    not 127.'
+  explain: 'A) Wrong: OOM kills show 137. B) Correct: a typo, a missing binary in a minimal image or a missing shebang interpreter. C) Wrong: PID exhaustion gives fork errors,
+    not 127. D) Wrong: SIGTERM is 143.'
 - id: oom-137
   prompt: docker inspect shows ExitCode 137 and OOMKilled false. What does this suggest?
   choices:
-  - A SIGKILL from a stop timeout or an external kill
   - A kernel out of memory kill in the container's cgroup
-  - A segmentation fault
+  - A SIGKILL from a stop timeout or an external kill
   - A normal exit
+  - A segmentation fault
   answer:
-  - 0
-  explain: 'A) Correct: 137 is 128+9 and OOMKilled false rules out the memory killer. B) Wrong: the flag would be true. C) Wrong: SIGSEGV is 139. D) Wrong: a normal exit is 0.'
+  - 1
+  explain: 'A) Wrong: the flag would be true. B) Correct: 137 is 128+9 and OOMKilled false rules out the memory killer. C) Wrong: a normal exit is 0. D) Wrong: SIGSEGV is 139.'
 - id: nsenter-net
   prompt: Why does nsenter -t PID -n tcpdump work on a distroless container?
   choices:
-  - Only the network namespace is entered, so the host's tcpdump stays available
+  - The container has a shell
   - tcpdump is statically linked into the image
   - nsenter copies tcpdump into the container
-  - The container has a shell
+  - Only the network namespace is entered, so the host's tcpdump stays available
   answer:
-  - 0
-  explain: 'A) Correct: the mount namespace is not joined, so host binaries remain visible. B) Wrong: distroless images have no such tool. C) Wrong: nothing is copied. D) Wrong: no shell is needed.'
+  - 3
+  explain: 'A) Wrong: no shell is needed. B) Wrong: distroless images have no such tool. C) Wrong: nothing is copied. D) Correct: the mount namespace is not joined, so host binaries remain visible.'
 - id: ephemeral
   prompt: What is the main property of a Kubernetes ephemeral container?
   choices:
   - It is added to a running pod for diagnosis and is never restarted
   - It restarts with the pod's policy
-  - It replaces the main container
   - It is created from a ConfigMap
+  - It replaces the main container
   answer:
   - 0
-  explain: 'A) Correct: it exists only to debug and cannot be removed without deleting the pod. B) Wrong: the kubelet does not restart it. C) Wrong: it runs beside the others. D) Wrong: it needs an image.'
+  explain: 'A) Correct: it exists only to debug and cannot be removed without deleting the pod. B) Wrong: the kubelet does not restart it. C) Wrong: it needs an image. D) Wrong: it runs beside the others.'
 - id: events
   prompt: Which command shows the rhythm of a restart loop even when logs are empty?
   choices:
+  - docker events --filter event=die --filter container=NAME
   - docker logs NAME
   - docker diff NAME
   - docker port NAME
-  - docker events --filter event=die --filter container=NAME
   answer:
-  - 3
-  explain: 'A) Wrong: empty logs show nothing. B) Wrong: diff lists file changes. C) Wrong: port lists mappings. D) Correct: die events carry exitCode and signal with timestamps.'
+  - 0
+  explain: 'A) Correct: die events carry exitCode and signal with timestamps. B) Wrong: empty logs show nothing. C) Wrong: diff lists file changes. D) Wrong: port lists mappings.'
 - id: limit-check
   prompt: A container is started with --memory=512m but grows to 4 GB on a rootless host. What do you verify?
   choices:
-  - The registry certificate
   - memory.max in the container's cgroup and whether the controller was delegated
   - The image digest
+  - The registry certificate
   - The pasta version
   answer:
-  - 1
-  explain: 'A) Wrong: pull-time TLS. B) Correct: the configured value is only effective if the cgroup file holds it. C) Wrong: unrelated to limits. D) Wrong: networking.'
+  - 0
+  explain: 'A) Correct: the configured value is only effective if the cgroup file holds it. B) Wrong: unrelated to limits. C) Wrong: pull-time TLS. D) Wrong: networking.'

@@ -4,8 +4,8 @@ questions:
   prompt: Which name does a program record in its DT_NEEDED entry?
   choices:
   - The real file name libfoo.so.1.4.2
-  - The linker name libfoo.so
   - The package name
+  - The linker name libfoo.so
   - The soname, for example libfoo.so.1
   answer:
   - 3
@@ -15,12 +15,12 @@ questions:
 - id: abi
   prompt: Which change to a library requires a new soname?
   choices:
-  - Changing the type of an argument of an exported function
-  - Adding a new exported function
-  - Fixing a bug inside a function body
   - Adding a new .pc file
+  - Adding a new exported function
+  - Changing the type of an argument of an exported function
+  - Fixing a bug inside a function body
   answer:
-  - 0
+  - 2
   explain: A changed signature breaks binaries already built. Adding a function and fixing internals keep the interface compatible,
     and a pkg-config file is build metadata.
 - id: order
@@ -37,22 +37,22 @@ questions:
 - id: hide
   prompt: What does -fvisibility=hidden achieve when building a library?
   choices:
-  - It strips debug information
-  - It hides the library from ldconfig
   - Only functions explicitly marked as default visibility are exported
   - It changes the soname
+  - It strips debug information
+  - It hides the library from ldconfig
   answer:
-  - 2
+  - 0
   explain: Hiding by default shrinks the dynamic symbol table to the real interface and keeps internals private. Debug information
     is controlled by -g and strip, ldconfig looks at files, not symbols, and the soname is set by -Wl,-soname.
 - id: pc
   prompt: Which command prints the compile and link options for a library described by a .pc file?
   choices:
-  - ldconfig -p name
-  - ldd name
   - nm -D name
   - pkg-config --cflags --libs name
+  - ldconfig -p name
+  - ldd name
   answer:
-  - 3
+  - 1
   explain: pkg-config reads the .pc file and prints include and library flags. ldconfig -p lists the cache, ldd lists the
     needed libraries of an executable, and nm -D lists dynamic symbols.

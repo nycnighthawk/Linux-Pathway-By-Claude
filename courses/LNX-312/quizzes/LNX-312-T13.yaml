@@ -7,21 +7,21 @@ questions:
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: unnumbered
   prompt: What does BGP unnumbered let you avoid?
-  choices: [A unique IP address and neighbour entry for every server link, Autonomous system numbers, Prefix filters, BFD]
-  answer: [0]
-  explain: 'A) correct: sessions run over link-local addresses with extended next hop. B) wrong. C) wrong. D) wrong.'
+  choices: [BFD, A unique IP address and neighbour entry for every server link, Autonomous system numbers, Prefix filters]
+  answer: [1]
+  explain: 'A) wrong. B) correct: sessions run over link-local addresses with extended next hop. C) wrong. D) wrong.'
 - id: filters
   prompt: Which protections belong on the switch for server-facing sessions? (select two)
-  choices: [An inbound prefix list, A maximum-prefix limit, Accepting any prefix, Disabling authentication]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+  choices: [Accepting any prefix, Disabling authentication, A maximum-prefix limit, An inbound prefix list]
+  answer: [3, 2]
+  explain: 'A) wrong. B) wrong. C) correct. D) correct.'
 - id: graceful
   prompt: What does graceful restart do during an agent restart?
-  choices: [The switch keeps forwarding to the node routes for a time, Routes are withdrawn at once, BFD is disabled, The session is renumbered]
-  answer: [0]
-  explain: 'A) correct, if both sides enable it. B) wrong. C) wrong. D) wrong.'
+  choices: [The session is renumbered, Routes are withdrawn at once, The switch keeps forwarding to the node routes for a time, BFD is disabled]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct, if both sides enable it. D) wrong.'
 - id: table
   prompt: What risk comes from announcing a /32 for every Pod?
-  choices: [The switch forwarding table can overflow, ARP storms, DNS failure, MTU growth]
-  answer: [0]
-  explain: 'A) correct: forwarding tables are smaller than routing tables. B) wrong. C) wrong. D) wrong.'
+  choices: [MTU growth, ARP storms, The switch forwarding table can overflow, DNS failure]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: forwarding tables are smaller than routing tables. D) wrong.'

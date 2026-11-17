@@ -36,6 +36,38 @@ Each milestone page lists the lessons from earlier courses it relies on. Read th
 
 Pass is 70. Anything that cannot be shown (for example a stage you could not run) must be said plainly with the reason; unconfirmed claims are marked "(to verify)" and are not marked down for that.
 
+## Score levels
+
+Each rubric area is marked at one of four levels, so two markers reach the same number.
+
+| Level | Share of the area's points | What it looks like |
+|---|---:|---|
+| Full | 100% | Everything in the Full marks column, with evidence a stranger can check |
+| Most | 70% | It works, but one element of Full marks is missing or its evidence is thin |
+| Some | 40% | A design or partial build exists, but the working evidence is missing |
+| None | 0% | Not attempted, or the evidence does not support the claim |
+
+A substitute from the fallback table below is marked the same way, but cannot score above Most for that area.
+
+## Resources and time budget
+
+These are planning estimates, not limits. Record your actual figures in the README.
+
+| Item | Estimate |
+|---|---|
+| Lab host | 32 GB RAM and 8 cores for two small clusters of three nodes each; 64 GB makes milestone 3 more comfortable |
+| Time | about 140 hours: milestones 1 to 5 about 15 to 20 each, 6 about 15, 7 one calendar week plus about 15 hours of work, 8 about 15 |
+| Cloud | one small managed cluster for a few days; set a spending alert and tear it down the same week, expect a few tens of US dollars |
+| Scale test | 100+ nodes need shared hardware or a simulator; real nodes are not required |
+
+## If you cannot run a milestone
+
+| Milestone | Substitute | Area affected |
+|---|---|---|
+| 6 Managed Kubernetes | Apply the same overlay to a third local cluster that imitates the provider parts, and list what the real provider would change | Managed cluster |
+| 7 Week-long soak | Run seventy-two hours with the same plan and chaos steps, and state the limits honestly | Soak, chaos and scale |
+| 8 100+ nodes | Use a simulated-node tool (for example KWOK) and label every result as simulated | Soak, chaos and scale |
+
 ## Rules
 
 - Original work. You may follow vendor and project documentation but write your own code and prose.

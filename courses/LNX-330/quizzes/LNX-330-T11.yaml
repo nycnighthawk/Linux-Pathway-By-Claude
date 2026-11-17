@@ -3,54 +3,54 @@ questions:
 - id: firsttask
   prompt: Which first contribution is easiest to get accepted?
   choices:
-  - A large new subsystem
   - A small fix for a bug you can reproduce and test
-  - A rename across a whole driver to satisfy a tool
+  - A large new subsystem
   - A patch with no description
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong, churn that maintainers often reject. D) wrong.'
+  - A rename across a whole driver to satisfy a tool
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong, churn that maintainers often reject.'
 - id: carry
   prompt: Patch 2 of your series got a Reviewed-by. In v2 only patch 1 changed. What do you do with the tag?
   choices:
-  - Drop it
-  - Keep it on patch 2 only
   - Put it on patch 1 as well
+  - Drop it
   - Ask the maintainer to remove it
-  answer: [1]
-  explain: 'A) wrong. B) correct: the approval covers the unchanged patch. C) wrong. D) wrong.'
+  - Keep it on patch 2 only
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: the approval covers the unchanged patch.'
 - id: deferred
   prompt: A reader suggests a large refactor unrelated to your fix. What is the best response?
   choices:
+  - Ignore silently and rudely
   - Add it to the patch
   - Thank them and offer it as a separate later series
-  - Ignore silently and rudely
   - Withdraw the patch
-  answer: [1]
-  explain: 'A) wrong, it widens the patch. B) correct. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong, it widens the patch. C) correct. D) wrong.'
 - id: silence
   prompt: Two weeks pass with no reply. What is reasonable?
   choices:
-  - Resend daily
-  - Check the recipient list and archive, then send one polite reminder
-  - Send the patch to Linus Torvalds privately
   - Give up
+  - Check the recipient list and archive, then send one polite reminder
+  - Resend daily
+  - Send the patch to Linus Torvalds privately
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: window
   prompt: Why might a feature patch sent during the merge window wait?
   choices:
-  - The mail server is closed
   - Maintainers' trees are mostly closed to new features until the next cycle
   - Patches are not allowed in June
   - The licence changes
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - The mail server is closed
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: botreport
   prompt: Why are syzbot reports with reproducers good first tasks?
   choices:
-  - They are always trivial
-  - The problem is concrete and your fix can be verified with the reproducer
   - Nobody reviews them
+  - The problem is concrete and your fix can be verified with the reproducer
   - They need no kernel build
+  - They are always trivial
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'

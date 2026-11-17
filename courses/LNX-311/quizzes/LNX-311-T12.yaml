@@ -2,14 +2,14 @@ title: 'Quiz: Scale and long-lived clusters'
 questions:
 - id: saturate
   prompt: A monitoring agent on every node lists all pods every few seconds. What is the usual fix?
-  choices: [Add more worker nodes, Use a watch with a field selector for the node's own pods, Increase etcd quota, Disable the API server cache]
+  choices: [Disable the API server cache, Use a watch with a field selector for the node's own pods, Add more worker nodes, Increase etcd quota]
   answer: [1]
-  explain: 'A) wrong: more nodes means more lists. B) correct: it reduces list load by an order of magnitude. C) wrong: size is not the issue. D) wrong: the cache helps.'
+  explain: 'A) wrong: the cache helps. B) correct: it reduces list load by an order of magnitude. C) wrong: more nodes means more lists. D) wrong: size is not the issue.'
 - id: apf
   prompt: What does API priority and fairness do?
-  choices: [Encrypts requests, Classifies and queues requests so one client cannot starve others, Chooses the scheduler, Backs up etcd]
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  choices: [Chooses the scheduler, Encrypts requests, Backs up etcd, Classifies and queues requests so one client cannot starve others]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: cadence
   prompt: Why is a regular upgrade cadence safer than rare big upgrades?
   choices: [Fewer APIs ever change, Each step is small, skew and deprecation windows are respected, Support windows are unlimited, It is cheaper to buy licences]
@@ -17,11 +17,11 @@ questions:
   explain: 'A) wrong. B) correct. C) wrong: versions leave support. D) wrong.'
 - id: fleet
   prompt: Which are good fleet practices? (select two)
-  choices: [Create clusters from one declarative template, Roll out in canary waves with checks between waves, Hand-tune each cluster, Upgrade all clusters on the same hour]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong: drift. D) wrong: no blast-radius control.'
+  choices: [Hand-tune each cluster, Create clusters from one declarative template, Upgrade all clusters on the same hour, Roll out in canary waves with checks between waves]
+  answer: [1, 3]
+  explain: 'A) wrong: drift. B) correct. C) wrong: no blast-radius control. D) correct.'
 - id: herd
   prompt: All kubelets restart at once after a certificate renewal and the API server saturates. Why?
-  choices: [Certificates are too long, A thundering herd of full re-lists, etcd lost quorum by design, The scheduler is single threaded]
-  answer: [1]
-  explain: 'A) wrong. B) correct: restart in batches. C) wrong. D) wrong.'
+  choices: [A thundering herd of full re-lists, etcd lost quorum by design, The scheduler is single threaded, Certificates are too long]
+  answer: [0]
+  explain: 'A) correct: restart in batches. B) wrong. C) wrong. D) wrong.'

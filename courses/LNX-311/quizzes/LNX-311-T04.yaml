@@ -7,14 +7,14 @@ questions:
   explain: 'A) wrong: API servers with newer watch caches confuse controllers. B) correct: quiesce writers, restore, then resume. C) wrong: it does not restore data. D) wrong: it restores nothing.'
 - id: nospace
   prompt: etcd raised a NOSPACE alarm. What is true?
-  choices: [Writes are refused while reads may still work, The cluster stops all running containers, Pods are evicted from every node, The API server restarts itself and fixes it]
-  answer: [0]
-  explain: 'A) correct: the store goes read-only until compaction, defragmentation and clearing the alarm. B) wrong: running containers are unaffected. C) wrong: nodes do not evict for this. D) wrong: it requires operator action.'
+  choices: [Pods are evicted from every node, The API server restarts itself and fixes it, The cluster stops all running containers, Writes are refused while reads may still work]
+  answer: [3]
+  explain: 'A) wrong: nodes do not evict for this. B) wrong: it requires operator action. C) wrong: running containers are unaffected. D) correct: the store goes read-only until compaction, defragmentation and clearing the alarm.'
 - id: single-member
   prompt: Which is a correct statement about etcdctl snapshot save?
-  choices: [It must be run on every member, It needs the member endpoint and TLS client credentials and one healthy member is enough, It only works while the cluster is stopped, It saves only the Secrets]
-  answer: [1]
-  explain: 'A) wrong: one member gives a consistent point-in-time snapshot. B) correct: use the etcd CA, certificate and key. C) wrong: it streams from a live member. D) wrong: it saves the whole keyspace.'
+  choices: [It saves only the Secrets, It must be run on every member, It only works while the cluster is stopped, It needs the member endpoint and TLS client credentials and one healthy member is enough]
+  answer: [3]
+  explain: 'A) wrong: it saves the whole keyspace. B) wrong: one member gives a consistent point-in-time snapshot. C) wrong: it streams from a live member. D) correct: use the etcd CA, certificate and key.'
 - id: limits
   prompt: After restoring a three-hour-old snapshot, which problems are expected? (select two)
   choices: [Objects created in the last three hours are missing from the API, PersistentVolumes provisioned in that time exist in the cloud but not in the API, All certificates are renewed automatically, The Kubernetes version is downgraded]
@@ -22,6 +22,6 @@ questions:
   explain: 'A) correct: the restore is a rollback of records. B) correct: orphaned volumes leak. C) wrong: restore does not renew certificates. D) wrong: versions are unchanged.'
 - id: secrets
   prompt: Why must etcd snapshots be encrypted and access controlled?
-  choices: [They are large, They contain every Secret in the cluster, They are written in a proprietary format, They slow the API server]
-  answer: [1]
-  explain: 'A) wrong: size is not the reason. B) correct: unless encrypted at rest they hold Secrets in plain text, and the key sits on the same host. C) wrong: format is open. D) wrong: unrelated.'
+  choices: [They are written in a proprietary format, They are large, They contain every Secret in the cluster, They slow the API server]
+  answer: [2]
+  explain: 'A) wrong: format is open. B) wrong: size is not the reason. C) correct: unless encrypted at rest they hold Secrets in plain text, and the key sits on the same host. D) wrong: unrelated.'

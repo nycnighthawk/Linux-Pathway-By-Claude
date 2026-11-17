@@ -13,40 +13,40 @@ questions:
 - id: router-needs
   prompt: What must hold for a Linux host to forward traffic between two networks?
   choices:
-  - Masquerade always
-  - Forwarding enabled and a return path routed
   - Only two interfaces
   - A default route on each interface
+  - Masquerade always
+  - Forwarding enabled and a return path routed
   answer:
-  - 1
+  - 3
   explain: ip_forward must be 1 and replies need a route back, by routes or NAT.
 - id: forward-sysctl
   prompt: Which sysctl enables IPv4 forwarding?
   choices:
+  - net.core.forward=1
   - net.ipv4.conf.all.rp_filter=1
   - net.ipv4.tcp_forward=1
-  - net.core.forward=1
   - net.ipv4.ip_forward=1
   answer:
   - 3
-  explain: Persist it in /etc/sysctl.d/.
+  explain: 'Setting net.ipv4.ip_forward=1 lets the kernel route packets between interfaces. Apply it with sysctl -w for now and persist it in a file under /etc/sysctl.d/; IPv6 has its own forwarding setting.'
 - id: route-get
   prompt: Which command predicts the route for one destination?
   choices:
-  - ss -r
   - ip route get 198.51.100.7
-  - ip route show type local
   - ip neigh get 198.51.100.7
+  - ss -r
+  - ip route show type local
   answer:
-  - 1
+  - 0
   explain: ip route get shows the decision, including interface and source.
 - id: policy
   prompt: What does ip rule add from 192.0.2.50/32 table 100 do?
   choices:
   - Adds a NAT rule
-  - Sets a default gateway
-  - Sends traffic from that source through routing table 100
   - Blocks that source
+  - Sends traffic from that source through routing table 100
+  - Sets a default gateway
   answer:
   - 2
   explain: Policy rules select a routing table by selector such as source address.
@@ -63,10 +63,10 @@ questions:
 - id: persist-route
   prompt: Where do you persist a static route on a NetworkManager host?
   choices:
-  - With ip route add only
-  - In /etc/hosts
-  - In nsswitch.conf
   - In the connection profile, for example with +ipv4.routes
+  - In nsswitch.conf
+  - In /etc/hosts
+  - With ip route add only
   answer:
-  - 3
+  - 0
   explain: ip route add is runtime only; the profile is the persistent source.

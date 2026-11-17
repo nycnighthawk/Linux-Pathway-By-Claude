@@ -3,60 +3,60 @@ questions:
 - id: direct-io
   prompt: Why use --direct=1 in a fio disk test?
   choices:
-  - It encrypts data
   - It bypasses the page cache so you measure the device
-  - It is faster
   - It writes zeros
+  - It encrypts data
+  - It is faster
   answer:
-  - 1
+  - 0
   explain: Buffered I/O may be served from memory and report impossible speeds.
 - id: repeats
   prompt: How many runs support a credible comparison?
   choices:
+  - None, use a vendor figure
+  - Two identical
   - One
   - Three to five at least, with spread reported
-  - Two identical
-  - None, use a vendor figure
   answer:
-  - 1
+  - 3
   explain: Repeats reveal variance; a difference inside the spread is not evidence.
 - id: co
   prompt: What is coordinated omission?
   choices:
-  - A closed-loop load generator under-reports latency by slowing down when the server stalls
+  - Dropping packets
   - Omitting a benchmark
   - Skipping warm-up
-  - Dropping packets
+  - A closed-loop load generator under-reports latency by slowing down when the server stalls
   answer:
-  - 0
+  - 3
   explain: Use an open-loop generator or correct with a histogram.
 - id: loopback
   prompt: Why is an iperf3 test over loopback misleading?
   choices:
-  - It uses UDP
+  - It needs root
   - It measures the CPU and stack, not the network path
   - It is too slow
-  - It needs root
+  - It uses UDP
   answer:
   - 1
   explain: Use two hosts to include NICs, links and offloads.
 - id: governor
   prompt: Which setting removes CPU frequency noise?
   choices:
-  - powersave governor
-  - performance governor
-  - More swap
   - Smaller packets
+  - performance governor
+  - powersave governor
+  - More swap
   answer:
   - 1
   explain: A fixed frequency makes runs comparable; record the governor with the result.
 - id: active
   prompt: What is active benchmarking?
   choices:
-  - Running the test twice
-  - Observing the system with other tools while the test runs to find the limiting resource
-  - Using a GUI
   - Running at night
+  - Observing the system with other tools while the test runs to find the limiting resource
+  - Running the test twice
+  - Using a GUI
   answer:
   - 1
   explain: It turns a number into a finding by naming the bottleneck.

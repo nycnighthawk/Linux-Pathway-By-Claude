@@ -3,39 +3,39 @@ questions:
 - id: console
   prompt: Which console argument shows the serial console on QEMU virt for arm64?
   choices:
+  - console=hvc9
   - console=ttyS0
   - console=ttyAMA0
   - console=tty0
-  - console=hvc9
-  answer: [1]
-  explain: 'A) wrong, that is the x86 serial port. B) correct, the PL011 UART. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong, that is the x86 serial port. C) correct, the PL011 UART. D) wrong.'
 - id: vars
   prompt: Which variables select an arm64 target and the GNU cross compiler prefix?
   choices:
-  - ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
-  - TARGET=arm CC=gcc
   - MACHINE=virt
   - PLATFORM=aarch64
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - TARGET=arm CC=gcc
+  - ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: sep
   prompt: Why build each architecture in its own O= directory?
   choices:
-  - It makes the build faster only
-  - Configuration and generated headers are architecture-specific and a mixed tree breaks
   - Git requires it
   - QEMU requires it
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - Configuration and generated headers are architecture-specific and a mixed tree breaks
+  - It makes the build faster only
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: kvm
   prompt: When does QEMU run arm64 guest code natively rather than translating it?
   choices:
-  - Always
   - On an arm64 host with KVM acceleration
+  - Always
   - Never
   - Only on x86
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: header
   prompt: Which field of the arm64 Image header identifies the file as a kernel?
   choices:
@@ -48,9 +48,9 @@ questions:
 - id: order
   prompt: Why can code that works on x86 fail rarely on arm64?
   choices:
-  - arm64 has fewer registers
   - arm64 is weakly ordered, so missing barriers matter
-  - x86 never has bugs
+  - arm64 has fewer registers
   - The compiler differs
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - x86 never has bugs
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

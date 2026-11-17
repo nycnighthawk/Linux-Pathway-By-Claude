@@ -2,14 +2,14 @@ title: 'Quiz: Live migration tuning'
 questions:
 - id: converge
   prompt: A migration reports remaining data that grows between samples. What does that show?
-  choices: [The guest dirties memory faster than it is sent, The disk is full, The destination is down, The guest is idle]
-  answer: [0]
-  explain: 'A) correct: the dirty rate exceeds the transfer rate. B) wrong. C) wrong. D) wrong: an idle guest converges.'
+  choices: [The disk is full, The destination is down, The guest is idle, The guest dirties memory faster than it is sent]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong: an idle guest converges. D) correct: the dirty rate exceeds the transfer rate.'
 - id: autoconv
   prompt: Why may auto-converge be unacceptable for a latency-critical guest?
-  choices: [It uses more network, It throttles the guest vCPUs and slows the whole service, It disables multifd, It needs shared storage]
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  choices: [It throttles the guest vCPUs and slows the whole service, It disables multifd, It uses more network, It needs shared storage]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: postcopy
   prompt: What is the main risk of post-copy?
   choices: [Pages are sent twice, Between switch and completion the current state is split, so a network or target failure can lose the guest, It needs more bandwidth, It cannot start]
@@ -17,11 +17,11 @@ questions:
   explain: 'A) wrong: pages are never sent twice. B) correct. C) wrong: it uses less. D) wrong.'
 - id: multifd
   prompt: Which statements about multifd are correct? (select two)
-  choices: [It splits the memory stream across several connections, With post-copy it speeds only the pre-copy phase, It slows guests down, It replaces the downtime setting]
-  answer: [0, 1]
+  choices: [With post-copy it speeds only the pre-copy phase, It splits the memory stream across several connections, It slows guests down, It replaces the downtime setting]
+  answer: [1, 0]
   explain: 'A) correct. B) correct. C) wrong. D) wrong.'
 - id: dirtylimit
   prompt: How does dirty limit differ from auto-converge?
-  choices: [It throttles only vCPUs whose dirty rate exceeds a limit, It compresses pages, It is a post-copy mode, It moves disks]
+  choices: [It throttles only vCPUs whose dirty rate exceeds a limit, It moves disks, It compresses pages, It is a post-copy mode]
   answer: [0]
   explain: 'A) correct: it needs the KVM dirty ring. B) wrong. C) wrong. D) wrong.'

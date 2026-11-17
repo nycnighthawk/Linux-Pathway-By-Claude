@@ -3,60 +3,60 @@ questions:
 - id: drift
   prompt: What is configuration drift?
   choices:
-  - The gap between the recorded intended state of a host and its actual state
   - Slow network speed
-  - Clock skew between two hosts
+  - The gap between the recorded intended state of a host and its actual state
   - A kind of file system
+  - Clock skew between two hosts
   answer:
-  - 0
-  explain: 'A) correct: hand edits and updates move a host away from its baseline. B) wrong: unrelated. C) wrong: that is time drift. D) wrong: unrelated.'
+  - 1
+  explain: 'A) wrong: unrelated. B) correct: hand edits and updates move a host away from its baseline. C) wrong: unrelated. D) wrong: that is time drift.'
 - id: aidedb
   prompt: After a patch window, why must the AIDE database be updated by a person who has reviewed the changes?
   choices:
-  - Otherwise every later report is full of known, legitimate changes and real problems are hidden
-  - To make AIDE run faster
-  - Because AIDE deletes files
   - It must never be updated
+  - Otherwise every later report is full of known, legitimate changes and real problems are hidden
+  - Because AIDE deletes files
+  - To make AIDE run faster
   answer:
-  - 0
-  explain: 'A) correct: the baseline must reflect approved change. B) wrong: unrelated. C) wrong: it only reports. D) wrong: a stale baseline is noise.'
+  - 1
+  explain: 'A) wrong: a stale baseline is noise. B) correct: the baseline must reflect approved change. C) wrong: it only reports. D) wrong: unrelated.'
 - id: checkmode
   prompt: What is a weakness of detecting drift with Ansible check mode?
   choices:
-  - Tasks that do not support check mode or are not idempotent report nothing or always report change
-  - It cannot read YAML
   - It changes the hosts
+  - It cannot read YAML
+  - Tasks that do not support check mode or are not idempotent report nothing or always report change
   - It works only on Windows
   answer:
-  - 0
-  explain: 'A) correct: the method depends on declarative, idempotent tasks. B) wrong: unrelated. C) wrong: check mode makes no changes. D) wrong: it works on Linux.'
+  - 2
+  explain: 'A) wrong: check mode makes no changes. B) wrong: unrelated. C) correct: the method depends on declarative, idempotent tasks. D) wrong: it works on Linux.'
 - id: ssd
   prompt: Why is overwriting an SSD from the operating system an unreliable wipe?
   choices:
-  - The drive remaps blocks and keeps spare cells, so old data may sit in places the overwrite never touches
   - SSDs cannot be written to
+  - The drive remaps blocks and keeps spare cells, so old data may sit in places the overwrite never touches
   - Overwriting is illegal
   - SSDs have no controller
   answer:
-  - 0
-  explain: 'A) correct: use the device sanitise or cryptographic erase. B) wrong: they can be written. C) wrong: not illegal. D) wrong: they have one.'
+  - 1
+  explain: 'A) wrong: they can be written. B) correct: use the device sanitise or cryptographic erase. C) wrong: not illegal. D) wrong: they have one.'
 - id: crypto
   prompt: What does cryptographic erase of a LUKS volume do?
   choices:
-  - Removes all key slots so the master key cannot be recovered, making the encrypted data unreadable
-  - Overwrites every block with zeros
   - Compresses the volume
   - Formats it as ext4
+  - Removes all key slots so the master key cannot be recovered, making the encrypted data unreadable
+  - Overwrites every block with zeros
   answer:
-  - 0
-  explain: 'A) correct: fast and independent of size, if no key copies survive. B) wrong: that is an overwrite. C) wrong: unrelated. D) wrong: the data would remain.'
+  - 2
+  explain: 'A) wrong: unrelated. B) wrong: the data would remain. C) correct: fast and independent of size, if no key copies survive. D) wrong: that is an overwrite.'
 - id: record
   prompt: A technician wiped 40 drives but kept no record. How does an auditor treat the work?
   choices:
-  - As not done, because sanitisation must be tracked, documented and verified
   - As done, since the drives are empty
-  - As done if the technician is trusted
+  - As not done, because sanitisation must be tracked, documented and verified
   - As irrelevant
+  - As done if the technician is trusted
   answer:
-  - 0
-  explain: 'A) correct: the control requires evidence per asset. B) wrong: emptiness cannot be proved without a record. C) wrong: trust is not evidence. D) wrong: it is a compliance failure.'
+  - 1
+  explain: 'A) wrong: emptiness cannot be proved without a record. B) correct: the control requires evidence per asset. C) wrong: it is a compliance failure. D) wrong: trust is not evidence.'

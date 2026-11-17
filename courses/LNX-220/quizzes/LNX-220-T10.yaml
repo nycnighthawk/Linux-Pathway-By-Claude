@@ -3,54 +3,54 @@ questions:
 - id: build
   prompt: Which command builds RPM packages from a spec file?
   choices:
+  - rpmbuild -ba name.spec
   - dpkg-deb --build name
   - flatpak-builder name
-  - rpmbuild -ba name.spec
   - podman build name
   answer:
-  - 2
+  - 0
   explain: rpmbuild reads the spec. dpkg-deb makes DEBs, flatpak-builder builds Flatpaks and podman build builds OCI images.
 - id: clean
   prompt: Why build packages in a clean build root such as mock or sbuild?
   choices:
+  - So undeclared build dependencies show up as failures
+  - To skip the tests
   - To make the package smaller
   - To sign it automatically
-  - To skip the tests
-  - So undeclared build dependencies show up as failures
   answer:
-  - 3
+  - 0
   explain: A clean root contains only declared BuildRequires, so a missing one fails visibly. Size, signing and test execution
     are not what the clean root provides.
 - id: diffid
   prompt: In an OCI image configuration, what do the diff_ids list?
   choices:
+  - The tags of the image
   - The digests of the uncompressed layers
   - The digests of the compressed layer blobs
-  - The tags of the image
   - The names of the files in each layer
   answer:
-  - 0
+  - 1
   explain: diff_ids identify layers by the SHA-256 of their uncompressed tar. The manifest lists the compressed blob digests,
     and tags and file names are separate.
 - id: flatpak
   prompt: What does a Flatpak application declare to reach the host?
   choices:
-  - Nothing; the sandbox is open
   - Permissions in its metadata, such as sockets, filesystem and bus names
   - A Dockerfile
+  - Nothing; the sandbox is open
   - A debian/control file
   answer:
-  - 1
+  - 0
   explain: Flatpak sandboxes by default and lists exceptions in finish-args. A Dockerfile and debian/control belong to other
     formats.
 - id: secret
   prompt: A secret was copied into one image layer and deleted in the next. What is true?
   choices:
   - It is removed from the image
+  - It exists only in the config
   - It is encrypted
   - It is still present in the earlier layer
-  - It exists only in the config
   answer:
-  - 2
+  - 3
   explain: Layers are additive, so deleting a file in a later layer hides it but the earlier layer still contains it. Nothing
     encrypts it, and it is not in the config.

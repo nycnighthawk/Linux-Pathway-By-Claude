@@ -5,43 +5,43 @@ questions:
   choices:
   - kvm-unit-tests
   - A shell script
-  - A web browser
   - Nothing
+  - A web browser
   answer: [0]
   explain: 'A) correct: small freestanding guests. B) wrong. C) wrong. D) wrong.'
 - id: ucall
   prompt: What is a ucall in KVM selftests?
   choices:
-  - A way for guest code to report results to the host harness
-  - A user-space call to the BIOS
   - A network request
+  - A user-space call to the BIOS
+  - A way for guest code to report results to the host harness
   - A kernel panic
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: skip
   prompt: A test needs nested virtualization that the host lacks. What should it do?
   choices:
-  - Fail
-  - Report skip with a reason
   - Pretend to pass
+  - Report skip with a reason
   - Crash the host
+  - Fail
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: status
   prompt: With an isa-debug-exit device, what QEMU exit status does a guest write of 0 produce?
   choices:
-  - '0'
   - '1'
   - '2'
+  - '0'
   - '255'
-  answer: [1]
-  explain: 'A) wrong. B) correct: (0 << 1) | 1. C) wrong. D) wrong.'
+  answer: [0]
+  explain: 'A) correct: (0 << 1) | 1. B) wrong. C) wrong. D) wrong.'
 - id: both
   prompt: Why must a runner read both the log and the exit status?
   choices:
-  - A guest may print FAIL yet exit with success, or QEMU may die for its own reasons
-  - Logs are always wrong
   - Status is always wrong
+  - Logs are always wrong
+  - A guest may print FAIL yet exit with success, or QEMU may die for its own reasons
   - It is a style rule
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'

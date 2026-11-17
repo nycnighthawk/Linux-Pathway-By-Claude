@@ -2,31 +2,31 @@ title: 'Quiz: Kernel tree, releases, stable/LTS, maintainers'
 questions:
 - id: window
   prompt: A new driver is accepted by its maintainer after -rc5. When can it reach a mainline release?
-  choices: [In the current release, In the next cycle's merge window, Never, Only through linux-next]
-  answer: [1]
-  explain: 'A) wrong: only fixes are accepted after the merge window. B) correct. C) wrong. D) wrong: linux-next is not a release.'
+  choices: [Only through linux-next, In the current release, In the next cycle's merge window, Never]
+  answer: [2]
+  explain: 'A) wrong: linux-next is not a release. B) wrong: only fixes are accepted after the merge window. C) correct. D) wrong.'
 - id: next
   prompt: What is linux-next?
-  choices: [The next stable release, A daily merge of subsystem trees used to find integration problems, A fork for new features, Linus Torvalds personal tree]
+  choices: [A fork for new features, A daily merge of subsystem trees used to find integration problems, Linus Torvalds personal tree, The next stable release]
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: version
   prompt: uname -r prints 6.12.0-55.el10.x86_64. What does it tell you about the code?
-  choices: [It is exactly upstream 6.12.0, It is a distribution kernel based on 6.12 that may carry many backports, It is a development snapshot, It is a stable 6.12.55 kernel]
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  choices: [It is a development snapshot, It is a stable 6.12.55 kernel, It is exactly upstream 6.12.0, It is a distribution kernel based on 6.12 that may carry many backports]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: stable
   prompt: Which are needed for a bug fix to be picked up for stable kernels? (select two)
-  choices: [A Cc to stable@vger.kernel.org, A fix that is already in mainline, A base on linux-next, A new feature flag]
+  choices: [A Cc to stable@vger.kernel.org, A fix that is already in mainline, A new feature flag, A base on linux-next]
   answer: [0, 1]
   explain: 'A) correct. B) correct. C) wrong. D) wrong.'
 - id: eol
   prompt: A product that must be supported for five years is designed on the newest stable branch. What is the risk?
-  choices: ['None', 'The branch reaches end of life within months, leaving no upstream fixes', 'Stable has no fixes', 'It cannot be built']
-  answer: [1]
-  explain: 'A) wrong. B) correct: choose a longterm branch or plan to track stable releases. C) wrong. D) wrong.'
+  choices: ['Stable has no fixes', 'It cannot be built', 'The branch reaches end of life within months, leaving no upstream fixes', 'None']
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: choose a longterm branch or plan to track stable releases. D) wrong.'
 - id: maint
   prompt: How do you find who should receive a patch?
-  choices: [Send it to Linus only, Run scripts/get_maintainer.pl on it and use the MAINTAINERS entries, Ask on any list, Post it to the stable list]
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  choices: [Send it to Linus only, Post it to the stable list, Run scripts/get_maintainer.pl on it and use the MAINTAINERS entries, Ask on any list]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'

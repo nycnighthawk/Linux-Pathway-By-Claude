@@ -3,39 +3,39 @@ questions:
 - id: zebra
   prompt: Which FRR daemon installs routes into the kernel?
   choices:
+  - bgpd
+  - zebra
   - ospfd
   - staticd only
-  - zebra
-  - bgpd
   answer:
-  - 2
-  explain: Protocol daemons feed zebra.
+  - 1
+  explain: 'In FRR, protocol daemons such as ospfd and bgpd send their best routes to zebra, which chooses among them and installs the winners in the kernel routing table.'
 - id: ospf-states
   prompt: Which OSPF neighbour state means adjacency is complete?
   choices:
+  - 2-Way
   - Init
   - Down
   - Full
-  - 2-Way
   answer:
-  - 2
+  - 3
   explain: ExStart usually means an MTU mismatch.
 - id: exstart
   prompt: A neighbour is stuck in ExStart. Likely cause?
   choices:
-  - Missing route map
   - Clock skew
-  - MTU mismatch
   - Wrong AS number
+  - Missing route map
+  - MTU mismatch
   answer:
-  - 2
-  explain: Database descriptions are dropped.
+  - 3
+  explain: 'OSPF neighbours exchange database descriptions in ExStart and Exchange. If the interface MTUs differ, the side with the smaller MTU drops the larger packets and the adjacency stalls there.'
 - id: ebgp-policy
   prompt: Why can an eBGP session be Established with 0 prefixes?
   choices:
-  - BGP needs OSPF
   - The AS path is empty
   - TCP 179 is closed
+  - BGP needs OSPF
   - FRR requires a policy unless ebgp-requires-policy is off
   answer:
   - 3
@@ -45,28 +45,28 @@ questions:
   choices:
   - Disables OSPF
   - Enables BFD
-  - Blocks BGP
   - Stops OSPF hellos on all interfaces except those re-enabled
+  - Blocks BGP
   answer:
-  - 3
-  explain: Re-enable with no passive-interface IFACE.
+  - 2
+  explain: 'passive-interface default stops OSPF hellos on every interface, so no adjacency forms by accident; the connected networks are still advertised. You then re-enable hellos only on core links with no passive-interface IFACE.'
 - id: ospf-proto
   prompt: Which IP protocol number does OSPF use?
   choices:
-  - '50'
   - '179'
   - '89'
+  - '50'
   - '112'
   answer:
-  - 2
-  explain: BGP uses TCP port 179.
+  - 1
+  explain: 'OSPF runs directly over IP as protocol 89, not over TCP or UDP, so firewall rules must allow that protocol number. BGP, by contrast, uses TCP port 179.'
 - id: offline
   prompt: How do you check frr.conf without daemons running?
   choices:
-  - systemctl status frr
-  - ospfd -t
   - vtysh -C -f frr.conf
+  - ospfd -t
+  - systemctl status frr
   - show running-config
   answer:
-  - 2
-  explain: vtysh -C parses the file.
+  - 0
+  explain: 'vtysh -C -f FILE parses a configuration in dry-run mode and reports errors without needing the daemons to be running, which makes it safe to use in CI or before a reload.'

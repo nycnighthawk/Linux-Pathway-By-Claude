@@ -2,26 +2,26 @@ title: 'Quiz: VirtualBox administration'
 questions:
 - id: headless
   prompt: Which command runs a registered machine with no window?
-  choices: [VBoxManage startvm node1 --type headless, VBoxManage createvm node1 --headless, VBoxManage controlvm node1 poweroff, VBoxManage modifyvm node1 --headless on]
-  answer: [0]
-  explain: 'A) correct: the front-end type is chosen at start. B) wrong: createvm only registers. C) wrong: that stops the machine. D) wrong: not an option of modifyvm.'
+  choices: [VBoxManage modifyvm node1 --headless on, VBoxManage startvm node1 --type headless, VBoxManage controlvm node1 poweroff, VBoxManage createvm node1 --headless]
+  answer: [1]
+  explain: 'A) wrong: not an option of modifyvm. B) correct: the front-end type is chosen at start. C) wrong: that stops the machine. D) wrong: createvm only registers.'
 - id: net-mode
   prompt: A three-node lab must reach the internet, reach each other, and stay invisible to the office LAN. Which mode fits?
-  choices: [Bridged, NAT network, Plain NAT, Internal network only]
-  answer: [1]
-  explain: 'A) wrong: it exposes guests on the LAN. B) correct: shared private network with outbound NAT. C) wrong: guests cannot reach each other. D) wrong: no outbound access.'
+  choices: [NAT network, Bridged, Plain NAT, Internal network only]
+  answer: [0]
+  explain: 'A) correct: shared private network with outbound NAT. B) wrong: it exposes guests on the LAN. C) wrong: guests cannot reach each other. D) wrong: no outbound access.'
 - id: address
   prompt: How should a script learn a headless guest's IP address?
-  choices: [Poll port 22 in a loop, Wait on the guest property the Guest Additions publish, Read the machine settings file, Assume the NAT address]
-  answer: [1]
-  explain: 'A) wrong: fragile and slow. B) correct: the guest publishes it and the host waits. C) wrong: it holds no runtime address. D) wrong: NAT hides it.'
+  choices: [Poll port 22 in a loop, Assume the NAT address, Wait on the guest property the Guest Additions publish, Read the machine settings file]
+  answer: [2]
+  explain: 'A) wrong: fragile and slow. B) wrong: NAT hides it. C) correct: the guest publishes it and the host waits. D) wrong: it holds no runtime address.'
 - id: snapshot
   prompt: Why is a snapshot a poor backup? (select two)
-  choices: [It lives on the same storage as the disk, Chains slow I/O and can fail to merge when space runs out, It cannot be taken while the VM runs, It deletes the original disk]
-  answer: [0, 1]
-  explain: 'A) correct: a lost disk loses the snapshot too. B) correct. C) wrong: live snapshots exist. D) wrong.'
+  choices: [Chains slow I/O and can fail to merge when space runs out, It lives on the same storage as the disk, It deletes the original disk, It cannot be taken while the VM runs]
+  answer: [1, 0]
+  explain: 'A) correct. B) correct: a lost disk loses the snapshot too. C) wrong. D) wrong: live snapshots exist.'
 - id: additions
   prompt: A Linux guest loses shared folders right after a kernel update. What do you check first?
-  choices: [The host BIOS, Whether Guest Additions modules exist for the running kernel and match the host version, The VDI disk size, The NAT forwarding rule]
-  answer: [1]
-  explain: 'A) wrong. B) correct: the modules are built per kernel. C) wrong. D) wrong: unrelated to shared folders.'
+  choices: [The host BIOS, The VDI disk size, The NAT forwarding rule, Whether Guest Additions modules exist for the running kernel and match the host version]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong: unrelated to shared folders. D) correct: the modules are built per kernel.'

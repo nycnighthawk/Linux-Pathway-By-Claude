@@ -3,66 +3,65 @@ questions:
 - id: subuid
   prompt: Where are the subordinate ID ranges for a rootless user defined?
   choices:
-  - ~/.config/containers/storage.conf
+  - /etc/passwd
   - /proc/self/uid_map
   - /etc/subuid and /etc/subgid
-  - /etc/passwd
+  - ~/.config/containers/storage.conf
   answer:
   - 2
-  explain: 'A) Wrong: storage.conf sets storage paths and drivers. B) Wrong: uid_map shows the result inside a namespace, it is not the configuration. C) Correct: lines of user:start:count, applied by newuidmap
-    and newgidmap. D) Wrong: passwd holds the account''s own UID only.'
+  explain: 'A) Wrong: passwd holds the account''s own UID only. B) Wrong: uid_map shows the result inside a namespace, it is not the configuration. C) Correct: lines of user:start:count, applied by newuidmap
+    and newgidmap. D) Wrong: storage.conf sets storage paths and drivers.'
 - id: keep-id
   prompt: Which option makes a rootless container's user keep your own numeric UID so bind-mounted files stay editable?
   choices:
-  - --network=host
   - --userns=keep-id
+  - --network=host
   - --privileged
   - --cap-add=CHOWN
   answer:
-  - 1
-  explain: 'A) Wrong: host networking is unrelated to file ownership. B) Correct: it maps your UID to the same number inside. C) Wrong: privileged removes confinement and does not fix ownership in a user
+  - 0
+  explain: 'A) Correct: it maps your UID to the same number inside. B) Wrong: host networking is unrelated to file ownership. C) Wrong: privileged removes confinement and does not fix ownership in a user
     namespace. D) Wrong: chown capability does not change the mapping.'
 - id: pod-ports
   prompt: Where do you publish a port for containers in a Podman pod?
   choices:
-  - With the infra image only at build time
   - On the pod, at podman pod create -p
-  - On each container with -p
+  - With the infra image only at build time
   - In /etc/hosts
+  - On each container with -p
   answer:
-  - 1
-  explain: 'A) Wrong: the infra container is created with the pod, not at image build. B) Correct: members share the pod''s network namespace, so the port belongs to the pod. C) Wrong: containers in a pod
-    do not own a separate network namespace. D) Wrong: /etc/hosts does not publish ports.'
+  - 0
+  explain: 'A) Correct: members share the pod''s network namespace, so the port belongs to the pod. B) Wrong: the infra container is created with the pod, not at image build. C) Wrong: /etc/hosts does not publish ports. D) Wrong: containers in a pod
+    do not own a separate network namespace.'
 - id: quadlet-path
   prompt: Where would a rootless user place web.container so that Quadlet generates web.service?
   choices:
   - ~/.config/containers/systemd/
-  - /etc/systemd/system/
   - ~/.config/systemd/user/ only after systemctl enable
+  - /etc/systemd/system/
   - /usr/lib/containers/
   answer:
   - 0
-  explain: 'A) Correct: the generator scans that directory for the user instance. B) Wrong: that is for system unit files, and Quadlet files there would not be rootless. C) Wrong: generated units are transient,
-    so enable does not apply. D) Wrong: that is not a Quadlet search path.'
+  explain: 'A) Correct: the generator scans that directory for the user instance. B) Wrong: generated units are transient,
+    so enable does not apply. C) Wrong: that is for system unit files, and Quadlet files there would not be rootless. D) Wrong: that is not a Quadlet search path.'
 - id: linger
   prompt: A rootless Quadlet service disappears after you log out. What is the first thing to check?
   choices:
   - loginctl show-user for Linger=yes
   - The image digest
-  - The SELinux boolean for NFS
   - The pasta version
+  - The SELinux boolean for NFS
   answer:
   - 0
-  explain: 'A) Correct: without lingering the user''s systemd instance stops at the end of the last session. B) Wrong: the image is unrelated to the lifetime of the manager. C) Wrong: NFS booleans do not
-    control session lifetime. D) Wrong: networking does not stop the service at logout.'
+  explain: 'A) Correct: without lingering the user''s systemd instance stops at the end of the last session. B) Wrong: the image is unrelated to the lifetime of the manager. C) Wrong: networking does not stop the service at logout. D) Wrong: NFS booleans do not
+    control session lifetime.'
 - id: notify-healthy
   prompt: What does Notify=healthy do in a Quadlet .container file?
   choices:
-  - The unit is reported started only after the container health check passes
-  - The container is restarted every time it is unhealthy
   - systemd sends mail on failure
   - The image is verified with cosign
+  - The unit is reported started only after the container health check passes
+  - The container is restarted every time it is unhealthy
   answer:
-  - 0
-  explain: 'A) Correct: dependants therefore start when the service is actually ready. B) Wrong: restarts are governed by Restart=, not Notify. C) Wrong: Notify is the readiness protocol, not an alert.
-    D) Wrong: signature checks are policy.json settings.'
+  - 2
+  explain: 'A) Wrong: Notify is the readiness protocol, not an alert. B) Wrong: signature checks are policy.json settings. C) Correct: dependants therefore start when the service is actually ready. D) Wrong: restarts are governed by Restart=, not Notify.'

@@ -3,70 +3,70 @@ questions:
 - id: journal-prev
   prompt: Which command shows kernel messages of the previous boot?
   choices:
+  - logger -b
+  - journalctl -f
   - journalctl -b -1 -k
   - dmesg -w
-  - journalctl -f
-  - logger -b
   answer:
-  - 0
+  - 2
   explain: -b -1 selects the previous boot and -k limits to kernel messages.
 - id: tcp-vs-udp
   prompt: Which rsyslog transport loses messages silently when the network drops?
   choices:
   - TCP
-  - TLS over TCP
   - UDP
   - RELP
+  - TLS over TCP
   answer:
-  - 2
+  - 1
   explain: UDP has no delivery guarantee or connection state; TCP, TLS and RELP detect failure.
 - id: queue
   prompt: Which setting lets rsyslog survive a collector outage without dropping messages?
   choices:
+  - Disabling TLS
+  - Setting protocol to udp
   - A disk-assisted queue with unlimited resume retries
   - A larger severity filter
-  - Setting protocol to udp
-  - Disabling TLS
   answer:
-  - 0
+  - 2
   explain: The queue buffers messages while the target is down and retries; without it they are discarded.
 - id: rotation
   prompt: A service keeps writing to the rotated file. What was missing?
   choices:
-  - A postrotate reload or copytruncate
-  - More compression
-  - A larger rotate count
   - A newer kernel
+  - A larger rotate count
+  - More compression
+  - A postrotate reload or copytruncate
   answer:
-  - 0
+  - 3
   explain: The process still holds the old file descriptor; reload so it reopens, or copytruncate.
 - id: loki-labels
   prompt: Why does Loki keep few labels?
   choices:
-  - Labels are expensive to type
   - It indexes only labels and stores log text compressed, so high cardinality hurts cost
+  - Labels are expensive to type
   - It cannot store text
   - Labels must be numeric
   answer:
-  - 1
+  - 0
   explain: Few bounded labels keep the index small; variable content stays in the message.
 - id: silence
   prompt: What does an absent log stream most likely deserve?
   choices:
   - Nothing, silence means health
   - Its own alert on no data received
-  - A lower retention
   - A bigger buffer
+  - A lower retention
   answer:
   - 1
   explain: A broken rotation or shipper looks like silence; alert on a source that stops sending.
 - id: tls-auth
   prompt: Which rsyslog setting verifies the collector's identity?
   choices:
-  - StreamDriverAuthMode with permitted peers
   - queue.type
-  - action.resumeRetryCount
+  - StreamDriverAuthMode with permitted peers
   - protocol=tcp
+  - action.resumeRetryCount
   answer:
-  - 0
+  - 1
   explain: With TLS you must authenticate the peer (x509/name plus permitted peers), or an attacker can impersonate the collector.

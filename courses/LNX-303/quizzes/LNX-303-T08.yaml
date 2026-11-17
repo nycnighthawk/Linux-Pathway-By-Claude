@@ -3,77 +3,75 @@ questions:
 - id: parts
   prompt: In SCAP, which part holds the machine-evaluable checks?
   choices:
-  - XCCDF
   - OVAL
-  - ARF
   - CPE
+  - ARF
+  - XCCDF
   answer:
-  - 1
-  explain: 'A) wrong: XCCDF describes the benchmark, rules and profiles. B) correct: OVAL definitions are evaluated by the scanner.
-    C) wrong: ARF is the result format. D) wrong: CPE names platforms.'
+  - 0
+  explain: 'A) correct: OVAL definitions are evaluated by the scanner. B) wrong: CPE names platforms. C) wrong: ARF is the result format. D) wrong: XCCDF describes the benchmark, rules and profiles.'
 - id: tailoring
   prompt: Why tailor a profile with a tailoring file or an extending .profile instead of editing the data stream?
   choices:
-  - Data streams cannot be edited at all
   - Deviations stay small, reviewable and survive content updates
+  - Data streams cannot be edited at all
   - Tailoring makes scans faster
   - It removes the need for exceptions
   answer:
-  - 1
-  explain: 'A) wrong: they can be, which is the problem. B) correct: the base content updates while your delta stays separate.
-    C) wrong: speed is unchanged. D) wrong: every deviation still needs a reason and an owner.'
+  - 0
+  explain: 'A) correct: the base content updates while your delta stays separate. B) wrong: they can be, which is the problem. C) wrong: speed is unchanged. D) wrong: every deviation still needs a reason and an owner.'
 - id: na
   prompt: A scan shows 94 percent pass on a new distribution release, using content for the previous release. What should worry you?
   choices:
-  - The HTML report is too large
-  - Many rules may be notapplicable and skipped, so the score flatters the system
   - The scan ran as root
+  - Many rules may be notapplicable and skipped, so the score flatters the system
   - The profile has too many rules
+  - The HTML report is too large
   answer:
   - 1
-  explain: 'A) wrong: size is irrelevant. B) correct: platform mismatches skip rules and the pass rate rises. C) wrong: the scanner needs privileges. D) wrong:
-    count is not the issue.'
+  explain: 'A) wrong: the scanner needs privileges. B) correct: platform mismatches skip rules and the pass rate rises. C) wrong:
+    count is not the issue. D) wrong: size is irrelevant.'
 - id: remediate
   prompt: What is the safest way to apply generated remediation?
   choices:
   - Run it on all production hosts at once
+  - Apply only the rules that fail
   - Review it, apply to a staging clone and a canary with out-of-band access, then rescan
   - Run it only after a reboot
-  - Apply only the rules that fail
   answer:
-  - 1
-  explain: 'A) wrong: one bad rule locks out everything. B) correct: a lockout is recoverable only with another way in. C) wrong:
-    rebooting does not make it safe. D) wrong: all remediation is applied to failing rules; the question is how safely.'
+  - 2
+  explain: 'A) wrong: one bad rule locks out everything. B) wrong: all remediation is applied to failing rules; the question is how safely. C) correct: a lockout is recoverable only with another way in. D) wrong:
+    rebooting does not make it safe.'
 - id: image
   prompt: Why is hardening at image build time preferred to remediation on running hosts?
   choices:
-  - Images cannot drift
-  - Hosts start compliant, changes are tested once, and later scans detect drift as an event
   - It avoids using OpenSCAP
+  - Hosts start compliant, changes are tested once, and later scans detect drift as an event
+  - Images cannot drift
   - It removes the need for exceptions
   answer:
   - 1
-  explain: 'A) wrong: running hosts still drift. B) correct: build-time application is testable and repeatable. C) wrong: the same tools are used. D) wrong:
+  explain: 'A) wrong: the same tools are used. B) correct: build-time application is testable and repeatable. C) wrong: running hosts still drift. D) wrong:
     exceptions still apply.'
 - id: evidence
   prompt: What does a passing OpenSCAP report prove to an auditor?
   choices:
-  - The system is secure
+  - The application is correct
   - The rules in that profile and content version passed as reported by the scanned host
   - No vulnerabilities exist
-  - The application is correct
+  - The system is secure
   answer:
   - 1
-  explain: 'A) wrong: benchmarks cover configuration only. B) correct: it is bounded by profile, version and the trustworthiness of
-    the host. C) wrong: vulnerability scanning is a separate activity. D) wrong: application correctness is out of scope.'
+  explain: 'A) wrong: application correctness is out of scope. B) correct: it is bounded by profile, version and the trustworthiness of
+    the host. C) wrong: vulnerability scanning is a separate activity. D) wrong: benchmarks cover configuration only.'
 - id: exceptions
   prompt: What belongs in an exception register entry?
   choices:
   - Only the rule name
-  - The rule, the reason, an owner and an expiry date
   - A screenshot
   - The scan score
+  - The rule, the reason, an owner and an expiry date
   answer:
-  - 1
-  explain: 'A) wrong: it cannot be reviewed without context. B) correct: reason, owner and expiry force a periodic decision. C) wrong:
-    a screenshot is not a record. D) wrong: the score belongs to the result.'
+  - 3
+  explain: 'A) wrong: it cannot be reviewed without context. B) wrong:
+    a screenshot is not a record. C) wrong: the score belongs to the result. D) correct: reason, owner and expiry force a periodic decision.'

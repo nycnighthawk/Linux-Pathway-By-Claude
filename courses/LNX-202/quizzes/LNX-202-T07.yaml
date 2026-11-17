@@ -3,70 +3,70 @@ questions:
 - id: allowedips
   prompt: What are the two jobs of AllowedIPs?
   choices:
-  - DNS and DHCP
   - NAT and masquerade
-  - Keepalive and MTU
   - Routing table and access list for inner source addresses
+  - Keepalive and MTU
+  - DNS and DHCP
   answer:
-  - 3
-  explain: Cryptokey routing.
+  - 1
+  explain: 'WireGuard uses AllowedIPs twice: outbound, as the routing table that picks the peer for a destination; inbound, as the list of inner source addresses a peer may send from. This pairing is called cryptokey routing.'
 - id: wg-keys
   prompt: What is exchanged between two WireGuard peers?
   choices:
+  - Certificates
   - Public keys only
   - Private keys
-  - Certificates
   - Pre-shared passwords only
   answer:
-  - 0
+  - 1
   explain: Private keys never leave their host.
 - id: wg-handshake
   prompt: What does a missing latest handshake in wg show mean?
   choices:
   - The key is too long
-  - The peer never completed the exchange
   - The tunnel is idle and healthy
   - The MTU is too small
+  - The peer never completed the exchange
   answer:
-  - 1
+  - 3
   explain: Check keys, endpoint and the UDP port.
 - id: ike-ports
   prompt: Which ports and protocol does IKEv2 IPsec need open?
   choices:
-  - UDP 51820
-  - TCP 179
   - UDP 500 and 4500, and ESP
+  - TCP 179
   - TCP 22
+  - UDP 51820
   answer:
-  - 2
-  explain: ESP is IP protocol 50.
+  - 0
+  explain: 'IKEv2 negotiates on UDP 500 and moves to UDP 4500 when NAT is detected. The protected traffic is ESP, IP protocol 50, which is not a TCP or UDP port and needs its own firewall rule unless NAT-T wraps it in UDP 4500.'
 - id: mtu
   prompt: A tunnel passes pings but large transfers stall. First suspect?
   choices:
-  - MTU
   - DNS
   - SELinux
   - Clock skew
+  - MTU
   answer:
-  - 0
+  - 3
   explain: Use ping -M do -s to find the path limit and lower the MTU.
 - id: keepalive
   prompt: Why set PersistentKeepalive = 25?
   choices:
-  - Enable roaming
-  - Keep a NAT mapping open
-  - Speed up handshakes
   - Increase MTU
+  - Enable roaming
+  - Speed up handshakes
+  - Keep a NAT mapping open
   answer:
-  - 1
+  - 3
   explain: Peers behind NAT need regular packets.
 - id: ipsec-mode
   prompt: Which IPsec mode wraps the whole original packet?
   choices:
-  - Aggressive mode
-  - Main mode
-  - Tunnel mode
   - Transport mode
+  - Tunnel mode
+  - Main mode
+  - Aggressive mode
   answer:
-  - 2
+  - 1
   explain: Tunnel mode is used for VPNs.

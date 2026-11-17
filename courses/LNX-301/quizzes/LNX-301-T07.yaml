@@ -3,38 +3,37 @@ questions:
 - id: why-trust
   prompt: What does a cross-forest trust avoid, compared with joining every Linux host to AD?
   choices:
-  - Having any Kerberos at all
-  - An AD computer object and AD ports per Linux host, and any Linux-specific schema or policy in AD
-  - The need for DNS
   - Time synchronisation
+  - Having any Kerberos at all
+  - The need for DNS
+  - An AD computer object and AD ports per Linux host, and any Linux-specific schema or policy in AD
   answer:
-  - 1
-  explain: 'A (wrong): Both use Kerberos. B (correct): Linux hosts enrol in IdM; AD users still log in through the
-    trust. C (wrong): DNS must work in both directions. D (wrong): Time still matters.'
+  - 3
+  explain: 'A (wrong): Time still matters. B (wrong): Both use Kerberos. C (wrong): DNS must work in both directions. D (correct): Linux hosts enrol in IdM; AD users still log in through the
+    trust.'
 - id: controller-agent
   prompt: What is the difference between an IdM trust controller and a trust agent?
   choices:
+  - They are the same role under different names
   - Controllers run Samba components and can establish the trust and process AD Kerberos requests; agents can resolve
     AD identities for clients but cannot handle AD Kerberos requests
   - Agents establish trusts and controllers cannot
-  - They are the same role under different names
   - Controllers are clients
   answer:
-  - 0
-  explain: 'A (correct): This matches the roles described for IdM trusts. B (wrong): The reverse is true. C (wrong):
-    They differ in services and exposure. D (wrong): Both are IdM servers.'
+  - 1
+  explain: 'A (wrong):
+    They differ in services and exposure. B (correct): This matches the roles described for IdM trusts. C (wrong): The reverse is true. D (wrong): Both are IdM servers.'
 - id: external-group
   prompt: Why is an external group nested in a POSIX group when AD users are given sudo rights?
   choices:
+  - To rename the AD forest
+  - To skip the trust
   - External groups hold AD members by SID and cannot be named directly in HBAC or sudo rules; the POSIX group wrapper
     can
   - To make AD groups writable
-  - To rename the AD forest
-  - To skip the trust
   answer:
-  - 0
-  explain: 'A (correct): Rules accept POSIX groups only. B (wrong): The nesting does not change AD. C (wrong): Unrelated.
-    D (wrong): The trust is still needed.'
+  - 2
+  explain: 'A (wrong): Unrelated. B (wrong): The trust is still needed. C (correct): Rules accept POSIX groups only. D (wrong): The nesting does not change AD.'
 - id: range-type
   prompt: Which statement about the ID range type of a trust is correct?
   choices:
@@ -51,14 +50,14 @@ questions:
 - id: two-way
   prompt: Why is a two-way trust nearly the same as a one-way trust for IdM?
   choices:
-  - IdM implements no global catalog service, so IdM users cannot be authorised for most AD resources
   - Windows forbids two-way trusts
-  - Kerberos is one-way by design
+  - IdM implements no global catalog service, so IdM users cannot be authorised for most AD resources
   - IdM has no users
+  - Kerberos is one-way by design
   answer:
-  - 0
-  explain: 'A (correct): AD resources need the catalog for access checks, which IdM lacks. B (wrong): Windows supports
-    them. C (wrong): Cross-realm tickets can flow both ways. D (wrong): IdM has users.'
+  - 1
+  explain: 'A (wrong): Windows supports
+    them. B (correct): AD resources need the catalog for access checks, which IdM lacks. C (wrong): IdM has users. D (wrong): Cross-realm tickets can flow both ways.'
 - id: dns
   prompt: Why does the trust need DNS forwarding on both sides?
   choices:
@@ -74,12 +73,11 @@ questions:
 - id: healthcheck
   prompt: Which command runs only the trust checks of IdM Healthcheck?
   choices:
-  - ipa-healthcheck --source=ipahealthcheck.ipa.trust
+  - ipa-backup --data
   - ipa trust-del
   - realm list
-  - ipa-backup --data
+  - ipa-healthcheck --source=ipahealthcheck.ipa.trust
   answer:
-  - 0
-  explain: 'A (correct): The --source option limits the run to the trust tests; an empty list means no findings.
-    B (wrong): It removes the trust. C (wrong): It lists joined realms on a client. D (wrong): It creates a data
-    backup.'
+  - 3
+  explain: 'A (wrong): It creates a data
+    backup. B (wrong): It removes the trust. C (wrong): It lists joined realms on a client. D (correct): The --source option limits the run to the trust tests; an empty list means no findings.'
