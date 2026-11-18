@@ -3,30 +3,30 @@ questions:
 - id: loglevel
   prompt: The console log level is set to 5. Which messages reach the console?
   choices:
-  - Levels 0 to 4, such as warnings and errors
   - Levels 5 to 7 only
   - Everything
   - Nothing
-  answer: [0]
-  explain: 'A) correct: levels lower than 5 print. B) wrong. C) wrong. D) wrong.'
+  - Levels 0 to 4, such as warnings and errors
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: levels lower than 5 print.'
 - id: dyndbg
   prompt: Which command enables all pr_debug output of module foo at run time?
   choices:
   - echo 'module foo +p' > /sys/kernel/debug/dynamic_debug/control
+  - echo 1 > /sys/kernel/tracing/tracing_on
   - echo foo > /proc/sys/kernel/printk
   - modprobe foo debug=1 always works
-  - echo 1 > /sys/kernel/tracing/tracing_on
   answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong, not every module has that parameter. D) wrong.'
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong, not every module has that parameter.'
 - id: graph
   prompt: Which ftrace tracer shows entry, exit and duration of calls as an indented tree?
   choices:
+  - wakeup
   - nop
   - function
   - function_graph
-  - wakeup
-  answer: [2]
-  explain: 'A) wrong. B) wrong, flat list. C) correct. D) wrong, a latency tracer.'
+  answer: [3]
+  explain: 'A) wrong, a latency tracer. B) wrong. C) wrong, flat list. D) correct.'
 - id: kasanread
   prompt: In a KASAN use-after-free report, where do you look to find who released the memory?
   choices:
@@ -39,18 +39,18 @@ questions:
 - id: lockdepwhen
   prompt: Why can lockdep warn about a deadlock that never happened in the run?
   choices:
-  - It guesses randomly
-  - It records lock ordering and reports an order that could deadlock if two paths interleave
   - It reads user logs
+  - It guesses randomly
   - It only checks interrupts
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - It records lock ordering and reports an order that could deadlock if two paths interleave
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: cost
   prompt: What is a main drawback of running a KASAN kernel?
   choices:
-  - It cannot boot
   - It uses more memory and runs several times slower
-  - It disables tracing
   - It removes logging
-  answer: [1]
-  explain: 'A) wrong. B) correct: shadow memory and instrumentation. C) wrong. D) wrong.'
+  - It disables tracing
+  - It cannot boot
+  answer: [0]
+  explain: 'A) correct: shadow memory and instrumentation. B) wrong. C) wrong. D) wrong.'

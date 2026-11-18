@@ -2,24 +2,24 @@ title: 'Quiz: the inner loop'
 questions:
 - id: live-update
   prompt: What does live update skip?
-  choices: [The image rebuild and redeploy for changed files, The container runtime, The cluster, Git]
+  choices: [The image rebuild and redeploy for changed files, Git, The cluster, The container runtime]
   answer: [0]
   explain: 'A) correct: files are synchronised into the running container. B) wrong. C) wrong. D) wrong.'
 - id: layers
   prompt: Why copy dependency manifests before the source in a Dockerfile?
-  choices: [The dependency layer stays cached when only source changes, Smaller images, Faster pulls only, It is required by Kubernetes]
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  choices: [Smaller images, Faster pulls only, It is required by Kubernetes, The dependency layer stays cached when only source changes]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: intercept
   prompt: When is a traffic intercept the better choice?
-  choices: [The system has too many services to run locally, The app has no network, A single static page, There is no cluster]
+  choices: [The system has too many services to run locally, A single static page, There is no cluster, The app has no network]
   answer: [0]
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: devcontainer
   prompt: Which belong in a devcontainer.json? (select two)
-  choices: [Features that install tools, Forwarded ports and lifecycle commands, The production Helm values, The cluster's etcd keys]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+  choices: [Forwarded ports and lifecycle commands, The cluster's etcd keys, The production Helm values, Features that install tools]
+  answer: [3, 0]
+  explain: 'A) correct. B) wrong. C) wrong. D) correct.'
 - id: drift
   prompt: What is the main risk of developing only with live update?
   choices: [The built image is first tested in the pipeline, where missing files show up, Slow builds, No logs, Port conflicts]

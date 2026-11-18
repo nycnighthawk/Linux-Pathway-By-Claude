@@ -4,28 +4,28 @@ questions:
   prompt: In a normal Kerberos login, what does the user's client send to the service it wants to use?
   choices:
   - The user's password, encrypted with TLS
+  - The ticket-granting ticket itself
   - A service ticket plus an authenticator proving the client holds the session key
   - A hash of the password for the service to compare
-  - The ticket-granting ticket itself
   answer:
-  - 1
-  explain: 'A (wrong): The password never goes to the service; that is the point of the protocol. B (correct): The
+  - 2
+  explain: 'A (wrong): The password never goes to the service; that is the point of the protocol. B (wrong): The
+    TGT is only presented to the KDC''s ticket-granting service, never to ordinary services. C (correct): The
     ticket is readable only by the service and the authenticator carries a timestamp encrypted with the session
-    key. C (wrong): A password-derived hash would make the service a target for offline attacks. D (wrong): The
-    TGT is only presented to the KDC''s ticket-granting service, never to ordinary services.'
+    key. D (wrong): A password-derived hash would make the service a target for offline attacks.'
 - id: clock-skew
   prompt: Every login fails with 'Clock skew too great' after a VM is resumed from a snapshot. What is the first
     fix?
   choices:
-  - Reissue the keytab
   - Delete the credential cache and reboot the KDC
-  - Step the clock back to correct time, for example with chronyc makestep
+  - Reissue the keytab
   - Raise the ticket lifetime
+  - Step the clock back to correct time, for example with chronyc makestep
   answer:
-  - 2
-  explain: 'A (wrong): The keys are fine; the timestamps in authenticators are not. B (wrong): Neither addresses
-    the host''s wrong time. C (correct): Authenticators carry timestamps and the default tolerance is five minutes,
-    so correct time restores service. D (wrong): Lifetime does not change the skew check on authenticators.'
+  - 3
+  explain: 'A (wrong): Neither addresses
+    the host''s wrong time. B (wrong): The keys are fine; the timestamps in authenticators are not. C (wrong): Lifetime does not change the skew check on authenticators. D (correct): Authenticators carry timestamps and the default tolerance is five minutes,
+    so correct time restores service.'
 - id: ktadd-rotates
   prompt: You run kadmin 'ktadd' for host/web1 on a second occasion and keep the first keytab file as well. What
     happens to the first file?
@@ -43,28 +43,27 @@ questions:
   prompt: ssh asks for a password although the user holds a valid TGT and GSSAPIAuthentication is on at both ends.
     ssh -vvv reports 'Server not found in Kerberos database'. Most likely cause?
   choices:
-  - The client built a service principal from a short name or a CNAME that the KDC does not know
   - The TGT is too old for any service ticket
+  - The client built a service principal from a short name or a CNAME that the KDC does not know
   - sshd cannot read the client's cache
   - PermitRootLogin is no
   answer:
-  - 0
-  explain: 'A (correct): The client asks for host/<name>; the name must match a principal exactly, so connect by
-    the real FQDN or adjust canonicalisation. B (wrong): An expired TGT gives a different error. C (wrong): The
+  - 1
+  explain: 'A (wrong): An expired TGT gives a different error. B (correct): The client asks for host/<name>; the name must match a principal exactly, so connect by
+    the real FQDN or adjust canonicalisation. C (wrong): The
     server never reads the client''s credentials cache. D (wrong): That affects authorisation after authentication,
     not the lookup.'
 - id: keytab-secret
   prompt: How should a host keytab be treated?
   choices:
   - 'Like a password: root-owned, mode 0600, never in images, and a distinct principal per host'
-  - As public data, because the keys inside are encrypted
-  - As a log file that can be world-readable for monitoring
   - As disposable, since tickets expire after ten hours
+  - As a log file that can be world-readable for monitoring
+  - As public data, because the keys inside are encrypted
   answer:
   - 0
-  explain: 'A (correct): A keytab holds long-term keys, so anyone who copies it can impersonate the host. B (wrong):
-    Keytabs store keys in a form directly usable by the owner. C (wrong): World-readable keys defeat the whole scheme.
-    D (wrong): Tickets expire, but the keytab key is what mints them.'
+  explain: 'A (correct): A keytab holds long-term keys, so anyone who copies it can impersonate the host. B (wrong): Tickets expire, but the keytab key is what mints them. C (wrong): World-readable keys defeat the whole scheme. D (wrong):
+    Keytabs store keys in a form directly usable by the owner.'
 - id: krb5-trace
   prompt: Which switch prints a step-by-step trace of KDC discovery, pre-authentication and errors for the MIT client?
   choices:
@@ -81,12 +80,12 @@ questions:
   prompt: A Kerberos principal alice@EXAMPLE.COM authenticates to sshd but no account called alice exists locally.
     Which mechanisms let the principal map to an account?
   choices:
-  - The user's .k5login file, auth_to_local rules in krb5.conf, or SSSD resolving the name from the directory
-  - Setting GSSAPIAuthentication to no
   - Removing the host keytab
+  - Setting GSSAPIAuthentication to no
+  - The user's .k5login file, auth_to_local rules in krb5.conf, or SSSD resolving the name from the directory
   - Running kinit on the server
   answer:
-  - 0
-  explain: 'A (correct): These are the standard places where the principal-to-account mapping is defined. B (wrong):
-    That disables the method entirely. C (wrong): Without the keytab the server cannot authenticate anyone. D (wrong):
+  - 2
+  explain: 'A (wrong): Without the keytab the server cannot authenticate anyone. B (wrong):
+    That disables the method entirely. C (correct): These are the standard places where the principal-to-account mapping is defined. D (wrong):
     The server''s own ticket does not map users.'

@@ -7,9 +7,9 @@ questions:
   explain: 'A) wrong. B) correct: types for every field make these server-side operations possible. C) wrong: controllers are separate processes. D) wrong: objects are still stored in etcd.'
 - id: finalizer
   prompt: A custom object is stuck in Terminating after its operator was removed. Why?
-  choices: [etcd is full, A finalizer remains that only the operator would remove, The CRD is cluster scoped, The namespace has no quota]
+  choices: [The namespace has no quota, A finalizer remains that only the operator would remove, The CRD is cluster scoped, etcd is full]
   answer: [1]
-  explain: 'A) wrong. B) correct: deletion is blocked until the finalizer is cleared. C) wrong: unrelated. D) wrong: unrelated.'
+  explain: 'A) wrong: unrelated. B) correct: deletion is blocked until the finalizer is cleared. C) wrong: unrelated. D) wrong.'
 - id: crd-delete
   prompt: What happens when a CRD is deleted?
   choices: [Only the schema is removed, All objects of that kind are deleted, Objects are archived, Nothing, the API server refuses]
@@ -17,11 +17,11 @@ questions:
   explain: 'A) wrong. B) correct: custom objects go with the definition. C) wrong: no archive. D) wrong: it proceeds.'
 - id: validation
   prompt: Which are preferred ways to validate a custom resource? (select two)
-  choices: [OpenAPI schema constraints, CEL validation rules in the CRD, A validating webhook for every field, Trusting the controller to reject bad input]
-  answer: [0, 1]
-  explain: 'A) correct: declarative and fast. B) correct: in-process rules. C) wrong: heavier and a failure risk. D) wrong: late feedback and inconsistent.'
+  choices: [CEL validation rules in the CRD, A validating webhook for every field, Trusting the controller to reject bad input, OpenAPI schema constraints]
+  answer: [3, 0]
+  explain: 'A) correct: in-process rules. B) wrong: heavier and a failure risk. C) wrong: late feedback and inconsistent. D) correct: declarative and fast.'
 - id: reconcile
   prompt: Which property must a reconcile function have?
-  choices: [It runs exactly once per event, It is idempotent and safe to re-run at any time, It deletes and recreates dependents each time, It never updates status]
-  answer: [1]
-  explain: 'A) wrong: events can be missed or repeated. B) correct. C) wrong: wasteful and disruptive. D) wrong: status reporting is part of the pattern.'
+  choices: [It deletes and recreates dependents each time, It runs exactly once per event, It is idempotent and safe to re-run at any time, It never updates status]
+  answer: [2]
+  explain: 'A) wrong: wasteful and disruptive. B) wrong: events can be missed or repeated. C) correct. D) wrong: status reporting is part of the pattern.'

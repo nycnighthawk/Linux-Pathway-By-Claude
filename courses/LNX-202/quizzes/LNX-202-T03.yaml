@@ -3,18 +3,18 @@ questions:
 - id: who-gateway
   prompt: Which mechanism carries the default router in IPv6?
   choices:
-  - DHCPv6
-  - DNS
   - ARP
+  - DHCPv6
   - Router advertisements
+  - DNS
   answer:
-  - 3
-  explain: DHCPv6 has no gateway option.
+  - 2
+  explain: 'IPv6 hosts learn their default router from router advertisements sent by the router itself. DHCPv6 has no option for a default gateway, so even a fully DHCP-managed network still needs RAs.'
 - id: m-o
   prompt: What does the O flag in a router advertisement say?
   choices:
-  - Addresses are available from DHCPv6
   - The router is the origin of the prefix
+  - Addresses are available from DHCPv6
   - Hosts must use privacy addresses
   - Other settings are available from DHCPv6
   answer:
@@ -23,10 +23,10 @@ questions:
 - id: accept-ra
   prompt: A Linux router loses its upstream default route when forwarding is enabled. Why?
   choices:
-  - DHCPv6 took over
-  - accept_ra falls back to 0 unless set to 2
-  - Forwarding deletes routes
   - The prefix expired
+  - accept_ra falls back to 0 unless set to 2
+  - DHCPv6 took over
+  - Forwarding deletes routes
   answer:
   - 1
   explain: Set accept_ra=2 on the upstream interface.
@@ -44,9 +44,9 @@ questions:
   prompt: What does radvd expect of the router host?
   choices:
   - A DHCPv6 server
-  - Jumbo frames
-  - IPv6 forwarding enabled
   - IPv4 NAT
+  - IPv6 forwarding enabled
+  - Jumbo frames
   answer:
   - 2
   explain: radvd logs a warning and carries on when forwarding is off, but hosts would then adopt a gateway that does not forward.
@@ -54,19 +54,19 @@ questions:
   prompt: Why must firewalls allow ICMPv6?
   choices:
   - Neighbour discovery, router discovery and path MTU discovery depend on it
-  - It carries web traffic
   - It replaces TCP
+  - It carries web traffic
   - It is only for ping
   answer:
   - 0
-  explain: Blocking it breaks IPv6.
+  explain: 'IPv6 uses ICMPv6 for neighbour discovery (its replacement for ARP), router discovery and path MTU discovery. A firewall that drops it all breaks address resolution and large transfers.'
 - id: dhcp6-ports
   prompt: Which ports does DHCPv6 use?
   choices:
-  - UDP 67 and 68
+  - UDP 546 client, 547 server
   - TCP 53
   - UDP 123
-  - UDP 546 client, 547 server
+  - UDP 67 and 68
   answer:
-  - 3
-  explain: DHCPv4 uses 67 and 68.
+  - 0
+  explain: 'DHCPv6 clients listen on UDP 546 and servers and relays on UDP 547. DHCPv4 uses different ports, 68 for clients and 67 for servers, so firewall rules must name both pairs on dual-stack networks.'

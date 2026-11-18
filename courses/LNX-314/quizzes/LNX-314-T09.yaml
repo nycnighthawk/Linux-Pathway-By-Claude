@@ -7,9 +7,9 @@ questions:
   explain: 'A) correct. B) wrong: reversed. C) wrong: NetworkPolicy does not encrypt. D) wrong: mTLS verifies certificates, not addresses.'
 - id: empty-selector
   prompt: A NetworkPolicy has an empty podSelector, policyTypes Ingress and Egress and no rules. What is its effect?
-  choices: [Allows everything, Denies all ingress and egress for every Pod in the namespace, Applies only to Pods without labels, Is rejected by the API]
-  answer: [1]
-  explain: 'A) wrong. B) correct: it selects all Pods and allows nothing. C) wrong. D) wrong.'
+  choices: [Denies all ingress and egress for every Pod in the namespace, Applies only to Pods without labels, Is rejected by the API, Allows everything]
+  answer: [0]
+  explain: 'A) correct: it selects all Pods and allows nothing. B) wrong. C) wrong. D) wrong.'
 - id: permissive
   prompt: Why is PERMISSIVE useful, and why must it not stay on?
   choices: [It enables encryption, It accepts both plain text and mTLS so you can migrate, but leaves a plain-text path open, It disables authorisation, It is faster]
@@ -22,6 +22,6 @@ questions:
   explain: 'A) correct. B) correct. C) wrong. D) wrong.'
 - id: wireguard
   prompt: What does transparent WireGuard encryption between nodes NOT give you?
-  choices: [Confidentiality on the underlay network, Authentication of individual workloads, Protection against sniffing between nodes, Application changes are unnecessary]
-  answer: [1]
-  explain: 'A) given. B) correct: it authenticates nodes, so identity-based authorisation still needs mesh or SPIFFE identities. C) given. D) given.'
+  choices: [Confidentiality on the underlay network, Protection against sniffing between nodes, Application changes are unnecessary, Authentication of individual workloads]
+  answer: [3]
+  explain: 'A) given. B) given. C) given. D) correct: it authenticates nodes, so identity-based authorisation still needs mesh or SPIFFE identities.'

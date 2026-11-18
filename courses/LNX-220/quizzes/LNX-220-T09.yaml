@@ -3,31 +3,31 @@ questions:
 - id: act
   prompt: Where does a session bus look for service files that allow activation by name?
   choices:
-  - /etc/systemd/system
-  - share/dbus-1/services under the directories of XDG_DATA_DIRS
-  - ~/.bashrc
   - /proc/dbus
+  - /etc/systemd/system
+  - ~/.bashrc
+  - share/dbus-1/services under the directories of XDG_DATA_DIRS
   answer:
-  - 1
+  - 3
   explain: The bus searches the dbus-1/services subdirectory of each data directory. systemd unit directories, shell profiles
     and /proc do not hold bus activation entries.
 - id: busctl
   prompt: Which command lists the interfaces of an object on the session bus?
   choices:
-  - busctl --system tree
-  - dbus-monitor --kill
-  - busctl --user introspect NAME PATH
   - systemctl list-sockets
+  - busctl --user introspect NAME PATH
+  - dbus-monitor --kill
+  - busctl --system tree
   answer:
-  - 2
+  - 1
   explain: introspect prints interfaces and members. tree lists paths, not interfaces, and also targets the system bus here.
     The others do not introspect objects.
 - id: xdg
   prompt: Where should a program keep a disposable cache for one user?
   choices:
   - $XDG_CONFIG_HOME
-  - /etc/xdg
   - /run/user/UID
+  - /etc/xdg
   - $XDG_CACHE_HOME, defaulting to ~/.cache
   answer:
   - 3
@@ -36,21 +36,21 @@ questions:
 - id: runtime
   prompt: What is XDG_RUNTIME_DIR for?
   choices:
-  - Per-session sockets and pipes, created at login with mode 0700
   - Large downloads
-  - Permanent configuration
+  - Per-session sockets and pipes, created at login with mode 0700
   - Package caches
+  - Permanent configuration
   answer:
-  - 0
+  - 1
   explain: It is a tmpfs directory owned by the user and removed at logout. It is not for bulk or permanent data.
 - id: session
   prompt: A script works at the desktop but fails over ssh with an error about autolaunching a bus. Why?
   choices:
+  - busctl only works as root
   - D-Bus is not installed in any shell
   - There is no session bus address in that environment
   - Method signatures differ by terminal
-  - busctl only works as root
   answer:
-  - 1
+  - 2
   explain: DBUS_SESSION_BUS_ADDRESS is set for desktop sessions, not necessarily for remote shells. dbus-run-session or the
     user's runtime socket provides one. The others are not true.

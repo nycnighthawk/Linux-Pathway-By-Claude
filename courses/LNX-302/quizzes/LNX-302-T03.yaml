@@ -3,10 +3,10 @@ questions:
 - id: partitions
   prompt: Which set of naming contexts replicates between DCs?
   choices:
-  - Home directories
-  - Domain, configuration, schema, DomainDnsZones, ForestDnsZones
   - Only the domain partition
+  - Domain, configuration, schema, DomainDnsZones, ForestDnsZones
   - SYSVOL files
+  - Home directories
   answer:
   - 1
   explain: Five directory partitions replicate through DRS. SYSVOL is files and is handled separately; home directories are
@@ -15,62 +15,62 @@ questions:
   prompt: How are SYSVOL contents kept in step between Samba DCs?
   choices:
   - By the KCC
-  - By DNS
   - Natively by DFS-R
   - By a one-way copy such as rsync from the PDC emulator holder
+  - By DNS
   answer:
-  - 3
+  - 2
   explain: Samba has no DFS-R, so a scheduled one-way copy is the documented workaround. The KCC builds connections for directory
     replication and DNS carries no files.
 - id: '8524'
   prompt: samba-tool drs showrepl reports result 8524. What do you check first?
   choices:
-  - 'DNS: the partner''s GUID CNAME under _msdcs and the resolver'
-  - Disk space
   - SMB1 settings
+  - Disk space
+  - 'DNS: the partner''s GUID CNAME under _msdcs and the resolver'
   - Printer queues
   answer:
-  - 0
+  - 2
   explain: 8524 is a DNS lookup failure for the replication partner. The other items are unrelated.
 - id: sysvolreset
   prompt: What does samba-tool ntacl sysvolreset do?
   choices:
-  - Deletes SYSVOL
   - Resets ACLs on the SYSVOL tree to the defaults
   - Transfers FSMO roles
+  - Deletes SYSVOL
   - Restarts replication
   answer:
-  - 1
+  - 0
   explain: It rewrites ACLs to their default values after files are copied. It does not delete content or move roles.
 - id: fsmo
   prompt: Which operation is correct when the RID master's host is permanently dead?
   choices:
-  - Seize the role on a survivor and never return the old host to service without wiping it
   - Delete the domain
   - Transfer the role from the dead host
   - Wait for it to return
+  - Seize the role on a survivor and never return the old host to service without wiping it
   answer:
-  - 0
+  - 3
   explain: A dead holder cannot take part in a transfer, so the role is seized, and a returning old holder would duplicate
     the role. Waiting leaves RID allocation stuck eventually.
 - id: tombstone
   prompt: Why should a DC that was off longer than the tombstone lifetime not simply be switched on?
   choices:
   - It loses its IP address
-  - It can reintroduce deleted objects as lingering objects
-  - It cannot run Kerberos
   - Its clock will be wrong
+  - It cannot run Kerberos
+  - It can reintroduce deleted objects as lingering objects
   answer:
-  - 1
+  - 3
   explain: Tombstones are garbage-collected after the lifetime, so the stale DC may resurrect deletions. Demote and rejoin
     instead. Clock and IP issues are separate.
 - id: edit
   prompt: A GPO edit made on a non-source DC disappears overnight. Why?
   choices:
-  - The one-way rsync from the source DC overwrote it
-  - KCC deleted it
-  - Windows clients undo edits
   - Kerberos tickets expired
+  - Windows clients undo edits
+  - KCC deleted it
+  - The one-way rsync from the source DC overwrote it
   answer:
-  - 0
+  - 3
   explain: The copy runs --delete-after from the source, so changes elsewhere are lost. Edit on the PDC emulator holder.

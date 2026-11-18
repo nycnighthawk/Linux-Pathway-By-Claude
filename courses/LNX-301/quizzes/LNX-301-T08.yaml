@@ -16,60 +16,60 @@ questions:
     slice 3 (counting from 0)?
   choices:
   - '201105'
+  - '600000'
   - '801105'
   - '3001105'
-  - '600000'
   answer:
-  - 1
-  explain: 'A (wrong): That is slice 0. B (correct): 200000 + 3 x 200000 = 800000, plus the RID 1105. C (wrong):
-    The slice size is 200000, not 1,000,000. D (wrong): This forgets the RID.'
+  - 2
+  explain: 'A (wrong): That is slice 0. B (wrong): This forgets the RID. C (correct): 200000 + 3 x 200000 = 800000, plus the RID 1105. D (wrong):
+    The slice size is 200000, not 1,000,000.'
 - id: rid-too-big
   prompt: What happens to a user whose RID is larger than the slice size?
   choices:
-  - It is mapped into the next slice automatically
+  - It is mapped to UID 0
   - It cannot be mapped; the log notes it, and a larger ldap_idmap_range_size is needed (which renumbers existing
     users)
-  - It is mapped to UID 0
+  - It is mapped into the next slice automatically
   - SSSD crashes
   answer:
   - 1
-  explain: 'A (wrong): Slices are fixed windows. B (correct): The RID falls outside its slice. C (wrong): SSSD never
-    maps to root. D (wrong): It logs and skips the entry.'
+  explain: 'A (wrong): SSSD never
+    maps to root. B (correct): The RID falls outside its slice. C (wrong): Slices are fixed windows. D (wrong): It logs and skips the entry.'
 - id: first-command
   prompt: Logins are slow. Which sssctl command shows whether SSSD is online and which servers it is using?
   choices:
-  - sssctl domain-status
-  - sssctl cert-show
-  - sssctl logs-remove
   - sssctl config-check
+  - sssctl domain-status
+  - sssctl logs-remove
+  - sssctl cert-show
   answer:
-  - 0
-  explain: 'A (correct): It reports online/offline state and active and discovered servers. B (wrong): Evaluates
-    certificates. C (wrong): Deletes logs. D (wrong): Validates the file only.'
+  - 1
+  explain: 'A (wrong): Validates the file only. B (correct): It reports online/offline state and active and discovered servers. C (wrong): Deletes logs. D (wrong): Evaluates
+    certificates.'
 - id: debug-level
   prompt: What is a sensible SSSD debug level to start with for an authentication problem?
   choices:
-  - '0'
-  - '2'
-  - '6'
   - '9'
+  - '2'
+  - '0'
+  - '6'
   answer:
-  - 2
-  explain: 'A (wrong): Almost nothing is logged. B (wrong): Serious failures only; this is the default. C (correct):
-    Detailed enough to follow authentication without the volume of the highest levels. D (wrong): Very large logs
-    with sensitive data; use sparingly.'
+  - 3
+  explain: 'A (wrong): Very large logs
+    with sensitive data; use sparingly. B (wrong): Serious failures only; this is the default. C (wrong): Almost nothing is logged. D (correct):
+    Detailed enough to follow authentication without the volume of the highest levels.'
 - id: cache-flush
   prompt: How do you make SSSD refresh one user without deleting the cache databases?
   choices:
-  - sss_cache -u user (or sssctl cache-expire), which marks entries stale
   - sssctl cache-remove
-  - rm /var/lib/sss/db/*
   - systemctl reboot
+  - sss_cache -u user (or sssctl cache-expire), which marks entries stale
+  - rm /var/lib/sss/db/*
   answer:
-  - 0
-  explain: 'A (correct): The entry is refreshed on the next request and cached credentials remain. B (wrong): This
-    stops SSSD and deletes the cache, removing offline credentials too. C (wrong): Manual deletion without stopping
-    SSSD risks corruption. D (wrong): Not needed.'
+  - 2
+  explain: 'A (wrong): This
+    stops SSSD and deletes the cache, removing offline credentials too. B (wrong): Not needed. C (correct): The entry is refreshed on the next request and cached credentials remain. D (wrong): Manual deletion without stopping
+    SSSD risks corruption.'
 - id: mode-switch
   prompt: What is the consequence of switching a large estate from algorithmic mapping to explicit POSIX attributes?
   choices:

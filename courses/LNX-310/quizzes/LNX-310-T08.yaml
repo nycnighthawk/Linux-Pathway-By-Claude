@@ -3,64 +3,64 @@ questions:
 - id: sign-digest
   prompt: Why sign and deploy an image by digest rather than by tag?
   choices:
+  - A tag can be moved to different content after verification
+  - Registries delete tags after signing
   - Digests are shorter
   - Tags cannot be signed with cosign at all
-  - Registries delete tags after signing
-  - A tag can be moved to different content after verification
   answer:
-  - 3
-  explain: 'A) Wrong: digests are longer. B) Wrong: cosign resolves a tag, which is exactly the hazard. C) Wrong: signing does not delete tags. D) Correct: a digest names exact content.'
+  - 0
+  explain: 'A) Correct: a digest names exact content. B) Wrong: signing does not delete tags. C) Wrong: digests are longer. D) Wrong: cosign resolves a tag, which is exactly the hazard.'
 - id: verify-flags
   prompt: Which flags make cosign verify meaningful for keyless signatures?
   choices:
-  - --output json
   - --certificate-identity (or regexp) and --certificate-oidc-issuer
-  - --insecure-ignore-tlog
   - --allow-http-registry
+  - --output json
+  - --insecure-ignore-tlog
   answer:
-  - 1
-  explain: 'A) Wrong: output format has no security effect. B) Correct: they assert who signed and through which identity provider. C) Wrong: ignoring the log weakens verification. D) Wrong: this concerns
-    transport, not identity.'
+  - 0
+  explain: 'A) Correct: they assert who signed and through which identity provider. B) Wrong: this concerns
+    transport, not identity. C) Wrong: output format has no security effect. D) Wrong: ignoring the log weakens verification.'
 - id: vex
   prompt: What does a VEX statement record?
   choices:
-  - That a known CVE does not affect this product, with a justification
-  - That an image is signed
   - The list of installed packages
+  - That a known CVE does not affect this product, with a justification
   - The build parameters
+  - That an image is signed
   answer:
-  - 0
-  explain: 'A) Correct: it makes suppression of a finding reviewable. B) Wrong: that is a signature. C) Wrong: that is an SBOM. D) Wrong: that is provenance.'
+  - 1
+  explain: 'A) Wrong: that is an SBOM. B) Correct: it makes suppression of a finding reviewable. C) Wrong: that is provenance. D) Wrong: that is a signature.'
 - id: false-positive
   prompt: A scanner flags openssl 3.0.11 on Debian although the fix was back-ported into 3.0.11-1~deb12u2. Best response?
   choices:
-  - Ignore all findings for the image
-  - Disable the scanner database update
   - Rebuild on scratch
+  - Disable the scanner database update
   - Check the distribution tracker and record a VEX not_affected or fixed statement
+  - Ignore all findings for the image
   answer:
-  - 3
-  explain: 'A) Wrong: that hides real findings. B) Wrong: stale data is worse. C) Wrong: this is a different design and unrelated to the finding. D) Correct: back-ports keep the upstream version string,
-    so evidence from the distribution settles it.'
+  - 2
+  explain: 'A) Wrong: this is a different design and unrelated to the finding. B) Wrong: stale data is worse. C) Correct: back-ports keep the upstream version string,
+    so evidence from the distribution settles it. D) Wrong: that hides real findings.'
 - id: sbom-where
   prompt: Where does BuildKit store an SBOM attestation by default?
   choices:
-  - As an attestation attached to the image index in the registry
-  - Inside the top layer
   - In /etc/sbom in the container
   - In the Docker daemon log
+  - Inside the top layer
+  - As an attestation attached to the image index in the registry
   answer:
-  - 0
-  explain: 'A) Correct: the image content and digest of the runnable manifest stay unchanged. B) Wrong: that would change the image. C) Wrong: the filesystem is not touched. D) Wrong: logs are not durable
-    storage.'
+  - 3
+  explain: 'A) Wrong: the filesystem is not touched. B) Wrong: logs are not durable
+    storage. C) Wrong: that would change the image. D) Correct: the image content and digest of the runnable manifest stay unchanged.'
 - id: scan-gate
   prompt: Which Trivy invocation fails a CI step only for serious, fixable findings?
   choices:
+  - trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 IMAGE
   - trivy image --skip-db-update IMAGE
   - trivy config IMAGE
-  - trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 IMAGE
   - trivy image --format json IMAGE
   answer:
-  - 2
-  explain: 'A) Wrong: this affects database freshness. B) Wrong: config scans manifests and Dockerfiles. C) Correct: severity filter, skip unfixable, and a non-zero exit code. D) Wrong: formatting does
+  - 0
+  explain: 'A) Correct: severity filter, skip unfixable, and a non-zero exit code. B) Wrong: this affects database freshness. C) Wrong: config scans manifests and Dockerfiles. D) Wrong: formatting does
     not change the exit code.'

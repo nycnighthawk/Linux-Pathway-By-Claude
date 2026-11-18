@@ -9,42 +9,42 @@ questions:
   - An open recursive resolver can be abused for amplification
   answer:
   - 3
-  explain: Authoritative servers should refuse recursion.
+  explain: 'A resolver that answers recursive queries from anyone can be used to reflect and amplify attacks against third parties. Keep authoritative servers non-recursive and limit recursion to your own clients.'
 - id: serial
   prompt: What must change in a zone file for secondaries to transfer the zone?
   choices:
   - The SOA serial
-  - The TTL
   - The NS records
+  - The TTL
   - The file name
   answer:
   - 0
-  explain: Secondaries compare serial numbers.
+  explain: 'Secondaries poll the SOA record and transfer the zone only when the primary''s serial is higher than theirs. Edit the records without raising the serial and the secondaries keep serving old data.'
 - id: cd
   prompt: What does dig +cd tell you?
   choices:
-  - The cookie
   - The delegation
   - Whether validation is the cause of a SERVFAIL
   - The cache depth
+  - The cookie
   answer:
-  - 2
+  - 1
   explain: Checking disabled returns data even if validation fails.
 - id: ds
   prompt: Where is the DS record published?
   choices:
   - In /etc/hosts
-  - In the resolver
-  - In the parent zone
   - In the child zone only
+  - In the parent zone
+  - In the resolver
   answer:
   - 2
   explain: The parent holds a hash of the child's key-signing key.
 - id: tsig
   prompt: What authenticates a zone transfer?
   choices:
-  - The SOA serial
   - The DS record
+  - The SOA serial
   - The NS records
   - A TSIG shared key
   answer:
@@ -54,19 +54,19 @@ questions:
   prompt: Who may query Unbound by default?
   choices:
   - Nobody
+  - Only the local subnet
   - Only localhost
   - Everyone
-  - Only the local subnet
   answer:
-  - 1
+  - 2
   explain: Add access-control lines for other clients.
 - id: named-check
   prompt: Which command checks a zone file?
   choices:
-  - named-checkzone
-  - named-checkconf
   - rndc status
+  - named-checkzone
   - dig +check
+  - named-checkconf
   answer:
-  - 0
+  - 1
   explain: named-checkconf checks the configuration, named-checkzone checks a zone.

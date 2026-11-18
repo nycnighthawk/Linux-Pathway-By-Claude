@@ -3,24 +3,24 @@ questions:
 - id: modes
   prompt: Which IMA action refuses access to a file whose hash or signature does not match?
   choices:
-  - measure
   - appraise
-  - audit
   - hash
+  - measure
+  - audit
   answer:
-  - 1
-  explain: 'A) wrong: measure records a hash in the log and the TPM. B) correct: appraisal compares and denies on mismatch. C) wrong:
-    audit only writes an event. D) wrong: hash selects the digest algorithm to use.'
+  - 0
+  explain: 'A) correct: appraisal compares and denies on mismatch. B) wrong: hash selects the digest algorithm to use. C) wrong: measure records a hash in the log and the TPM. D) wrong:
+    audit only writes an event.'
 - id: fix
   prompt: Why does ima_appraise=fix not protect against a root attacker on a running system?
   choices:
-  - It disables the TPM
   - The kernel regenerates the stored hash, so a modified file looks valid
+  - It disables the TPM
   - It only works on tmpfs
   - It blocks all writes
   answer:
-  - 1
-  explain: 'A) wrong: the TPM is unaffected. B) correct: fix mode trusts the current content and labels it. C) wrong: it applies to
+  - 0
+  explain: 'A) correct: fix mode trusts the current content and labels it. B) wrong: the TPM is unaffected. C) wrong: it applies to
     real filesystems. D) wrong: it does not block writes.'
 - id: evm
   prompt: What does EVM add to IMA?
@@ -47,33 +47,32 @@ questions:
 - id: file-check
   prompt: What goes wrong if you appraise func=FILE_CHECK for all files read by root?
   choices:
+  - The TPM is cleared
   - Nothing, it is the safest rule
   - Unsigned configuration and unit files are denied, and the system can fail to boot
-  - The TPM is cleared
   - Lockdown is disabled
   answer:
-  - 1
-  explain: 'A) wrong: it is the riskiest rule. B) correct: most configuration files have no signature. C) wrong: policy does not touch
-    the TPM that way. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: policy does not touch
+    the TPM that way. B) wrong: it is the riskiest rule. C) correct: most configuration files have no signature. D) wrong: unrelated.'
 - id: lockdown
   prompt: Which statement about kernel lockdown is correct?
   choices:
   - It can be lowered by root at runtime
-  - It blocks ways root could modify the running kernel, and can be raised but not lowered at runtime
   - It signs executables
+  - It blocks ways root could modify the running kernel, and can be raised but not lowered at runtime
   - It replaces Secure Boot
   answer:
-  - 1
-  explain: 'A) wrong: that would defeat it. B) correct: integrity blocks /dev/mem, unsigned modules and unsigned kexec, among others.
-    C) wrong: signing is IMA. D) wrong: it complements Secure Boot.'
+  - 2
+  explain: 'A) wrong: that would defeat it. B) wrong: signing is IMA. C) correct: integrity blocks /dev/mem, unsigned modules and unsigned kexec, among others. D) wrong: it complements Secure Boot.'
 - id: script
   prompt: A policy appraises executed programs. Why can python3 /dev/shm/x.py still run an unsigned script?
   choices:
-  - Python is exempt from IMA
   - The kernel sees the signed interpreter being executed, and the script is only data it reads
   - /dev/shm is always trusted
+  - Python is exempt from IMA
   - Scripts are signed automatically
   answer:
-  - 1
-  explain: 'A) wrong: Python is subject to the same rules as any program. B) correct: unless an interpreter opts in to script checks,
-    scripts are plain file reads. C) wrong: it is a writable tmpfs. D) wrong: nothing signs them.'
+  - 0
+  explain: 'A) correct: unless an interpreter opts in to script checks,
+    scripts are plain file reads. B) wrong: it is a writable tmpfs. C) wrong: Python is subject to the same rules as any program. D) wrong: nothing signs them.'

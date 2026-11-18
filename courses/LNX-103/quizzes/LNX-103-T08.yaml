@@ -13,50 +13,50 @@ questions:
 - id: match
   prompt: What must match between initiator and target?
   choices:
-  - The file system UUID
-  - The initiator IQN in the ACL
-  - The hostname
   - The MTU
+  - The initiator IQN in the ACL
+  - The file system UUID
+  - The hostname
   answer:
   - 1
   explain: The ACL lists initiator IQNs from initiatorname.iscsi.
 - id: netdev
   prompt: What does _netdev do in fstab?
   choices:
-  - Waits for the network before mounting
   - Encrypts traffic
+  - Waits for the network before mounting
   - Makes it read-only
   - Adds multipath
   answer:
-  - 0
+  - 1
   explain: It orders the mount after network and iscsi services.
 - id: two-writers
   prompt: Why is mounting one LUN on two hosts dangerous?
   choices:
   - It is slower
   - It breaks CHAP
-  - It needs IPv6
   - Ordinary file systems are not cluster aware and corrupt
+  - It needs IPv6
   answer:
-  - 3
+  - 2
   explain: Only cluster file systems with fencing allow shared writers.
 - id: port
   prompt: Which TCP port does iSCSI use by default?
   choices:
   - '3260'
-  - '2049'
   - '445'
   - '860'
+  - '2049'
   answer:
   - 0
   explain: The IANA registered port is 3260.
 - id: login
   prompt: Which command logs in to a discovered target?
   choices:
-  - iscsiadm -m node -T iqn -p ip --login
   - targetcli login
-  - mount -t iscsi
   - iscsid --login
+  - mount -t iscsi
+  - iscsiadm -m node -T iqn -p ip --login
   answer:
-  - 0
-  explain: iscsiadm node mode with --login.
+  - 3
+  explain: 'After discovery records the target, iscsiadm in node mode (-m node) with the target name (-T), portal (-p) and --login opens a session; the LUNs then appear as new block devices.'

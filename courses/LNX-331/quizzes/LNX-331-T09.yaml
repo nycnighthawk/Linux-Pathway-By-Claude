@@ -4,53 +4,53 @@ questions:
   prompt: What does the eBPF verifier guarantee before a program runs?
   choices:
   - That it is fast
-  - That it terminates and accesses only permitted memory
   - That it has no bugs in its logic
   - That it uses little memory
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong, the logic can still be wrong. D) wrong.'
+  - That it terminates and accesses only permitted memory
+  answer: [3]
+  explain: 'A) wrong. B) wrong, the logic can still be wrong. C) wrong. D) correct.'
 - id: nullcheck
   prompt: A map lookup returns a pointer. What must the program do before reading through it?
   choices:
   - Nothing
-  - Test it for NULL
   - Copy it to the stack
+  - Test it for NULL
   - Free it
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: core
   prompt: What do BTF and CO-RE provide?
   choices:
-  - Faster JIT
-  - Type information and relocations so one compiled program can run on different kernel layouts
-  - A debugger
   - Encryption
+  - Type information and relocations so one compiled program can run on different kernel layouts
+  - Faster JIT
+  - A debugger
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: scx
   prompt: What happens if a sched_ext scheduler leaves runnable tasks unscheduled past the timeout?
   choices:
+  - Nothing
+  - The tasks are killed
   - The machine hangs
   - The kernel ejects it and falls back to the default scheduler
-  - The tasks are killed
-  - Nothing
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: dsq
   prompt: In sched_ext, what is a dispatch queue?
   choices:
-  - A queue of system calls
   - A queue of runnable tasks that a scheduler fills and CPUs consume
-  - A network queue
   - A log buffer
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - A queue of system calls
+  - A network queue
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: priv
   prompt: Why is unprivileged BPF usually disabled?
   choices:
+  - It needs a GPU
   - It is too slow
   - Verifier bugs and side channels make it a security risk
-  - It needs a GPU
   - It is unsupported on x86
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'

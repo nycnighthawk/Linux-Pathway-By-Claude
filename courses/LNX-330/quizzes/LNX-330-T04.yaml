@@ -3,54 +3,54 @@ questions:
 - id: multifile
   prompt: A module has main.c and util.c. Which Makefile lines build one module named hello?
   choices:
-  - 'obj-m := main.o util.o'
-  - 'obj-m := hello.o and hello-y := main.o util.o'
   - 'obj-y := hello.o'
+  - 'obj-m := main.o util.o'
   - 'hello-m := main.o util.o'
-  answer: [1]
-  explain: 'A) wrong, builds two modules. B) correct. C) wrong, that builds into the kernel. D) wrong.'
+  - 'obj-m := hello.o and hello-y := main.o util.o'
+  answer: [3]
+  explain: 'A) wrong, that builds into the kernel. B) wrong, builds two modules. C) wrong. D) correct.'
 - id: kdir
   prompt: Which command builds an external module against the running kernel?
   choices:
+  - 'insmod hello.c'
   - 'make -C /lib/modules/$(uname -r)/build M=$PWD modules'
   - 'make modules_install'
-  - 'insmod hello.c'
   - 'depmod hello'
-  answer: [0]
-  explain: 'A) correct. B) wrong, installs. C) wrong. D) wrong.'
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong, installs. D) wrong.'
 - id: vermagic
   prompt: A module fails with Invalid module format after a kernel update. What is the likely cause?
   choices:
   - It was built against a different kernel release or configuration
+  - The licence is GPL
   - It has too many source files
   - modprobe is missing
-  - The licence is GPL
   answer: [0]
   explain: 'A) correct: vermagic must match. B) wrong. C) wrong. D) wrong.'
 - id: taint
   prompt: Why do maintainers often decline to debug an oops from a tainted kernel?
   choices:
   - Tainted kernels never boot
-  - Non-upstream or non-free code may have caused the fault
-  - They only support virtual machines
   - Taint means a hardware fault
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - They only support virtual machines
+  - Non-upstream or non-free code may have caused the fault
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: modprobe
   prompt: What does modprobe do that insmod does not?
   choices:
+  - It removes the module
+  - It signs the module
   - It loads a module by name and resolves its dependencies
   - It compiles the module
-  - It signs the module
-  - It removes the module
-  answer: [0]
-  explain: 'A) correct, using modules.dep from depmod. B) wrong. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct, using modules.dep from depmod. D) wrong.'
 - id: intree
   prompt: What is the main reason upstream developers push for in-tree code?
   choices:
   - It runs faster
-  - Internal interfaces change, and in-tree users are fixed by whoever changes them
   - It avoids all licences
+  - Internal interfaces change, and in-tree users are fixed by whoever changes them
   - It removes the need for Kconfig
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'

@@ -3,77 +3,74 @@ questions:
 - id: seal
   prompt: What does it mean that a Vault-compatible server is sealed?
   choices:
+  - The audit log is closed
   - It rejects all TLS connections
   - It holds encrypted data but cannot decrypt it until the master key is reconstructed from a quorum of unseal key shares or by auto-unseal
-  - The audit log is closed
   - All tokens are revoked
   answer:
-  - 1
-  explain: 'A) wrong: the listener may still answer status requests. B) correct: the master key is not in memory. C) wrong: audit
-    is separate. D) wrong: tokens are not revoked by sealing.'
+  - 2
+  explain: 'A) wrong: audit
+    is separate. B) wrong: the listener may still answer status requests. C) correct: the master key is not in memory. D) wrong: tokens are not revoked by sealing.'
 - id: root
   prompt: What should happen to the initial root token after setup?
   choices:
-  - It becomes the CI credential
-  - It is revoked, with a documented break-glass procedure to generate a new one when needed
   - It is stored with the unseal keys
   - It is shared with the on-call team
+  - It is revoked, with a documented break-glass procedure to generate a new one when needed
+  - It becomes the CI credential
   answer:
-  - 1
-  explain: 'A) wrong: a daily root credential defeats policies. B) correct: least privilege with recovery. C) wrong: one leak then
-    opens everything. D) wrong: sharing it widens exposure.'
+  - 2
+  explain: 'A) wrong: one leak then
+    opens everything. B) wrong: sharing it widens exposure. C) correct: least privilege with recovery. D) wrong: a daily root credential defeats policies.'
 - id: kv2
   prompt: A policy grants read on secret/payments/* but the service gets permission denied on a KV v2 secret. Why?
   choices:
-  - KV v2 stores data under secret/data/payments/*, so the policy path matches nothing
   - Tokens expired
-  - The service lacks a certificate
   - The audit device failed
+  - KV v2 stores data under secret/data/payments/*, so the policy path matches nothing
+  - The service lacks a certificate
   answer:
-  - 0
-  explain: 'A) correct: v2 inserts data/ and metadata/ path segments. B) wrong: an expired token gives a different error. C) wrong:
-    not needed for KV. D) wrong: that would stop all requests.'
+  - 2
+  explain: 'A) wrong: an expired token gives a different error. B) wrong: that would stop all requests. C) correct: v2 inserts data/ and metadata/ path segments. D) wrong:
+    not needed for KV.'
 - id: dynamic
   prompt: What is the main security benefit of dynamic database credentials?
   choices:
-  - They never expire
-  - Each workload gets its own short-lived account, revoked at lease end, so a leak has bounded value and is attributable
   - They are stored encrypted in Git
+  - Each workload gets its own short-lived account, revoked at lease end, so a leak has bounded value and is attributable
+  - They never expire
   - They remove the need for policies
   answer:
   - 1
-  explain: 'A) wrong: expiry is the point. B) correct: lease-bound per-identity credentials limit damage. C) wrong: unrelated.
-    D) wrong: policies decide who may request them.'
+  explain: 'A) wrong: unrelated. B) correct: lease-bound per-identity credentials limit damage. C) wrong: expiry is the point. D) wrong: policies decide who may request them.'
 - id: sops
   prompt: What does sops leave unencrypted in a YAML file?
   choices:
   - Nothing
   - The keys, so diffs and reviews stay readable, while values are encrypted
-  - The values
   - Only comments
+  - The values
   answer:
   - 1
-  explain: 'A) wrong: keys remain readable. B) correct: this leaks structure but allows review. C) wrong: values are what it protects.
-    D) wrong: comments are not the design point.'
+  explain: 'A) wrong: keys remain readable. B) correct: this leaks structure but allows review. C) wrong: comments are not the design point. D) wrong: values are what it protects.'
 - id: recipient
   prompt: A departing engineer is removed from .sops.yaml and the files are re-encrypted. What else is needed?
   choices:
-  - Nothing, they can no longer decrypt anything
   - Rotate the secrets themselves, because the engineer may hold copies and old ciphertext in history
-  - Delete the repository
+  - Nothing, they can no longer decrypt anything
   - Change the file format
+  - Delete the repository
   answer:
-  - 1
-  explain: 'A) wrong: old ciphertext and copies remain decryptable with their key. B) correct: only rotation invalidates values they
-    could have read. C) wrong: it does not help. D) wrong: format is irrelevant.'
+  - 0
+  explain: 'A) correct: only rotation invalidates values they
+    could have read. B) wrong: old ciphertext and copies remain decryptable with their key. C) wrong: format is irrelevant. D) wrong: it does not help.'
 - id: audit
   prompt: Why configure two audit devices?
   choices:
-  - The server refuses requests when all audit devices fail, so a single full disk causes an outage
   - Two devices double the log detail
-  - It is required by the licence
   - To speed up unsealing
+  - The server refuses requests when all audit devices fail, so a single full disk causes an outage
+  - It is required by the licence
   answer:
-  - 0
-  explain: 'A) correct: unlogged access is treated as worse than none. B) wrong: detail is unchanged. C) wrong: no such requirement.
-    D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: detail is unchanged. B) wrong: unrelated. C) correct: unlogged access is treated as worse than none. D) wrong: no such requirement.'

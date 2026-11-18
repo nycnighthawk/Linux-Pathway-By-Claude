@@ -3,13 +3,13 @@ questions:
 - id: opt93
   prompt: What does DHCP option 93 carry?
   choices:
-  - The hostname
-  - The client system architecture (BIOS, x86-64 UEFI, ARM64 UEFI and so on)
   - The lease time
+  - The hostname
   - The repository URL
+  - The client system architecture (BIOS, x86-64 UEFI, ARM64 UEFI and so on)
   answer:
-  - 1
-  explain: 'A) wrong: option 12 is the hostname. B) correct: the server uses it to choose the boot file. C) wrong: option 51. D) wrong: no such option.'
+  - 3
+  explain: 'A) wrong: option 51. B) wrong: option 12 is the hostname. C) wrong: no such option. D) correct: the server uses it to choose the boot file.'
 - id: loop
   prompt: A UEFI client keeps loading iPXE forever. What is the usual cause?
   choices:
@@ -24,22 +24,22 @@ questions:
   prompt: Why move everything after the first file to HTTP?
   choices:
   - HTTP is encrypted by default
+  - HTTP needs no DHCP
   - TFTP is slow and fragile for large files, while HTTP is fast and easy to cache and proxy
   - UEFI forbids TFTP
-  - HTTP needs no DHCP
   answer:
-  - 1
-  explain: 'A) wrong: plain HTTP is not encrypted. B) correct: kernels and initrds are large. C) wrong: TFTP is allowed. D) wrong: DHCP is still needed.'
+  - 2
+  explain: 'A) wrong: plain HTTP is not encrypted. B) wrong: DHCP is still needed. C) correct: kernels and initrds are large. D) wrong: TFTP is allowed.'
 - id: safedefault
   prompt: What should the boot service answer to a machine that is in service?
   choices:
-  - The installer
-  - A script that exits to the local disk
-  - Nothing, so it hangs
   - A rescue shell
+  - A script that exits to the local disk
+  - The installer
+  - Nothing, so it hangs
   answer:
   - 1
-  explain: 'A) wrong: reinstalls production by accident. B) correct: exit falls through to the disk. C) wrong: hanging stalls a reboot. D) wrong: gives away access.'
+  explain: 'A) wrong: gives away access. B) correct: exit falls through to the disk. C) wrong: reinstalls production by accident. D) wrong: hanging stalls a reboot.'
 - id: secureboot
   prompt: Why does Secure Boot affect network boot?
   choices:
@@ -53,10 +53,10 @@ questions:
 - id: relay
   prompt: How does DHCP reach a server on another subnet?
   choices:
-  - Through a DHCP relay (ip helper) on the router, which adds the gateway address
-  - Through a TFTP proxy
   - It cannot
+  - Through a DHCP relay (ip helper) on the router, which adds the gateway address
   - Through DNS
+  - Through a TFTP proxy
   answer:
-  - 0
-  explain: 'A) correct: the server picks the scope from the relay address. B) wrong: unrelated. C) wrong: relays are standard. D) wrong: unrelated.'
+  - 1
+  explain: 'A) wrong: relays are standard. B) correct: the server picks the scope from the relay address. C) wrong: unrelated. D) wrong: unrelated.'

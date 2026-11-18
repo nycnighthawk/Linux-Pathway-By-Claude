@@ -2,14 +2,14 @@ title: 'Quiz: release strategies'
 questions:
 - id: no-loss
   prompt: Which settings keep full capacity during a rolling update?
-  choices: [maxUnavailable 0 with a positive maxSurge, maxSurge 0 and maxUnavailable 50%, strategy Recreate, minReadySeconds 0 only]
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong: all Pods stop first. D) wrong.'
+  choices: [minReadySeconds 0 only, maxSurge 0 and maxUnavailable 50%, strategy Recreate, maxUnavailable 0 with a positive maxSurge]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong: all Pods stop first. D) correct.'
 - id: deadline
   prompt: What happens when progressDeadlineSeconds passes without progress?
-  choices: [The Deployment gets a failed condition; nothing is rolled back automatically, The old version is restored, The Pods are deleted, The cluster pauses]
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  choices: [The cluster pauses, The Pods are deleted, The old version is restored, The Deployment gets a failed condition; nothing is rolled back automatically]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: switch
   prompt: How does a plain Kubernetes blue/green switch work?
   choices: [Patch the Service selector from one colour to the other, Scale the old Deployment, Delete the namespace, Change the node labels]
@@ -17,11 +17,11 @@ questions:
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: canary-share
   prompt: One canary Pod and nine stable Pods share a Service. About what share reaches the canary?
-  choices: [10 percent, 1 percent, 50 percent, 90 percent]
-  answer: [0]
-  explain: 'A) correct: one of ten ready Pods with even balancing. B) wrong. C) wrong. D) wrong.'
+  choices: [90 percent, 50 percent, 1 percent, 10 percent]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: one of ten ready Pods with even balancing.'
 - id: expand
   prompt: Which are steps of expand and contract? (select two)
-  choices: [Add the new column while the old code still works, Remove the old column only after no old version runs, Drop the column in the same release as the code, Skip rollback planning]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+  choices: [Skip rollback planning, Add the new column while the old code still works, Remove the old column only after no old version runs, Drop the column in the same release as the code]
+  answer: [1, 2]
+  explain: 'A) wrong. B) correct. C) correct. D) wrong.'

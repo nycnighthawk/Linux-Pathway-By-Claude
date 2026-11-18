@@ -3,22 +3,22 @@ questions:
 - id: high-vs-max
   prompt: What is the difference between memory.high and memory.max?
   choices:
-  - No difference
   - high throttles and reclaims without killing, max is a hard limit that triggers the OOM killer
   - max throttles, high kills
   - high is for swap only
+  - No difference
   answer:
-  - 1
+  - 0
   explain: memory.high slows the group down; memory.max kills inside the group when reclaim fails.
 - id: constraint
   prompt: Which log text marks an OOM caused by a cgroup limit?
   choices:
-  - constraint=CONSTRAINT_MEMCG
-  - constraint=CONSTRAINT_NONE
-  - Kernel panic
   - hung_task
+  - Kernel panic
+  - constraint=CONSTRAINT_NONE
+  - constraint=CONSTRAINT_MEMCG
   answer:
-  - 0
+  - 3
   explain: MEMCG means a memory cgroup hit its limit; NONE means the whole machine ran out.
 - id: score-adj
   prompt: Which oom_score_adj makes a process immune to the OOM killer?
@@ -33,40 +33,40 @@ questions:
 - id: memory-events
   prompt: Which file counts oom_kill events for a cgroup?
   choices:
+  - cgroup.procs
   - memory.events
   - memory.stat
-  - cgroup.procs
   - memory.low
   answer:
-  - 0
+  - 1
   explain: memory.events has low, high, max, oom and oom_kill counters, good for alerts.
 - id: cpu-max
   prompt: What does cpu.max 200000 100000 grant?
   choices:
-  - Two CPUs' worth per period
   - Twenty percent of one CPU
+  - Two CPUs' worth per period
   - Two cores pinned
   - Nothing
   answer:
-  - 0
+  - 1
   explain: 200000 microseconds of CPU per 100000 period is two CPUs; hitting it shows in cpu.stat nr_throttled.
 - id: kill-loop
   prompt: A unit with MemoryMax too low and Restart=always does what under load?
   choices:
   - Never fails
-  - Is killed, restarted and killed again
   - Grows memory automatically
   - Swaps forever
+  - Is killed, restarted and killed again
   answer:
-  - 1
+  - 3
   explain: The limit is hit again after each restart, producing a loop that hides the real working-set need.
 - id: systemd-oomd
   prompt: systemd-oomd decides to kill based on what?
   choices:
   - Disk space
-  - Memory pressure and swap use of cgroups
   - CPU frequency
   - Package updates
+  - Memory pressure and swap use of cgroups
   answer:
-  - 1
+  - 3
   explain: It watches PSI and swap and acts before the kernel's killer.

@@ -3,19 +3,19 @@ questions:
 - id: steps
   prompt: A pointer-chase curve is flat to 32 KiB, then steps up. What does the step show?
   choices:
-  - The working set no longer fits in the L1 data cache
-  - The disk is slow
   - The kernel is swapping
   - The thread migrated
+  - The disk is slow
+  - The working set no longer fits in the L1 data cache
   answer:
-  - 0
-  explain: 'A) correct: compare with lscpu. B) wrong. C) wrong. D) wrong.'
+  - 3
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: compare with lscpu.'
 - id: firsttouch
   prompt: A parallel program initialises a large array in one thread, then computes in many. What is the likely NUMA effect?
   choices:
-  - Pages are spread evenly
-  - Pages land on the initialising thread's node, so other nodes read remotely
   - Pages are copied per thread
+  - Pages land on the initialising thread's node, so other nodes read remotely
+  - Pages are spread evenly
   - Nothing
   answer:
   - 1
@@ -23,41 +23,41 @@ questions:
 - id: falseshare
   prompt: Which two measures address false sharing? (select two)
   choices:
+  - Use a larger page size
+  - Add more locks everywhere
   - Align per-thread data to a cache line
   - Give each thread its own counter and combine later
-  - Add more locks everywhere
-  - Use a larger page size
   answer:
-  - 0
-  - 1
-  explain: A) correct. B) correct (this also removes true sharing of one counter). C) wrong. D) wrong.
+  - 2
+  - 3
+  explain: A) wrong. B) wrong. C) correct. D) correct (this also removes true sharing of one counter).
 - id: distance
   prompt: numactl --hardware prints distance 10 and 21. What do they mean?
   choices:
   - 10 ns and 21 ns
+  - Bandwidth in GB/s
   - Relative cost of local and remote access
   - Cache sizes
-  - Bandwidth in GB/s
   answer:
-  - 1
-  explain: 'A) wrong: they are relative. B) correct. C) wrong. D) wrong.'
+  - 2
+  explain: 'A) wrong: they are relative. B) wrong. C) correct. D) wrong.'
 - id: verify
   prompt: Which tools show where a process memory actually resides?
   choices:
-  - numastat -p PID and /proc/PID/numa_maps
   - top
-  - df
   - ps aux only
+  - numastat -p PID and /proc/PID/numa_maps
+  - df
   answer:
-  - 0
-  explain: A) correct. B) wrong. C) wrong. D) wrong.
+  - 2
+  explain: A) wrong. B) wrong. C) correct. D) wrong.
 - id: balance
   prompt: Why might benchmark results differ by 20% between runs on a NUMA machine?
   choices:
   - The compiler changes
-  - Automatic NUMA balancing migrates pages during the run
-  - The cache disappears
   - The kernel version changes
+  - The cache disappears
+  - Automatic NUMA balancing migrates pages during the run
   answer:
-  - 1
-  explain: 'A) wrong. B) correct: run to steady state or disable it for the experiment. C) wrong. D) wrong.'
+  - 3
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: run to steady state or disable it for the experiment.'

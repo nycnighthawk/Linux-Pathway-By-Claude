@@ -3,45 +3,45 @@ questions:
 - id: why
   prompt: Why move a virtio back end out of the VMM thread?
   choices:
+  - To disable interrupts
+  - To avoid using virtqueues
   - To lower overhead on the data path and to isolate the device model
   - To make guests larger
-  - To avoid using virtqueues
-  - To disable interrupts
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: fds
   prompt: How do file descriptors for guest memory and eventfds reach a vhost-user back end?
   choices:
-  - As ancillary data (SCM_RIGHTS) on the Unix socket
-  - In the message payload as numbers
-  - Through environment variables
   - By copying the whole file
-  answer: [0]
-  explain: 'A) correct. B) wrong: numbers are meaningless in another process. C) wrong. D) wrong.'
+  - As ancillary data (SCM_RIGHTS) on the Unix socket
+  - Through environment variables
+  - In the message payload as numbers
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong: numbers are meaningless in another process.'
 - id: kick
   prompt: What is the kick descriptor?
   choices:
-  - The interrupt from the device to the guest
   - The doorbell the guest rings when new buffers are available
+  - The interrupt from the device to the guest
   - A reset signal
   - A log of dirty pages
-  answer: [1]
-  explain: 'A) wrong: that is call. B) correct. C) wrong. D) wrong.'
+  answer: [0]
+  explain: 'A) correct. B) wrong: that is call. C) wrong. D) wrong.'
 - id: mem
   prompt: What does vhost-user need from the VMM about guest memory?
   choices:
   - It must be shareable (for example memfd or hugetlbfs backed)
+  - Nothing
   - It must be encrypted
   - It must be smaller than 1 GiB
-  - Nothing
   answer: [0]
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: trust
   prompt: A vhost-user back end reads a size field from a message. What must it do?
   choices:
+  - Double it
+  - Ignore it
   - Trust it
   - Check it against a limit and the bytes available before using it
-  - Ignore it
-  - Double it
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'

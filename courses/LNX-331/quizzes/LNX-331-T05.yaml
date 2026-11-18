@@ -3,54 +3,54 @@ questions:
 - id: mutexirq
   prompt: Why can a mutex not be used in a hard interrupt handler?
   choices:
+  - The handler holds a spinlock already
+  - Mutexes are only for user space
   - Mutexes are slow
   - Taking one may sleep, and interrupt context cannot sleep
-  - Mutexes are only for user space
-  - The handler holds a spinlock already
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: irqsaveuse
   prompt: A lock is shared between process context and a hard interrupt handler. How does process context take it?
   choices:
-  - spin_lock
-  - spin_lock_irqsave
-  - mutex_lock
   - rcu_read_lock
-  answer: [1]
-  explain: 'A) wrong, deadlock if the interrupt hits the holder CPU. B) correct. C) wrong. D) wrong.'
+  - mutex_lock
+  - spin_lock_irqsave
+  - spin_lock
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong, deadlock if the interrupt hits the holder CPU.'
 - id: rcufree
   prompt: After publishing a new version with rcu_assign_pointer, when may the updater free the old one?
   choices:
-  - Immediately
-  - After synchronize_rcu returns or a call_rcu callback runs
   - Never
   - After the next reboot
-  answer: [1]
-  explain: 'A) wrong, readers may still use it. B) correct: a grace period must pass. C) wrong. D) wrong.'
+  - Immediately
+  - After synchronize_rcu returns or a call_rcu callback runs
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong, readers may still use it. D) correct: a grace period must pass.'
 - id: lockdepwhy
   prompt: Why can lockdep report a deadlock that never happened?
   choices:
-  - It guesses
   - It records lock ordering edges and flags an inconsistent order that could deadlock under another interleaving
-  - It reads the console
   - It only checks interrupts
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - It guesses
+  - It reads the console
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: sleepspin
   prompt: What must not be done while holding a spinlock?
   choices:
-  - Read a variable
-  - Call a function that may sleep
-  - Increment a counter
   - Return an error
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - Read a variable
+  - Increment a counter
+  - Call a function that may sleep
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: rt
   prompt: What changes for spinlock_t on a PREEMPT_RT kernel?
   choices:
-  - It becomes a sleeping lock
   - It becomes faster than an atomic
-  - It is removed
   - It works only in user space
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - It is removed
+  - It becomes a sleeping lock
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'

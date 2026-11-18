@@ -3,54 +3,54 @@ questions:
 - id: atomicflag
   prompt: An interrupt handler needs memory. Which flag is appropriate?
   choices:
+  - __GFP_ZERO alone
   - GFP_KERNEL
   - GFP_ATOMIC
   - GFP_USER
-  - __GFP_ZERO alone
-  answer: [1]
-  explain: 'A) wrong, may sleep. B) correct. C) wrong. D) wrong, it is a modifier.'
+  answer: [2]
+  explain: 'A) wrong, it is a modifier. B) wrong, may sleep. C) correct. D) wrong.'
 - id: kvmalloc
   prompt: Why prefer kvmalloc for an array whose size depends on user input?
   choices:
-  - It always returns zeroed memory
+  - It avoids freeing
   - It tries kmalloc and falls back to vmalloc when contiguous memory is not available
   - It is usable in interrupt context
-  - It avoids freeing
+  - It always returns zeroed memory
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: busaddr
   prompt: What address does the device get from the DMA API?
   choices:
-  - The CPU virtual address
-  - The bus (DMA) address in dma_handle or from dma_map_single
   - The physical address from virt_to_phys
+  - The CPU virtual address
   - The PCI slot number
-  answer: [1]
-  explain: 'A) wrong. B) correct, possibly an IOMMU virtual address. C) wrong. D) wrong.'
+  - The bus (DMA) address in dma_handle or from dma_map_single
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct, possibly an IOMMU virtual address.'
 - id: fragmentation
   prompt: buddyinfo shows many free order-0 pages and none at order 6 and above. What happens to a large GFP_KERNEL order-8 request?
   choices:
-  - It always succeeds
-  - It may fail despite plenty of free memory
   - The kernel reboots
+  - It always succeeds
   - It is served from the slab
-  answer: [1]
-  explain: 'A) wrong. B) correct: the memory is fragmented. C) wrong. D) wrong.'
+  - It may fail despite plenty of free memory
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: the memory is fragmented.'
 - id: overflow
   prompt: Why use kmalloc_array(n, size, gfp) instead of kmalloc(n * size, gfp)?
   choices:
   - It checks the multiplication for overflow
-  - It is faster
-  - It zeroes memory
   - It sleeps less
+  - It zeroes memory
+  - It is faster
   answer: [0]
   explain: 'A) correct. B) wrong. C) wrong, that is kcalloc. D) wrong.'
 - id: streaming
   prompt: After dma_map_single with DMA_FROM_DEVICE, when may the CPU read the buffer?
   choices:
+  - Never
   - Immediately
   - After the transfer completes and dma_unmap_single or a sync for the CPU
-  - Never
   - Only before mapping
-  answer: [1]
-  explain: 'A) wrong. B) correct: ownership returns to the CPU. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: ownership returns to the CPU. D) wrong.'

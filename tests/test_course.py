@@ -261,3 +261,41 @@ def test_argv_runs_scripts_through_their_interpreter_on_windows(tmp_path):
     assert course._argv([str(py)], nt=False) == [str(py)]
     assert course._argv([str(py)], nt=True) == [sys.executable, str(py)]
     assert course._argv([str(sh)], nt=True)[-1] == str(sh) and len(course._argv([str(sh)], nt=True)) == 2
+
+
+# ------------------------------------------------------------------ quiz quality and capstone brief
+def _quiz(root, questions):
+    (root / "courses" / "LNX-900" / "quizzes" / "LNX-900-T01.yaml").write_text(yaml.safe_dump({"questions": questions}))
+
+
+def test_lettered_explanation_must_match_answer_key(root):
+    q = {"id": "q1", "prompt": "Pick b", "choices": ["a", "b"], "answer": [1],
+         "explain": "A) correct: it is a. B) wrong: it is not b."}
+    _quiz(root, [q])
+    assert any("lettered explanation" in e for e in _errors(root))
+    q["explain"] = "A) wrong: it is not a. B) correct: b is the one we want."
+    _quiz(root, [q])
+    assert not _errors(root)
+
+
+def test_short_explanations_and_position_skew_warn(root):
+    qs = [{"id": f"q{i}", "prompt": "Pick the first one", "choices": ["x", "y", "z"], "answer": [0], "explain": "Too short."} for i in range(20)]
+    _quiz(root, qs)
+    warns = [i.msg for i in course.check(root) if i.level == "warn"]
+    assert any("under six words" in w for w in warns)
+    assert any("position 0" in w for w in warns)
+    assert not _errors(root)
+
+
+def test_capstone_brief_is_rendered_and_linked(root, tmp_path):
+    c = root / "courses" / "LNX-900"
+    (c / "brief.md").write_text("# Brief\n\n## Rubric\n\nSee [the lab](lab:demo).\n")
+    (c / "lessons" / "LNX-900-T01.md").write_text(LESSON + "\nSee [the brief](../brief.md).\n")
+    assert not _errors(root)
+    out = tmp_path / "site"
+    course.build(root, out)
+    base = out / "courses" / "LNX-900"
+    brief = (base / "brief.html").read_text()
+    assert "Rubric" in brief and 'href="labs/demo.html"' in brief
+    assert 'href="brief.html"' in (base / "index.html").read_text()
+    assert 'href="../brief.html"' in (base / "lessons" / "LNX-900-T01.html").read_text()

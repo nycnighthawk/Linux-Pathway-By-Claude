@@ -3,70 +3,70 @@ questions:
 - id: pull-model
   prompt: What does a failed scrape set the up metric to?
   choices:
-  - '1'
+  - NaN
   - '0'
   - The previous value
-  - NaN
+  - '1'
   answer:
   - 1
   explain: up is 1 when the scrape succeeded and 0 when it failed, a free liveness signal.
 - id: rate-counter
   prompt: Which expression gives requests per second from a counter?
   choices:
-  - http_requests_total[5m]
   - rate(http_requests_total[5m])
   - avg(http_requests_total)
   - sum(http_requests_total)
+  - http_requests_total[5m]
   answer:
-  - 1
+  - 0
   explain: rate() converts a counter to a per-second increase and handles resets. A raw counter only goes up.
 - id: for-clause
   prompt: 'What does for: 10m do in an alerting rule?'
   choices:
+  - Groups alerts for ten minutes
+  - Repeats the notification every ten minutes
   - Retains data for ten minutes
   - Keeps the alert pending until the expression is true for ten minutes
-  - Repeats the notification every ten minutes
-  - Groups alerts for ten minutes
   answer:
-  - 1
+  - 3
   explain: The alert stays pending, then fires; this suppresses short blips.
 - id: cardinality
   prompt: Which label is most likely to cause a series explosion?
   choices:
+  - user_id
   - method
   - status code
-  - user_id
   - job
   answer:
-  - 2
+  - 0
   explain: Unbounded values multiply the series count and exhaust memory; keep identifiers in logs or traces.
 - id: percentiles
   prompt: How do you get a p99 latency from a histogram?
   choices:
-  - avg of p99 values from each instance
   - histogram_quantile(0.99, sum by (le) (rate(x_bucket[5m])))
   - max_over_time of the mean
   - rate of x_sum
+  - avg of p99 values from each instance
   answer:
-  - 1
+  - 0
   explain: Aggregate the buckets first, then compute the quantile. Averaging percentiles is statistically meaningless.
 - id: alertmanager-role
   prompt: What is Alertmanager's job?
   choices:
-  - Scraping targets
+  - Drawing dashboards
   - Storing metrics long term
   - Grouping, deduplicating, silencing and routing alerts
-  - Drawing dashboards
+  - Scraping targets
   answer:
   - 2
   explain: Prometheus evaluates rules; Alertmanager handles notification routing. Grafana draws dashboards.
 - id: promtool
   prompt: Which command tests alerting rules with synthetic series?
   choices:
-  - promtool check config
-  - promtool test rules
-  - promtool query
   - promtool tsdb
+  - promtool query
+  - promtool test rules
+  - promtool check config
   answer:
-  - 1
+  - 2
   explain: promtool test rules feeds input series and asserts the alerts that result; check rules only validates syntax.

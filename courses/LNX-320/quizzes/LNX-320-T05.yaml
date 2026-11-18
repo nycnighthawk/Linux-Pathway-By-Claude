@@ -4,60 +4,60 @@ questions:
   prompt: Ten SIGCHLD arrive while the signal is blocked. How many are delivered after unblocking?
   choices:
   - Ten
-  - One
-  - None
   - Two
+  - None
+  - One
   answer:
-  - 1
-  explain: 'A) wrong: standard signals are not queued. B) correct, so a handler must loop on waitpid with WNOHANG. C) wrong. D) wrong.'
+  - 3
+  explain: 'A) wrong: standard signals are not queued. B) wrong. C) wrong. D) correct, so a handler must loop on waitpid with WNOHANG.'
 - id: safe
   prompt: Which calls are safe inside a signal handler? (select two)
   choices:
-  - write
-  - _exit
   - printf
+  - _exit
+  - write
   - malloc
   answer:
-  - 0
+  - 2
   - 1
-  explain: 'A) correct. B) correct. C) wrong: it uses locks and global state. D) wrong: it may have interrupted malloc itself.'
+  explain: 'A) wrong: it uses locks and global state. B) correct. C) correct. D) wrong: it may have interrupted malloc itself.'
 - id: block
   prompt: What must you do before reading a signal from a signalfd?
   choices:
   - Install a handler
-  - Block the signal with sigprocmask
-  - Call alarm
   - Nothing
+  - Call alarm
+  - Block the signal with sigprocmask
   answer:
-  - 1
-  explain: 'A) wrong. B) correct: otherwise the default action happens. C) wrong. D) wrong.'
+  - 3
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: otherwise the default action happens.'
 - id: timerfd
   prompt: A timerfd with a 100 ms interval is read after 350 ms of inactivity. What does read return?
   choices:
-  - '1'
   - '3'
+  - '1'
   - '350'
   - An error
   answer:
-  - 1
-  explain: 'A) wrong. B) correct: three expirations since the last read. C) wrong. D) wrong.'
+  - 0
+  explain: 'A) correct: three expirations since the last read. B) wrong. C) wrong. D) wrong.'
 - id: inherit
   prompt: A launcher blocks SIGTERM and then forks and execs a worker. What happens to the worker?
   choices:
-  - It receives SIGTERM normally
-  - It inherits the blocked mask and its SIGTERM stays pending
   - SIGTERM is delivered to the launcher only
+  - It inherits the blocked mask and its SIGTERM stays pending
   - The signal is ignored by the kernel
+  - It receives SIGTERM normally
   answer:
   - 1
   explain: 'A) wrong. B) correct: reset the mask before exec. C) wrong. D) wrong.'
 - id: segv
   prompt: A SIGSEGV handler simply returns. What happens?
   choices:
+  - The kernel kills the handler
   - The program continues after the fault
   - The faulting instruction runs again and the signal repeats
-  - The kernel kills the handler
   - The memory is mapped automatically
   answer:
-  - 1
-  explain: A) wrong. B) correct. C) wrong. D) wrong.
+  - 2
+  explain: A) wrong. B) wrong. C) correct. D) wrong.

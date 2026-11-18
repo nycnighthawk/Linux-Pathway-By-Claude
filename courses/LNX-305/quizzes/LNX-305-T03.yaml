@@ -3,76 +3,76 @@ questions:
 - id: defaults-vs-vars
   prompt: Which role directory should hold values that users are meant to override?
   choices:
-  - files/
   - meta/
   - vars/
   - defaults/
+  - files/
   answer:
-  - 3
+  - 2
   explain: defaults/ has the lowest precedence and is the interface of the role. vars/ outranks inventory data and so blocks
     overrides, files/ holds static files and meta/ holds metadata.
 - id: prefix
   prompt: Why should every public role variable start with the role name?
   choices:
-  - The prefix makes the variable encrypted
-  - Roles share one variable namespace with the play, so prefixes avoid collisions
-  - Ansible rejects unprefixed names
   - The prefix selects the role's handlers
+  - Ansible rejects unprefixed names
+  - Roles share one variable namespace with the play, so prefixes avoid collisions
+  - The prefix makes the variable encrypted
   answer:
-  - 1
+  - 2
   explain: There is no private scope for role variables. Unprefixed names collide with other roles and with the play. Ansible
     does not enforce the rule, ansible-lint does.
 - id: import-include
   prompt: What is the practical difference between import_role and include_role?
   choices:
-  - include is faster in every case
   - import is static at parse time; include is dynamic at run time and can be looped or conditional
-  - import is for collections, include for plain roles
+  - include is faster in every case
   - They are identical
+  - import is for collections, include for plain roles
   answer:
-  - 1
+  - 0
   explain: Static imports are processed when the playbook is parsed, so tags and conditions apply to each task. Includes are
     evaluated when reached, so a loop or variable can choose the role.
 - id: collection-install
   prompt: Which command installs a collection tarball into a project-local directory?
   choices:
-  - ansible-galaxy collection install file.tar.gz -p collections
-  - pip install file.tar.gz
-  - ansible-playbook --collections file.tar.gz
   - ansible-galaxy role install file.tar.gz
+  - ansible-galaxy collection install file.tar.gz -p collections
+  - ansible-playbook --collections file.tar.gz
+  - pip install file.tar.gz
   answer:
-  - 0
+  - 1
   explain: ansible-galaxy collection install takes a tarball or a requirements file and -p picks the target directory. The
     role subcommand installs roles, and pip is for Python packages.
 - id: argspec
   prompt: What does meta/argument_specs.yml give a role?
   choices:
-  - Automatic validation of its inputs before any task runs, and documentation
   - Faster task execution
   - A list of hosts it may run on
+  - Automatic validation of its inputs before any task runs, and documentation
   - Encryption of variables
   answer:
-  - 0
+  - 2
   explain: The spec declares types, defaults, choices and required options. Ansible validates the inputs at role start, and
     ansible-doc can show the interface. It has no effect on speed or security.
 - id: ee
   prompt: What does an execution environment contain?
   choices:
-  - A virtual machine disk with the managed hosts
   - A container image with ansible-core, ansible-runner, collections and their dependencies
   - The inventory and the vault password
   - Only the playbooks of a project
+  - A virtual machine disk with the managed hosts
   answer:
-  - 1
+  - 0
   explain: An EE is the runtime of the control node as an image, built by ansible-builder. Playbooks and inventories are supplied
     at run time, never baked in with secrets.
 - id: pin
   prompt: Why pin collection versions in requirements.yml?
   choices:
   - So an upgrade of content cannot change behaviour until you choose it
+  - To make the collection smaller
   - Because collections are cached forever
   - Because Galaxy refuses unpinned installs
-  - To make the collection smaller
   answer:
   - 0
   explain: Unpinned installs take the newest release, so behaviour can change between two runs of the same playbook. Pinning

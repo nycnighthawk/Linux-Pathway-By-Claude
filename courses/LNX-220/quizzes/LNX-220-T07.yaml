@@ -3,42 +3,42 @@ questions:
 - id: go
   prompt: How do you build a Go program that has no libc dependency?
   choices:
-  - go build -static-libc
-  - GOOS=static go build
-  - go vendor
   - CGO_ENABLED=0 go build
+  - go vendor
+  - GOOS=static go build
+  - go build -static-libc
   answer:
-  - 3
+  - 0
   explain: With cgo disabled the build uses only Go code and produces a static binary. The other settings are not Go options
     (-static-libc, GOOS=static) or concern dependency copying (vendor).
 - id: rust
   prompt: Which rustc option links the C runtime statically on a glibc target?
   choices:
-  - -C target-feature=+crt-static
-  - -C opt-level=3
   - --emit=obj
   - -C debuginfo=0
+  - -C target-feature=+crt-static
+  - -C opt-level=3
   answer:
-  - 0
+  - 2
   explain: crt-static selects static linking of the C runtime. Optimisation level, emitted artefacts and debug information
     do not change linkage.
 - id: venv
   prompt: Why create a virtual environment for a Python project?
   choices:
-  - To compile Python to machine code
-  - To isolate its dependencies from the system interpreter's packages
-  - To make pip faster
   - To remove the need for pyproject.toml
+  - To compile Python to machine code
+  - To make pip faster
+  - To isolate its dependencies from the system interpreter's packages
   answer:
-  - 1
+  - 3
   explain: venv gives each project its own site-packages. It does not compile code, speed up pip or replace project metadata.
 - id: lock
   prompt: What is the purpose of Cargo.lock or go.sum style lock data?
   choices:
-  - To speed up compilation only
   - To license the code
-  - To pin exact dependency versions and hashes so builds repeat
   - To list installed system packages
+  - To pin exact dependency versions and hashes so builds repeat
+  - To speed up compilation only
   answer:
   - 2
   explain: Lock files record the resolved graph and content hashes. Speed is a side effect at most, and they say nothing about
@@ -46,11 +46,11 @@ questions:
 - id: glibc
   prompt: A Rust binary built on a new distribution fails on an old one with a glibc version error. Which fix works?
   choices:
-  - Add more cargo features
   - Run cargo clean
-  - Use cargo fmt
   - Build in an environment with an older glibc, or target musl for a static binary
+  - Add more cargo features
+  - Use cargo fmt
   answer:
-  - 3
+  - 1
   explain: The dynamic symbol versions come from the build machine's libc. Building on an older base or linking statically
     avoids it. Features, cleaning and formatting do not change the libc requirement.

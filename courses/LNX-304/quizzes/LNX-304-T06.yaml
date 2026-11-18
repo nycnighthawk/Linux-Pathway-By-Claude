@@ -3,53 +3,53 @@ questions:
 - id: cvversion
   prompt: What does publishing a content view create?
   choices:
-  - A new host
-  - An immutable numbered content view version
   - A new repository upstream
   - A registered activation key
+  - An immutable numbered content view version
+  - A new host
   answer:
-  - 1
-  explain: 'A) wrong: hosts register separately. B) correct: the version is the snapshot. C) wrong: upstream is untouched. D) wrong: keys are created separately.'
+  - 2
+  explain: 'A) wrong: upstream is untouched. B) wrong: keys are created separately. C) correct: the version is the snapshot. D) wrong: hosts register separately.'
 - id: promote
   prompt: A new view version is published but Prod hosts see no updates. Why?
   choices:
-  - Publishing does not promote; the version must be promoted to the Prod environment
+  - The product has no repositories
   - The hosts are offline
   - Filters are disabled
-  - The product has no repositories
+  - Publishing does not promote; the version must be promoted to the Prod environment
   answer:
-  - 0
-  explain: 'A) correct: promotion places the version in the environment. B) wrong: not implied. C) wrong: unrelated. D) wrong: the view itself holds content.'
+  - 3
+  explain: 'A) wrong: the view itself holds content. B) wrong: not implied. C) wrong: unrelated. D) correct: promotion places the version in the environment.'
 - id: activationkey
   prompt: What does an activation key give a registering host?
   choices:
-  - A root password
-  - Its organisation, lifecycle environment, content view and subscriptions
-  - A kernel
   - A new IP address
+  - A kernel
+  - Its organisation, lifecycle environment, content view and subscriptions
+  - A root password
   answer:
-  - 1
-  explain: 'A) wrong: not a credential for login. B) correct: it is a registration recipe. C) wrong: unrelated. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) correct: it is a registration recipe. D) wrong: not a credential for login.'
 - id: filters
   prompt: Which practice with filters is sound?
   choices:
-  - Exclude any package you dislike without testing
   - Keep few filters, document them and test them on a canary host
+  - Exclude any package you dislike without testing
   - Use package-name filters for every view
   - Never use filters
   answer:
-  - 1
-  explain: 'A) wrong: it can break dependencies on clients. B) correct: filters are powerful and easy to misuse. C) wrong: blunt and fragile. D) wrong: an errata date filter is the usual way to get a dated view.'
+  - 0
+  explain: 'A) correct: filters are powerful and easy to misuse. B) wrong: it can break dependencies on clients. C) wrong: blunt and fragile. D) wrong: an errata date filter is the usual way to get a dated view.'
 - id: incremental
   prompt: What is an incremental update used for?
   choices:
-  - A normal weekly publish
   - A fast minor version with only selected errata for an emergency
   - Deleting old versions
   - Registering many hosts
+  - A normal weekly publish
   answer:
-  - 1
-  explain: 'A) wrong: weekly publishes are full. B) correct: it is the expedited path and should be folded back later. C) wrong: that is clean-up. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: it is the expedited path and should be folded back later. B) wrong: that is clean-up. C) wrong: unrelated. D) wrong: weekly publishes are full.'
 - id: upgrade
   prompt: What must be in the view and activation key for an in-place OS upgrade of a Satellite-registered host?
   choices:

@@ -3,43 +3,43 @@ questions:
 - id: composer
   prompt: What does osbuild-composer do with a blueprint?
   choices:
-  - Boots a VM and records it
-  - Resolves packages and generates an osbuild manifest for the chosen output type
   - Signs the repository
+  - Resolves packages and generates an osbuild manifest for the chosen output type
   - Installs the image on hosts
+  - Boots a VM and records it
   answer:
   - 1
-  explain: 'A) wrong: that is the capture style of older tools. B) correct: the manifest pins the inputs. C) wrong: unrelated. D) wrong: installation is a separate step.'
+  explain: 'A) wrong: unrelated. B) correct: the manifest pins the inputs. C) wrong: installation is a separate step. D) wrong: that is the capture style of older tools.'
 - id: firstboot
   prompt: Which setting belongs to first-boot provisioning rather than the image?
   choices:
-  - The chrony package
   - The machine hostname and SSH host keys
-  - The audit kernel argument
   - An enabled sshd service
+  - The audit kernel argument
+  - The chrony package
   answer:
-  - 1
-  explain: 'A) wrong: common to every host. B) correct: unique per machine, so generated or injected at first boot. C) wrong: common. D) wrong: common.'
+  - 0
+  explain: 'A) correct: unique per machine, so generated or injected at first boot. B) wrong: common. C) wrong: common. D) wrong: common to every host.'
 - id: repeat
   prompt: How do you make an image build repeatable?
   choices:
-  - Build on the same laptop
+  - Disable dependency solving
   - Point the build sources at a dated snapshot of your repository and verify signatures
   - Use the newest public mirror each time
-  - Disable dependency solving
+  - Build on the same laptop
   answer:
   - 1
-  explain: 'A) wrong: a laptop cache is not a record. B) correct: the same inputs give the same packages. C) wrong: contents change daily. D) wrong: it would break the build.'
+  explain: 'A) wrong: it would break the build. B) correct: the same inputs give the same packages. C) wrong: contents change daily. D) wrong: a laptop cache is not a record.'
 - id: secrets
   prompt: Why must a blueprint not carry passwords or tokens?
   choices:
-  - TOML cannot hold strings
-  - Blueprints are stored and readable, and the secret ends up inside every image
   - It makes builds slower
   - The builder rejects all keys
+  - TOML cannot hold strings
+  - Blueprints are stored and readable, and the secret ends up inside every image
   answer:
-  - 1
-  explain: 'A) wrong: it can. B) correct: both the store and the image leak it. C) wrong: no effect on speed. D) wrong: public SSH keys are fine.'
+  - 3
+  explain: 'A) wrong: no effect on speed. B) wrong: public SSH keys are fine. C) wrong: it can. D) correct: both the store and the image leak it.'
 - id: rebuild
   prompt: Why rebuild images on a schedule even if the blueprint did not change?
   choices:
@@ -53,10 +53,10 @@ questions:
 - id: bootcib
   prompt: What does bootc-image-builder take as input?
   choices:
-  - A kickstart file
-  - A bootc container image and a small configuration file
-  - A Debian source package
   - A tarball of /home
+  - A kickstart file
+  - A Debian source package
+  - A bootc container image and a small configuration file
   answer:
-  - 1
-  explain: 'A) wrong: that is installer input. B) correct: it converts the container image into disk images. C) wrong: wrong family. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: that is installer input. C) wrong: wrong family. D) correct: it converts the container image into disk images.'

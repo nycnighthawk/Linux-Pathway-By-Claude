@@ -3,54 +3,54 @@ questions:
 - id: dropmech
   prompt: How does Rust remove the leak on a failed probe error path?
   choices:
-  - A garbage collector
   - Ownership and Drop release acquired resources when they go out of scope
+  - A garbage collector
   - The compiler adds sleep calls
   - It cannot
-  answer: [1]
-  explain: 'A) wrong, there is none. B) correct. C) wrong. D) wrong.'
+  answer: [0]
+  explain: 'A) correct. B) wrong, there is none. C) wrong. D) wrong.'
 - id: mutex
   prompt: What is special about Mutex<T> in the kernel crate?
   choices:
-  - It is faster than a spinlock
-  - The protected data is reachable only through the lock guard
   - It allows sleeping in interrupts
+  - It is faster than a spinlock
   - It needs no unlocking logic in C
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - The protected data is reachable only through the lock guard
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: unsafe
   prompt: Why is some unsafe code still needed in the kernel crate?
   choices:
-  - The compiler is incomplete
-  - Raw hardware access and calling C cannot be checked by the language
   - It is required by the licence
   - Safe code is slower
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - Raw hardware access and calling C cannot be checked by the language
+  - The compiler is incomplete
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: panic
   prompt: What does a panic in kernel Rust code mean?
   choices:
-  - Normal error handling
   - 'A bug: expected failures should be returned as Result'
-  - A request to reboot
+  - Normal error handling
   - A warning only
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - A request to reboot
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: bindings
   prompt: What are rust/bindings used for?
   choices:
-  - Raw generated declarations of C interfaces, wrapped by safe abstractions
-  - Documentation
-  - Test data
   - Licensing
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - Test data
+  - Documentation
+  - Raw generated declarations of C interfaces, wrapped by safe abstractions
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: alloc
   prompt: How does kernel Rust differ from application Rust on allocation?
   choices:
   - Allocation is fallible and returns an error instead of aborting
   - Allocation is not allowed
-  - It always uses the stack
   - It uses a garbage collector
+  - It always uses the stack
   answer: [0]
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

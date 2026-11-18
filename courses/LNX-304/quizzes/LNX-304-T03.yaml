@@ -3,43 +3,43 @@ questions:
 - id: debmodel
   prompt: What does the Debian family sign to authenticate a whole repository?
   choices:
+  - The kernel
   - Every .deb file
   - The Release file (InRelease or Release.gpg), which lists the checksums of the indexes
-  - The kernel
   - The sources.list file
   answer:
-  - 1
-  explain: 'A) wrong: archive packages are not signed one by one. B) correct: signing the top of the hash tree covers everything below. C) wrong: unrelated. D) wrong: that is local configuration.'
+  - 2
+  explain: 'A) wrong: unrelated. B) wrong: archive packages are not signed one by one. C) correct: signing the top of the hash tree covers everything below. D) wrong: that is local configuration.'
 - id: repogpg
   prompt: What does repo_gpgcheck=1 check?
   choices:
   - The signature on the repository metadata
-  - The package payload only
   - The TLS certificate
+  - The package payload only
   - The disk space
   answer:
   - 0
-  explain: 'A) correct: the signed repomd.xml authenticates the metadata. B) wrong: that is gpgcheck. C) wrong: TLS is separate. D) wrong: unrelated.'
+  explain: 'A) correct: the signed repomd.xml authenticates the metadata. B) wrong: TLS is separate. C) wrong: that is gpgcheck. D) wrong: unrelated.'
 - id: nokey
   prompt: rpm -K prints NOKEY for a package. What is the cause?
   choices:
-  - The file is corrupt
-  - The public key that made the signature is not imported
   - The package is unsigned
   - The key expired
+  - The public key that made the signature is not imported
+  - The file is corrupt
   answer:
-  - 1
-  explain: 'A) wrong: corruption gives a bad digest or signature. B) correct: import it with rpm --import. C) wrong: an unsigned package says so. D) wrong: expiry is reported differently.'
+  - 2
+  explain: 'A) wrong: an unsigned package says so. B) wrong: expiry is reported differently. C) correct: import it with rpm --import. D) wrong: corruption gives a bad digest or signature.'
 - id: offline
   prompt: Why keep the primary key offline and sign with a subkey?
   choices:
-  - Subkeys are faster
   - Routine signing never exposes the primary, and a subkey can be replaced or extended without changing the identity
-  - It is required by GnuPG
   - It makes packages smaller
+  - It is required by GnuPG
+  - Subkeys are faster
   answer:
-  - 1
-  explain: 'A) wrong: speed is not the reason. B) correct: it limits the blast radius and eases renewal. C) wrong: GnuPG does not require it. D) wrong: no effect on size.'
+  - 0
+  explain: 'A) correct: it limits the blast radius and eases renewal. B) wrong: no effect on size. C) wrong: GnuPG does not require it. D) wrong: speed is not the reason.'
 - id: rotation
   prompt: Which rotation plan avoids an outage?
   choices:
@@ -53,10 +53,10 @@ questions:
 - id: trustedyes
   prompt: An import problem blocks updates. What is the correct response?
   choices:
-  - Set trusted=yes or gpgcheck=0 permanently
   - Fix the key delivery (import the right key through a channel you control) and keep verification on
-  - Delete the repository
+  - Set trusted=yes or gpgcheck=0 permanently
   - Use HTTP instead of HTTPS
+  - Delete the repository
   answer:
-  - 1
-  explain: 'A) wrong: it removes the control and is rarely reverted. B) correct: solve the cause. C) wrong: it does not fix anything. D) wrong: it weakens transport.'
+  - 0
+  explain: 'A) correct: solve the cause. B) wrong: it removes the control and is rarely reverted. C) wrong: it weakens transport. D) wrong: it does not fix anything.'

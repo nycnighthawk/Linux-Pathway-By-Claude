@@ -12,45 +12,45 @@ questions:
 - id: status
   prompt: What does status = "disabled" do?
   choices:
+  - Hides the node in the source
+  - Resets the device
   - Loads the driver without hardware
   - The kernel creates no device for the node
-  - Resets the device
-  - Hides the node in the source
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: defer
   prompt: When should probe return -EPROBE_DEFER?
   choices:
+  - When the hardware is broken
   - When memory allocation fails
   - When a needed resource such as a clock is supplied by a driver that has not bound yet
-  - When the hardware is broken
   - Never
-  answer: [1]
-  explain: 'A) wrong, that is -ENOMEM. B) correct: the core retries later. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong, that is -ENOMEM. C) correct: the core retries later. D) wrong.'
 - id: devm
   prompt: What is the benefit of devm_ allocation helpers?
   choices:
   - They are faster
   - Resources are released automatically when probe fails or the device is removed
-  - They avoid locking
   - They work only on x86
+  - They avoid locking
   answer: [1]
   explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: sysfs
   prompt: What is the sysfs convention for attribute files?
   choices:
-  - Binary blobs of any size
   - One readable value per file
-  - Only writable files
+  - Binary blobs of any size
   - XML documents
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - Only writable files
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: udev
   prompt: How does a newly detected device cause its driver module to load?
   choices:
-  - The kernel guesses by name
-  - A uevent reaches udev, which loads the module whose device-table alias matches
   - The user must run insmod
+  - The kernel guesses by name
   - Modules always load at boot
-  answer: [1]
-  explain: 'A) wrong. B) correct, via MODULE_DEVICE_TABLE aliases. C) wrong. D) wrong.'
+  - A uevent reaches udev, which loads the module whose device-table alias matches
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct, via MODULE_DEVICE_TABLE aliases.'

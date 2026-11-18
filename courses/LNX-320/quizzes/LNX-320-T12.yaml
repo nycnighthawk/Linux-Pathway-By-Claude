@@ -3,61 +3,61 @@ questions:
 - id: btf
   prompt: What makes a BPF object portable across kernel versions with CO-RE?
   choices:
-  - A kernel module per version
   - 'BTF type information: field accesses are recorded as relocations and fixed by libbpf at load time'
   - Recompiling on the target with kernel headers
   - Running as root
+  - A kernel module per version
   answer:
-  - 1
-  explain: 'A) wrong. B) correct. C) wrong: that was the BCC approach. D) wrong.'
+  - 0
+  explain: 'A) correct. B) wrong: that was the BCC approach. C) wrong. D) wrong.'
 - id: flags
   prompt: Which clang options does a BPF object need? (select two)
   choices:
+  - -fPIC
+  - -static
   - -O2 so the verifier accepts the code
   - -g so BTF and CO-RE relocations are produced
-  - -static
-  - -fPIC
   answer:
-  - 0
-  - 1
-  explain: A) correct. B) correct. C) wrong. D) wrong.
+  - 2
+  - 3
+  explain: A) wrong. B) wrong. C) correct. D) correct.
 - id: nullcheck
   prompt: A program uses the value returned by bpf_map_lookup_elem without a test. What happens?
   choices:
-  - It runs
-  - The verifier rejects it because the pointer may be NULL
-  - The kernel adds the check
   - The map is created
+  - It runs
+  - The kernel adds the check
+  - The verifier rejects it because the pointer may be NULL
   answer:
-  - 1
-  explain: A) wrong. B) correct. C) wrong. D) wrong.
+  - 3
+  explain: A) wrong. B) wrong. C) wrong. D) correct.
 - id: ring
   prompt: bpf_ringbuf_reserve returns NULL under load. What should the program do?
   choices:
-  - Dereference it anyway
-  - Count the drop (for example in a map) and return
-  - Loop until it succeeds
   - Reboot
+  - Count the drop (for example in a map) and return
+  - Dereference it anyway
+  - Loop until it succeeds
   answer:
   - 1
-  explain: 'A) wrong. B) correct: events are lost and the loss should be visible. C) wrong: loops are bounded and spinning hurts. D) wrong.'
+  explain: 'A) wrong. B) correct: events are lost and the loss should be visible. C) wrong. D) wrong: loops are bounded and spinning hurts.'
 - id: hook
   prompt: Which hook is the most stable across kernel versions?
   choices:
-  - A kprobe on an internal function
-  - A tracepoint
-  - A kprobe at a fixed address
   - A hardcoded struct offset
+  - A kprobe on an internal function
+  - A kprobe at a fixed address
+  - A tracepoint
   answer:
-  - 1
-  explain: 'A) wrong: names change. B) correct. C) wrong. D) wrong.'
+  - 3
+  explain: 'A) wrong. B) wrong: names change. C) wrong. D) correct.'
 - id: priv
   prompt: Which capabilities are normally needed to load a tracing program without full root?
   choices:
-  - CAP_BPF and CAP_PERFMON
   - CAP_CHOWN
   - CAP_KILL
   - None at all
+  - CAP_BPF and CAP_PERFMON
   answer:
-  - 0
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong: unprivileged BPF is usually disabled.'
+  - 3
+  explain: 'A) wrong. B) wrong. C) wrong: unprivileged BPF is usually disabled. D) correct.'

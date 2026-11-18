@@ -3,9 +3,9 @@ questions:
 - id: shell
   prompt: How is the default shell for the OpenSSH server on Windows set?
   choices:
+  - Environment variable SHELL
   - A line in sshd_config named Shell
   - /etc/passwd
-  - Environment variable SHELL
   - DefaultShell string under HKLM:\SOFTWARE\OpenSSH
   answer:
   - 3
@@ -15,51 +15,51 @@ questions:
   prompt: Where do an Administrators-group member's authorized keys go by default?
   choices:
   - The registry
-  - C:\ProgramData\ssh\administrators_authorized_keys
   - ~/.ssh/authorized_keys only
+  - C:\ProgramData\ssh\administrators_authorized_keys
   - C:\Windows\system32
   answer:
-  - 1
+  - 2
   explain: A Match Group administrators block points to the shared file, which must be ACL-restricted to SYSTEM and Administrators.
 - id: fallback
   prompt: Key login falls back to a password and the event log says bad ownership or modes. Fix?
   choices:
-  - chmod 600
   - Reinstall Windows
   - Disable the firewall
   - Reset ACLs on the key file with icacls (remove inheritance, Administrators and SYSTEM only)
+  - chmod 600
   answer:
-  - 3
+  - 2
   explain: Windows uses ACLs, so chmod is cosmetic. A permissive inherited ACL makes sshd ignore the file.
 - id: hostname
   prompt: Which parameter picks the SSH transport for PowerShell remoting?
   choices:
-  - -Credential
-  - -ComputerName
   - -HostName
+  - -Credential
   - -Authentication
+  - -ComputerName
   answer:
-  - 2
+  - 0
   explain: -HostName uses SSH, -ComputerName uses WinRM.
 - id: subsystem
   prompt: Why does the Subsystem powershell line use a short path such as Progra~1?
   choices:
-  - It is faster
-  - Windows requires 8.3 names everywhere
   - Spaces in the path are not parsed reliably in the directive
+  - Windows requires 8.3 names everywhere
   - It selects 32-bit
+  - It is faster
   answer:
-  - 2
+  - 0
   explain: The directive splits on spaces, so the 8.3 short form avoids a broken command.
 - id: deleg
   prompt: Which is a limitation of SSH remoting compared with WinRM with Kerberos?
   choices:
-  - No encryption
-  - Only cmd.exe
   - No Kerberos delegation, so the double hop is not solved
   - No scripting
+  - Only cmd.exe
+  - No encryption
   answer:
-  - 2
+  - 0
   explain: SSH key authentication gives no delegable credential. It is encrypted and supports PowerShell.
 - id: ps7
   prompt: On a fresh Windows Server image, which PowerShell is present?

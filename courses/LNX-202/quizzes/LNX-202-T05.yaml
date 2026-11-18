@@ -3,59 +3,59 @@ questions:
 - id: files
   prompt: Which file belongs to Kea's DHCPv4 server?
   choices:
-  - dhcp4.json only
-  - kea-dhcp4.conf
   - dhcpd.conf
   - kea.conf
+  - kea-dhcp4.conf
+  - dhcp4.json only
   answer:
-  - 1
+  - 2
   explain: Each protocol has its own file and service.
 - id: test
   prompt: How do you test a Kea configuration without starting it?
   choices:
-  - kea-dhcp4 -t FILE
   - kea-admin test
   - systemctl check
+  - kea-dhcp4 -t FILE
   - dhcpd -t
   answer:
-  - 0
-  explain: -t checks syntax and semantics.
+  - 2
+  explain: 'Running kea-dhcp4 -t FILE parses the configuration and checks its meaning, then exits without serving leases. Run it before every reload so a typo does not take DHCP down.'
 - id: t1
   prompt: When does a client first try to renew a lease?
   choices:
   - At expiry
-  - At the rebind timer with any server
-  - Never
   - At the renew timer (T1) with the same server
+  - Never
+  - At the rebind timer with any server
   answer:
-  - 3
+  - 1
   explain: T2 is the rebind timer, expiry ends the lease.
 - id: leasefile
   prompt: Why not edit the memfile lease CSV by hand?
   choices:
-  - It is read-only
   - It is a database
   - Kea keeps leases in memory and rewrites the file
   - The file is encrypted
+  - It is read-only
   answer:
-  - 2
-  explain: Manual edits are overwritten.
+  - 1
+  explain: 'With the memfile back end Kea holds leases in memory and periodically rewrites the CSV file. Anything you edit by hand is overwritten or ignored; change leases through the control API instead.'
 - id: relay
   prompt: How does Kea pick the subnet for a relayed request?
   choices:
-  - By the lease file
   - By the relay address (giaddr)
+  - By the lease file
   - By the client MAC
   - By the hostname
   answer:
-  - 1
+  - 0
   explain: A subnet must contain the relay address.
 - id: hooks
   prompt: Which hook library provides high availability?
   choices:
-  - lease_cmds
   - stat_cmds
   - flex_id
+  - lease_cmds
   - ha
   answer:
   - 3
@@ -64,9 +64,9 @@ questions:
   prompt: Which lease back ends can serve shared storage?
   choices:
   - Only memfile
-  - Only SQLite
-  - None
   - MySQL and PostgreSQL
+  - None
+  - Only SQLite
   answer:
-  - 3
-  explain: memfile is a local file.
+  - 1
+  explain: 'Several Kea servers can share leases only through a database back end such as MySQL or PostgreSQL. The memfile back end is a local file that one server owns, so its HA pairs sync leases with each other instead.'

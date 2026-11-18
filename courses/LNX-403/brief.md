@@ -33,6 +33,36 @@ Each milestone page lists the lessons from earlier courses it relies on. Read th
 
 Pass is 70. Anything that cannot be shown (for example a stage you could not run) must be said plainly with the reason; unconfirmed claims are marked "(to verify)" and are not marked down for that.
 
+## Score levels
+
+Each rubric area is marked at one of four levels, so two markers reach the same number.
+
+| Level | Share of the area's points | What it looks like |
+|---|---:|---|
+| Full | 100% | Everything in the Full marks column, with evidence a stranger can check |
+| Most | 70% | It works, but one element of Full marks is missing or its evidence is thin |
+| Some | 40% | A design or partial build exists, but the working evidence is missing |
+| None | 0% | Not attempted, or the evidence does not support the claim |
+
+A substitute from the fallback table below is marked the same way, but cannot score above Most for that area.
+
+## Resources and time budget
+
+These are planning estimates, not limits. Record your actual figures in the README.
+
+| Item | Estimate |
+|---|---|
+| Lab host | any machine with 16 GB RAM and a container engine; milestone 4 needs a VM with systemd |
+| Time | about 80 hours: milestone 1 about 15, 2 about 15, 3 about 15, 4 about 10, 5 about 10, 6 about 15 spread over at least four weeks |
+| CI | free CI minutes are enough if the fuzz job is time-boxed to a few minutes per run |
+
+## If you cannot run a milestone
+
+| Milestone | Substitute | Area affected |
+|---|---|---|
+| 5 Shared test hardware | Profile on your own machine with the frequency governor fixed and the load pinned, and report the noise you measured | Profiling |
+| 6 Real users | Cut at least three releases over four weeks, have a classmate or colleague file issues against them, and answer each one in public | Release and users |
+
 ## Rules
 
 - Original work. You may follow vendor and project documentation but write your own code and prose.

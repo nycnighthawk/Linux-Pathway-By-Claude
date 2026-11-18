@@ -3,45 +3,45 @@ questions:
 - id: qom
   prompt: What is QOM?
   choices:
+  - A kernel scheduler
   - A disk image format
   - 'QEMU object model: registered types with inheritance, properties and a runtime object tree'
   - A network protocol
-  - A kernel scheduler
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: realize
   prompt: Where does a device usually create its memory regions and register its BARs?
   choices:
-  - In realize
-  - In the Makefile
-  - In the guest
   - At power-off
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - In the guest
+  - In the Makefile
+  - In realize
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: qtest
   prompt: What does qtest allow?
   choices:
-  - Driving device registers from a test without any guest software
-  - Booting Windows faster
   - Compiling QEMU
+  - Driving device registers from a test without any guest software
   - Encrypting guest RAM
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - Booting Windows faster
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: vmstate
   prompt: What happens if a device omits a field from its VMStateDescription?
   choices:
-  - Nothing at all
-  - Live migration can restore the device with wrong state
-  - The device is faster
   - The guest cannot boot
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  - Nothing at all
+  - The device is faster
+  - Live migration can restore the device with wrong state
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: security
   prompt: Why are device models a main source of QEMU vulnerabilities?
   choices:
-  - Guest-controlled register and DMA accesses reach complex C code in the host process
   - They run in the guest
-  - They are written in assembly only
   - They have no registers
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - Guest-controlled register and DMA accesses reach complex C code in the host process
+  - They are written in assembly only
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'

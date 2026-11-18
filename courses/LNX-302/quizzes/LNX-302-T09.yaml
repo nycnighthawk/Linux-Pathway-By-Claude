@@ -3,39 +3,39 @@ questions:
 - id: authsys
   prompt: Why is AUTH_SYS weak?
   choices:
-  - The server trusts the uid the client claims
-  - It uses UDP only
   - It needs Kerberos
+  - It uses UDP only
   - It encrypts with DES
+  - The server trusts the uid the client claims
   answer:
-  - 0
+  - 3
   explain: Root on any client can claim any uid. RPCSEC_GSS fixes that.
 - id: flavours
   prompt: What does krb5p add over krb5i?
   choices:
   - Encryption of the payload
-  - Compression
   - Authentication
   - Integrity
+  - Compression
   answer:
   - 0
   explain: krb5 authenticates, krb5i adds integrity checksums, krb5p adds privacy by encryption.
 - id: principals
   prompt: Which principals does the setup need?
   choices:
+  - None
+  - Only user principals
   - krbtgt on clients
   - nfs/ on the server and host/ on clients, with AES keys
-  - Only user principals
-  - None
   answer:
-  - 1
+  - 3
   explain: The server needs an nfs/ service key; clients need a machine principal to mount at boot.
 - id: nobody
   prompt: Files show owner nobody although kinit succeeded. Likeliest cause?
   choices:
   - Signing
-  - The KDC is down
   - Wrong port
+  - The KDC is down
   - The idmap domain strings differ between client and server
   answer:
   - 3
@@ -44,18 +44,18 @@ questions:
   prompt: Why disable NFSv3 on a Kerberos-only server?
   choices:
   - It uses TCP
+  - Its auxiliary protocols remain insecure
   - It lacks locking
   - It is slower
-  - Its auxiliary protocols remain insecure
   answer:
-  - 3
+  - 1
   explain: Kerberos covers v3 incompletely and idmapping is absent.
 - id: port
   prompt: Which port does NFSv4 need?
   choices:
-  - TCP 445
   - TCP 88 only on server
   - UDP 111 only
+  - TCP 445
   - TCP 2049
   answer:
   - 3
@@ -64,9 +64,9 @@ questions:
   prompt: A user job loses NFS access after ten hours. Fix?
   choices:
   - Raise timeo
-  - Use a keytab-backed service identity or renewal tool
   - Reboot
   - Use sec=sys
+  - Use a keytab-backed service identity or renewal tool
   answer:
-  - 1
+  - 3
   explain: The ticket expired; sec=sys removes authentication.

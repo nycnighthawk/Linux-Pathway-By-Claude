@@ -4,53 +4,53 @@ questions:
   prompt: Which checkpatch message class appears only with --strict?
   choices:
   - ERROR
+  - FATAL
   - WARNING
   - CHECK
-  - FATAL
-  answer: [2]
-  explain: 'A) wrong. B) wrong. C) correct. D) wrong, no such class.'
+  answer: [3]
+  explain: 'A) wrong. B) wrong, no such class. C) wrong. D) correct.'
 - id: wild
   prompt: 'In MAINTAINERS, an F: entry of drivers/net/* matches which of these files?'
   choices:
-  - drivers/net/Makefile
   - drivers/net/foo/core.c
   - Documentation/networking/foo.rst
   - include/linux/net.h
-  answer: [0]
-  explain: 'A) correct: the star stays within one directory level. B) wrong, it is one level deeper. C) wrong. D) wrong.'
+  - drivers/net/Makefile
+  answer: [3]
+  explain: 'A) wrong, it is one level deeper. B) wrong. C) wrong. D) correct: the star stays within one directory level.'
 - id: exclude
   prompt: 'What does an X: line in a MAINTAINERS section do?'
   choices:
-  - It marks the section obsolete
-  - It excludes matching files from that section
-  - It adds a reviewer
   - It names the mailing list
-  answer: [1]
-  explain: 'A) wrong, that is S:. B) correct. C) wrong. D) wrong.'
+  - It adds a reviewer
+  - It excludes matching files from that section
+  - It marks the section obsolete
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong, that is S:.'
 - id: sparsebug
   prompt: What kind of bug does sparse find that the compiler does not?
   choices:
-  - Syntax errors
+  - Slow loops
   - Mixing little-endian and native integers or using a user pointer as a kernel pointer
   - Missing semicolons
-  - Slow loops
+  - Syntax errors
   answer: [1]
   explain: 'A) wrong. B) correct: annotations such as __le32 and __user. C) wrong. D) wrong.'
 - id: cocci
   prompt: Why is Coccinelle useful when a kernel API changes?
   choices:
-  - It rewrites every caller consistently from one rule that reviewers can read
-  - It compiles the kernel faster
-  - It signs patches
   - It replaces code review
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  - It signs patches
+  - It compiles the kernel faster
+  - It rewrites every caller consistently from one rule that reviewers can read
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct.'
 - id: fixwarn
   prompt: A patch only reformats working code to silence checkpatch. What is the usual reaction?
   choices:
+  - It is required by the licence
   - It is welcomed everywhere
   - Many maintainers reject it outside new code
   - It is merged automatically
-  - It is required by the licence
-  answer: [1]
-  explain: 'A) wrong. B) correct: churn without benefit. C) wrong. D) wrong.'
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: churn without benefit. D) wrong.'

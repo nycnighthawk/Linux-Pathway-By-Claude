@@ -3,61 +3,61 @@ questions:
 - id: poll-cost
   prompt: Why does poll degrade with tens of thousands of descriptors, most idle?
   choices:
+  - It cannot watch sockets
   - It only supports 1024 descriptors
   - The whole set is passed and scanned on every call so the cost follows the number watched
-  - It cannot watch sockets
   - It always blocks
   answer:
-  - 1
-  explain: 'A) wrong: that is the select limit. B) correct. C) wrong. D) wrong.'
+  - 2
+  explain: 'A) wrong. B) wrong: that is the select limit. C) correct. D) wrong.'
 - id: et
   prompt: What must a program do after an EPOLLET event on a socket?
   choices:
-  - Read once
   - Read until EAGAIN with a non-blocking descriptor
-  - Close and reopen
   - Call epoll_create again
+  - Close and reopen
+  - Read once
   answer:
-  - 1
-  explain: 'A) wrong: remaining data would not trigger another event. B) correct. C) wrong. D) wrong.'
+  - 0
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong: remaining data would not trigger another event.'
 - id: readiness
   prompt: Which statements are correct? (select two)
   choices:
-  - epoll reports readiness and the program performs the read
   - io_uring completions carry the byte count of finished operations
   - epoll accepts buffers for the kernel to fill later
+  - epoll reports readiness and the program performs the read
   - io_uring needs one system call per operation
   answer:
+  - 2
   - 0
-  - 1
-  explain: 'A) correct. B) correct. C) wrong: that describes io_uring. D) wrong: batching and SQPOLL reduce calls.'
+  explain: 'A) correct. B) wrong: that describes io_uring. C) correct. D) wrong: batching and SQPOLL reduce calls.'
 - id: files
   prompt: Why does epoll not help with reads from regular files?
   choices:
-  - Files are always reported ready, so waiting tells you nothing
   - epoll rejects file descriptors on ext4 only
   - Files cannot be read
   - It is too slow
+  - Files are always reported ready, so waiting tells you nothing
   answer:
-  - 0
-  explain: 'A) correct. B) wrong: the main problem is the always-ready report (adding a regular file returns EPERM, which is a symptom of the same fact). C) wrong. D) wrong.'
+  - 3
+  explain: 'A) wrong: the main problem is the always-ready report (adding a regular file returns EPERM, which is a symptom of the same fact). B) wrong. C) wrong. D) correct.'
 - id: iouring-risk
   prompt: Why have some operators restricted io_uring?
   choices:
+  - It lacks networking operations
   - It is slower than epoll
   - It enlarged the kernel attack surface with many vulnerabilities
-  - It lacks networking operations
   - It needs root
   answer:
-  - 1
-  explain: 'A) wrong. B) correct. C) wrong: it has many. D) wrong.'
+  - 2
+  explain: 'A) wrong: it has many. B) wrong. C) correct. D) wrong.'
 - id: oneshot
   prompt: What does EPOLLONESHOT do?
   choices:
-  - Closes the descriptor after one event
-  - Disarms the descriptor after one event until re-armed with epoll_ctl
-  - Makes the mode edge-triggered
   - Limits the program to one thread
+  - Disarms the descriptor after one event until re-armed with epoll_ctl
+  - Closes the descriptor after one event
+  - Makes the mode edge-triggered
   answer:
   - 1
-  explain: 'A) wrong. B) correct: useful when several threads could handle the same descriptor. C) wrong: that is EPOLLET. D) wrong.'
+  explain: 'A) wrong. B) correct: useful when several threads could handle the same descriptor. C) wrong. D) wrong: that is EPOLLET.'

@@ -3,42 +3,42 @@ questions:
 - id: move-label
   prompt: A file moved with mv into the web root is denied to httpd_t. What is the usual cause?
   choices:
-  - mv changed the file mode
+  - mv keeps the old SELinux type, for example user_home_t
   - The file is too large
   - httpd_t cannot read files
-  - mv keeps the old SELinux type, for example user_home_t
+  - mv changed the file mode
   answer:
-  - 3
+  - 0
   explain: Moving preserves the label, whereas copying creates a file that inherits the directory type. Mode and size are unrelated, and httpd_t
     can read web content types.
 - id: persistent-label
   prompt: Which pair makes a label change survive a relabel?
   choices:
-  - semanage fcontext -a ... then restorecon
   - setenforce 0
   - chcon then reboot
   - restorecon alone
+  - semanage fcontext -a ... then restorecon
   answer:
-  - 0
+  - 3
   explain: semanage records the rule in policy and restorecon applies it. chcon is lost at the next relabel, setenforce changes the mode, and
     restorecon alone would restore the old rule.
 - id: boolean
   prompt: audit2why says a denial was caused by a boolean. What do you run?
   choices:
-  - audit2allow -M local
   - setsebool -P name on
-  - setenforce 0
   - semodule -r
+  - audit2allow -M local
+  - setenforce 0
   answer:
-  - 1
+  - 0
   explain: A boolean exists for exactly this case and -P keeps it across reboots. A local module is the last resort, permissive mode weakens everything,
     and semodule -r removes modules.
 - id: port-type
   prompt: 'nginx cannot bind tcp 8081 under httpd_t. The smallest fix is:'
   choices:
-  - Disable SELinux
   - chmod 777 on the binary
   - Run nginx as root
+  - Disable SELinux
   - semanage port -a -t http_port_t -p tcp 8081
   answer:
   - 3
@@ -47,21 +47,21 @@ questions:
 - id: disabled
   prompt: Why is switching from disabled back to enforcing more than a one-line change?
   choices:
-  - Files created while disabled have no labels, so a full relabel is needed
+  - The policy must be reinstalled
   - The kernel must be recompiled
   - audit must be removed
-  - The policy must be reinstalled
+  - Files created while disabled have no labels, so a full relabel is needed
   answer:
-  - 0
+  - 3
   explain: Unlabelled files would be denied or mislabelled, so touch /.autorelabel and reboot. A recompile and reinstall are not needed.
 - id: permissive-domain
   prompt: What is better than setenforce 0 when debugging one daemon?
   choices:
-  - Delete the policy
-  - chcon -R on /
   - semanage permissive -a httpd_t
   - Unmount /var
+  - chcon -R on /
+  - Delete the policy
   answer:
-  - 2
+  - 0
   explain: A permissive domain logs without denying for just that daemon and leaves the rest enforcing. The other options destroy protection or
     do damage.

@@ -3,22 +3,22 @@ questions:
 - id: ns-isolate
   prompt: Which is NOT isolated by a network namespace?
   choices:
-  - Firewall rules
   - Port numbers
   - The process list
   - Routing tables
+  - Firewall rules
   answer:
-  - 2
+  - 1
   explain: Network namespaces isolate network resources; the PID namespace isolates processes.
 - id: veth-role
   prompt: What is a veth pair?
   choices:
-  - A tunnel with encryption
-  - A VLAN trunk
-  - A virtual cable with two ends that can sit in different namespaces
   - A bridge with two ports
+  - A VLAN trunk
+  - A tunnel with encryption
+  - A virtual cable with two ends that can sit in different namespaces
   answer:
-  - 2
+  - 3
   explain: Packets sent into one end come out of the other.
 - id: rule-order
   prompt: In which order does the kernel evaluate ip rules?
@@ -33,39 +33,39 @@ questions:
 - id: route-get
   prompt: Which command shows the route a packet from a given source would use?
   choices:
-  - ip addr show SRC
   - ip route get DEST from SRC
-  - ip route show SRC
   - ip rule get SRC
+  - ip route show SRC
+  - ip addr show SRC
   answer:
-  - 1
+  - 0
   explain: ip route get asks the kernel and honours policy rules.
 - id: vrf-scope
   prompt: What does a VRF NOT separate?
   choices:
-  - Overlapping prefixes
-  - Processes and sockets
   - Routing tables
+  - Processes and sockets
   - Interface routing
+  - Overlapping prefixes
   answer:
   - 1
   explain: VRF separates routing only; sockets and firewall remain shared, so daemons must bind to it.
 - id: lo-down
   prompt: What must you do for loopback in a freshly created namespace?
   choices:
-  - Delete it
-  - Move it to the host
   - Bring it up
   - Nothing, it is up
+  - Move it to the host
+  - Delete it
   answer:
-  - 2
+  - 0
   explain: A new namespace starts with lo down.
 - id: rp-filter
   prompt: Which setting commonly breaks replies on the second link of a multihomed host?
   choices:
+  - Jumbo frames
   - IPv6 privacy
   - TCP timestamps
-  - Jumbo frames
   - Strict reverse-path filtering
   answer:
   - 3

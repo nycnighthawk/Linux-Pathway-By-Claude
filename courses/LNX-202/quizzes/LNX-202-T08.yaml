@@ -13,59 +13,59 @@ questions:
 - id: offload
   prompt: Why might a capture on the sender show 64 KiB frames?
   choices:
-  - MTU is 64 KiB
+  - The capture is wrong
   - TSO/GSO hand large segments to the NIC
   - The network is corrupt
-  - The capture is wrong
+  - MTU is 64 KiB
   answer:
   - 1
   explain: Capture elsewhere or disable offloads while testing.
 - id: ring
   prompt: Which options rotate capture files by size?
   choices:
-  - -s0
-  - -n
   - -C and -W
+  - -s0
   - -G only
+  - -n
   answer:
-  - 2
-  explain: -G rotates by time.
+  - 0
+  explain: 'tcpdump -C SIZE starts a new file when the current one reaches SIZE (in millions of bytes), and -W N keeps only N files, overwriting the oldest. -G rotates by time instead.'
 - id: conv
   prompt: Which tshark option prints a TCP conversation table?
   choices:
   - -q -z conv,tcp
-  - -Y conv
   - -T conv
+  - -Y conv
   - -e tcp.conv
   answer:
   - 0
-  explain: -z selects statistics.
+  explain: '-z conv,tcp asks tshark for a conversation statistics table, and -q suppresses the per-packet lines so only the summary prints at the end.'
 - id: tlskeys
   prompt: How do you decrypt TLS in a capture?
   choices:
+  - Capture on loopback
+  - Impossible
   - Use the client's key log file
   - Use the server's private key always
-  - Impossible
-  - Capture on loopback
   answer:
-  - 0
-  explain: SSLKEYLOGFILE and tls.keylog_file.
+  - 2
+  explain: 'Modern TLS uses forward secrecy, so the server key cannot decrypt a capture. Point the client''s SSLKEYLOGFILE at a file, then give that file to Wireshark or tshark through the tls.keylog_file preference.'
 - id: drops
   prompt: Where do you learn whether tcpdump lost packets?
   choices:
-  - dmesg only
-  - The file size
-  - The 'dropped by kernel' report at exit
   - The pcap header
+  - The 'dropped by kernel' report at exit
+  - The file size
+  - dmesg only
   answer:
-  - 2
+  - 1
   explain: Raise the buffer or narrow the filter.
 - id: vantage
   prompt: Why capture on a mirror port or tap?
   choices:
-  - It decrypts traffic
-  - It is faster
   - It adds offloads
+  - It is faster
+  - It decrypts traffic
   - It gives an independent view of the wire
   answer:
   - 3

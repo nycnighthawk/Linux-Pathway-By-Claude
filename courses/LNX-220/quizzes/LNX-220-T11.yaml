@@ -3,9 +3,9 @@ questions:
 - id: record
   prompt: Which command samples a program and records call graphs?
   choices:
-  - perf stat ./prog
   - perf list
   - perf top --version
+  - perf stat ./prog
   - perf record -g ./prog
   answer:
   - 3
@@ -15,9 +15,9 @@ questions:
   prompt: Why do flame graphs of release binaries often look flat?
   choices:
   - The binary omits frame pointers, so the sampler cannot walk the stack
+  - Release builds use no functions
   - perf cannot read ELF files
   - The graph needs -O0
-  - Release builds use no functions
   answer:
   - 0
   explain: Without frame pointers or other unwind data the stacks are truncated. Using --call-graph dwarf or frame pointers
@@ -25,10 +25,10 @@ questions:
 - id: width
   prompt: In a flame graph, what does the width of a box show?
   choices:
-  - Elapsed time in order
-  - The share of samples that include that frame
   - The memory used
+  - The share of samples that include that frame
   - The number of calls
+  - Elapsed time in order
   answer:
   - 1
   explain: Boxes are widest where more samples contain the frame. The x axis is not a timeline, and width says nothing about
@@ -37,21 +37,21 @@ questions:
   prompt: perf stat reports instructions per cycle of 0.3. What does that suggest?
   choices:
   - The program is perfectly efficient
+  - Frame pointers are missing
   - The program is running in a container
   - The CPU is often stalled, for example waiting on memory
-  - Frame pointers are missing
   answer:
-  - 2
+  - 3
   explain: A low IPC means few instructions retire per cycle, typically from cache misses or dependencies. It is not efficiency,
     and neither containers nor frame pointers produce it.
 - id: noperf
   prompt: Which tool gives repeatable instruction counts where perf_event_open is blocked?
   choices:
-  - perf top
+  - valgrind --tool=callgrind
   - strace -c
   - ldd
-  - valgrind --tool=callgrind
+  - perf top
   answer:
-  - 3
+  - 0
   explain: callgrind simulates execution and needs no kernel privileges. perf top needs the blocked interface, strace -c counts
     syscalls only, and ldd lists libraries.

@@ -3,12 +3,12 @@ questions:
 - id: xfs-shrink
   prompt: Which file system cannot be shrunk?
   choices:
-  - FAT
-  - ext4
   - XFS
   - Btrfs
+  - FAT
+  - ext4
   answer:
-  - 2
+  - 0
   explain: XFS can be grown online but never shrunk.
 - id: fstab-fields
   prompt: What are the six fstab fields in order?
@@ -23,50 +23,50 @@ questions:
 - id: uuid
   prompt: Why prefer UUID= over /dev/sdX in fstab?
   choices:
-  - It is faster
-  - sdX is not allowed
   - Names can change between boots
+  - It is faster
   - UUID is shorter
+  - sdX is not allowed
   answer:
-  - 2
+  - 0
   explain: Device names depend on probe order; UUIDs follow the file system.
 - id: nofail
   prompt: What does the nofail option do?
   choices:
-  - Boot continues if the device is missing
   - Skips fsck
-  - Mounts read-only
+  - Boot continues if the device is missing
   - Disables journaling
+  - Mounts read-only
   answer:
-  - 0
+  - 1
   explain: Without nofail a missing disk can drop boot to emergency mode.
 - id: mount-unit
   prompt: How is a mount unit for /srv/data named?
   choices:
+  - srv_data.mount
+  - srv-data.mount
   - /srv/data.mount
   - data.mount
-  - srv-data.mount
-  - srv_data.mount
   answer:
-  - 2
+  - 1
   explain: Slashes become dashes and the leading slash is dropped.
 - id: grow
   prompt: Which command grows a mounted XFS file system?
   choices:
   - resize2fs
   - xfs_repair
-  - tune2fs -O
   - xfs_growfs /mountpoint
+  - tune2fs -O
   answer:
-  - 3
+  - 2
   explain: xfs_growfs takes the mount point and grows to the device size.
 - id: btrfs-raid
   prompt: Which statement about Btrfs RAID 5/6 is the safest advice?
   choices:
-  - It needs mdadm
   - Use it for important data
-  - Avoid it for critical data; known write-hole issues remain
+  - It needs mdadm
   - It is faster than RAID 1
+  - Avoid it for critical data; known write-hole issues remain
   answer:
-  - 2
+  - 3
   explain: The Btrfs documentation still warns about RAID 5/6 reliability.

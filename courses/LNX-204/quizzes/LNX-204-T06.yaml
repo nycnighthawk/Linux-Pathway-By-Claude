@@ -3,30 +3,30 @@ questions:
 - id: policy
   prompt: Which base-chain setting makes an input chain default-deny?
   choices:
-  - hook forward
-  - policy accept with a final drop rule
-  - policy drop
   - priority 100
+  - policy accept with a final drop rule
+  - hook forward
+  - policy drop
   answer:
-  - 2
+  - 3
   explain: A drop policy discards what no rule accepts, even if a rule is inserted after a final drop. policy accept with a last rule can be defeated
     by later rules.
 - id: family
   prompt: Why use the inet family for a host firewall?
   choices:
-  - It enables NAT
-  - It requires no kernel support
-  - One ruleset covers IPv4 and IPv6, so IPv6 is not left open
   - It is faster than ip
+  - One ruleset covers IPv4 and IPv6, so IPv6 is not left open
+  - It requires no kernel support
+  - It enables NAT
   answer:
-  - 2
+  - 1
   explain: A table in ip leaves IPv6 unfiltered. inet is not about speed or NAT.
 - id: icmpv6
   prompt: Why not drop all ICMPv6?
   choices:
-  - nft cannot match it
   - It is encrypted
   - It is only for IPv4
+  - nft cannot match it
   - Neighbour discovery and packet-too-big are needed for IPv6 to work
   answer:
   - 3
@@ -34,10 +34,10 @@ questions:
 - id: order
   prompt: Where must a rate-limit rule for SSH sit relative to the accept for the same port?
   choices:
-  - After it
+  - In another table only
   - Before it, otherwise the accept short-circuits the limiter
   - It does not matter
-  - In another table only
+  - After it
   answer:
   - 1
   explain: Rules are evaluated in order and accept ends evaluation, so a limiter after the accept never runs.
@@ -54,10 +54,10 @@ questions:
 - id: containers
   prompt: Why can published container ports bypass your input chain?
   choices:
-  - They are encrypted
-  - Published ports are forwarded, so they traverse the forward hook instead of input
   - Docker uses UDP only
   - Containers disable nftables
+  - They are encrypted
+  - Published ports are forwarded, so they traverse the forward hook instead of input
   answer:
-  - 1
+  - 3
   explain: Traffic to a container is routed through the host, so restrict it in forward or with the engine's settings.

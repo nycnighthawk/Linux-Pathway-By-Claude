@@ -2,24 +2,24 @@ title: 'Quiz: Migrating from VMware'
 questions:
 - id: what-changes
   prompt: What does virt-v2v change in a Linux guest?
-  choices: [It rewrites application data, It makes the guest bootable on KVM by adding virtio drivers and fixing device references, It changes the guest IP addresses, It encrypts the disk]
+  choices: [It changes the guest IP addresses, It makes the guest bootable on KVM by adding virtio drivers and fixing device references, It rewrites application data, It encrypts the disk]
   answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong: addressing is left alone. D) wrong.'
+  explain: 'A) wrong: addressing is left alone. B) correct. C) wrong. D) wrong.'
 - id: fastest
   prompt: Which VMware input path is usually fastest?
-  choices: [vCenter metadata copy, VDDK through nbdkit, OVA over email, SSH on a snapshotted guest]
-  answer: [1]
-  explain: 'A) wrong: slowest. B) correct: it needs the proprietary library. C) wrong. D) wrong: SSH fails with snapshots.'
+  choices: [VDDK through nbdkit, OVA over email, vCenter metadata copy, SSH on a snapshotted guest]
+  answer: [0]
+  explain: 'A) correct: it needs the proprietary library. B) wrong. C) wrong: slowest. D) wrong: SSH fails with snapshots.'
 - id: windows
   prompt: Which are Windows conversion preparations? (select two)
-  choices: [Disable Fast Startup and hibernation, Have the BitLocker recovery key available, Convert while running, Use a dynamic disk for the system volume]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong: shut down cleanly. D) wrong: not supported.'
+  choices: [Have the BitLocker recovery key available, Use a dynamic disk for the system volume, Convert while running, Disable Fast Startup and hibernation]
+  answer: [3, 0]
+  explain: 'A) correct. B) wrong: not supported. C) wrong: shut down cleanly. D) correct.'
 - id: not-convert
   prompt: Which machine should get an individual design and not a tool conversion?
-  choices: [A stateless web server, A cluster node using a shared disk, A test machine, A file server]
+  choices: [A test machine, A cluster node using a shared disk, A stateless web server, A file server]
   answer: [1]
-  explain: 'A) wrong: rebuild it. B) correct: shared disks need design. C) wrong. D) wrong.'
+  explain: 'A) wrong. B) correct: shared disks need design. C) wrong: rebuild it. D) wrong.'
 - id: rollback
   prompt: What is a sound rollback practice?
   choices: [Delete the source at cutover, Keep the source powered off but intact until acceptance, Run both copies live, Skip testing]

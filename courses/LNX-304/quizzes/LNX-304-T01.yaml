@@ -4,35 +4,34 @@ questions:
   prompt: What does %config(noreplace) do when the package ships a changed default for a file the administrator edited?
   choices:
   - Overwrites the admin's file without warning
-  - Keeps the admin's file and writes the new default as a .rpmnew file
   - Deletes the file
+  - Keeps the admin's file and writes the new default as a .rpmnew file
   - Refuses the upgrade
   answer:
-  - 1
-  explain: 'A) wrong: that is the risk it avoids. B) correct: local edits survive and the new default is available beside it. C) wrong:
-    nothing is deleted. D) wrong: the upgrade proceeds.'
+  - 2
+  explain: 'A) wrong: that is the risk it avoids. B) wrong:
+    nothing is deleted. C) correct: local edits survive and the new default is available beside it. D) wrong: the upgrade proceeds.'
 - id: phases
   prompt: Which rpmbuild option builds the binary and source packages together?
   choices:
+  - -bc
   - -bp
   - -bb
   - -ba
-  - -bc
   answer:
-  - 2
-  explain: 'A) wrong: -bp stops after %prep. B) wrong: -bb builds the binary packages only. C) correct: -ba builds both. D) wrong: -bc stops
-    after %build.'
+  - 3
+  explain: 'A) wrong: -bc stops
+    after %build. B) wrong: -bp stops after %prep. C) wrong: -bb builds the binary packages only. D) correct: -ba builds both.'
 - id: mock
   prompt: Why build in mock instead of on a developer workstation?
   choices:
+  - Mock is required by RPM
   - Mock builds are faster
   - The chroot contains only the declared build dependencies, so hidden dependencies show up as failures
   - Mock signs packages automatically
-  - Mock is required by RPM
   answer:
-  - 1
-  explain: 'A) wrong: speed is not the aim. B) correct: a clean room exposes missing BuildRequires. C) wrong: signing is a separate step.
-    D) wrong: rpmbuild works without it.'
+  - 2
+  explain: 'A) wrong: rpmbuild works without it. B) wrong: speed is not the aim. C) correct: a clean room exposes missing BuildRequires. D) wrong: signing is a separate step.'
 - id: scriptlet-arg
   prompt: In a %postun scriptlet the first argument is 0. What happened?
   choices:
@@ -47,14 +46,13 @@ questions:
 - id: release
   prompt: A package is rebuilt with a fix but Version and Release are unchanged. What happens on clients?
   choices:
-  - They upgrade automatically
   - They do not see an update, because the package manager compares version-release
   - They downgrade
+  - They upgrade automatically
   - The repository rejects it
   answer:
-  - 1
-  explain: 'A) wrong: nothing differs for the solver. B) correct: the release must be bumped. C) wrong: a downgrade would need a lower number.
-    D) wrong: createrepo does not enforce this.'
+  - 0
+  explain: 'A) correct: the release must be bumped. B) wrong: a downgrade would need a lower number. C) wrong: nothing differs for the solver. D) wrong: createrepo does not enforce this.'
 - id: network
   prompt: A spec downloads dependencies during %build. Why is this a problem in a build system?
   choices:
@@ -69,11 +67,11 @@ questions:
 - id: rpm-v
   prompt: What does rpm -V package report?
   choices:
-  - Files whose digest, mode, owner or size differ from the package database
   - The package's changelog
   - The packages that depend on it
+  - Files whose digest, mode, owner or size differ from the package database
   - Its build log
   answer:
-  - 0
-  explain: 'A) correct: it verifies installed files against the recorded values. B) wrong: that is rpm -q --changelog. C) wrong: that
-    is rpm -q --whatrequires. D) wrong: build logs are not in the database.'
+  - 2
+  explain: 'A) wrong: that is rpm -q --changelog. B) wrong: that
+    is rpm -q --whatrequires. C) correct: it verifies installed files against the recorded values. D) wrong: build logs are not in the database.'

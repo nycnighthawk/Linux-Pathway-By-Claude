@@ -3,60 +3,60 @@ questions:
 - id: roles
   prompt: Which statement divides the work between Corosync and Pacemaker correctly?
   choices:
-  - Corosync provides membership, messaging and quorum; Pacemaker decides where resources run and manages them
-  - Pacemaker provides membership; Corosync starts services
-  - Both only monitor networks
-  - Corosync is the fence device
+  - Corosync handles membership, messaging and quorum; Pacemaker decides where resources run
+  - Pacemaker handles membership and quorum; Corosync starts and stops the resources
+  - Corosync decides where resources run; Pacemaker only carries the heartbeat traffic
+  - Both run the same logic on every node and vote on each resource action
   answer:
   - 0
-  explain: 'A) correct: two layers with separate jobs. B) wrong: reversed. C) wrong: they manage far more. D) wrong: fencing is a separate device or agent.'
+  explain: 'A) correct: the two layers have separate jobs. B) wrong: the roles are reversed. C) wrong: placement is Pacemaker''s job. D) wrong: they are distinct layers, not duplicates.'
 - id: fencing
   prompt: Why is fencing needed before another node takes over shared data?
   choices:
-  - An unresponsive node may still be writing, so it must be certainly offline first
-  - It makes failover faster
-  - It encrypts the disk
-  - It is only a licensing rule
+  - It makes failover faster because the survivor skips the health checks
+  - A silent node may still be writing, so it must be certainly offline first
+  - It releases the cluster licence so the survivor can start resources
+  - It flushes the failed node's page cache to the shared disk first
   answer:
-  - 0
-  explain: 'A) correct: silence is not death. B) wrong: it adds time. C) wrong: unrelated. D) wrong: it is a safety need.'
+  - 1
+  explain: 'A) wrong: fencing adds time; it is a safety step. B) correct: silence is not proof that a node has stopped. C) wrong: fencing has nothing to do with licences. D) wrong: a fenced node is cut off, not asked to flush.'
 - id: nofence
   prompt: A cluster has no fence device configured and fencing is enabled. What happens by default?
   choices:
-  - The cluster refuses to start resources
-  - Resources start normally
-  - The nodes reboot every hour
-  - Quorum is ignored
+  - Resources start normally and fencing is skipped for that node
+  - Resources start, but only on the node that holds quorum
+  - The cluster refuses to start resources until fencing works
+  - The cluster disables quorum checks and starts everything
   answer:
-  - 0
-  explain: 'A) correct: safety first; you must fix fencing or knowingly disable it. B) wrong: they will not start. C) wrong: no such behaviour. D) wrong: quorum still applies.'
+  - 2
+  explain: 'A) wrong: with fencing enabled and no device, they do not start. B) wrong: no node may run them without a working device. C) correct: Pacemaker puts safety first; fix fencing or knowingly disable it. D) wrong: quorum still applies.'
 - id: score
   prompt: What does a location constraint with a score of 50 express?
   choices:
+  - A hard requirement that the resource runs only there
+  - A ban that keeps the resource off that node
+  - A limit of fifty restarts before the node is avoided
   - A preference for that node, not a requirement
-  - A hard requirement
-  - A ban on the node
-  - A timeout of 50 seconds
   answer:
-  - 0
-  explain: 'A) correct: finite scores are preferences. B) wrong: INFINITY is the requirement. C) wrong: a ban uses negative infinity. D) wrong: scores are not times.'
+  - 3
+  explain: 'A) wrong: only INFINITY makes it mandatory. B) wrong: bans use negative scores such as -INFINITY. C) wrong: that is migration-threshold, not a location score. D) correct: finite positive scores express preference.'
 - id: ipmifence
   prompt: Why can an onboard IPMI controller be a poor fence device?
   choices:
-  - If it shares power or network with the host, one fault disables both and the cluster cannot recover
-  - IPMI cannot restart machines
-  - IPMI is always encrypted
-  - It requires Windows
+  - If it shares power or network with the host, one fault disables both
+  - IPMI can only reboot a machine, never power it off
+  - IPMI commands are refused while the operating system is running
+  - Pacemaker has no fence agent that speaks the IPMI protocol
   answer:
   - 0
-  explain: 'A) correct: a fence device must survive the failure it is meant to handle. B) wrong: it can. C) wrong: irrelevant. D) wrong: irrelevant.'
+  explain: 'A) correct: the device must not fail together with its node. B) wrong: IPMI can power off, on and cycle. C) wrong: the BMC works independently of the OS. D) wrong: fence_ipmilan exists for exactly this.'
 - id: moveclear
   prompt: Why run pcs resource clear after pcs resource move?
   choices:
-  - The move leaves a location constraint that keeps pinning the resource until it is removed
-  - Clear restarts the node
-  - Move deletes the resource
-  - Clear changes the quorum
+  - The move puts the resource in maintenance mode until it is cleared
+  - The move leaves a location constraint that keeps pinning the resource
+  - Clear restarts the resource so its new location is saved
+  - The move resets the failure count, and clear restores it
   answer:
-  - 0
-  explain: 'A) correct: otherwise the resource cannot move back or elsewhere later. B) wrong: no reboot. C) wrong: it only moves it. D) wrong: unrelated.'
+  - 1
+  explain: 'A) wrong: it adds a constraint, not maintenance mode. B) correct: pcs resource move works by adding a constraint. C) wrong: clear removes the constraint and restarts nothing. D) wrong: failure counts are handled by pcs resource cleanup.'

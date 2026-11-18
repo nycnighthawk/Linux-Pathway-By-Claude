@@ -14,12 +14,12 @@ questions:
 - id: extra-vars
   prompt: Which source overrides every other variable source?
   choices:
-  - Extra vars given with -e
   - Inventory host_vars
-  - Role vars
   - set_fact
+  - Extra vars given with -e
+  - Role vars
   answer:
-  - 0
+  - 2
   explain: Extra vars are the last thing a human typed and sit at the top of the ranking. set_fact and role vars are high
     but below it, and host_vars are well below.
 - id: role-defaults
@@ -48,19 +48,19 @@ questions:
   prompt: Which variable changes the merge order of groups at the same depth, and where must it be set?
   choices:
   - ansible_group_priority, in a group_vars file
-  - group_weight, in ansible.cfg
   - ansible_order, in host_vars
   - ansible_group_priority, in the inventory source, not in a group_vars file
+  - group_weight, in ansible.cfg
   answer:
-  - 3
+  - 2
   explain: ansible_group_priority is read from the inventory source. In a group_vars file it is ignored because the file is
     read after the merge order is fixed. The other names do not exist.
 - id: inspect
   prompt: Which command prints the merged variables that one host will receive?
   choices:
   - ansible-config dump web01
-  - ansible-galaxy inventory web01
   - ansible-playbook --list-hosts web01
+  - ansible-galaxy inventory web01
   - ansible-inventory --host web01
   answer:
   - 3
@@ -70,10 +70,10 @@ questions:
   prompt: 'A group sets app: {port: 80, tls: false} and a more specific group sets app: {tls: true}. With default settings,
     what does the host see?'
   choices:
-  - '{port: 80, tls: false}'
+  - An error about duplicate keys
   - '{port: 80, tls: true}'
   - '{tls: true}'
-  - An error about duplicate keys
+  - '{port: 80, tls: false}'
   answer:
   - 2
   explain: Dictionaries are replaced as a whole by default, so the port key is lost. Use the combine filter to merge explicitly.

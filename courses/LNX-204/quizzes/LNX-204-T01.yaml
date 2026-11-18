@@ -3,12 +3,12 @@ questions:
 - id: preauth-order
   prompt: Where must the faillock preauth line sit in the auth stack, and why?
   choices:
-  - After pam_unix, so failures are already known
+  - Before pam_unix, so a locked account is refused without testing the password
   - At the end of the account group
   - Anywhere, because required lines are order-independent
-  - Before pam_unix, so a locked account is refused without testing the password
+  - After pam_unix, so failures are already known
   answer:
-  - 3
+  - 0
   explain: Preauth refuses a locked account before the password is tested, so a correct guess after the threshold cannot succeed. After pam_unix
     it would still be tested; account is a different group; and order in a stack is significant.
 - id: both-files
@@ -27,8 +27,8 @@ questions:
   choices:
   - Digits are forbidden
   - At least one digit is required
-  - Each digit earns one credit toward length
   - One digit may be reused
+  - Each digit earns one credit toward length
   answer:
   - 1
   explain: A negative credit value turns the option into a requirement of that many characters of the class. A positive value is the credit toward
@@ -36,21 +36,21 @@ questions:
 - id: authselect
   prompt: Why use authselect rather than editing system-auth by hand?
   choices:
-  - authselect is faster at login time
   - The generated files are rewritten from a profile, so hand edits are refused or lost on update
-  - Hand edits are not allowed by the kernel
+  - authselect is faster at login time
   - It encrypts the stack files
+  - Hand edits are not allowed by the kernel
   answer:
-  - 1
+  - 0
   explain: authselect treats the stack as generated output of a profile and checks for drift. It does not change login speed, the kernel does
     not care who edits PAM files, and it does not encrypt anything.
 - id: lockout-risk
   prompt: What is the main denial-of-service risk of a strict lockout threshold?
   choices:
-  - SSH keys stop working
+  - The audit log grows without bound
   - Passwords expire sooner
   - An attacker who knows account names can lock out administrators on purpose
-  - The audit log grows without bound
+  - SSH keys stop working
   answer:
   - 2
   explain: Locking is an availability cost an attacker can trigger by failing logins deliberately. It does not expire passwords, it only adds
@@ -58,11 +58,11 @@ questions:
 - id: faillock-cmd
   prompt: Which command lists and clears the failure records of a user?
   choices:
-  - faillock --user alice (and --reset to clear)
   - pam_tally2 -u alice
   - passwd -l alice
+  - faillock --user alice (and --reset to clear)
   - chage -l alice
   answer:
-  - 0
+  - 2
   explain: The faillock tool reads the per-user records. passwd -l locks the password itself, pam_tally2 belongs to the removed older module,
     and chage shows ageing data.

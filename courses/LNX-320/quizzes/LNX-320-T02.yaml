@@ -2,31 +2,31 @@ title: 'Quiz: File I/O, locking, mmap'
 questions:
 - id: shortwrite
   prompt: write returns a count smaller than requested on a full disk. What should the program do?
-  choices: [Treat it as success, Continue from the offset and stop on the real error, Call write once more with the original arguments, Close the file]
+  choices: [Call write once more with the original arguments, Continue from the offset and stop on the real error, Treat it as success, Close the file]
   answer: [1]
-  explain: 'A) wrong: data is missing. B) correct. C) wrong: it would write the first bytes twice. D) wrong: the failure is not reported.'
+  explain: 'A) wrong: it would write the first bytes twice. B) correct. C) wrong: data is missing. D) wrong: the failure is not reported.'
 - id: replace
   prompt: Which order gives a durable atomic replace of a file?
-  choices: ['write temp, rename, fsync temp', 'write temp, fsync temp, rename, fsync directory', 'rename, write, fsync directory', 'write in place, fsync']
-  answer: [1]
-  explain: 'A) wrong: renaming before the data is flushed can expose an empty file. B) correct. C) wrong. D) wrong: a crash can leave a mixture.'
+  choices: ['write temp, fsync temp, rename, fsync directory', 'write in place, fsync', 'rename, write, fsync directory', 'write temp, rename, fsync temp']
+  answer: [0]
+  explain: 'A) correct. B) wrong: a crash can leave a mixture. C) wrong. D) wrong: renaming before the data is flushed can expose an empty file.'
 - id: posixlock
   prompt: A program holds a POSIX record lock. A library opens and closes the same file. What happens?
-  choices: [Nothing, The program's locks on that file are dropped, The lock moves to the library, The file is unlocked for threads only]
-  answer: [1]
-  explain: 'A) wrong. B) correct: POSIX locks belong to the process and any close drops them. C) wrong. D) wrong.'
+  choices: [The lock moves to the library, The file is unlocked for threads only, Nothing, The program's locks on that file are dropped]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: POSIX locks belong to the process and any close drops them.'
 - id: ofd
   prompt: Which statements about F_OFD_SETLK are correct? (select two)
-  choices: [It locks byte ranges, Its owner is the open file description, It is dropped when any descriptor of the file closes, It is mandatory]
-  answer: [0, 1]
+  choices: [Its owner is the open file description, It locks byte ranges, It is dropped when any descriptor of the file closes, It is mandatory]
+  answer: [1, 0]
   explain: 'A) correct. B) correct. C) wrong: that is POSIX locking. D) wrong: it is advisory.'
 - id: sigbus
   prompt: A viewer maps a log. A rotation job truncates it and the viewer dies with SIGBUS. Why?
-  choices: [The kernel ran out of memory, A page beyond the new end of file was touched, The mapping was read-only, The file was locked]
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong: a protection fault would be SIGSEGV. D) wrong.'
+  choices: [The mapping was read-only, The file was locked, The kernel ran out of memory, A page beyond the new end of file was touched]
+  answer: [3]
+  explain: 'A) wrong: a protection fault would be SIGSEGV. B) wrong. C) wrong. D) correct.'
 - id: odirect
   prompt: What does O_DIRECT guarantee?
-  choices: [Durability of each write, That the page cache is bypassed for the data, That locks are mandatory, Atomic appends]
-  answer: [1]
-  explain: 'A) wrong: you still need fsync or O_DSYNC. B) correct. C) wrong. D) wrong.'
+  choices: [Atomic appends, Durability of each write, That the page cache is bypassed for the data, That locks are mandatory]
+  answer: [2]
+  explain: 'A) wrong. B) wrong: you still need fsync or O_DSYNC. C) correct. D) wrong.'

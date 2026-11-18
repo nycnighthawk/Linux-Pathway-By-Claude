@@ -4,29 +4,29 @@ questions:
   prompt: Which command changes a parameter for the running kernel only?
   choices:
   - sysctl -w
-  - sysctl --system
-  - modprobe
   - tuned-adm
+  - modprobe
+  - sysctl --system
   answer:
   - 0
   explain: -w writes the value into /proc/sys; it is lost at reboot.
 - id: persist-dir
   prompt: Where do your own persistent sysctl settings go?
   choices:
-  - /etc/sysctl.d/
   - /usr/lib/sysctl.d/
   - /proc/sys
   - /boot
+  - /etc/sysctl.d/
   answer:
-  - 0
+  - 3
   explain: /etc/sysctl.d is for administrators; /usr/lib is for vendors.
 - id: blacklist
   prompt: What is the difference between blacklist and an install line with /bin/false?
   choices:
-  - None
-  - blacklist stops auto-loading only; install blocks loading by name too
   - install stops only auto-loading
+  - blacklist stops auto-loading only; install blocks loading by name too
   - blacklist needs a reboot
+  - None
   answer:
   - 1
   explain: A blacklisted module can still be loaded explicitly.
@@ -43,20 +43,20 @@ questions:
 - id: modinfo
   prompt: Which command shows a module's parameters?
   choices:
+  - depmod
   - modinfo
   - lsmod
-  - depmod
   - dmesg
   answer:
-  - 0
+  - 1
   explain: lsmod lists loaded modules; modinfo prints details.
 - id: mod-load
   prompt: Which directory lists modules to load at boot?
   choices:
+  - /lib/modules/
+  - /sys/module/
   - /etc/modules-load.d/
   - /etc/modprobe.d/
-  - /sys/module/
-  - /lib/modules/
   answer:
-  - 0
+  - 2
   explain: modprobe.d is for options and rules, not for the load list.

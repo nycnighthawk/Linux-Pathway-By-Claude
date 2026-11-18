@@ -3,32 +3,32 @@ questions:
 - id: plugins
   prompt: Which connection plugins manage Windows nodes?
   choices:
-  - only ssh
-  - only local
   - psrp, winrm and ssh
+  - only local
+  - only ssh
   - network_cli
   answer:
-  - 2
+  - 0
   explain: All three work; ssh is officially supported from 2.18. network_cli is for network devices.
 - id: python
   prompt: Why can the built-in command and shell modules not run on Windows?
   choices:
   - They are deprecated
   - They need a Python and POSIX shell on the target
-  - Licence
   - Windows lacks networking
+  - Licence
   answer:
   - 1
   explain: Windows modules are PowerShell; use win_command, win_shell and the win_ modules.
 - id: idem
   prompt: A task using win_shell reports changed every run. Best remedy?
   choices:
-  - Disable check mode
   - Ignore it
   - Use a proper module or set changed_when
+  - Disable check mode
   - Add become
   answer:
-  - 2
+  - 1
   explain: win_shell cannot know whether it changed anything, so idempotence must be expressed or avoided.
 - id: hop
   prompt: What is the double hop?
@@ -44,22 +44,22 @@ questions:
 - id: kerb
   prompt: A play using an IP in the inventory fails with Server not found in Kerberos database. Fix?
   choices:
-  - Use the FQDN that has a service principal
   - Use Basic
-  - Reboot
   - Disable Kerberos
+  - Reboot
+  - Use the FQDN that has a service principal
   answer:
-  - 0
+  - 3
   explain: Kerberos needs a name. Basic over HTTP is the insecure shortcut.
 - id: cert
   prompt: Why not set certificate validation to ignore?
   choices:
-  - It removes protection against interception; fix the trust store instead
   - It slows tasks
-  - It breaks idempotence
   - It disables Kerberos
+  - It removes protection against interception; fix the trust store instead
+  - It breaks idempotence
   answer:
-  - 0
+  - 2
   explain: Ignoring validation hides a name or CA problem and permits man-in-the-middle attacks.
 - id: mixed
   prompt: Group policy and Ansible both set one registry key. What happens?

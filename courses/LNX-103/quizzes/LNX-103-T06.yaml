@@ -3,52 +3,52 @@ questions:
 - id: setfacl
   prompt: Which command gives user alice read access through an ACL?
   choices:
-  - getfacl -m
   - setfacl -m u:alice:r file
+  - getfacl -m
   - chmod u+r
   - chown alice
   answer:
-  - 1
+  - 0
   explain: setfacl -m modifies the ACL, u:name:perms names the entry.
 - id: default
   prompt: What does a default ACL on a directory do?
   choices:
-  - Applies to the directory only
-  - Removes access
-  - Sets quotas
   - New files inherit it
+  - Sets quotas
+  - Removes access
+  - Applies to the directory only
   answer:
-  - 3
+  - 0
   explain: Default entries (d:) are copied into new children.
 - id: mask
   prompt: What does the ACL mask limit?
   choices:
-  - Effective permissions of named users, groups and the group class
   - Owner permissions
-  - File size
   - Quota
+  - Effective permissions of named users, groups and the group class
+  - File size
   answer:
-  - 0
+  - 2
   explain: The mask caps every entry except owner and other.
 - id: xattr
   prompt: Which prefix holds user-defined extended attributes?
   choices:
-  - trusted.
   - security.
-  - system.
   - user.
+  - system.
+  - trusted.
   answer:
-  - 3
+  - 1
   explain: setfattr -n user.name -v value file.
 - id: quota-tools
   prompt: Which command shows ext4 user quota usage?
   choices:
-  - df -i
   - du -a
-  - lsattr
+  - df -i
   - quota -u user or repquota
+  - lsattr
   answer:
-  - 3
+  - 2
   explain: quota and repquota report blocks and inodes against limits.
 - id: soft-hard
   prompt: What is the difference between soft and hard quota limits?
@@ -64,9 +64,9 @@ questions:
   prompt: Which command shows ACLs?
   choices:
   - getfacl
-  - ls -i
-  - stat -f
   - lsattr
+  - stat -f
+  - ls -i
   answer:
   - 0
   explain: ls marks files that have ACLs with a plus sign.

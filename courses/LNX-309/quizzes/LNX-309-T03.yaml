@@ -3,60 +3,60 @@ questions:
 - id: vrrp
   prompt: How does VRRP decide which node holds the virtual address?
   choices:
-  - The node with the highest priority among those advertising becomes master; backups take over when advertisements stop
-  - The node with the lowest uptime
-  - A coin toss at every packet
-  - The node with the most memory
+  - The highest-priority node advertising becomes master
+  - The node that started first keeps the address for good
+  - The node with the lowest IP address always becomes master
+  - Each node holds the address in turn on a fixed timer
   answer:
   - 0
-  explain: 'A) correct: priority election with timeout. B) wrong: not a rule. C) wrong: not random. D) wrong: not considered.'
+  explain: 'A) correct: backups take over when advertisements stop. B) wrong: priority decides, and failover moves it. C) wrong: address breaks ties only for equal priority. D) wrong: VRRP elects one master.'
 - id: nonlocal
   prompt: Why set net.ipv4.ip_nonlocal_bind=1 on the load balancers?
   choices:
-  - So HAProxy on the standby can start although it does not currently hold the virtual address
-  - To speed up TCP
-  - To enable IPv6
-  - To disable the firewall
+  - So the standby answers ARP for the virtual address too
+  - So HAProxy on the standby can bind the virtual address it does not hold
+  - So keepalived can send advertisements as unicast
+  - So the kernel accepts traffic for any address on the subnet
   answer:
-  - 0
-  explain: 'A) correct: binding an address the host lacks would otherwise fail. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+  - 1
+  explain: 'A) wrong: that would cause address conflicts. B) correct: without it the standby''s HAProxy fails to start. C) wrong: that is unicast_peer, a different setting. D) wrong: it only allows binding, not accepting.'
 - id: fall
   prompt: In "check inter 2s fall 3 rise 2", what happens after three consecutive failed checks?
   choices:
+  - HAProxy restarts itself to clear the failing connections
+  - The virtual address moves to the other load balancer
   - The server is marked down and receives no new requests
-  - HAProxy restarts
-  - The address moves
-  - Nothing, the setting is only advice
+  - The server is drained, finishing only requests already queued
   answer:
-  - 0
-  explain: 'A) correct: fall counts failures to mark down, rise counts successes to mark up. B) wrong: no restart. C) wrong: that is keepalived. D) wrong: it is enforced.'
+  - 2
+  explain: 'A) wrong: HAProxy does not restart on a failed check. B) wrong: that is keepalived''s job. C) correct: fall 3 means three failed checks mark it down. D) wrong: drain is a separate admin state.'
 - id: splitbrain
   prompt: Both load balancers show the virtual address. What is the most likely cause?
   choices:
-  - Advertisements are not reaching the peer (filtered multicast or firewall), so each assumes the other is dead
-  - HAProxy is too fast
-  - The back ends are healthy
-  - DNS is slow
+  - Both nodes were given the same priority in keepalived
+  - HAProxy health checks failed on both nodes at once
+  - The virtual address was added to DNS twice
+  - VRRP adverts are lost, so each node thinks the other died
   answer:
-  - 0
-  explain: 'A) correct: VRRP has no quorum, so lost advertisements produce two masters. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: equal priority still elects one master. B) wrong: health checks do not assign addresses. C) wrong: DNS does not decide which node holds the address. D) correct: filtered multicast or a firewall is the usual cause.'
 - id: cloud
   prompt: Why is keepalived often unsuitable in a public cloud?
   choices:
-  - The virtual network usually blocks VRRP multicast and does not honour gratuitous ARP, so addresses are moved with the provider API or a managed balancer
-  - Clouds forbid HAProxy
-  - Clouds have no IP addresses
-  - Keepalived cannot run on Linux
+  - The virtual network blocks VRRP multicast and ignores gratuitous ARP
+  - Cloud providers do not allow HAProxy to listen on public ports
+  - Cloud instances cannot run more than one network interface
+  - Cloud images ship without the kernel module keepalived needs
   answer:
   - 0
-  explain: 'A) correct: use the provider mechanisms. B) wrong: allowed. C) wrong: they have. D) wrong: it is Linux software.'
+  explain: 'A) correct: use the provider API or a managed balancer instead. B) wrong: HAProxy runs in clouds routinely. C) wrong: most providers allow several. D) wrong: the limit is the network, not the kernel.'
 - id: pick
   prompt: A stateful database needs shared storage and strict start order. Which front-end design fits best?
   choices:
+  - keepalived with a health script
   - A Pacemaker cluster with fencing
-  - keepalived alone
-  - DNS round robin
-  - No failover
+  - DNS round robin across both nodes
+  - Two independent nodes behind HAProxy
   answer:
-  - 0
-  explain: 'A) correct: it provides quorum, fencing and ordering. B) wrong: two masters could corrupt state. C) wrong: no health awareness. D) wrong: not an answer.'
+  - 1
+  explain: 'A) wrong: it moves an address but cannot order storage and services. B) correct: it handles shared storage and ordered starts safely. C) wrong: it gives no failover and no ordering. D) wrong: a stateful database cannot be split like that.'

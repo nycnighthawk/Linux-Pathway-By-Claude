@@ -2,14 +2,14 @@ title: 'Quiz: Helm chart authoring'
 questions:
 - id: versions
   prompt: Which field must change whenever the chart's templates or defaults change?
-  choices: [version in Chart.yaml, appVersion only, The release name, The namespace]
-  answer: [0]
-  explain: 'A) correct: released chart versions are immutable. B) wrong: informational. C) wrong. D) wrong.'
+  choices: [The release name, appVersion only, The namespace, version in Chart.yaml]
+  answer: [3]
+  explain: 'A) wrong. B) wrong: informational. C) wrong. D) correct: released chart versions are immutable.'
 - id: crd
   prompt: How does Helm treat files in the crds directory after the first install?
-  choices: [It does not upgrade or delete them, It upgrades them each time, It templates them, It deletes them on rollback]
-  answer: [0]
-  explain: 'A) correct: to avoid data loss, CRD upgrades are a separate step. B) wrong. C) wrong. D) wrong.'
+  choices: [It templates them, It deletes them on rollback, It does not upgrade or delete them, It upgrades them each time]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: to avoid data loss, CRD upgrades are a separate step. D) wrong.'
 - id: schema
   prompt: What does values.schema.json do?
   choices: [Validates merged values at install, upgrade, lint and template time, Encrypts values, Stores release history, Pins images]
@@ -17,7 +17,7 @@ questions:
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: selector
   prompt: Why must selector labels never change between releases?
-  choices: [The Deployment selector is immutable, Helm forbids labels, Services ignore labels, Labels are encrypted]
+  choices: [The Deployment selector is immutable, Labels are encrypted, Services ignore labels, Helm forbids labels]
   answer: [0]
   explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
 - id: tests

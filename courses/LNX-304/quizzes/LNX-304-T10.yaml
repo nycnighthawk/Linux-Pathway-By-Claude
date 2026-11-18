@@ -13,23 +13,23 @@ questions:
 - id: wave1
   prompt: What should wave 1 contain?
   choices:
-  - The easiest hosts
   - A few representative production hosts, one of each major class
   - The most critical hosts
+  - The easiest hosts
   - Only lab hosts
   answer:
-  - 1
-  explain: 'A) wrong: it teaches nothing. B) correct: it exposes the problems later waves would meet. C) wrong: too risky for a first step. D) wrong: that is wave 0.'
+  - 0
+  explain: 'A) correct: it exposes the problems later waves would meet. B) wrong: too risky for a first step. C) wrong: it teaches nothing. D) wrong: that is wave 0.'
 - id: growth
   prompt: Why stop doubling the wave size at some point?
   choices:
-  - Doubling is forbidden
   - The recovery capacity of people and systems, not only the risk, limits how much can fail at once
-  - Machines get slower
   - Gates are optional later
+  - Doubling is forbidden
+  - Machines get slower
   answer:
-  - 1
-  explain: 'A) wrong: no such rule. B) correct: on-call and recovery systems must cope with a failed wave. C) wrong: unrelated. D) wrong: gates apply throughout.'
+  - 0
+  explain: 'A) correct: on-call and recovery systems must cope with a failed wave. B) wrong: gates apply throughout. C) wrong: no such rule. D) wrong: unrelated.'
 - id: ponr
   prompt: What is a point of no return?
   choices:
@@ -53,10 +53,10 @@ questions:
 - id: inventory
   prompt: What is the first number to report about the inventory?
   choices:
-  - Total CPU cores
   - The count of hosts with no owner
-  - Disk usage
   - The number of racks
+  - Total CPU cores
+  - Disk usage
   answer:
-  - 1
-  explain: 'A) wrong: irrelevant. B) correct: unowned hosts cannot be scheduled or tested. C) wrong: irrelevant. D) wrong: irrelevant.'
+  - 0
+  explain: 'A) correct: unowned hosts cannot be scheduled or tested. B) wrong: irrelevant. C) wrong: irrelevant. D) wrong: irrelevant.'

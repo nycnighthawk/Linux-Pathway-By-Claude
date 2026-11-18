@@ -31,55 +31,55 @@ questions:
 - id: ldapsearch-flags
   prompt: You want ldapsearch to insist on StartTLS and stop if the upgrade fails. Which option?
   choices:
-  - -x
-  - -Z
-  - -ZZ
   - -LLL
+  - -x
+  - -ZZ
+  - -Z
   answer:
   - 2
-  explain: 'A (wrong): Selects simple authentication instead of SASL; it says nothing about TLS. B (wrong): A single
-    -Z attempts StartTLS but carries on in clear text if it fails. C (correct): Doubling the flag makes StartTLS
-    mandatory: the command aborts if the upgrade fails. D (wrong): Only reduces the LDIF decoration of the output.'
+  explain: 'A (wrong): Only reduces the LDIF decoration of the output. B (wrong): Selects simple authentication instead of SASL; it says nothing about TLS. C (correct): Doubling the flag makes StartTLS
+    mandatory: the command aborts if the upgrade fails. D (wrong): A single
+    -Z attempts StartTLS but carries on in clear text if it fails.'
 - id: tls-reqcert
   prompt: A client has TLS_REQCERT never in ldap.conf because a certificate once failed in testing. What is the
     practical effect?
   choices:
-  - Nothing changes; certificates are still verified against the CA file
-  - Any certificate is accepted, so an active attacker can impersonate the server and read binds
   - The client falls back to anonymous binds
+  - Any certificate is accepted, so an active attacker can impersonate the server and read binds
+  - Nothing changes; certificates are still verified against the CA file
   - Only expired certificates are accepted
   answer:
   - 1
-  explain: 'A (wrong): never disables verification of the server certificate. B (correct): The channel is encrypted
-    but the peer is not authenticated, which defeats the purpose of TLS for credentials. C (wrong): Binding mode
-    is not affected by this option. D (wrong): never skips the checks altogether, not just the expiry check.'
+  explain: 'A (wrong): Binding mode
+    is not affected by this option. B (correct): The channel is encrypted
+    but the peer is not authenticated, which defeats the purpose of TLS for credentials. C (wrong): never disables verification of the server certificate. D (wrong): never skips the checks altogether, not just the expiry check.'
 - id: group-schema
   prompt: A directory exported from Active Directory stores group members as member DNs, but Linux clients show
     only the primary group. Why?
   choices:
-  - The client expects RFC 2307 memberUid names, while the data uses member DNs (rfc2307bis style); set the group
-    schema or member attribute accordingly
-  - TLS is misconfigured
   - The index on uid is missing
   - ldapsearch needs -ZZ
+  - TLS is misconfigured
+  - The client expects RFC 2307 memberUid names, while the data uses member DNs (rfc2307bis style); set the group
+    schema or member attribute accordingly
   answer:
-  - 0
-  explain: 'A (correct): The two group models store membership differently and the client must be told which one
-    it is reading. B (wrong): A TLS fault would break every lookup, not just supplementary groups. C (wrong): A
-    missing index slows searches; it does not hide values. D (wrong): Transport options do not change the attribute
-    that holds membership.'
+  - 3
+  explain: 'A (wrong): A
+    missing index slows searches; it does not hide values. B (wrong): Transport options do not change the attribute
+    that holds membership. C (wrong): A TLS fault would break every lookup, not just supplementary groups. D (correct): The two group models store membership differently and the client must be told which one
+    it is reading.'
 - id: backup
   prompt: Which backup method works for OpenLDAP without needing the server to be reachable on the network?
   choices:
-  - Copying the mdb directory while slapd is writing
-  - slapcat to LDIF, restored later with slapadd
-  - ldapsearch with a root bind, once a year
   - Backing up /etc/ldap/ldap.conf
+  - Copying the mdb directory while slapd is writing
+  - ldapsearch with a root bind, once a year
+  - slapcat to LDIF, restored later with slapadd
   answer:
-  - 1
-  explain: 'A (wrong): A live copy of a database in use can be inconsistent. B (correct): These offline tools read
-    and write the database directly, which gives a portable text dump. C (wrong): It needs the network and a running
-    server, and it misses operational data. D (wrong): That is the client configuration, not the directory.'
+  - 3
+  explain: 'A (wrong): That is the client configuration, not the directory. B (wrong): A live copy of a database in use can be inconsistent. C (wrong): It needs the network and a running
+    server, and it misses operational data. D (correct): These offline tools read
+    and write the database directly, which gives a portable text dump.'
 - id: syncrepl
   prompt: In a multi-provider OpenLDAP pair, why do operators usually send writes to one node at a time?
   choices:

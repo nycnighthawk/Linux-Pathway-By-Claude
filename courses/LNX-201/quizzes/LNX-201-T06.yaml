@@ -13,20 +13,20 @@ questions:
 - id: nft-check
   prompt: What does nft -c -f file do?
   choices:
-  - Compares it with the live ruleset
-  - Converts iptables rules
-  - Checks the file without applying it
   - Loads it and flushes counters
+  - Compares it with the live ruleset
+  - Checks the file without applying it
+  - Converts iptables rules
   answer:
   - 2
   explain: -c is a dry run that parses and validates.
 - id: atomic
   prompt: What is true about loading a file with nft -f?
   choices:
-  - It requires a reboot
-  - 'It is atomic: all commands take effect or none'
-  - Each rule is applied separately
   - It restarts the network
+  - 'It is atomic: all commands take effect or none'
+  - It requires a reboot
+  - Each rule is applied separately
   answer:
   - 1
   explain: A failed file leaves the previous ruleset untouched.
@@ -43,28 +43,28 @@ questions:
 - id: timeout
   prompt: Which firewall-cmd flag reverts a runtime change after a delay?
   choices:
+  - --panic-on
   - --lockdown-on
   - --check-config
   - --timeout=<seconds>
-  - --panic-on
   answer:
-  - 2
+  - 3
   explain: A timeout is the safe way to test a risky rule remotely.
 - id: default-zone
   prompt: Which zone does firewall-cmd use when --zone is omitted?
   choices:
-  - public always
-  - trusted
-  - The default zone
   - The zone of your interface
+  - The default zone
+  - trusted
+  - public always
   answer:
-  - 2
+  - 1
   explain: Omitting --zone applies to the default zone, which may differ from your interface's zone.
 - id: inet-family
   prompt: Why use the inet family in nftables?
   choices:
-  - It is faster than ip
   - It is required for NAT
+  - It is faster than ip
   - It adds stateful tracking
   - One table covers IPv4 and IPv6
   answer:

@@ -4,19 +4,19 @@ questions:
   prompt: Where do your own TuneD profiles belong?
   choices:
   - /etc/tuned/name/tuned.conf
+  - /opt/tuned
   - /usr/lib/tuned/name/tuned.conf
   - /var/tuned
-  - /opt/tuned
   answer:
   - 0
-  explain: /usr/lib/tuned is for shipped profiles.
+  explain: 'Profiles shipped by packages live under /usr/lib/tuned and are replaced on update. Your own profiles go under /etc/tuned (newer TuneD releases also read /etc/tuned/profiles; to verify on your release), where they survive updates and can include a shipped profile.'
 - id: include
   prompt: What does include= do in a profile?
   choices:
   - Starts from another profile
+  - Disables a plugin
   - Imports a module
   - Loads a script
-  - Disables a plugin
   answer:
   - 0
   explain: Your sections override the included profile.
@@ -24,39 +24,39 @@ questions:
   prompt: Which command checks that the running system matches the profile?
   choices:
   - tuned-adm verify
-  - tuned-adm list
-  - tuned-adm off
   - tuned-adm active
+  - tuned-adm off
+  - tuned-adm list
   answer:
   - 0
   explain: verify compares live settings with the profile.
 - id: activate
   prompt: Which command activates a profile named lab-web?
   choices:
-  - tuned-adm profile lab-web
-  - tuned lab-web
-  - systemctl start lab-web
   - tuned-adm enable lab-web
+  - tuned-adm profile lab-web
+  - systemctl start lab-web
+  - tuned lab-web
   answer:
-  - 0
-  explain: profile followed by the name.
+  - 1
+  explain: 'tuned-adm profile NAME switches to that profile immediately and records it as the active one, so it is applied again after a reboot. tuned-adm active confirms the result.'
 - id: choice
   prompt: When is a plain sysctl file better than TuneD?
   choices:
-  - One or two parameters, or no extra daemon allowed
   - Always
-  - When tuning CPU governors
   - Never
+  - When tuning CPU governors
+  - One or two parameters, or no extra daemon allowed
   answer:
-  - 0
+  - 3
   explain: TuneD adds a daemon, which a small change or a hardened baseline may not want.
 - id: recommend
   prompt: Which command suggests a profile for this hardware?
   choices:
-  - tuned-adm recommend
+  - tuned-adm guess
   - tuned-adm best
   - tuned-adm auto
-  - tuned-adm guess
+  - tuned-adm recommend
   answer:
-  - 0
-  explain: recommend reads the system type.
+  - 3
+  explain: 'tuned-adm recommend inspects the system (virtual guest, laptop, server) and prints the profile TuneD would pick. It only suggests; you still apply it with tuned-adm profile.'

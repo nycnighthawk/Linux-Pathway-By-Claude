@@ -3,24 +3,24 @@ questions:
 - id: quorum
   prompt: What is the quorum for a cluster with 5 votes?
   choices:
-  - '2'
   - '3'
   - '4'
+  - '2'
   - '5'
   answer:
-  - 1
-  explain: 'A) wrong: not a majority. B) correct: a strict majority of 5. C) wrong: more than needed. D) wrong:
+  - 0
+  explain: 'A) correct: a strict majority of 5. B) wrong: more than needed. C) wrong: not a majority. D) wrong:
     tolerates no failure.'
 - id: two
   prompt: Why does a two-node cluster without a tie-break stop when either node fails?
   choices:
-  - It overheats
   - The survivor holds 1 of 2 votes, which is not a majority, and cannot tell a dead peer from a broken link
-  - Corosync needs three NICs
   - Ceph requires it
+  - Corosync needs three NICs
+  - It overheats
   answer:
-  - 1
-  explain: 'A) wrong: no. B) correct: add a QDevice or witness. C) wrong: no. D) wrong: no.'
+  - 0
+  explain: 'A) correct: add a QDevice or witness. B) wrong: no. C) wrong: no. D) wrong: no.'
 - id: fencing
   prompt: Why is pinging a host and restarting its guests elsewhere not high availability?
   choices:
@@ -46,14 +46,14 @@ questions:
 - id: network
   prompt: Why keep Corosync traffic off the storage network?
   choices:
+  - It saves cables
   - Corosync is encrypted
   - Heavy storage or migration traffic can delay heartbeats and cause evictions
   - Storage blocks UDP
-  - It saves cables
   answer:
-  - 1
-  explain: 'A) wrong: not the reason. B) correct: latency under about 5 ms is needed. C) wrong: no. D) wrong: not
-    the reason.'
+  - 2
+  explain: 'A) wrong: not
+    the reason. B) wrong: not the reason. C) correct: latency under about 5 ms is needed. D) wrong: no.'
 - id: maintenance
   prompt: In a three-node cluster, what is a safe way to patch hosts?
   choices:

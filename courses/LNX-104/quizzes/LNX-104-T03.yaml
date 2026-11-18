@@ -3,52 +3,52 @@ questions:
 - id: gpgcheck
   prompt: What does gpgcheck=1 verify in a dnf repository?
   choices:
+  - Disk usage
+  - TLS certificates
   - Package signatures
   - The repomd.xml signature
-  - TLS certificates
-  - Disk usage
   answer:
-  - 0
+  - 2
   explain: gpgcheck covers packages; repo_gpgcheck covers the signed metadata.
 - id: hash-chain
   prompt: How does APT make one signature cover every package?
   choices:
-  - Every deb carries its own certificate
-  - The mirror signs each download
-  - dpkg signs the status file
   - A signed Release file lists checksums of the Packages indexes, which list package checksums
+  - Every deb carries its own certificate
+  - dpkg signs the status file
+  - The mirror signs each download
   answer:
-  - 3
+  - 0
   explain: Release is signed; it carries the checksums of the indexes, which carry the checksums of the packages.
 - id: nokey
   prompt: What does NOKEY in rpm -K output mean?
   choices:
   - The package is corrupted
-  - The package is unsigned
-  - The key expired
   - The signature is well formed but the key is not imported
+  - The key expired
+  - The package is unsigned
   answer:
-  - 3
+  - 1
   explain: BAD would mean altered content; NOKEY means no matching key in the rpm database.
 - id: signed-by
   prompt: Why prefer signed-by on one source over apt-key add?
   choices:
-  - The key then applies to that source only
-  - It is faster
-  - It removes the need for HTTPS
   - It works offline only
+  - The key then applies to that source only
+  - It removes the need for HTTPS
+  - It is faster
   answer:
-  - 0
+  - 1
   explain: A global keyring lets any trusted key vouch for any repository.
 - id: trusted-yes
   prompt: When is [trusted=yes] acceptable?
   choices:
-  - Never needed on Debian
   - Only for a local repository you built yourself
   - For any vendor mirror
   - For security repositories
+  - Never needed on Debian
   answer:
-  - 1
+  - 0
   explain: It disables verification for that source, so reserve it for content you created.
 - id: fingerprint
   prompt: What should you do before accepting a vendor key?
@@ -63,8 +63,8 @@ questions:
 - id: list-keys
   prompt: Which command lists keys imported into the rpm database?
   choices:
-  - dnf repolist
   - gpg --list-secret-keys
+  - dnf repolist
   - rpm -qa 'gpg-pubkey*'
   - rpm -V gpg
   answer:

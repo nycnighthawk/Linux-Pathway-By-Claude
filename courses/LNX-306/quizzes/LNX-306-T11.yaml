@@ -5,48 +5,48 @@ questions:
   choices:
   - The BMC is also the tool used for remote repair, and a failed update may need physical recovery or a replacement board
   - It deletes the operating system
-  - It changes the licence
   - It only affects the fan colour
+  - It changes the licence
   answer:
   - 0
   explain: 'A) correct: you lose remote control of the machine. B) wrong: the host disks are not touched. C) wrong: unrelated. D) wrong: unrelated.'
 - id: source
   prompt: Where should BMC firmware images come from?
   choices:
+  - A random mirror
   - The server vendor's official support site, verified by checksum or signature
   - Any forum post with a high score
-  - A random mirror
   - A colleague's laptop
   answer:
-  - 0
-  explain: 'A) correct: authenticity matters. B) wrong: untrusted. C) wrong: unverified. D) wrong: unverifiable.'
+  - 1
+  explain: 'A) wrong: unverified. B) correct: authenticity matters. C) wrong: untrusted. D) wrong: unverifiable.'
 - id: pilot
   prompt: Why run a pilot and waves instead of updating the whole rack at once?
   choices:
-  - A defect then affects only a few machines and the campaign can stop
-  - It is cheaper in licences
   - Waves are required by IPMI
+  - It is cheaper in licences
   - It makes the firmware smaller
+  - A defect then affects only a few machines and the campaign can stop
   answer:
-  - 0
-  explain: 'A) correct: the blast radius is limited. B) wrong: unrelated. C) wrong: not a protocol rule. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: not a protocol rule. B) wrong: unrelated. C) wrong: unrelated. D) correct: the blast radius is limited.'
 - id: preserve
   prompt: Why check whether the update preserved the configuration?
   choices:
-  - Some updates reset the BMC to defaults, leaving a default account and network settings on the management network
-  - Configuration files are always kept
-  - Only the fans are reset
   - It does not matter
+  - Some updates reset the BMC to defaults, leaving a default account and network settings on the management network
+  - Only the fans are reset
+  - Configuration files are always kept
   answer:
-  - 0
-  explain: 'A) correct: verify network, accounts and security settings afterwards. B) wrong: not guaranteed. C) wrong: more is reset. D) wrong: it is a common security gap.'
+  - 1
+  explain: 'A) wrong: it is a common security gap. B) correct: verify network, accounts and security settings afterwards. C) wrong: more is reset. D) wrong: not guaranteed.'
 - id: secureboot
   prompt: What does UEFI Secure Boot add?
   choices:
   - The firmware runs only boot programs signed by trusted certificates, starting a chain of trust to the kernel
-  - It encrypts the BMC password
-  - It speeds up booting
   - It replaces the BMC
+  - It speeds up booting
+  - It encrypts the BMC password
   answer:
   - 0
   explain: 'A) correct: it blocks unsigned boot code, and mokutil --sb-state shows the state. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
@@ -54,8 +54,8 @@ questions:
   prompt: Which of these can an emulator NOT teach?
   choices:
   - How long a real update takes, how recovery works on a failed board and how a vendor's tool behaves
-  - How to call a Redfish endpoint
   - How to write a script that sets a boot override
+  - How to call a Redfish endpoint
   - How a REST client handles a 401
   answer:
   - 0

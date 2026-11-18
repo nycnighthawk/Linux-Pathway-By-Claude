@@ -1,6 +1,6 @@
 # Lab: triage a kernel release listing
 
-`setup` writes `releases.json` (a saved copy of the kernel.org release data from 16 November 2026), `maintainers.txt` (an excerpt in `MAINTAINERS` format) and `tags.txt` (the output of `git tag --contains` for a fix). No network is needed.
+`setup` writes `releases.json` (a saved copy of the kernel.org release data from 16 November 2026), `maintainers.txt` (an excerpt in `MAINTAINERS` format) and `tags.txt` (the output of `git tag --contains` for the stable backport of a fix). No network is needed.
 
 ## Your task
 

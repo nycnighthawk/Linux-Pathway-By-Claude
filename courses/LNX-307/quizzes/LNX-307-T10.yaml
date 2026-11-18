@@ -3,60 +3,60 @@ questions:
 - id: mitigate-first
   prompt: 'In the first minutes of an incident you should:'
   choices:
-  - Find the root cause before touching anything
-  - Mitigate to restore service, after saving key evidence
   - Wait for the owner
   - Reboot everything
+  - Find the root cause before touching anything
+  - Mitigate to restore service, after saving key evidence
   answer:
-  - 1
+  - 3
   explain: Restore service quickly (rollback, failover) but capture logs and state first; deep diagnosis can wait.
 - id: escalate
   prompt: When should you escalate?
   choices:
   - Never, it signals failure
+  - Only to the CEO
   - When you have no hypothesis after 15 to 30 minutes, impact grows or it is outside your knowledge
   - Only after the incident
-  - Only to the CEO
   answer:
-  - 1
+  - 2
   explain: Early escalation is expected and shortens outages.
 - id: blameless
   prompt: What does a blameless postmortem examine?
   choices:
-  - Who made the mistake
   - How the system and process allowed the error
-  - Only the timeline
   - Only the fix
+  - Only the timeline
+  - Who made the mistake
   answer:
-  - 1
+  - 0
   explain: The aim is learning; blame discourages reporting.
 - id: actions
   prompt: 'Postmortem action items should be:'
   choices:
-  - Vague intentions
   - Owned, dated and classed as prevent, detect or mitigate
-  - Optional
   - Only for managers
+  - Optional
+  - Vague intentions
   answer:
-  - 1
+  - 0
   explain: Unowned actions are never done; classing them shows which defence is improved.
 - id: page-quality
   prompt: If most pages are not actionable, what is wrong?
   choices:
   - The engineers
   - 'The alerting: fix or remove the alerts'
-  - The pager app
   - Nothing
+  - The pager app
   answer:
   - 1
   explain: Alert fatigue is a system problem; keep pages few and symptom-based.
 - id: comms
   prompt: How often should stakeholder updates go out during an incident?
   choices:
-  - Only at the end
-  - On a regular schedule, even when nothing new
   - Hourly with graphs only
+  - On a regular schedule, even when nothing new
   - When asked
+  - Only at the end
   answer:
   - 1
   explain: Regular plain updates stop interruptions and keep trust.

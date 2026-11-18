@@ -3,70 +3,70 @@ questions:
 - id: shared-power
   prompt: Why is an onboard management controller that shares the server's power feed risky as the only fence device?
   choices:
-  - A power failure takes out both the node and the device that should fence it, so the cluster cannot recover
-  - Controllers cannot cut power
-  - It only works on Tuesdays
-  - It needs a licence
+  - Management controllers cannot switch power off, only reset
+  - The controller's fence agent works only on the same subnet
+  - A power failure takes out both the node and the device that should fence it
+  - The controller needs a licence before it accepts fence commands
   answer:
-  - 0
-  explain: 'A) correct: independence rule 2. B) wrong: they can. C) wrong: nonsense. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: they can power off. B) wrong: that is a network design issue, not power. C) correct: the cluster cannot confirm the node is off. D) wrong: licensing is not the risk.'
 - id: ssh-device
   prompt: Why is an agent that logs into the target node and shuts it down unsuitable in production?
   choices:
-  - Fencing is needed exactly when the node is unresponsive, so a device that relies on the node working fails when it is needed
-  - SSH is too fast
-  - It cannot reboot
-  - It breaks quorum
+  - SSH sessions are too slow to fence within the token timeout
+  - SSH-based agents cannot reboot a node, only shut it down
+  - SSH logins break quorum while they are open
+  - It relies on the very node that has stopped responding
   answer:
-  - 0
-  explain: 'A) correct: rule 3. B) wrong: speed is irrelevant. C) wrong: unrelated. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: speed is not the problem. B) wrong: the issue is reliance on the node. C) wrong: SSH has no effect on quorum. D) correct: it cannot work in the case it exists for.'
 - id: levels
   prompt: In a fencing topology, what happens when a device in level 1 fails?
   choices:
-  - Processing of that level stops and Pacemaker tries level 2, until a level passes or all have been tried
-  - The cluster is deleted
-  - Level 2 runs in parallel with level 1 from the start
-  - The node is declared fenced
+  - Pacemaker moves on to level 2, then any later levels
+  - The node is declared fenced because level 1 was attempted
+  - Level 2 runs at the same time as level 1 from the start
+  - Pacemaker retries level 1 until it succeeds
   answer:
   - 0
-  explain: 'A) correct: ascending order, 1 to 9. B) wrong: no. C) wrong: levels are sequential. D) wrong: only a passed level counts.'
+  explain: 'A) correct: levels are tried in order. B) wrong: an attempt is not success. C) wrong: levels are sequential. D) wrong: it moves to the next level.'
 - id: dual-psu
   prompt: A server has two power supplies on two PDU outlets. How should its two outlet devices be placed?
   choices:
+  - In different levels, so either outlet alone counts as success
   - In the same level, because both must switch off for the node to be off
-  - In different levels, so one switching off is enough
-  - Only one outlet is needed
-  - Outside the topology
+  - Only one outlet in the topology; the other is left alone
+  - Outside the topology, as a manual step after fencing
   answer:
-  - 0
-  explain: 'A) correct: all devices in a level must succeed. B) wrong: the node would keep running on the other supply. C) wrong: same reason. D) wrong: unrelated.'
+  - 1
+  explain: 'A) wrong: one outlet off does not stop a dual-PSU server. B) correct: one outlet alone leaves the node powered. C) wrong: the node would stay powered. D) wrong: manual steps cannot confirm fencing.'
 - id: delay
   prompt: In a two-node cluster the link between nodes fails and both are healthy. What prevents mutual fencing?
   choices:
-  - A delay (pcmk_delay_base) on the device that fences the node you prefer to lose, so the other node acts first
-  - Disabling fencing
-  - A larger disk
-  - Rebooting both nodes
+  - A delay on the device that fences the node you are willing to lose
+  - Disabling fencing whenever only the cluster link fails
+  - A delay (pcmk_delay_base) on the device that fences the node you want to keep
+  - Rebooting both nodes and letting the first one up win
   answer:
-  - 0
-  explain: 'A) correct: the delayed side loses the race. B) wrong: unsafe. C) wrong: unrelated. D) wrong: causes an outage.'
+  - 2
+  explain: 'A) wrong: that node would win the race instead. B) wrong: unsafe: shared data may be written by both. C) correct: fencing aimed at that node waits, so it fences its peer first. D) wrong: that causes a full outage.'
 - id: sbd-timeouts
   prompt: In watchdog-only SBD, how must stonith-watchdog-timeout relate to SBD_WATCHDOG_TIMEOUT?
   choices:
-  - It must be larger (the guide doubles it), so the survivor waits until the target has reset itself
-  - It must be zero
-  - It must be smaller
-  - They are unrelated
+  - It must be smaller, so the survivor reacts before the target resets
+  - It must be equal, so both timers expire together
+  - It must be zero, so the watchdog decides alone
+  - It must be larger (the guide doubles it), so the survivor waits for the reset
   answer:
-  - 0
-  explain: 'A) correct: otherwise the resource could start while the old node still runs. B) wrong: no. C) wrong: no. D) wrong: they are linked.'
+  - 3
+  explain: 'A) wrong: the survivor would act too early. B) wrong: equal leaves no margin. C) wrong: zero disables the watchdog fallback. D) correct: the target needs time to reset itself.'
 - id: test
   prompt: Which is a valid test that fencing works in a real failure?
   choices:
-  - Pull the cluster network cable or drop corosync traffic with the firewall and watch the survivor fence the node
-  - Bring the local interface down only
-  - Read the configuration once
-  - Restart pcsd
+  - Block corosync traffic and watch the survivor fence
+  - Bring the local interface down on one node only
+  - Restart pcsd on one node and watch the logs
+  - Run pcs stonith config and read the settings once
   answer:
   - 0
-  explain: 'A) correct: it resembles a real fault. B) wrong: the documentation advises against it. C) wrong: a belief, not a test. D) wrong: does not trigger fencing.'
+  explain: 'A) correct: it reproduces a real failure. B) wrong: the documentation advises against it; it does not behave like a real failure. C) wrong: pcsd is not part of membership. D) wrong: reading the configuration proves nothing.'

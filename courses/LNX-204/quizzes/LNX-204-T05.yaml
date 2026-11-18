@@ -3,29 +3,29 @@ questions:
 - id: path-model
   prompt: What does AppArmor use to decide which files a profile covers?
   choices:
-  - User names
-  - File labels in extended attributes
   - Path names
+  - User names
   - Inode numbers
+  - File labels in extended attributes
   answer:
-  - 2
+  - 0
   explain: AppArmor is path-based, which is easy to write but means renames and bind mounts matter. Labels are SELinux's model.
 - id: complain
   prompt: What does complain mode do?
   choices:
-  - Allows and logs violations, useful for learning
   - Sends mail to root
-  - Disables the profile
   - Blocks and logs violations
+  - Disables the profile
+  - Allows and logs violations, useful for learning
   answer:
-  - 0
+  - 3
   explain: Complain mode records what enforce would have denied. It does not block, disable or mail anyone.
 - id: ux
   prompt: What is wrong with a ux transition in a profile?
   choices:
+  - It requires root
   - It runs the child twice
   - It is slower
-  - It requires root
   - It runs the child unconfined, escaping the profile
   answer:
   - 3
@@ -34,31 +34,31 @@ questions:
 - id: moved-binary
   prompt: A deploy moves the program to a new path and the profile no longer applies. Why?
   choices:
+  - The kernel deletes profiles
   - Profiles attach by path, so the new binary runs unconfined
   - AppArmor reboots the host
   - Profiles are tied to PIDs
-  - The kernel deletes profiles
   answer:
-  - 0
+  - 1
   explain: Attachment is by the executable path, so compliance checks must compare expected and actual confinement. Nothing is deleted and nothing
     reboots.
 - id: genprof
   prompt: Which tool builds rules from observed behaviour?
   choices:
-  - aa-status
   - aa-genprof and aa-logprof
-  - aa-disable
   - apparmor_parser -Q
+  - aa-status
+  - aa-disable
   answer:
-  - 1
+  - 0
   explain: aa-genprof drives an interactive learning run and aa-logprof updates a profile from the log. The others report status, parse, or disable.
 - id: docker
   prompt: How do you run a container under a custom profile?
   choices:
   - docker run --security-opt apparmor=name after loading the profile on the host
-  - Use --privileged
   - Copy the profile into the image
   - Set SELINUX=enforcing
+  - Use --privileged
   answer:
   - 0
   explain: The profile is loaded into the host kernel and selected by name. Putting it in the image does nothing, SELinux is another module, and

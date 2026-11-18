@@ -14,54 +14,52 @@ questions:
 - id: postcopy
   prompt: What is the main risk of post-copy?
   choices:
-  - It is slower
   - If the link fails after switching, memory is split between hosts and the guest can be lost
   - It needs shared CPUs
+  - It is slower
   - It disables TLS
   answer:
-  - 1
-  explain: 'A) wrong: it finishes in bounded time. B) correct: neither host holds the full state. C) wrong: no.
-    D) wrong: no.'
+  - 0
+  explain: 'A) correct: neither host holds the full state. B) wrong: no. C) wrong: it finishes in bounded time. D) wrong: no.'
 - id: cpu
   prompt: Which CPU mode lets libvirt check compatibility before migrating?
   choices:
-  - host-passthrough
-  - host-model
-  - none
   - emulated only
+  - none
+  - host-model
+  - host-passthrough
   answer:
-  - 1
-  explain: 'A) wrong: exposes the host CPU as is, so it cannot be verified in advance. B) correct: exposes host
-    features in a checkable way. C) wrong: a CPU must be chosen. D) wrong: not a libvirt mode.'
+  - 2
+  explain: 'A) wrong: not a libvirt mode. B) wrong: a CPU must be chosen. C) correct: exposes host
+    features in a checkable way. D) wrong: exposes the host CPU as is, so it cannot be verified in advance.'
 - id: copy-storage
   prompt: What must exist on the destination before virsh migrate --copy-storage-all?
   choices:
-  - Nothing
-  - Empty images of the same size and path as the guest's disks
   - A snapshot
   - A copy of the QEMU binary
+  - Empty images of the same size and path as the guest's disks
+  - Nothing
   answer:
-  - 1
-  explain: 'A) wrong: the images are not created automatically. B) correct: the mirror writes into them. C) wrong:
-    not needed. D) wrong: the destination has its own.'
+  - 2
+  explain: 'A) wrong:
+    not needed. B) wrong: the destination has its own. C) correct: the mirror writes into them. D) wrong: the images are not created automatically.'
 - id: abort
   prompt: How do you cancel a running migration, and where is the guest afterwards?
   choices:
-  - virsh domjobabort, guest still on the source
+  - Reboot the source
   - virsh destroy, guest gone
   - virsh undefine, guest on the destination
-  - Reboot the source
+  - virsh domjobabort, guest still on the source
   answer:
-  - 0
-  explain: 'A) correct: pre-copy abort leaves the source running. B) wrong: destroys it. C) wrong: not an abort.
-    D) wrong: unnecessary and disruptive.'
+  - 3
+  explain: 'A) wrong: unnecessary and disruptive. B) wrong: destroys it. C) wrong: not an abort. D) correct: pre-copy abort leaves the source running.'
 - id: unsafe
   prompt: Why should you never use --unsafe?
   choices:
-  - It encrypts less
   - It skips cache-safety checks and can corrupt disks on shared storage
-  - It prevents TLS
+  - It encrypts less
   - It disables post-copy
+  - It prevents TLS
   answer:
-  - 1
-  explain: 'A) wrong: unrelated. B) correct: the check protects consistency. C) wrong: unrelated. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: the check protects consistency. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'

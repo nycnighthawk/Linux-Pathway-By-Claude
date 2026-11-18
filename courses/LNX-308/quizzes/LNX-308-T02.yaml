@@ -3,66 +3,66 @@ questions:
 - id: rule
   prompt: A template image has overlays based on it. What must never happen to the template?
   choices:
-  - It must never be copied
   - It must never be written, booted or committed into
+  - It must never be copied
   - It must never be compressed
   - It must never be read
   answer:
-  - 1
-  explain: 'A) wrong: copying is harmless. B) correct: overlays read unallocated clusters from it, so any change
-    corrupts them. C) wrong: compression of a copy is fine. D) wrong: reads are exactly what overlays do.'
+  - 0
+  explain: 'A) correct: overlays read unallocated clusters from it, so any change
+    corrupts them. B) wrong: copying is harmless. C) wrong: compression of a copy is fine. D) wrong: reads are exactly what overlays do.'
 - id: minus-f
   prompt: Why does qemu-img create -b base.qcow2 -F qcow2 give the format explicitly?
   choices:
   - To enable compression
   - So the backing file's format is never guessed by probing
-  - To make the overlay larger
   - To lock the base
+  - To make the overlay larger
   answer:
   - 1
-  explain: 'A) wrong: unrelated. B) correct: probing a guest-writable header is a security risk. C) wrong: size
-    is set separately. D) wrong: locking is separate.'
+  explain: 'A) wrong: unrelated. B) correct: probing a guest-writable header is a security risk. C) wrong: locking is separate. D) wrong: size
+    is set separately.'
 - id: snap-types
   prompt: Which statement about external snapshots is correct?
   choices:
-  - They exist only inside the qcow2 file
   - The current disk becomes read-only and a new overlay receives writes, with any base format
-  - They are the same as backups
   - They free space immediately
+  - They exist only inside the qcow2 file
+  - They are the same as backups
   answer:
-  - 1
-  explain: 'A) wrong: that describes internal snapshots. B) correct: this is what --disk-only creates. C) wrong:
-    they share the disk and host with the data they protect. D) wrong: space is freed only after merging.'
+  - 0
+  explain: 'A) correct: this is what --disk-only creates. B) wrong: space is freed only after merging. C) wrong: that describes internal snapshots. D) wrong:
+    they share the disk and host with the data they protect.'
 - id: pivot
   prompt: What does virsh blockcommit DOM vda --active --pivot do?
   choices:
-  - Deletes the guest
-  - Merges the running top layer into its base and switches the guest to the merged image
   - Takes a new snapshot
+  - Merges the running top layer into its base and switches the guest to the merged image
+  - Deletes the guest
   - Resizes the disk
   answer:
   - 1
-  explain: 'A) wrong: it merges disks. B) correct: --active commits the live layer, --pivot makes the guest use
-    the base afterwards. C) wrong: that is snapshot-create-as. D) wrong: that is blockresize.'
+  explain: 'A) wrong: that is snapshot-create-as. B) correct: --active commits the live layer, --pivot makes the guest use
+    the base afterwards. C) wrong: it merges disks. D) wrong: that is blockresize.'
 - id: sysprep
   prompt: Which problem does virt-sysprep prevent in a fleet of clones?
   choices:
+  - Large disks
   - Slow boots
   - Duplicate machine-id and SSH host keys across guests
   - Missing drivers
-  - Large disks
   answer:
-  - 1
-  explain: 'A) wrong: not its purpose. B) correct: it removes machine-specific identity so each clone generates
-    its own. C) wrong: not its purpose. D) wrong: not its purpose.'
+  - 2
+  explain: 'A) wrong: not its purpose. B) wrong: not its purpose. C) correct: it removes machine-specific identity so each clone generates
+    its own. D) wrong: not its purpose.'
 - id: tools
   prompt: Why do the libguestfs tools open images in an appliance instead of loop-mounting?
   choices:
-  - It is faster
-  - It needs no root and keeps untrusted filesystems away from the host kernel
-  - It supports only qcow2
   - It boots the guest fully
+  - It needs no root and keeps untrusted filesystems away from the host kernel
+  - It is faster
+  - It supports only qcow2
   answer:
   - 1
-  explain: 'A) wrong: speed is not the reason. B) correct: the work happens in a throwaway VM. C) wrong: it supports
-    many formats. D) wrong: it never boots the guest''s own system.'
+  explain: 'A) wrong: it never boots the guest''s own system. B) correct: the work happens in a throwaway VM. C) wrong: speed is not the reason. D) wrong: it supports
+    many formats.'

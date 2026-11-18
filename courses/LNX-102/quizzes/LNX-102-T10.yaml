@@ -13,50 +13,50 @@ questions:
 - id: fstab-test
   prompt: How can you test fstab without rebooting?
   choices:
-  - mount -a
-  - fsck
-  - ls /mnt
   - swapon
+  - ls /mnt
+  - fsck
+  - mount -a
   answer:
-  - 0
+  - 3
   explain: mount -a tries every line and shows errors; findmnt --verify checks syntax.
 - id: sysctl-w
   prompt: Is `sysctl -w` persistent?
   choices:
   - 'Yes'
-  - No, runtime only
   - Only with --system
   - Only for net keys
+  - No, runtime only
   answer:
-  - 1
-  explain: It writes /proc/sys only.
+  - 3
+  explain: 'sysctl -w changes the value in /proc/sys for the running kernel only, and the change is lost at reboot. To persist it, put the setting in a file under /etc/sysctl.d/ and load it with sysctl --system.'
 - id: clone
   prompt: Why do the reboot test on a clone or test machine first?
   choices:
+  - Reboots are logged
   - A bad change can leave the machine unbootable
   - It is faster
   - Clones have no fstab
-  - Reboots are logged
   answer:
-  - 0
+  - 1
   explain: A bad fstab line can drop the system into emergency mode.
 - id: failed
   prompt: Which command lists units that failed during boot?
   choices:
-  - systemctl --failed
   - systemctl list-sockets
   - journalctl -k
+  - systemctl --failed
   - systemd-analyze
   answer:
-  - 0
+  - 2
   explain: --failed shows units in the failed state.
 - id: both
   prompt: Which command changes both runtime and stored state?
   choices:
-  - timedatectl set-timezone
-  - sysctl -w
   - modprobe
+  - sysctl -w
   - mount
+  - timedatectl set-timezone
   answer:
-  - 0
+  - 3
   explain: It sets the live zone and updates /etc/localtime.

@@ -3,23 +3,23 @@ questions:
 - id: httpdir
   prompt: What does the http_directory setting of a Packer source do?
   choices:
-  - Publishes the finished image
   - Serves a directory (for example the Kickstart file) from a temporary web server for the installer
-  - Selects the repository mirror
   - Sets the output folder
+  - Selects the repository mirror
+  - Publishes the finished image
   answer:
-  - 1
-  explain: 'A) wrong: that is a post-processor. B) correct: the boot command points the installer at it. C) wrong: unrelated. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: the boot command points the installer at it. B) wrong: unrelated. C) wrong: unrelated. D) wrong: that is a post-processor.'
 - id: checksum
   prompt: Why is iso_checksum required to be a real value?
   choices:
-  - Packer needs it to name the output
-  - It proves the installation media is the one you intended, so a changed or tampered ISO fails the build
   - It speeds up downloads
+  - It proves the installation media is the one you intended, so a changed or tampered ISO fails the build
   - It selects the architecture
+  - Packer needs it to name the output
   answer:
   - 1
-  explain: 'A) wrong: not used for naming. B) correct: inputs must be pinned and verified. C) wrong: unrelated. D) wrong: unrelated.'
+  explain: 'A) wrong: unrelated. B) correct: inputs must be pinned and verified. C) wrong: unrelated. D) wrong: not used for naming.'
 - id: machineid
   prompt: Why truncate /etc/machine-id before capture?
   choices:
@@ -34,29 +34,29 @@ questions:
   prompt: Which is the right way to handle the temporary build password?
   choices:
   - Hard-code it in the template
-  - A sensitive variable supplied by environment or a secrets manager, with the account removed in the clean-up step
-  - Leave it in the image for later use
   - Print it in the log
+  - Leave it in the image for later use
+  - A sensitive variable supplied by environment or a secrets manager, with the account removed in the clean-up step
   answer:
-  - 1
-  explain: 'A) wrong: it lands in Git. B) correct: it is a build-time secret. C) wrong: a backdoor in every instance. D) wrong: logs leak.'
+  - 3
+  explain: 'A) wrong: it lands in Git. B) wrong: logs leak. C) wrong: a backdoor in every instance. D) correct: it is a build-time secret.'
 - id: test
   prompt: What is a sound test of a freshly built image?
   choices:
   - It built without errors, so publish
-  - Boot it twice and assert services, open ports, no build user and different SSH host keys per instance
   - Check the file size
   - Read the template again
+  - Boot it twice and assert services, open ports, no build user and different SSH host keys per instance
   answer:
-  - 1
-  explain: 'A) wrong: a successful build says little about the result. B) correct: tests cover identity and security. C) wrong: weak signal. D) wrong: does not test the artefact.'
+  - 3
+  explain: 'A) wrong: a successful build says little about the result. B) wrong: weak signal. C) wrong: does not test the artefact. D) correct: tests cover identity and security.'
 - id: alt
   prompt: When might Image Builder or a distribution tool be preferable to Packer?
   choices:
   - When you need the real installer on an unusual hypervisor
-  - When you want faster, more reproducible images for one distribution family without booting an installer
   - When building Windows images
+  - When you want faster, more reproducible images for one distribution family without booting an installer
   - Never
   answer:
-  - 1
-  explain: 'A) wrong: that favours Packer. B) correct: composition tools skip the installer boot. C) wrong: Packer covers Windows. D) wrong: they have clear uses.'
+  - 2
+  explain: 'A) wrong: that favours Packer. B) wrong: Packer covers Windows. C) correct: composition tools skip the installer boot. D) wrong: they have clear uses.'

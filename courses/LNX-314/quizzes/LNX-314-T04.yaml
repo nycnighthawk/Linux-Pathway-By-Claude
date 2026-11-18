@@ -2,19 +2,19 @@ title: 'Quiz: Pod Security Admission and policy engines'
 questions:
 - id: modes
   prompt: Which Pod Security Admission mode rejects a violating Pod?
-  choices: [warn, audit, enforce, dry-run]
-  answer: [2]
-  explain: 'A) wrong: it only returns a warning to the client. B) wrong: it records an annotation in the audit log. C) correct. D) wrong: not a PSA mode.'
+  choices: [dry-run, audit, warn, enforce]
+  answer: [3]
+  explain: 'A) wrong: not a PSA mode. B) wrong: it records an annotation in the audit log. C) wrong: it only returns a warning to the client. D) correct.'
 - id: deployment
   prompt: With enforce restricted on a namespace, a Deployment with a root container is applied. What happens?
-  choices: [The Deployment is rejected, The Deployment is created but its Pods are refused when the ReplicaSet creates them, The Pods run with a warning only, The namespace is relabelled]
-  answer: [1]
-  explain: 'A) wrong: enforcement is on Pod creation (the Deployment gets a warning in warn mode). B) correct. C) wrong: that is warn mode. D) wrong.'
+  choices: [The Deployment is created but its Pods are refused when the ReplicaSet creates them, The Deployment is rejected, The Pods run with a warning only, The namespace is relabelled]
+  answer: [0]
+  explain: 'A) correct. B) wrong: enforcement is on Pod creation (the Deployment gets a warning in warn mode). C) wrong: that is warn mode. D) wrong.'
 - id: existing
   prompt: A new policy is installed. What happens to Pods that already run and violate it?
-  choices: [They are killed, They keep running until recreated unless a background scan reports them, They are mutated, They are moved to another namespace]
-  answer: [1]
-  explain: 'A) wrong: admission acts only on writes. B) correct: engines with background scans report them. C) wrong. D) wrong.'
+  choices: [They are moved to another namespace, They are mutated, They are killed, They keep running until recreated unless a background scan reports them]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong: admission acts only on writes. D) correct: engines with background scans report them.'
 - id: rollout
   prompt: Which rollout is safest for moving a namespace from privileged to restricted? (select two)
   choices: [Set warn and audit to restricted first, Pin the enforce version, Set enforce restricted immediately in production, Remove the labels after testing]
@@ -22,6 +22,6 @@ questions:
   explain: 'A) correct: it surfaces violations without blocking. B) correct: upgrades do not change the meaning of the level. C) wrong: it risks outages. D) wrong.'
 - id: webhook-failure
   prompt: A fail-closed validating webhook is hosted in the cluster it guards, with no namespace exclusions. What can go wrong?
-  choices: [Nothing; Kubernetes handles it, Its own Pods cannot be recreated after an eviction because every Pod creation waits for the webhook, Policies run twice, The webhook gets more CPU]
-  answer: [1]
-  explain: 'A) wrong. B) correct: the guard needs itself to be admitted. C) wrong. D) wrong.'
+  choices: [The webhook gets more CPU, Nothing; Kubernetes handles it, Policies run twice, Its own Pods cannot be recreated after an eviction because every Pod creation waits for the webhook]
+  answer: [3]
+  explain: 'A) wrong. B) wrong. C) wrong. D) correct: the guard needs itself to be admitted.'

@@ -7,21 +7,21 @@ questions:
   explain: 'A) wrong: clones would share them. B) correct: the instance layer. C) wrong: not repeatable. D) wrong: secrets in templates leak.'
 - id: sysprep
   prompt: Which items does generalisation remove before an image becomes a template? (select two)
-  choices: [SSH host keys, The machine identifier, The kernel, The package manager]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct: each instance must make its own. C) wrong. D) wrong.'
+  choices: [The machine identifier, The kernel, The package manager, SSH host keys]
+  answer: [3, 0]
+  explain: 'A) correct: each instance must make its own. B) wrong. C) wrong. D) correct.'
 - id: label
   prompt: A NoCloud seed disk is attached but cloud-init ignores it. What is the first thing to check?
-  choices: [The volume label is cidata, The guest has 4 GB RAM, The disk is qcow2, Secure Boot is on]
+  choices: [The volume label is cidata, The guest has 4 GB RAM, Secure Boot is on, The disk is qcow2]
   answer: [0]
   explain: 'A) correct: the datasource finds the seed by its label. B) wrong. C) wrong. D) wrong.'
 - id: tool
   prompt: Which tool edits a disk image without booting it?
-  choices: [virt-customize from libguestfs, Packer with a QEMU source, cloud-init, virsh start]
+  choices: [virt-customize from libguestfs, virsh start, cloud-init, Packer with a QEMU source]
   answer: [0]
-  explain: 'A) correct: it works in a small appliance. B) wrong: it boots a guest. C) wrong: it runs in the guest. D) wrong.'
+  explain: 'A) correct: it works in a small appliance. B) wrong. C) wrong: it runs in the guest. D) wrong: it boots a guest.'
 - id: pin
   prompt: Why pin the checksum of the base image?
-  choices: [Smaller images, A rebuild is reproducible and a changed upstream is noticed, Faster boot, It encrypts the disk]
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  choices: [A rebuild is reproducible and a changed upstream is noticed, Smaller images, Faster boot, It encrypts the disk]
+  answer: [0]
+  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'

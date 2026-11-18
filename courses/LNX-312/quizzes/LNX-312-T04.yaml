@@ -14,8 +14,8 @@ questions:
     choices:
       - "They keep the Service table in a hash-based structure instead of a rule list that is walked in order"
       - "They stop using connection tracking"
-      - "They send traffic through user space where it is easier to balance"
       - "They remove the need for the control plane"
+      - "They send traffic through user space where it is easier to balance"
     answer: [0]
     explain: "Lookup in a hash table or a verdict map does not grow with the number of Services. All three modes still depend on conntrack, and none carries traffic in user space."
   - id: conntrack
@@ -31,17 +31,17 @@ questions:
     prompt: "Which Service types add something on top of ClusterIP? Select all that apply."
     choices:
       - "NodePort"
-      - "LoadBalancer"
       - "ExternalName"
       - "Headless"
-    answer: [0, 1]
+      - "LoadBalancer"
+    answer: [0, 3]
     explain: "NodePort adds a port on every node and LoadBalancer adds an external balancer on top of that. ExternalName is only a DNS alias and a headless Service deliberately has no virtual IP."
   - id: output-hook
     prompt: "In the lab ruleset, a curl run on the node cannot reach the Service, although Pods can. What is the most likely fault?"
     choices:
-      - "The verdict map has two entries instead of one"
-      - "The numgen expression uses mod 2"
       - "The map lookup is only attached to the prerouting hook, not to the output hook"
       - "The backends listen on port 8080"
-    answer: [2]
+      - "The numgen expression uses mod 2"
+      - "The verdict map has two entries instead of one"
+    answer: [0]
     explain: "Packets created on the node never traverse the prerouting hook. They need the same lookup in a chain on the output hook."

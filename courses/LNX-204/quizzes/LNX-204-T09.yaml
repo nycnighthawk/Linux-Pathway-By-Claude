@@ -3,22 +3,22 @@ questions:
 - id: oval-xccdf
   prompt: What is the relation between XCCDF and OVAL?
   choices:
-  - XCCDF holds benchmark and profiles; OVAL expresses the machine checks
   - OVAL is a scanner
   - XCCDF is a package manager
+  - XCCDF holds benchmark and profiles; OVAL expresses the machine checks
   - They are the same format
   answer:
-  - 0
+  - 2
   explain: XCCDF organises rules and profiles, and its checks usually refer to OVAL definitions.
 - id: tailoring
   prompt: Why use a tailoring file?
   choices:
-  - To sign the content
   - To change selections and variables without editing the shared content
   - To speed up scans
   - To scan containers
+  - To sign the content
   answer:
-  - 1
+  - 0
   explain: It keeps site decisions separate from upstream content, so updates do not erase them.
 - id: remediate
   prompt: What is the safe way to use automatic remediation?
@@ -34,19 +34,19 @@ questions:
   prompt: Does a 100 percent score mean the host is secure?
   choices:
   - Only on RHEL
-  - No, it means the host matches the benchmark; unpatched services and gaps outside the profile remain
   - Only if scanned twice
   - 'Yes'
+  - No, it means the host matches the benchmark; unpatched services and gaps outside the profile remain
   answer:
-  - 1
+  - 3
   explain: Compliance measures configuration against a chosen policy, not overall risk.
 - id: oscap-exit
   prompt: What does an oscap xccdf eval exit status of 2 mean?
   choices:
-  - Two hosts were scanned
+  - The scanner crashed
   - At least one rule failed
   - The profile is missing
-  - The scanner crashed
+  - Two hosts were scanned
   answer:
   - 1
   explain: Exit 2 signals evaluation completed with failures; 1 signals an error.

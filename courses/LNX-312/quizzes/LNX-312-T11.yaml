@@ -2,9 +2,9 @@ title: 'Quiz: ClusterMesh'
 questions:
 - id: cidr
   prompt: Which must be non-overlapping across clusters in a ClusterMesh?
-  choices: [Pod CIDRs, Service CIDRs only, Namespace names, Node labels]
-  answer: [0]
-  explain: 'A) correct: Pods are reached directly by address. B) wrong: Services are translated at the source. C) wrong. D) wrong.'
+  choices: [Node labels, Pod CIDRs, Namespace names, Service CIDRs only]
+  answer: [1]
+  explain: 'A) wrong. B) correct: Pods are reached directly by address. C) wrong. D) wrong: Services are translated at the source.'
 - id: global
   prompt: How is a Service made global?
   choices: [Annotate the same-named Service in each participating cluster, Create a ServiceExport only, Use a ConfigMap in kube-system, Run kube-proxy in both]
@@ -12,16 +12,16 @@ questions:
   explain: 'A) correct. B) wrong: that is the MCS API route. C) wrong. D) wrong.'
 - id: affinity
   prompt: What does affinity local do?
-  choices: [Prefers local backends and falls back to remote ones if none is healthy, Never uses remote backends, Always prefers remote, Disables load balancing]
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  choices: [Never uses remote backends, Prefers local backends and falls back to remote ones if none is healthy, Disables load balancing, Always prefers remote]
+  answer: [1]
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
 - id: identity
   prompt: Why can a policy distinguish production from staging Pods with identical labels?
-  choices: [The cluster is part of the identity, DNS names differ, Pod IPs are sorted, kube-proxy tells it]
-  answer: [0]
-  explain: 'A) correct. B) wrong. C) wrong. D) wrong.'
+  choices: [DNS names differ, Pod IPs are sorted, The cluster is part of the identity, kube-proxy tells it]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: prereq
   prompt: Which are mesh prerequisites? (select two)
-  choices: [Unique cluster IDs, A shared certificate authority, Identical Service CIDRs, A single etcd cluster]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct. C) wrong. D) wrong.'
+  choices: [A single etcd cluster, Unique cluster IDs, Identical Service CIDRs, A shared certificate authority]
+  answer: [1, 3]
+  explain: 'A) wrong. B) correct. C) wrong. D) correct.'

@@ -3,70 +3,70 @@ questions:
 - id: switch-side
   prompt: What does the switch need for 802.3ad?
   choices:
+  - Nothing
   - Spanning tree off
   - A port-channel with LACP and matching members
-  - Nothing
   - Only a static group
   answer:
-  - 1
+  - 2
   explain: Active mode on at least one side.
 - id: mlag
   prompt: What does MLAG add?
   choices:
-  - Faster LACP
+  - One LACP partner across two switches
   - Spanning tree
   - VLAN trunking
-  - One LACP partner across two switches
+  - Faster LACP
   answer:
-  - 3
+  - 0
   explain: A plain bond cannot span two independent switches.
 - id: fallback
   prompt: Why is LACP fallback useful?
   choices:
-  - It encrypts
-  - It enables VLANs
-  - A port works as an individual link until LACPDUs arrive, for network boot
   - It doubles speed
+  - It enables VLANs
+  - It encrypts
+  - A port works as an individual link until LACPDUs arrive, for network boot
   answer:
-  - 2
-  explain: PXE clients cannot speak LACP.
+  - 3
+  explain: 'A server booting from the network has no LACP yet. With fallback the switch treats a port as a plain link until LACP frames arrive, so PXE and the installer can reach the network.'
 - id: numvfs
   prompt: Which file creates SR-IOV virtual functions?
   choices:
-  - device/vfs
-  - sriov_numvfs
   - sriov_totalvfs
+  - sriov_numvfs
   - vf_create
+  - device/vfs
   answer:
   - 1
-  explain: sriov_totalvfs shows the maximum.
+  explain: 'Writing a number to /sys/class/net/IFACE/device/sriov_numvfs creates that many virtual functions. sriov_totalvfs in the same directory shows the most the device supports.'
 - id: bypass
   prompt: What does VF traffic bypass?
   choices:
-  - The host network stack, bridge and firewall
-  - The NIC
-  - The IOMMU
   - The guest
+  - The host network stack, bridge and firewall
+  - The IOMMU
+  - The NIC
   answer:
-  - 0
+  - 1
   explain: That is both the benefit and the limit.
 - id: iommu
   prompt: What must be enabled for device assignment?
   choices:
-  - IPv6
-  - LACP
-  - The IOMMU (VT-d or AMD-Vi)
   - Jumbo frames
+  - IPv6
+  - The IOMMU (VT-d or AMD-Vi)
+  - LACP
   answer:
   - 2
-  explain: Plus SR-IOV in firmware.
+  explain: 'Assigning a device to a guest needs the IOMMU (Intel VT-d or AMD-Vi) enabled in firmware and on the kernel command line, so the device''s DMA is confined to the guest''s memory. SR-IOV must also be enabled in firmware for VFs.'
 - id: pf-control
   prompt: Who sets a VF's MAC and VLAN?
   choices:
-  - The switch only
+  - The guest only
   - DHCP
   - The PF, with ip link set ... vf N
-  - The guest only
+  - The switch only
   answer:
   - 2
   explain: The PF keeps control of VF policy.

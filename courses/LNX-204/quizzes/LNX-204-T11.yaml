@@ -4,29 +4,29 @@ questions:
   prompt: A scanner says openssl 1.1.1k is vulnerable but the vendor lists a fix. How do you confirm?
   choices:
   - Check the package changelog and the vendor advisory for the fixed build
-  - Reinstall
   - Trust the version number
   - Ignore it
+  - Reinstall
   answer:
   - 0
   explain: Distribution fixes are backported without changing the upstream version, so use the vendor build data.
 - id: kev
   prompt: What does KEV tell you that CVSS does not?
   choices:
-  - The vendor
   - The flaw has been seen exploited in the wild
   - Attack complexity
+  - The vendor
   - The patch size
   answer:
-  - 1
+  - 0
   explain: KEV lists exploited vulnerabilities, a strong urgency signal beyond abstract severity.
 - id: restart
   prompt: After updating libfoo, a daemon still runs the old code. What is missing?
   choices:
   - A restart of the service (or reboot) so it loads the new library
-  - A firewall rule
   - Nothing
   - A new CVE
+  - A firewall rule
   answer:
   - 0
   explain: Running processes keep the deleted old library mapped. needs-restarting finds them.
@@ -34,29 +34,29 @@ questions:
   prompt: Two CVEs have the same score. Which first?
   choices:
   - Random
-  - The older one
   - The one with the lower number
   - The one in a component that is installed, running and reachable
+  - The older one
   answer:
-  - 3
+  - 2
   explain: Exposure and exploitability decide urgency, not the score alone.
 - id: security-only
   prompt: Which command applies only security errata on dnf systems?
   choices:
-  - dnf autoremove
-  - dnf clean all
-  - dnf upgrade --security
   - dnf history
+  - dnf autoremove
+  - dnf upgrade --security
+  - dnf clean all
   answer:
   - 2
   explain: --security limits the transaction to security advisories; the others clean or report.
 - id: static
   prompt: Why can a patched distribution still hold a vulnerable library?
   choices:
-  - A statically linked or bundled copy is not updated by the package of the shared library
   - Updates are fake
-  - It cannot
+  - A statically linked or bundled copy is not updated by the package of the shared library
   - Kernel module
+  - It cannot
   answer:
-  - 0
+  - 1
   explain: Bundled copies and language packages need their own updates.

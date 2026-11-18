@@ -3,30 +3,30 @@ questions:
 - id: pps
   prompt: How many 64-byte frames per second fit on a 10 Gb/s Ethernet link?
   choices:
+  - About 812 000
+  - About 14.88 million
   - About 1 million
   - About 100 million
-  - About 14.88 million
-  - About 812 000
   answer:
-  - 2
+  - 1
   explain: 10e9 / ((64 + 20) x 8) with 20 bytes of preamble and gap.
 - id: parallel
   prompt: Why use iperf3 -P on fast links?
   choices:
-  - It disables offloads
-  - One TCP stream uses one core
   - UDP needs parallelism
   - It enables RSS
+  - It disables offloads
+  - One TCP stream uses one core
   answer:
-  - 1
+  - 3
   explain: Parallel streams spread across cores and queues.
 - id: udp-loss
   prompt: UDP loss on the receiver with nstat showing buffer errors. Where is the loss?
   choices:
-  - In the cable
-  - In the DNS
-  - Inside the host, buffer too small
   - In the switch
+  - In the cable
+  - Inside the host, buffer too small
+  - In the DNS
   answer:
   - 2
   explain: Raise net.core.rmem_max and the socket buffer.
@@ -39,34 +39,34 @@ questions:
   - The date
   answer:
   - 0
-  explain: So the result is repeatable.
+  explain: 'A throughput number alone cannot be reproduced. Recording the NIC, driver, kernel, MTU, offload settings, exact tool options and the spread over repeated runs lets someone else repeat the test and compare.'
 - id: rings
   prompt: Which command shows ring buffer sizes?
   choices:
   - ethtool -l
-  - ip -s link
   - nstat
+  - ip -s link
   - ethtool -g
   answer:
   - 3
-  explain: -l shows queues.
+  explain: 'ethtool -g IFACE shows the current and maximum RX and TX ring sizes, and -G changes them. The similar -l option shows queue (channel) counts, not ring sizes.'
 - id: mpstat
   prompt: What does one core at 100 percent soft-irq during a test suggest?
   choices:
-  - A full disk
-  - A per-queue CPU limit
-  - A switch fault
   - A DNS problem
+  - A per-queue CPU limit
+  - A full disk
+  - A switch fault
   answer:
   - 1
-  explain: Add queues or spread interrupts.
+  explain: 'When one core sits at 100 percent soft-IRQ while others idle, packet processing is bound to one queue. Add queues, enable RSS or RPS, or spread the interrupts across cores.'
 - id: control
   prompt: Which port does iperf3 use for control by default?
   choices:
   - UDP 5001
   - TCP 22
-  - UDP 53
   - TCP 5201
+  - UDP 53
   answer:
-  - 3
+  - 2
   explain: UDP data moves to a UDP socket on the same number.

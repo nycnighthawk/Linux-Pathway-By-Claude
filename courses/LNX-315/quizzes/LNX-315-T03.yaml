@@ -2,26 +2,26 @@ title: 'Quiz: Performance tuning for guests'
 questions:
 - id: strict
   prompt: Why prefer numatune mode strict over preferred for a latency-sensitive guest?
-  choices: [Strict is faster to configure, Preferred silently falls back to other nodes and hides a layout failure, Strict uses less memory, Preferred needs hugepages]
-  answer: [1]
-  explain: 'A) wrong. B) correct: with strict, an unsatisfiable layout fails loudly. C) wrong. D) wrong.'
+  choices: [Preferred needs hugepages, Strict uses less memory, Preferred silently falls back to other nodes and hides a layout failure, Strict is faster to configure]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: with strict, an unsatisfiable layout fails loudly. D) wrong.'
 - id: siblings
   prompt: On this host the SMT sibling of CPU 8 is CPU 24. Which pinning keeps guest SMT pairs on one core?
-  choices: [vCPU 0 to CPU 8 and vCPU 1 to CPU 9, vCPU 0 to CPU 8 and vCPU 1 to CPU 24, vCPU 0 to CPU 8 and vCPU 1 to CPU 16, Leave it to the scheduler]
-  answer: [1]
-  explain: 'A) wrong: those are different cores. B) correct. C) wrong: CPU 16 belongs to node 0. D) wrong: that is the untuned case.'
+  choices: [vCPU 0 to CPU 8 and vCPU 1 to CPU 9, Leave it to the scheduler, vCPU 0 to CPU 8 and vCPU 1 to CPU 16, vCPU 0 to CPU 8 and vCPU 1 to CPU 24]
+  answer: [3]
+  explain: 'A) wrong: those are different cores. B) wrong: that is the untuned case. C) wrong: CPU 16 belongs to node 0. D) correct.'
 - id: tradeoffs
   prompt: What do pinned, hugepage-backed guests give up? (select two)
-  choices: [Memory overcommit and ballooning, Easy live migration to any host, Multiqueue virtio, Any benefit from NUMA]
-  answer: [0, 1]
-  explain: 'A) correct: the memory is reserved. B) correct: the destination needs an identical free layout. C) wrong. D) wrong.'
+  choices: [Easy live migration to any host, Memory overcommit and ballooning, Any benefit from NUMA, Multiqueue virtio]
+  answer: [1, 0]
+  explain: 'A) correct: the destination needs an identical free layout. B) correct: the memory is reserved. C) wrong. D) wrong.'
 - id: scsi
   prompt: Which need points to virtio-scsi?
-  choices: [One disk needing the highest IOPS, Forty disks on one controller with UNMAP and persistent reservations, A guest without IOThreads, Booting without firmware]
+  choices: [Booting without firmware, Forty disks on one controller with UNMAP and persistent reservations, A guest without IOThreads, One disk needing the highest IOPS]
   answer: [1]
-  explain: 'A) wrong: virtio-blk has the shortest path. B) correct. C) wrong. D) wrong.'
+  explain: 'A) wrong. B) correct. C) wrong. D) wrong: virtio-blk has the shortest path.'
 - id: measure
   prompt: Which result is most trustworthy after a tuning change?
-  choices: [An average from a short micro-benchmark, Tail latency percentiles and throughput from a realistic workload before and after one change, A lower CPU load figure, The XML looking cleaner]
+  choices: [An average from a short micro-benchmark, Tail latency percentiles and throughput from a realistic workload before and after one change, The XML looking cleaner, A lower CPU load figure]
   answer: [1]
   explain: 'A) wrong: averages hide jitter. B) correct. C) wrong. D) wrong.'

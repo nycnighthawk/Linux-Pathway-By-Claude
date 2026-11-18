@@ -2,9 +2,9 @@ title: 'Quiz: Secrets encryption at rest'
 questions:
 - id: first-provider
   prompt: A resources entry lists providers in the order identity, aescbc. How are new Secrets stored?
-  choices: [Encrypted with aescbc, In plaintext through the identity provider, Rejected, Encrypted twice]
-  answer: [1]
-  explain: 'A) wrong: only the first provider writes. B) correct: this is the common misconfiguration that appears to work. C) wrong. D) wrong.'
+  choices: [Encrypted with aescbc, Rejected, In plaintext through the identity provider, Encrypted twice]
+  answer: [2]
+  explain: 'A) wrong: only the first provider writes. B) wrong. C) correct: this is the common misconfiguration that appears to work. D) wrong.'
 - id: read-path
   prompt: How does the API server choose how to decrypt a stored value?
   choices: [It tries every key until one works, It reads the provider and key name from the prefix stored in front of the value, It asks the client, It always uses the first provider]
@@ -17,11 +17,11 @@ questions:
   explain: 'A) wrong: it would make old data unreadable. B) correct: every server must be able to read the new key before any server writes with it. C) wrong: peers could not read its writes. D) wrong: premature.'
 - id: kms-benefit
   prompt: What is the main benefit of a KMS v2 provider over secretbox with a key in a file? (select two)
-  choices: [The key encryption key never sits on the control plane host, Data keys are cached so the KMS is not called on every read, It makes etcd faster than unencrypted, It removes the need for RBAC on Secrets]
-  answer: [0, 1]
-  explain: 'A) correct. B) correct: that is the point of v2. C) wrong. D) wrong: the API server decrypts for authorised callers.'
+  choices: [Data keys are cached so the KMS is not called on every read, It removes the need for RBAC on Secrets, The key encryption key never sits on the control plane host, It makes etcd faster than unencrypted]
+  answer: [2, 0]
+  explain: 'A) correct: that is the point of v2. B) wrong: the API server decrypts for authorised callers. C) correct. D) wrong.'
 - id: verify
   prompt: How do you prove that Secrets are encrypted at rest?
-  choices: [kubectl get secret shows base64, Read the stored value directly from etcd and check for the encryption prefix and unreadable bytes, Check that the API server started, Read the Secret from a Pod]
-  answer: [1]
-  explain: 'A) wrong: base64 is always shown. B) correct: only the stored bytes tell. C) wrong: it starts either way. D) wrong: Pods see decrypted data.'
+  choices: [kubectl get secret shows base64, Check that the API server started, Read the stored value directly from etcd and check for the encryption prefix and unreadable bytes, Read the Secret from a Pod]
+  answer: [2]
+  explain: 'A) wrong: base64 is always shown. B) wrong: it starts either way. C) correct: only the stored bytes tell. D) wrong: Pods see decrypted data.'

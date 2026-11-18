@@ -3,60 +3,60 @@ questions:
 - id: async
   prompt: Why can asynchronous streaming replication lose data when the primary fails?
   choices:
-  - The primary reports a commit before any standby has received it, so recent commits may exist only on the failed machine
-  - Standbys cannot read WAL
-  - WAL is never written to disk
-  - Promotion deletes the data directory
+  - The standby discards WAL it has not yet applied when promoted
+  - Asynchronous standbys receive WAL only at checkpoints
+  - The primary confirms a commit before any standby has received it
+  - The primary writes WAL to disk only after the standby confirms
   answer:
-  - 0
-  explain: 'A) correct: the recovery point is the replication lag. B) wrong: they can. C) wrong: WAL is written first. D) wrong: it does not.'
+  - 2
+  explain: 'A) wrong: received WAL is replayed on promotion. B) wrong: streaming sends WAL continuously. C) correct: recent commits may exist only on the failed machine. D) wrong: that would be synchronous replication.'
 - id: basebackup
   prompt: What does the -R option of pg_basebackup do?
   choices:
-  - Writes the connection settings and the signal file so the copy starts as a standby
-  - Restarts the primary
-  - Rewinds the old primary
-  - Removes replication slots
+  - Removes replication slots from the copy so it starts clean
+  - Rewinds the copy to the last checkpoint before it starts
+  - Restricts the copy to read-only tablespaces
+  - Writes the standby settings and signal file into the copy
   answer:
-  - 0
-  explain: 'A) correct: it writes primary_conninfo and standby.signal on PostgreSQL 12 and later. B) wrong: no restart. C) wrong: that is pg_rewind. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: -R does not touch slots. B) wrong: that is pg_rewind, a separate tool. C) wrong: -R means write the recovery configuration. D) correct: -R prepares the copy for replication.'
 - id: slot
   prompt: A replication slot belongs to a standby that was decommissioned and never dropped. What happens?
   choices:
   - The primary keeps retaining WAL for it until the disk fills
-  - The slot deletes itself after a day
-  - Nothing, slots hold no data
-  - The standby is promoted
+  - The slot is dropped automatically after a day without a client
+  - The primary promotes another standby to use the slot
+  - The slot keeps only the latest WAL segment, so it costs nothing
   answer:
   - 0
-  explain: 'A) correct: monitor slots and drop unused ones, or cap retention. B) wrong: not automatic. C) wrong: they retain WAL. D) wrong: unrelated.'
+  explain: 'A) correct: an unused slot holds WAL forever. B) wrong: slots persist until dropped, unless a size limit is set. C) wrong: slots never trigger promotion. D) wrong: it retains everything since the client''s position.'
 - id: oldprimary
   prompt: After a failover the old primary comes back. What must be done before it can follow the new primary?
   choices:
-  - Rebuild it with pg_basebackup or rewind it with pg_rewind; never start it as a primary
-  - Start it normally
-  - Copy the new primary's pg_hba.conf
-  - Nothing
+  - Start it normally; it detects the new primary and follows
+  - Rebuild it or run pg_rewind before it follows
+  - Copy the new primary's configuration files and restart it
+  - Promote it again and let the two primaries reconcile
   answer:
-  - 0
-  explain: 'A) correct: it may hold commits the new primary never saw. B) wrong: gives two primaries. C) wrong: irrelevant. D) wrong: it would diverge.'
+  - 1
+  explain: 'A) wrong: it would start as a second primary. B) correct: its history has diverged from the new primary. C) wrong: configuration does not fix a diverged timeline. D) wrong: PostgreSQL cannot reconcile two primaries.'
 - id: backup
   prompt: Why is a hot standby not a backup?
   choices:
-  - A destructive statement such as DROP TABLE is replicated to it immediately
-  - It cannot store data
-  - It is always older than the primary by a day
-  - It is encrypted with a lost key
+  - A standby lags by at least a day, so its data is stale
+  - A standby cannot be read while it is replaying WAL
+  - A destructive statement such as DROP TABLE is replicated to it at once
+  - A standby holds only the tables marked for replication
   answer:
-  - 0
-  explain: 'A) correct: use base backups plus archived WAL for point-in-time recovery. B) wrong: it stores a full copy. C) wrong: it is near real time. D) wrong: irrelevant.'
+  - 2
+  explain: 'A) wrong: streaming standbys usually lag by seconds. B) wrong: hot standbys accept reads. C) correct: a standby has no history to go back to. D) wrong: physical replication copies everything.'
 - id: automatic
   prompt: What should an automatic failover mechanism rely on?
   choices:
-  - A quorum or lease and fencing, not a single failed ping
-  - Whichever node answers ping first
-  - The oldest standby
-  - Manual SSH by the owner
+  - Whichever standby answers ping first after a timeout
+  - The standby with the oldest replay position
+  - A cron job on the primary that promotes a standby
+  - A quorum or lease plus fencing, not a single failed ping
   answer:
-  - 0
-  explain: 'A) correct: it must be sure the old primary cannot write. B) wrong: a network blip would trigger it. C) wrong: irrelevant. D) wrong: that is manual failover.'
+  - 3
+  explain: 'A) wrong: a ping does not prove the primary has stopped. B) wrong: that would lose the most data. C) wrong: a failed primary cannot run the job. D) correct: one failed check is not proof the primary is gone.'

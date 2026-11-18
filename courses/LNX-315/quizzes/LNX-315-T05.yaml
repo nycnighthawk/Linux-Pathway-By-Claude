@@ -2,26 +2,26 @@ title: 'Quiz: Firmware, trusted boot and confidential VMs'
 questions:
 - id: ovmf-need
   prompt: Which guest needs OVMF rather than SeaBIOS?
-  choices: [A DOS test image, A Windows 11 guest with Secure Boot, A guest with one serial console, A guest using virtio-net]
-  answer: [1]
-  explain: 'A) wrong: legacy BIOS suits it. B) correct: Secure Boot and Windows 11 require UEFI. C) wrong. D) wrong: virtio works with either.'
+  choices: [A DOS test image, A guest with one serial console, A guest using virtio-net, A Windows 11 guest with Secure Boot]
+  answer: [3]
+  explain: 'A) wrong: legacy BIOS suits it. B) wrong. C) wrong: virtio works with either. D) correct: Secure Boot and Windows 11 require UEFI.'
 - id: smm
   prompt: Why does the guest XML set smm state='on' for Secure Boot?
-  choices: [To speed up boot, To protect the firmware variable store from the running guest OS, To enable nested virtualisation, To select q35]
-  answer: [1]
-  explain: 'A) wrong. B) correct: the secure OVMF build writes variables from SMM. C) wrong. D) wrong.'
+  choices: [To enable nested virtualisation, To select q35, To protect the firmware variable store from the running guest OS, To speed up boot]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct: the secure OVMF build writes variables from SMM. D) wrong.'
 - id: tpm-state
   prompt: A VM is redefined and its swtpm state directory is deleted. What is the consequence for BitLocker?
-  choices: [Nothing, The sealed key cannot be unsealed and recovery is needed, The disk is re-encrypted, Secure Boot turns off]
-  answer: [1]
-  explain: 'A) wrong. B) correct: the TPM no longer holds the sealing material. C) wrong. D) wrong.'
+  choices: [The sealed key cannot be unsealed and recovery is needed, Nothing, Secure Boot turns off, The disk is re-encrypted]
+  answer: [0]
+  explain: 'A) correct: the TPM no longer holds the sealing material. B) wrong. C) wrong. D) wrong.'
 - id: snp-adds
   prompt: What does SEV-SNP add over SEV-ES? (select two)
-  choices: [Memory integrity protection against remapping and replay, Encrypted guest register state, Stronger attestation with a launch measurement report, Faster live migration]
-  answer: [0, 2]
-  explain: 'A) correct. B) wrong: ES already did that. C) correct. D) wrong: migration is harder.'
+  choices: [Memory integrity protection against remapping and replay, Stronger attestation with a launch measurement report, Faster live migration, Encrypted guest register state]
+  answer: [0, 1]
+  explain: 'A) correct. B) correct. C) wrong: migration is harder. D) wrong: ES already did that.'
 - id: attest
   prompt: What should a key broker do before releasing a secret to a confidential guest?
-  choices: [Trust any guest that boots, Verify the signed report chain and compare the measurement to a known-good value, Check the guest IP address, Ask the host admin]
-  answer: [1]
-  explain: 'A) wrong. B) correct: that is what proves what is running. C) wrong. D) wrong: the host admin is outside the trust boundary.'
+  choices: [Ask the host admin, Check the guest IP address, Verify the signed report chain and compare the measurement to a known-good value, Trust any guest that boots]
+  answer: [2]
+  explain: 'A) wrong: the host admin is outside the trust boundary. B) wrong. C) correct: that is what proves what is running. D) wrong.'

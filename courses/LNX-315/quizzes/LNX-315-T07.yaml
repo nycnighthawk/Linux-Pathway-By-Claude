@@ -17,9 +17,9 @@ questions:
   explain: 'A) wrong. B) correct: KVM owns the feature and shares it. C) wrong. D) wrong.'
 - id: image
   prompt: Why must one disk image not be opened in both stacks at once?
-  choices: [Formats differ, No shared locking exists so the image can be corrupted, It uses more RAM, It voids support]
-  answer: [1]
-  explain: 'A) wrong. B) correct. C) wrong. D) wrong.'
+  choices: [Formats differ, It voids support, No shared locking exists so the image can be corrupted, It uses more RAM]
+  answer: [2]
+  explain: 'A) wrong. B) wrong. C) correct. D) wrong.'
 - id: caution
   prompt: Which steps belong in a plan to adopt the KVM backend? (select two)
   choices: [Qualify your guests and compare performance with the native driver, Keep a rollback to the native driver, Assume saved states are interchangeable, Delete the native driver first]

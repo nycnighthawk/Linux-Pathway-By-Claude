@@ -3,60 +3,60 @@ questions:
 - id: state
   prompt: What is the role of the state file?
   choices:
-  - It stores the Git history
   - It maps configuration addresses to the real objects the tool created, so later runs update or destroy exactly those
-  - It holds the provider source code
   - It caches package downloads
+  - It stores the Git history
+  - It holds the provider source code
   answer:
-  - 1
-  explain: 'A) wrong: Git stores history. B) correct: without it the tool would try to recreate everything. C) wrong: providers are downloaded separately. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: without it the tool would try to recreate everything. B) wrong: unrelated. C) wrong: Git stores history. D) wrong: providers are downloaded separately.'
 - id: foreach
   prompt: vm_names is a set of three names used with for_each. You remove one name and apply. What happens?
   choices:
-  - All three VMs are recreated
-  - Only the VM for the removed name (and its disk and seed) is destroyed
   - Nothing, the VM stays
+  - Only the VM for the removed name (and its disk and seed) is destroyed
+  - All three VMs are recreated
   - The base image is deleted
   answer:
   - 1
-  explain: 'A) wrong: the other keys are unchanged. B) correct: resources are tracked by key. C) wrong: it is no longer declared. D) wrong: the base volume is shared.'
+  explain: 'A) wrong: it is no longer declared. B) correct: resources are tracked by key. C) wrong: the other keys are unchanged. D) wrong: the base volume is shared.'
 - id: secretsstate
   prompt: Why must the state file be protected?
   choices:
-  - It is large
   - It contains attribute values that may include secrets, such as keys and passwords
+  - It is large
   - It is executable
   - It has no backups
   answer:
-  - 1
-  explain: 'A) wrong: size is not the risk. B) correct: sensitive variables are hidden from plan output but remain in state. C) wrong: it is data. D) wrong: backups are advised, but the issue is content.'
+  - 0
+  explain: 'A) correct: sensitive variables are hidden from plan output but remain in state. B) wrong: size is not the risk. C) wrong: it is data. D) wrong: backups are advised, but the issue is content.'
 - id: savedplan
   prompt: Why apply a saved plan file in a pipeline?
   choices:
-  - It runs faster
-  - What was reviewed is exactly what runs, even if the state changed since
-  - It avoids provider downloads
   - It disables locking
+  - What was reviewed is exactly what runs, even if the state changed since
+  - It runs faster
+  - It avoids provider downloads
   answer:
   - 1
-  explain: 'A) wrong: not the point. B) correct: a fresh plan could differ from the reviewed one. C) wrong: unrelated. D) wrong: locking still applies.'
+  explain: 'A) wrong: locking still applies. B) correct: a fresh plan could differ from the reviewed one. C) wrong: not the point. D) wrong: unrelated.'
 - id: drift
   prompt: Which command reports differences caused by hand edits without proposing configuration changes?
   choices:
-  - tofu destroy
-  - tofu plan -refresh-only
   - tofu fmt
   - tofu init
+  - tofu plan -refresh-only
+  - tofu destroy
   answer:
-  - 1
-  explain: 'A) wrong: that deletes. B) correct: it refreshes state from reality and shows drift. C) wrong: formatting only. D) wrong: installs providers.'
+  - 2
+  explain: 'A) wrong: formatting only. B) wrong: installs providers. C) correct: it refreshes state from reality and shows drift. D) wrong: that deletes.'
 - id: userdata
   prompt: You change the user-data template of a running VM and apply. What should you expect?
   choices:
-  - cloud-init re-runs and applies it at once
   - A new seed ISO, but the guest's cloud-init does not re-run unless the instance-id changes or its state is cleaned
   - The VM is deleted by libvirt
+  - cloud-init re-runs and applies it at once
   - Nothing at all in the plan
   answer:
-  - 1
-  explain: 'A) wrong: per-instance modules run once. B) correct: replace the VM or push the change by configuration management. C) wrong: libvirt does not delete. D) wrong: the plan shows a seed change.'
+  - 0
+  explain: 'A) correct: replace the VM or push the change by configuration management. B) wrong: libvirt does not delete. C) wrong: per-instance modules run once. D) wrong: the plan shows a seed change.'
