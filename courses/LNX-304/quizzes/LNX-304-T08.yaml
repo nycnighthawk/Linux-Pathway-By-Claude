@@ -3,60 +3,80 @@ questions:
 - id: usr
   prompt: On a bootc system, where do operating system programs and default configuration come from?
   choices:
+  - The home directory of the administrator
+  - Local dnf installs made on each host
   - The read-only /usr from the image
-  - The home directory
-  - Local dnf installs
-  - /var
+  - The /var directory of the host
   answer:
-  - 0
-  explain: 'A) correct: /usr is part of the image. B) wrong: unrelated. C) wrong: installs happen in the build. D) wrong: /var is persistent state.'
+  - 2
+  explain: 'A) wrong: user data. B) wrong: not the model. C) correct: the image is the source. D) wrong: mutable state.'
 - id: etc
   prompt: A host edited a file in /etc and a new image changes the default of that file. What does an update do?
   choices:
-  - Refuses to update
-  - Deletes /etc
-  - Keeps the local edit (three-way merge) and applies new defaults to files not changed locally
-  - Discards the local edit
+  - It keeps the local edit and applies new defaults to files not changed locally
+  - It deletes /etc and starts with the image defaults
+  - It discards the local edit and uses the image file
+  - It refuses to update until the edit is reverted
   answer:
-  - 2
-  explain: 'A) wrong: the update proceeds. B) wrong: nothing is deleted. C) correct: that is the /etc merge rule. D) wrong: local state is preserved.'
+  - 0
+  explain: 'A) correct: a three-way merge. B) wrong: local state is kept. C) wrong: the edit survives. D) wrong: it proceeds.'
 - id: rollback
   prompt: How does bootc rollback work?
   choices:
-  - It downgrades each package
+  - It restores a backup taken before the update
   - It selects the previous deployment for the next boot
-  - It rebuilds the image
-  - It restores a backup tape
+  - It downgrades each package one by one
+  - It rebuilds the whole image from the older Containerfile and pushes it again
   answer:
   - 1
-  explain: 'A) wrong: there is no per-package history. B) correct: the old deployment is still on disk. C) wrong: the registry holds images. D) wrong: unrelated.'
+  explain: 'A) wrong: no backup needed. B) correct: the old deployment is still there. C) wrong: it does not use packages. D) wrong: not needed.'
 - id: overlay
   prompt: You fix a bug on one host with rpm-ostree usroverlay. What is the status of the fix?
   choices:
-  - Signed automatically
-  - Temporary on that host until reboot; the fix must go into the Containerfile
-  - Permanent on all hosts
-  - Saved in /etc
+  - Signed automatically and kept in the next image that the registry publishes
+  - Permanent on every host that pulls the image
+  - Saved in /etc, so it survives the next update
+  - Temporary on that host until reboot; the fix belongs in the Containerfile
   answer:
-  - 1
-  explain: 'A) wrong: signing is separate. B) correct: the overlay disappears at reboot. C) wrong: it affects one host. D) wrong: it changes /usr.'
+  - 3
+  explain: 'A) wrong: nothing is signed. B) wrong: only that host, only until reboot. C) wrong: /usr overlay is not /etc. D) correct: changes vanish at reboot.'
 - id: blast
   prompt: Why are rings and automatic rollback essential in image-based delivery?
   choices:
-  - Registries are slow
-  - Kernels are bigger
-  - Images are larger
+  - Registries are slow, so changes to images must always be staged over several days
   - A bad image on a shared tag reaches every host that follows it
+  - Kernels in images are larger than in packages
+  - Images take longer to build than packages do
   answer:
-  - 3
-  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) wrong: size is not the issue. D) correct: the unit of delivery is the whole system.'
+  - 1
+  explain: 'A) wrong: speed is not the reason. B) correct: one mistake spreads fast. C) wrong: not the reason. D) wrong: not the reason.'
 - id: secrets
   prompt: Why must secrets not be baked into a bootc image?
   choices:
+  - Images cannot hold files of that kind
   - Anyone able to pull the image can read them
-  - dnf forbids it
-  - Images cannot hold files
-  - They slow boot
+  - They slow down the boot of the host
+  - dnf forbids it in the image build
   answer:
-  - 0
-  explain: 'A) correct: registry access equals read access. B) wrong: not enforced. C) wrong: they can. D) wrong: not the issue.'
+  - 1
+  explain: 'A) wrong: they can. B) correct: images are readable. C) wrong: not the reason. D) wrong: no such rule.'
+- id: rollbackcase
+  prompt: After an image update a host boots but the application fails. What is the quickest recovery that keeps the data?
+  choices:
+  - Edit files in /usr to undo the change
+  - Run bootc rollback and reboot into the previous deployment
+  - Reinstall the host from the original installer and restore the data from backup
+  - Downgrade the packages one by one with dnf
+  answer:
+  - 1
+  explain: 'A) wrong: /usr is read-only. B) correct: the old deployment is intact. C) wrong: slow and loses state. D) wrong: no package manager model.'
+- id: tagfollow
+  prompt: A team publishes every build to the tag latest and all 400 hosts follow it. A broken build ships on Friday. What design change limits this?
+  choices:
+  - Add more registry servers for the tag
+  - Promote tags through rings, so a few hosts follow the new build first
+  - Build less often so that there are fewer mistakes that can reach the fleet
+  - Move all hosts to different tags at random
+  answer:
+  - 1
+  explain: 'A) wrong: does not help. B) correct: limits the blast radius. C) wrong: does not stop a bad build. D) wrong: no control.'

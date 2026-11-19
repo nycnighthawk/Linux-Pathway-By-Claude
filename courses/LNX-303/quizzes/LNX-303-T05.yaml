@@ -4,75 +4,89 @@ questions:
   prompt: Why is the auid field valuable in audit records?
   choices:
   - It names the audit rule
-  - It holds the effective user after su or sudo
+  - It holds the effective user after su or sudo, so it changes with each switch
   - It keeps the uid of the original login, even after privilege changes
   - It is the process id
   answer:
   - 2
-  explain: 'A) wrong: the rule name is the key, set with -k. B) wrong: the effective uid is a different field. C) correct: the login uid survives su and sudo, so a human can be
-    traced. D) wrong: the process id is pid.'
+  explain: 'A) wrong: the rule name is the key, set with -k. B) wrong: the effective uid is a different field. C) correct: the login uid survives su and sudo, so a human can be traced. D) wrong: the process id is pid.'
 - id: b32
   prompt: An execve audit rule exists only with arch=b64. What is the gap?
   choices:
-  - 64-bit programs are not logged
-  - A 32-bit binary uses the other system call table and runs without a record
   - Shell builtins are not logged
-  - Kernel modules cannot be loaded
+  - Kernel modules cannot be loaded while the rule is active on the host
+  - 64-bit programs are not logged
+  - A 32-bit binary uses the other system call table and runs unlogged
   answer:
-  - 1
-  explain: 'A) wrong: those are logged. B) correct: the b32 twin is needed for completeness. C) wrong: unrelated to architecture.
-    D) wrong: module rules are separate.'
+  - 3
+  explain: 'A) wrong: unrelated to architecture. B) wrong: module rules are separate. C) wrong: those are logged. D) correct: the b32 twin is needed for completeness.'
 - id: immutable
   prompt: What does -e 2 do as the last audit rule?
   choices:
-  - Enables remote logging
   - Makes the rule set immutable until reboot
   - Exits auditd
   - Doubles the log size
+  - Enables remote logging
   answer:
-  - 1
-  explain: 'A) wrong: forwarding is configured elsewhere. B) correct: even root cannot change rules, though changes then need a reboot. C) wrong: the daemon keeps running. D) wrong: it does not affect size.'
+  - 0
+  explain: 'A) correct: even root cannot change rules, though changes then need a reboot. B) wrong: the daemon keeps running. C) wrong: it does not affect size. D) wrong: forwarding is configured elsewhere.'
 - id: lost
   prompt: auditctl -s shows lost 41203. What does it mean?
   choices:
-  - The rules were deleted
-  - The kernel dropped events because its backlog overflowed, so the record has holes
-  - 41203 users logged out
   - The log was rotated
+  - The audit rules were deleted when the daemon last restarted on the host
+  - The kernel dropped events as its backlog overflowed, leaving holes in the record
+  - 41203 users logged out
   answer:
-  - 1
-  explain: 'A) wrong: rules are reported separately. B) correct: lost counts events that never reached the log. C) wrong: it is not
-    a session count. D) wrong: rotation is a daemon action.'
+  - 2
+  explain: 'A) wrong: rotation is a daemon action. B) wrong: rules are reported separately. C) correct: lost counts events that never reached the log. D) wrong: it is not a session count.'
 - id: falco-parts
   prompt: Which Falco objects can a rule condition reuse?
   choices:
-  - Audit keys
-  - Lists and macros
   - Only other rules
   - Kernel modules
+  - Audit keys
+  - Lists and macros
   answer:
-  - 1
-  explain: 'A) wrong: keys belong to auditd. B) correct: lists hold strings and macros hold named conditions. C) wrong: rules do not reference each other. D) wrong:
-    modules are drivers.'
+  - 3
+  explain: 'A) wrong: rules do not reference each other. B) wrong: modules are drivers. C) wrong: keys belong to auditd. D) correct: lists hold strings and macros hold named conditions.'
 - id: driver
   prompt: What is the advantage of the modern eBPF driver in Falco?
   choices:
-  - It makes rules unnecessary
   - It needs no compiler or kernel headers on the host, using CO-RE, but needs a kernel with BTF
   - It encrypts alerts
   - It works on any kernel version
+  - It makes rules unnecessary
   answer:
-  - 1
-  explain: 'A) wrong: the rules engine
-    still decides. B) correct: compile once, run everywhere. C) wrong: transport security is separate. D) wrong: it needs a recent kernel with BTF.'
+  - 0
+  explain: 'A) correct: compile once, run everywhere. B) wrong: transport security is separate. C) wrong: it needs a recent kernel with BTF. D) wrong: the rules engine still decides.'
 - id: fatigue
   prompt: All Falco alerts at NOTICE and above go to a chat channel and people mute it. What is the best remedy?
   choices:
+  - Lower the priority of every rule so that they all stay below the chat threshold
+  - Tune by namespace, image and behaviour; send only high priority to people
   - Disable Falco
   - Add more rules
-  - Lower the priority of every rule
-  - Tune by namespace, image and behaviour, and route only high-priority alerts to people
   answer:
-  - 3
-  explain: 'A) wrong: it
-    removes detection. B) wrong: more rules add more noise. C) wrong: this hides real alerts as well. D) correct: exceptions for known-good behaviour restore trust.'
+  - 1
+  explain: 'A) wrong: this hides real alerts as well. B) correct: exceptions for known-good behaviour restore trust. C) wrong: it removes detection. D) wrong: more rules add more noise.'
+- id: missing-execve
+  prompt: A 64-bit execve audit rule logs commands, but a 32-bit binary leaves no record. What is the gap?
+  choices:
+  - auditd ignores 32-bit users by design, as they cannot become privileged ones
+  - The rule exists only for arch=b64; add the matching b32 rule
+  - The binary runs in a container, so the kernel cannot see the call at all
+  - The log is rotated too often to keep every record that the rule produces
+  answer:
+  - 1
+  explain: 'A) wrong: no such rule. B) correct: the other syscall table is not covered. C) wrong: the kernel still sees it. D) wrong: rotation is unrelated.'
+- id: lost-events
+  prompt: auditctl -s shows a growing lost counter during a backup window. What is the best response?
+  choices:
+  - Raise the backlog limit and slim the rules, because events are being dropped
+  - Ignore it, since the counter only shows how often the log was rotated
+  - Delete the rules during the backup so that the load on the kernel falls
+  - Restart auditd after each backup so that the counter is reset to zero
+  answer:
+  - 0
+  explain: 'A) correct: the record has holes. B) wrong: it counts dropped events. C) wrong: blinds the audit. D) wrong: does not stop drops.'

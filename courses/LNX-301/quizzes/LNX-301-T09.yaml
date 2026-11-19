@@ -3,79 +3,80 @@ questions:
 - id: idempotent
   prompt: What does idempotent mean for an ansible-freeipa module?
   choices:
-  - It always changes the object
-  - A second run with the same arguments reports no change because the object already matches
-  - It runs only once per year
   - It deletes unmanaged objects
+  - It always changes the object, so that the result is the same after each run
+  - A second run with the same arguments reports no change
+  - It runs only once per year
   answer:
-  - 1
-  explain: 'A (wrong): That is the opposite. B (correct): Modules read the current state and change only the difference.
-    C (wrong): Frequency is not part of the definition. D (wrong): Pruning is not automatic.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: member-action
-  prompt: 'You set ''user: [alice, bob]'' on an ipagroup task with state present. Carol was added by hand earlier.
-    What happens?'
+  prompt: 'You set ''user: [alice, bob]'' on an ipagroup task with state present. Carol was added by hand earlier. What happens?'
   choices:
+  - Carol stays, because lists are merged with the members who already exist
+  - Carol is removed, because the list replaces the membership
   - Carol becomes admin
   - The task fails
-  - Carol stays because lists are merged
-  - Carol is removed because the list replaces the membership
   answer:
-  - 3
-  explain: 'A (wrong): No such effect. B (wrong): It runs successfully. C (wrong): Without action: member the list is treated as the full membership. D (correct): Use action:
-    member to add or remove only the listed users.'
+  - 1
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: secrets
   prompt: Where should ipaadmin_password come from?
   choices:
-  - A literal in the playbook
   - An environment file committed next to the playbook
   - A vaulted variable referenced with Jinja, or better a keytab for a narrow automation account
   - The hostname
+  - A literal in the playbook
   answer:
-  - 2
-  explain: 'A (wrong): Secrets in Git are a leak. B (wrong): Still in the repository. C (correct): The secret stays out of plain text. D (wrong): Not
-    a secret.'
+  - 1
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: fqcn
   prompt: Why write freeipa.ansible_freeipa.ipahbacrule rather than ipahbacrule?
   choices:
   - The short form is faster
-  - RHEL 10 installs only the collection format, so the collection prefix (or module_defaults) is needed
-  - The short form needs Windows
+  - RHEL 10 installs only the collection format, so the prefix (or module_defaults) is needed
+  - The short form needs Windows to run and is not offered by the Linux collection
   - The prefix chooses the realm
   answer:
   - 1
-  explain: 'A (wrong): No performance difference. B (correct): Short names do not resolve without the prefix. C
-    (wrong): Irrelevant. D (wrong): It selects the collection.'
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: drift
   prompt: How does a scheduled '--check --diff' run help?
   choices:
+  - It repairs problems automatically, by applying the Git state to the live domain
   - It speeds up replication
-  - It reports any difference between Git and the domain, so manual edits show up as drift
+  - It reports any difference between Git and the domain, so manual edits show
   - It rotates the CA
-  - It repairs problems automatically
   answer:
-  - 1
-  explain: 'A (wrong):
-    Unrelated. B (correct): Changed tasks in check mode identify drift. C (wrong): Unrelated. D (wrong): Check mode changes nothing.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: no-hbac-allow
   prompt: 'What does ipaserver_no_hbac_allow: true do?'
   choices:
-  - It removes sudo
   - It disables Kerberos
-  - It disables the web UI
+  - It disables the web UI of the server, so that only the command line remains
   - It skips creating the default allow_all HBAC rule at install
+  - It removes sudo
   answer:
-  - 3
-  explain: 'A (wrong): No. B (wrong): No. C (wrong): No. D (correct): The domain starts default-deny for HBAC.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: where-run
   prompt: Where do the ansible-freeipa modules need to run?
   choices:
   - Only inside a container without network
-  - On a host with the IPA Python libraries, normally an IdM server or enrolled client, with the target set to one
-    server
-  - Only on the control node laptop with no IPA packages
+  - On a host with the IPA Python libraries, targeting one server
+  - Only on the control node laptop, which needs no IPA packages for the modules
   - On every client at once for objects
   answer:
   - 1
-  explain: 'A (wrong):
-    They need the server API. B (correct): The modules reuse the IPA code, which must be present on the managed node. C (wrong): They
-    fail with import errors. D (wrong): Objects need one change on one server; replication propagates it.'
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
+- id: lists-replace
+  prompt: 'A task sets "user: [alice, bob]" on an ipagroup with state present. Carol was added by hand earlier. What happens?'
+  choices:
+  - Carol becomes an admin of the group, because she was added there by hand
+  - The task fails with an error, because of the member who is not in the list
+  - Carol is removed, because the list replaces the membership
+  - Carol stays in the group, since the lists of the module are merged together
+  answer:
+  - 2
+  explain: 'A) wrong: not related. B) wrong: it does not fail. C) correct: the module enforces the list. D) wrong: they are not merged.'

@@ -3,60 +3,80 @@ questions:
 - id: repomd
   prompt: Which file does a dnf client read first, and which is therefore the one to sign?
   choices:
-  - the .repo file
-  - the largest package
-  - repodata/repomd.xml
-  - primary.xml.gz
+  - primary.xml.gz, which lists the packages and is read after the metadata index
+  - The .repo file on the client machine
+  - The largest package in the repository
+  - repodata/repomd.xml, which lists the other metadata files
   answer:
-  - 2
-  explain: 'A) wrong: that is client configuration. B) wrong: packages are fetched later. C) correct: it lists the other metadata files and their checksums. D) wrong: it is listed by repomd.xml.'
+  - 3
+  explain: 'A) wrong: listed by repomd. B) wrong: a local configuration file. C) wrong: packages come later. D) correct: the entry point.'
 - id: update
   prompt: What is createrepo_c --update for?
   choices:
-  - Upgrading installed packages
-  - Re-reading only packages that changed since the last run
-  - Signing the repository
-  - Deleting old versions
+  - Upgrading the packages installed on the host
+  - Signing the repository after the metadata has been built from all of the packages
+  - Deleting old versions of every package
+  - Re-reading only the packages that changed since the last run
   answer:
-  - 1
-  explain: 'A) wrong: that is dnf upgrade. B) correct: it reuses cached metadata for unchanged files. C) wrong: signing is separate. D) wrong: it does not remove packages.'
+  - 3
+  explain: 'A) wrong: that is dnf. B) wrong: signing is a separate step. C) wrong: it does not delete packages. D) correct: faster on a big repository.'
 - id: pulpchain
   prompt: In Pulp 3, what does a distribution do?
   choices:
-  - Builds packages
-  - Stores private keys
-  - Maps a stable URL path to a publication
-  - Downloads content from upstream
+  - It maps a stable URL path to a publication
+  - It stores private keys for the signing service
+  - It downloads content from the upstream remote
+  - It builds the packages from the source repository
   answer:
-  - 2
-  explain: 'A) wrong: Pulp manages content, not builds. B) wrong: signing services do that. C) correct: moving the distribution to another publication is the rollback. D) wrong: that is a remote and a sync.'
+  - 0
+  explain: 'A) correct: what clients use. B) wrong: keys sit elsewhere. C) wrong: a remote and sync do that. D) wrong: that is not its job.'
 - id: ondemand
   prompt: What is the trade-off of the Pulp on_demand policy?
   choices:
-  - It uses more disk
-  - It saves disk, but a package is fetched from upstream at first request
-  - It disables signatures
-  - It makes the repository read-only
+  - It disables signature checks for the repository, because content arrives late from upstream
+  - It makes the repository read-only for clients
+  - It saves disk, but each package is fetched from upstream on first request
+  - It uses more disk than a full sync would
   answer:
-  - 1
-  explain: 'A) wrong: it uses less. B) correct: the upstream must be reachable for packages not yet cached. C) wrong: signing is unaffected. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: signatures remain. B) wrong: clients stay read-only anyway. C) correct: less storage, more dependence on upstream. D) wrong: the opposite.'
 - id: atomic
   prompt: How should a mirror be published so that clients never see a partial update?
   choices:
-  - Sync in place during the day
-  - Build in a staging directory, validate, then switch with a symlink or atomic rename
-  - Delete the index first
-  - Disable caching
+  - Sync in place during the day, when clients are idle
+  - Delete the index first, then upload the packages
+  - Build in staging, validate, then switch with a symlink or atomic rename
+  - Disable caching on the web server for an hour
   answer:
-  - 1
-  explain: 'A) wrong: clients may fetch mid-sync. B) correct: the switch is atomic. C) wrong: this breaks clients. D) wrong: caching is not the cause.'
+  - 2
+  explain: 'A) wrong: clients see half-synced data. B) wrong: clients see an empty repository. C) correct: one step flips it. D) wrong: does not stop partial states.'
 - id: flat
   prompt: How does a client source entry for a flat Debian repository end?
   choices:
+  - With a port number for the web server
+  - With the suite name of the release
+  - With .rpm, as in the other package family
   - With ./ in place of a suite and component
-  - With a port number
-  - With the suite name
-  - With .rpm
   answer:
-  - 0
-  explain: 'A) correct: the slash form means Packages and Release sit in that directory. B) wrong: not part of the syntax. C) wrong: that is the dists layout. D) wrong: that is the other family.'
+  - 3
+  explain: 'A) wrong: not part of the syntax. B) wrong: that is for a normal repository. C) wrong: wrong family. D) correct: a flat layout has none.'
+- id: stalefiles
+  prompt: After a sync, clients get "404" for a package that the index still lists. Which publishing mistake is most likely?
+  choices:
+  - The package is larger than the cache limit
+  - The index and the packages were published in different steps, so one was missing
+  - The client clock is a few seconds wrong
+  - The TLS certificate expired on the server
+  answer:
+  - 1
+  explain: 'A) wrong: not a 404. B) correct: not atomic. C) wrong: would not give a 404. D) wrong: would give a TLS error.'
+- id: pulpclient
+  prompt: A team wants clients to keep working during an upstream outage, with new packages fetched later. Which Pulp setting fits?
+  choices:
+  - A shorter sync interval and no stored copies
+  - The immediate policy, so all packages are stored locally at sync time
+  - The on_demand policy with the upstream remote turned off after the first sync has run
+  - A distribution without a publication
+  answer:
+  - 1
+  explain: 'A) wrong: still depends on upstream. B) correct: nothing depends on upstream later. C) wrong: packages not yet fetched would fail. D) wrong: clients get nothing.'

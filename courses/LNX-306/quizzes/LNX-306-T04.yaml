@@ -3,60 +3,80 @@ questions:
 - id: httpdir
   prompt: What does the http_directory setting of a Packer source do?
   choices:
-  - Serves a directory (for example the Kickstart file) from a temporary web server for the installer
-  - Sets the output folder
-  - Selects the repository mirror
-  - Publishes the finished image
+  - It chooses the repository mirror that the guest uses while it installs its packages
+  - It uploads the finished image to a registry when done
+  - It selects the folder where the finished image is stored
+  - It serves a directory, such as the Kickstart file, to the installer
   answer:
-  - 0
-  explain: 'A) correct: the boot command points the installer at it. B) wrong: unrelated. C) wrong: unrelated. D) wrong: that is a post-processor.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: that is a post-processor. C) wrong: that is the output setting. D) correct: the boot command points the installer at it.'
 - id: checksum
   prompt: Why is iso_checksum required to be a real value?
   choices:
-  - It speeds up downloads
-  - It proves the installation media is the one you intended, so a changed or tampered ISO fails the build
-  - It selects the architecture
-  - Packer needs it to name the output
+  - Packer uses it to name the output file and the folder of the finished build
+  - It speeds up the download of the installation media
+  - It proves the media is the intended one, so a tampered ISO fails
+  - It selects the processor architecture for the build
   answer:
-  - 1
-  explain: 'A) wrong: unrelated. B) correct: inputs must be pinned and verified. C) wrong: unrelated. D) wrong: not used for naming.'
+  - 2
+  explain: 'A) wrong: not used for naming. B) wrong: unrelated. C) correct: inputs must be pinned and verified. D) wrong: unrelated.'
 - id: machineid
   prompt: Why truncate /etc/machine-id before capture?
   choices:
-  - To save disk space
-  - So that every clone generates its own identity on first boot instead of sharing one
-  - Because systemd requires it to boot
-  - To disable networking
+  - Each clone then makes its own identity instead of sharing one
+  - It frees disk space in the final image
+  - systemd refuses to boot the image at all unless that file is completely empty
+  - It turns off networking until the first login
   answer:
-  - 1
-  explain: 'A) wrong: it is tiny. B) correct: shared ids break DHCP, licensing and monitoring. C) wrong: it regenerates. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: shared ids break DHCP, licensing and monitoring. B) wrong: the file is tiny. C) wrong: it regenerates the value. D) wrong: unrelated.'
 - id: secrets
   prompt: Which is the right way to handle the temporary build password?
   choices:
-  - Hard-code it in the template
-  - Print it in the log
-  - Leave it in the image for later use
-  - A sensitive variable supplied by environment or a secrets manager, with the account removed in the clean-up step
+  - A sensitive variable from a secrets manager, with the account removed in clean-up
+  - Print it in the build log so the team can find it
+  - Leave the account in the image for later maintenance
+  - Hard-code the password in the template next to the other settings of the source
   answer:
-  - 3
-  explain: 'A) wrong: it lands in Git. B) wrong: logs leak. C) wrong: a backdoor in every instance. D) correct: it is a build-time secret.'
+  - 0
+  explain: 'A) correct: a build-time secret that does not outlive the build. B) wrong: logs leak. C) wrong: a backdoor in every instance. D) wrong: it lands in Git.'
 - id: test
   prompt: What is a sound test of a freshly built image?
   choices:
-  - It built without errors, so publish
-  - Check the file size
-  - Read the template again
-  - Boot it twice and assert services, open ports, no build user and different SSH host keys per instance
+  - Boot it twice; assert services, ports, no build user, unique host keys
+  - Check that the build finished without errors, then publish
+  - Compare the file size with last week's image
+  - Read the template once more before the release
   answer:
-  - 3
-  explain: 'A) wrong: a successful build says little about the result. B) wrong: weak signal. C) wrong: does not test the artefact. D) correct: tests cover identity and security.'
+  - 0
+  explain: 'A) correct: tests cover identity and security. B) wrong: a successful build says little about the result. C) wrong: weak signal. D) wrong: does not test the artefact.'
 - id: alt
   prompt: When might Image Builder or a distribution tool be preferable to Packer?
   choices:
-  - When you need the real installer on an unusual hypervisor
-  - When building Windows images
-  - When you want faster, more reproducible images for one distribution family without booting an installer
-  - Never
+  - When the target is a Windows image for a lab
+  - When the image needs no testing before it is released to the whole production fleet
+  - When the real installer must run on an unusual hypervisor
+  - When you want quick, repeatable images for one distro without an installer
   answer:
-  - 2
-  explain: 'A) wrong: that favours Packer. B) wrong: Packer covers Windows. C) correct: composition tools skip the installer boot. D) wrong: they have clear uses.'
+  - 3
+  explain: 'A) wrong: Packer covers Windows too. B) wrong: every image needs tests. C) wrong: that favours Packer. D) correct: composition tools skip the installer boot.'
+- id: clones
+  prompt: Two VMs cloned from the same new image get the same address from DHCP and show as one host in monitoring. What was missed in the build?
+  choices:
+  - The ISO checksum was not pinned in the template
+  - The http_directory pointed at the wrong folder on the build host
+  - The build password was left in the template file
+  - /etc/machine-id was not truncated, so both clones share one identity
+  answer:
+  - 3
+  explain: 'A) wrong: a checksum does not affect identity. B) wrong: that affects the build, not the clones. C) wrong: a separate problem. D) correct: each clone should regenerate its id.'
+- id: weekly
+  prompt: A team rebuilds images weekly and the latest one fails to boot in production. Which practice limits the damage?
+  choices:
+  - Keep the old image and promote the new one only after its boot test passes
+  - Skip the boot tests whenever the template did not change since the previous week
+  - Delete the old images to save storage space
+  - Build directly in production to save a copy step
+  answer:
+  - 0
+  explain: 'A) correct: a tested promotion with a rollback. B) wrong: the base packages still change. C) wrong: removes the rollback. D) wrong: removes any gate before release.'

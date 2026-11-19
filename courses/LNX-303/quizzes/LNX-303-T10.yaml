@@ -3,58 +3,53 @@ questions:
 - id: volatility
   prompt: In which order should evidence be collected from a live suspect host?
   choices:
-  - Disk image, then memory, then network state
   - Memory and network state first, then disk, then backups and off-host logs
   - Backups first, because they are safest
   - Whatever is easiest
+  - Disk image first, then memory, then the network state and any off-host logs
   answer:
-  - 1
-  explain: 'A) wrong: memory and connections vanish at shutdown. B) correct: the most volatile data go first. C) wrong: backups are
-    durable and can wait. D) wrong: order matters.'
+  - 0
+  explain: 'A) correct: the most volatile data go first. B) wrong: backups are durable and can wait. C) wrong: order matters. D) wrong: memory and connections vanish at shutdown.'
 - id: contain
   prompt: How should you contain a suspected compromise while preserving evidence?
   choices:
   - Delete the attacker's files
   - Cut the network connection and leave the machine running
   - Power the machine off
-  - Reboot into single-user mode
+  - Reboot into single-user mode so that nothing else can run on the host
   answer:
   - 1
-  explain: 'A) wrong: it alters the evidence. B) correct: it stops exfiltration and keeps volatile state. C) wrong: memory and processes are lost. D) wrong: a reboot
-    destroys memory.'
+  explain: 'A) wrong: it alters the evidence. B) correct: it stops exfiltration and keeps volatile state. C) wrong: memory and processes are lost. D) wrong: a reboot destroys memory.'
 - id: deleted
   prompt: lsof +L1 shows a running process whose binary file was deleted. How do you recover the binary?
   choices:
-  - Search the trash
-  - Run strings on the disk
   - It cannot be recovered
   - Copy /proc/PID/exe, which still refers to the running image
+  - Search the trash
+  - Run strings on the whole disk and rebuild the binary from the fragments
   answer:
-  - 3
-  explain: 'A) wrong: unlinking is
-    not trash. B) wrong: the data may be gone from the disk but not from the process. C) wrong: the kernel still holds it. D) correct: /proc/PID/exe gives access to the deleted file.'
+  - 1
+  explain: 'A) wrong: the kernel still holds it. B) correct: /proc/PID/exe gives access to the deleted file. C) wrong: unlinking is not trash. D) wrong: the data may be gone from the disk but not from the process.'
 - id: mount
   prompt: Why mount an evidence image with ro,noload,nodev,noexec,noatime?
   choices:
-  - To compress the image
   - To encrypt the image
-  - To prevent writes, journal replay, device nodes, execution of attacker programs and access-time changes
+  - To prevent writes, journal replay, device nodes, execution and atime changes
   - To speed up analysis
+  - To compress the image on the fly so that it takes less space on the analysis host
   answer:
-  - 2
-  explain: 'A) wrong: they do not compress. B) wrong:
-    mount options do not encrypt. C) correct: each option removes a way to change the evidence or run malware. D) wrong: speed is not the aim.'
+  - 1
+  explain: 'A) wrong: mount options do not encrypt. B) correct: each option removes a way to change the evidence or run malware. C) wrong: speed is not the aim. D) wrong: they do not compress.'
 - id: ctime
   prompt: Why is ctime more useful than mtime when timestamps may be forged?
   choices:
-  - ctime records file creation
   - mtime is never recorded
-  - ctime is stored off the host
-  - ordinary user-space tools cannot set ctime, so a mismatch with mtime suggests timestomping
+  - ctime is stored off the host on the log server, so an intruder cannot change it
+  - User-space tools cannot set ctime, so a mismatch with mtime hints at timestomping
+  - ctime records file creation
   answer:
-  - 3
-  explain: 'A) wrong: ctime is inode change time; birth time is separate. B) wrong: mtime is recorded. C) wrong: it is on the file system. D) correct: touch sets mtime and atime but ctime updates
-    to the real change time.'
+  - 2
+  explain: 'A) wrong: mtime is recorded. B) wrong: it is on the file system. C) correct: touch sets mtime and atime but ctime updates to the real change time. D) wrong: ctime is inode change time; birth time is separate.'
 - id: rootkit
   prompt: Why prefer analysing a memory dump and a disk image to running commands on the live host?
   choices:
@@ -64,16 +59,34 @@ questions:
   - Live commands are always slower
   answer:
   - 2
-  explain: 'A) wrong:
-    dumps are large. B) wrong: encryption is not implied. C) correct: rootkits hide processes, connections and files from live tools. D) wrong: speed is not the reason.'
+  explain: 'A) wrong: dumps are large. B) wrong: encryption is not implied. C) correct: rootkits hide processes, connections and files from live tools. D) wrong: speed is not the reason.'
 - id: hash
   prompt: Why hash the source device and the image at acquisition?
   choices:
-  - To speed up the copy
-  - To make the copy smaller
-  - To show later that the copy is faithful and unchanged
   - To erase the source
+  - To speed up the copy
+  - To make the copy smaller by dropping blocks that contain identical data
+  - To show later that the copy is faithful and unchanged
   answer:
-  - 2
-  explain: 'A) wrong:
-    it does not speed up the copy. B) wrong: hashing does not reduce size. C) correct: matching hashes support integrity and chain of custody. D) wrong: it never erases anything.'
+  - 3
+  explain: 'A) wrong: it never erases anything. B) wrong: it does not speed up the copy. C) wrong: hashing does not reduce size. D) correct: matching hashes support integrity and chain of custody.'
+- id: live-host
+  prompt: A suspected compromised server is still running. In what order do you collect evidence?
+  choices:
+  - Reboot into single-user mode and copy the logs to a USB disk for review
+  - Memory and network state first, then disk, then backups and off-host logs
+  - Disk image first, then memory and network state, then backups and off-host logs
+  - Power it off, then image the disk so that nothing changes during the copy
+  answer:
+  - 1
+  explain: 'A) wrong: changes the evidence. B) correct: most volatile first. C) wrong: memory is lost by then. D) wrong: loses memory and connections.'
+- id: deleted-bin
+  prompt: lsof +L1 shows a running process whose binary was deleted. How do you recover it?
+  choices:
+  - It cannot be recovered once the file has been deleted from the disk
+  - Copy /proc/PID/exe, which still refers to the running image
+  - Search the trash of the user for the file and restore it from there
+  - Run strings on the whole disk and rebuild the binary from the fragments
+  answer:
+  - 1
+  explain: 'A) wrong: it can. B) correct: the process still holds it. C) wrong: not there. D) wrong: lossy.'

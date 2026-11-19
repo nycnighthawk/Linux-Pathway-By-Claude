@@ -3,60 +3,80 @@ questions:
 - id: inhibitor
   prompt: What does an inhibitor in a Leapp report mean?
   choices:
-  - A warning that can always be ignored
   - A package that is faster than the old one
-  - A kind of firewall rule
   - A problem that blocks the upgrade until it is resolved
+  - A firewall rule that Leapp adds on its own while it runs the checks
+  - A warning that can safely be ignored
   answer:
-  - 3
-  explain: 'A) wrong: informational items can be, inhibitors cannot. B) wrong: unrelated. C) wrong: unrelated. D) correct: the upgrade will not start.'
+  - 1
+  explain: 'A) wrong: unrelated. B) correct: resolve it, then run again. C) wrong: unrelated. D) wrong: inhibitors block the upgrade.'
 - id: preupgrade
   prompt: What does leapp preupgrade do?
   choices:
-  - Collects data, assesses upgradability and writes a report without changing the configuration
-  - Upgrades the system without a reboot
-  - Removes all third-party packages
-  - Creates a backup
+  - It creates a full backup of the host before the upgrade
+  - It upgrades the system to the next major release without needing a reboot at all
+  - It assesses upgradability and writes a report without changing the config
+  - It removes every third-party package from the host
   answer:
-  - 0
-  explain: 'A) correct: it is a rehearsal of the checks. B) wrong: that is leapp upgrade. C) wrong: it does not remove anything. D) wrong: you must make the backup yourself.'
+  - 2
+  explain: 'A) wrong: backups are your job. B) wrong: the upgrade phase is separate. C) correct: a safe first step. D) wrong: it does not remove anything.'
 - id: clean
   prompt: The report shows no inhibitors. What does that prove?
   choices:
-  - The application will work unchanged
-  - Nothing is guaranteed; the assessment cannot simulate the whole upgrade, so it still needs a backup and ideally a rehearsal
-  - The upgrade will certainly succeed
-  - No reboot is needed
+  - No reboot is needed for this upgrade
+  - Nothing is guaranteed, so a backup and ideally a rehearsal still matter
+  - The application will work unchanged after the upgrade
+  - The upgrade will certainly succeed on this host
   answer:
   - 1
-  explain: 'A) wrong: applications can break. B) correct: it lowers risk only. C) wrong: no guarantee. D) wrong: a reboot is part of the process.'
+  explain: 'A) wrong: a reboot is part of the upgrade. B) correct: the check is a filter, not a proof. C) wrong: nothing about the application is tested. D) wrong: the assessment cannot simulate everything.'
 - id: answers
   prompt: Why must required questions be answered before the upgrade phase?
   choices:
-  - Questions are optional
-  - Answers make the download faster
   - The upgrade phase runs unattended and cannot stop to ask
-  - They change the BIOS
+  - Questions are optional and may be skipped when the answer is already obvious
+  - Answers make the download phase faster
+  - Answers change the BIOS settings of the host
   answer:
-  - 2
-  explain: 'A) wrong: missing answers block the run. B) wrong: unrelated. C) correct: decisions are recorded ahead of time. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: answers must be on file first. B) wrong: required ones block the upgrade. C) wrong: unrelated. D) wrong: unrelated.'
 - id: watchdog
   prompt: Why disable hardware watchdogs and health checks during an upgrade?
   choices:
-  - A busy host that is not feeding the watchdog may be reset in the middle of the package transaction
-  - They are not needed after the upgrade
-  - They use too much disk
-  - They are not compatible with TLS
+  - A busy host may miss the watchdog and be reset mid-transaction
+  - They use too much disk space during the upgrade
+  - They are incompatible with TLS on the new release
+  - They are not needed once the upgrade has finished and the host is running again
   answer:
   - 0
-  explain: 'A) correct: an interruption can leave the machine unbootable. B) wrong: they should be re-enabled afterwards. C) wrong: unrelated. D) wrong: unrelated.'
+  explain: 'A) correct: a reset mid-transaction can leave a broken system. B) wrong: unrelated. C) wrong: unrelated. D) wrong: they are needed afterwards.'
 - id: rebuild
   prompt: When is a rebuild preferable to an in-place upgrade?
   choices:
-  - Only for Windows
-  - When the host is stateless or built from code, drifted or poorly understood, or the distribution does not support in-place paths
-  - Never
-  - When the host holds unique data and has no snapshot
+  - Never, since in-place upgrades are always better
+  - Only when the hosts run Windows
+  - When the host holds unique data and has no snapshot that could be restored later
+  - When the host is stateless or built from code, or has drifted
   answer:
-  - 1
-  explain: 'A) wrong: it applies to Linux too. B) correct: replacing is cheap and clean there. C) wrong: it is often best. D) wrong: that is a case for in-place with a backup.'
+  - 3
+  explain: 'A) wrong: sometimes it is not. B) wrong: not about Windows. C) wrong: that argues for caution, not a rebuild. D) correct: a clean build beats a risky upgrade.'
+- id: inhibitorcase
+  prompt: leapp preupgrade lists an inhibitor about an unsupported kernel module. The upgrade window opens in an hour. What is the best action?
+  choices:
+  - Ignore the finding because the report is often wrong
+  - Delete the report file and start the assessment over
+  - Remove or replace the module as advised, then rerun preupgrade
+  - Run the upgrade anyway and accept the risk this time, since the window is short
+  answer:
+  - 2
+  explain: 'A) wrong: the report is a gate. B) wrong: the problem remains. C) correct: the inhibitor must be cleared first. D) wrong: inhibitors block the upgrade phase.'
+- id: rebootstuck
+  prompt: After an in-place upgrade the host sits at the reboot screen for an hour with no console output. What was the missed preparation?
+  choices:
+  - Disabled watchdogs and out-of-band console access kept ready
+  - Choosing a faster package mirror for the upgrade
+  - Renaming the host before the upgrade
+  - Increasing the swap size on the host
+  answer:
+  - 0
+  explain: 'A) correct: a watchdog reset or a hidden failure needs console access. B) wrong: unrelated to the stall. C) wrong: unrelated. D) wrong: not the cause.'

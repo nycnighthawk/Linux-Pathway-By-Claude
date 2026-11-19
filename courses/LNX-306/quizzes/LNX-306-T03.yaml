@@ -1,62 +1,82 @@
 title: 'Quiz: cloud-init'
 questions:
 - id: header
-  prompt: What happens if user-data has no #cloud-config first line?
+  prompt: 'What happens if user-data has no #cloud-config first line?'
   choices:
-  - cloud-init is removed
-  - The instance does not boot #!)
-  - It is still parsed as configuration
-  - It is not treated as cloud-config, so its keys are ignored (or it is run as a script if it starts with
+  - 'Its keys are ignored, or it runs as a script if it starts with #!'
+  - cloud-init removes itself from the image on the first boot
+  - It is read as configuration anyway, because the content looks like YAML
+  - The instance fails to boot and drops to an emergency shell
   answer:
-  - 3
-  explain: 'A) wrong: nothing is removed. B) wrong: boot continues. C) wrong: the header selects the handler. D) correct: the type is detected from the first line.'
+  - 0
+  explain: 'A) correct: the type is detected from the first line. B) wrong: nothing is removed. C) wrong: the header selects the handler. D) wrong: boot continues.'
 - id: instanceid
   prompt: Why did ten cloned VMs skip their runcmd entries?
   choices:
-  - runcmd is deprecated
-  - They shared the instance-id, so cloud-init believed it had already run on that instance
-  - YAML forbids lists
-  - The disks were full
+  - They shared one instance-id, so cloud-init saw the work as already done
+  - The clones ran out of disk space while they were writing their first-boot logs
+  - runcmd is deprecated and no longer runs on current images
+  - YAML does not allow lists inside the user-data file
   answer:
-  - 1
-  explain: 'A) wrong: it works. B) correct: per-instance modules key on the id. C) wrong: lists are fine. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: per-instance modules key on the id. B) wrong: unrelated. C) wrong: it still works. D) wrong: lists are fine.'
 - id: nocloud
   prompt: How does cloud-init find a NoCloud seed on a volume?
   choices:
-  - By the file name seed.iso
-  - By DNS
-  - By the volume label cidata (or CIDATA) with user-data and meta-data files
-  - By the MAC address
+  - By the MAC address of the first network interface
+  - By a file named seed.iso placed on the first volume
+  - The volume label cidata (or CIDATA) with user-data and meta-data files
+  - By a DNS record that the instance looks up from the name it was given at boot
   answer:
   - 2
-  explain: 'A) wrong: names do not matter. B) wrong: unrelated. C) correct: the label is the key. D) wrong: unrelated.'
+  explain: 'A) wrong: unrelated. B) wrong: names do not matter. C) correct: the label is the key. D) wrong: unrelated.'
 - id: secrets
   prompt: Why are passwords in user-data a problem?
   choices:
-  - Any process on the instance, and anyone who can read the instance configuration, can read them
-  - They slow boot
-  - YAML cannot hold them
-  - They are removed at boot
+  - YAML cannot store the special characters that passwords tend to contain in real life
+  - cloud-init erases them before the first login happens
+  - They make the first boot slower on small instances
+  - Any process on the instance, and anyone reading its config, can read them
   answer:
-  - 0
-  explain: 'A) correct: it is served by the metadata service and stored by the platform. B) wrong: unrelated. C) wrong: it can. D) wrong: they persist.'
+  - 3
+  explain: 'A) wrong: it can. B) wrong: they persist. C) wrong: unrelated. D) correct: served by the metadata service and stored by the platform.'
 - id: clean
   prompt: What does cloud-init clean --logs prepare for?
   choices:
-  - Capturing an image or retesting, so the next boot behaves as a first boot
-  - Deleting the kernel
-  - Formatting the disk
-  - Changing the hostname
+  - It reformats the root file system of the instance
+  - It changes the hostname that the instance reports to its DHCP server at boot
+  - It makes the next boot a first boot, for image capture or retests
+  - It removes the running kernel from the boot disk
   answer:
-  - 0
-  explain: 'A) correct: it removes state and logs. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) correct: it removes state and logs. D) wrong: unrelated.'
 - id: validate
   prompt: Which command checks a user-data file against the schema before booting?
   choices:
-  - cloud-init query
+  - cloud-id, which names the datasource that was found
   - cloud-init schema --config-file user-data
-  - cloud-init status
-  - cloud-id
+  - cloud-init query, which reads the instance data
+  - cloud-init status, which reports how the run went
   answer:
   - 1
-  explain: 'A) wrong: reads instance data. B) correct: it catches type and indentation errors. C) wrong: reports run state. D) wrong: names the datasource.'
+  explain: 'A) wrong: names the datasource. B) correct: it catches type and indentation errors. C) wrong: reads instance data. D) wrong: reports run state.'
+- id: noruns
+  prompt: You edit user-data on a running VM and reboot, but nothing changes. The instance-id is the same. What is the best next step?
+  choices:
+  - Run cloud-init clean, or give the instance a new instance-id
+  - 'Add a #cloud-config line to the top of meta-data'
+  - Rename the datasource label from cidata to CIDATA
+  - Reboot a second time so the per-instance modules run again
+  answer:
+  - 0
+  explain: 'A) correct: this makes the next boot a first boot. B) wrong: the header belongs in user-data. C) wrong: the label is not the cause. D) wrong: per-instance modules still skip.'
+- id: badindent
+  prompt: A new image boots but the users from user-data are missing. The logs show a schema warning. What do you do first?
+  choices:
+  - Move the file to a second volume with another label
+  - Run cloud-init schema on the file and fix the keys it reports
+  - Turn off the metadata service on the host and retry
+  - Reinstall the cloud-init package inside the image
+  answer:
+  - 1
+  explain: 'A) wrong: the location is not at fault. B) correct: the schema check shows the exact error. C) wrong: not related to a schema warning. D) wrong: the file is the likely problem.'

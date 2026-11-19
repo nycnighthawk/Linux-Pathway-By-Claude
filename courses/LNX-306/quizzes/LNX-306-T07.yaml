@@ -3,60 +3,80 @@ questions:
 - id: bmc
   prompt: Why can a BMC power-cycle a server that is switched off at the operating-system level?
   choices:
-  - It needs the OS agent installed
-  - It is a separate small computer with its own network port and firmware, powered whenever the server has standby power
-  - It uses the host network card only
-  - It runs inside the kernel
+  - It shares the host network card with the operating system
+  - It is a separate computer with its own port, on standby power
+  - It runs as a module inside the host kernel
+  - It relies on an agent that must be installed and running inside the host OS
   answer:
   - 1
-  explain: 'A) wrong: no agent is needed. B) correct: it is independent of the host. C) wrong: it has its own port. D) wrong: it is separate hardware.'
+  explain: 'A) wrong: it has its own port. B) correct: independent of the host. C) wrong: it is separate hardware. D) wrong: no agent is needed.'
 - id: once
   prompt: Which Redfish settings make a PXE boot apply for one boot only?
   choices:
-  - ResetType ForceOff
-  - PowerState Pxe
-  - BootSourceOverrideTarget Pxe with BootSourceOverrideEnabled Once
   - BootSourceOverrideTarget Pxe with BootSourceOverrideEnabled Continuous
+  - PowerState set to Pxe before the next reset
+  - ResetType ForceOff followed by ForceOn on the system
+  - BootSourceOverrideTarget Pxe with BootSourceOverrideEnabled Once
   answer:
-  - 2
-  explain: 'A) wrong: that turns the machine off. B) wrong: not a valid state. C) correct: the override is cleared after one boot. D) wrong: it would stay for every boot.'
+  - 3
+  explain: 'A) wrong: stays for every boot. B) wrong: not a valid state. C) wrong: power cycle only, no boot choice. D) correct: the override clears after one boot.'
 - id: password
   prompt: Why prefer ipmitool -E (password from the environment) over -P?
   choices:
-  - A password on the command line is visible in the process list
-  - -P is not supported
-  - -E encrypts the network traffic
-  - -E is faster
+  - -E encrypts the traffic between the client and the BMC
+  - A command-line password shows in the process list
+  - -E makes the connection to the BMC faster
+  - -P is no longer supported by current ipmitool builds
   answer:
-  - 0
-  explain: 'A) correct: other users can read process arguments. B) wrong: it works but is unsafe. C) wrong: encryption depends on lanplus. D) wrong: no speed change.'
+  - 1
+  explain: 'A) wrong: encryption depends on lanplus. B) correct: other users can read process arguments. C) wrong: no speed change. D) wrong: it works but is unsafe.'
 - id: suite0
   prompt: What is the danger of IPMI cipher suite 0?
   choices:
-  - It limits sessions to one user
-  - It permits sessions without authentication or encryption
-  - It disables serial-over-LAN
-  - It forces TLS
+  - It switches off serial-over-LAN on the BMC
+  - It forces every session through TLS
+  - It limits the BMC to a single management session at a time for all users
+  - It allows sessions without authentication or encryption
   answer:
-  - 1
-  explain: 'A) wrong: unrelated. B) correct: anyone who reaches the port may act. C) wrong: unrelated. D) wrong: IPMI does not use TLS.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: IPMI does not use TLS. C) wrong: unrelated. D) correct: a known weakness.'
 - id: allowable
   prompt: Why should a Redfish client read the allowable values and system ids from the service?
   choices:
-  - Vendors differ in ids and accepted values, so assumptions break on the first different model
-  - The standard forbids caching
-  - It is required for TLS
-  - Values never change
+  - Ids and values differ by vendor, so assumptions fail on a new model
+  - The standard forbids a client from caching any values
+  - TLS needs the values to negotiate a session
+  - The values never change between server models, firmware versions and vendors alike
   answer:
   - 0
   explain: 'A) correct: discover instead of assume. B) wrong: not forbidden. C) wrong: unrelated. D) wrong: they differ by model and firmware.'
 - id: nohw
   prompt: Which is a way to practise BMC automation without servers?
   choices:
-  - Use ping
-  - Run ipmitool against a public address
-  - A mock Redfish service, sushy-emulator or virtualbmc in front of libvirt guests
-  - Disable the firewall
+  - Run ping against a test address and read the replies to check the power state
+  - Run ipmitool against a public address that answers
+  - Turn off the firewall on the workstation first
+  - A mock Redfish service, sushy-emulator or virtualbmc over libvirt guests
   answer:
-  - 2
-  explain: 'A) wrong: ping does not manage power. B) wrong: attacking others is not practice. C) correct: emulators and mocks behave like a BMC. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: ping does not manage power. B) wrong: attacking others is not practice. C) wrong: unrelated. D) correct: emulators behave like a BMC.'
+- id: timeoutcase
+  prompt: A script sets a one-time PXE boot through Redfish and gets HTTP 400 on a new server model. The same call worked on the old model. What do you do first?
+  choices:
+  - Switch the script to cipher suite 0 for the new model
+  - Read the system id and allowable values from the new model and fix the request
+  - Retry the same call a few times until it succeeds
+  - Disable certificate checks on the client and send the same request once more
+  answer:
+  - 1
+  explain: 'A) wrong: weakens security and is not the cause. B) correct: vendors differ in ids and values. C) wrong: a 400 is a request problem. D) wrong: unrelated to a bad request.'
+- id: sniffed
+  prompt: During an audit, a scan shows the BMC accepts cipher suite 0. What should be done?
+  choices:
+  - Send the scan result to the vendor and take no action yet
+  - Change the user names but keep all the cipher suites
+  - Leave it as it is, because the management network is trusted
+  - Disable suite 0 and null authentication, use a strong suite, isolate the network
+  answer:
+  - 3
+  explain: 'A) wrong: the risk remains. B) wrong: suite 0 needs no user name. C) wrong: one foothold then controls every machine. D) correct: closes the hole.'

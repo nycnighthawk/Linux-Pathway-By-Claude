@@ -3,60 +3,80 @@ questions:
 - id: clearpart
   prompt: What is the danger of "clearpart --all --initlabel" with no drive filter?
   choices:
-  - It forces a reboot
-  - It disables SELinux
-  - It can wipe every disk the installer sees, including data disks
-  - It only clears the boot disk
+  - It can erase every disk the installer sees, data disks included
+  - It clears only the disk the installer booted from, nothing else
+  - It removes the installer logs from the target after the run
+  - It resets the BIOS settings of the target host and reboots it
   answer:
-  - 2
-  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) correct: pair it with ignoredisk --only-use and --drives. D) wrong: it is not limited to one disk by default.'
+  - 0
+  explain: 'A) correct: pair it with ignoredisk --only-use and --drives. B) wrong: it is not limited to the boot disk by default. C) wrong: logs are untouched by partitioning commands. D) wrong: unrelated to disk partitioning.'
 - id: rootpw
   prompt: Which is the safest root setting in an answer file?
   choices:
-  - A shared password in the URL
-  - rootpw --lock together with an SSH key for a named administrator
-  - An empty root password
-  - rootpw --plaintext changeme
+  - rootpw --plaintext changeme with a forced change at first login
+  - One shared root password passed in the Kickstart URL for every host
+  - An empty root password that a first-boot script sets later on
+  - rootpw --lock plus an SSH key for a named administrator
   answer:
-  - 1
-  explain: 'A) wrong: URLs are logged. B) correct: no password to steal; access by key. C) wrong: anyone can log in. D) wrong: a readable shared secret.'
+  - 3
+  explain: 'A) wrong: a readable shared secret that sits in the file. B) wrong: URLs end up in server logs and shell history. C) wrong: anyone can log in until that script runs. D) correct: no password exists to steal and access is by key.'
 - id: ksdelivery
   prompt: How do you tell Anaconda to use a Kickstart file served over HTTP?
   choices:
-  - It cannot be done
   - The kernel argument inst.ks=http://server/path/ks.cfg
-  - A DNS TXT record only
-  - ks=http://... in /etc/fstab
+  - A ks=http://server/path entry in /etc/fstab of the install media
+  - A DNS TXT record on the domain that names the answer file
+  - A file called ks.cfg that the installer finds by scanning the LAN
   answer:
-  - 1
-  explain: 'A) wrong: it is the usual method. B) correct: inst.ks takes URLs, nfs and hd locations. C) wrong: no such mechanism. D) wrong: fstab is not read by the installer.'
+  - 0
+  explain: 'A) correct: inst.ks takes URL, nfs and hd locations. B) wrong: the installer does not read fstab. C) wrong: no such discovery mechanism exists. D) wrong: Anaconda does not scan the network.'
 - id: preseedtime
   prompt: Why can a preseed file fetched over the network fail to answer the network questions?
   choices:
-  - Preseed does not support networks
-  - The network is configured before the file is fetched, so those questions are asked first
-  - HTTP is blocked by Debian
-  - The file is too big
+  - Debian blocks HTTP downloads while the installer is still running
+  - Network setup runs before the file is fetched, so those questions come first
+  - The file is only parsed after it grows past a certain size
+  - Preseed has no support for static network settings at all
   answer:
   - 1
-  explain: 'A) wrong: it supports it. B) correct: set netcfg values as boot parameters or embed the file in the initrd. C) wrong: not blocked. D) wrong: size is irrelevant.'
+  explain: 'A) wrong: HTTP is not blocked. B) correct: set netcfg values as boot parameters or embed the file in the initrd. C) wrong: size is irrelevant. D) wrong: it supports them as netcfg values.'
 - id: autoinstallsafe
   prompt: Why does Ubuntu autoinstall wait for confirmation unless the autoinstall kernel argument is present?
   choices:
-  - A safety feature, so that an installation that would erase disks needs explicit consent
-  - To download updates
-  - To pick a language
-  - A bug in Subiquity
+  - The installer has to ask which language the new system should use
+  - The pause is a defect that the next point release should remove
+  - An install that erases disks should need explicit consent
+  - Subiquity must download updates first and needs time to finish
   answer:
-  - 0
-  explain: 'A) correct: the argument is the consent. B) wrong: unrelated. C) wrong: unrelated. D) wrong: it is deliberate.'
+  - 2
+  explain: 'A) wrong: language is part of the file. B) wrong: the wait is deliberate. C) correct: the argument is that consent. D) wrong: unrelated to the prompt.'
 - id: handoff
   prompt: What should the answer file hand over to at the end?
   choices:
   - Configuration management or cloud-init, which converge repeatedly
-  - A manual checklist
-  - The BIOS
-  - Nothing; it should configure everything
+  - The BIOS, which applies the remaining host settings by itself
+  - Nothing, because the installer should configure every setting itself
+  - A manual checklist that an engineer completes after the first login
   answer:
   - 0
-  explain: 'A) correct: keep the file minimal and let repeatable tools do the rest. B) wrong: not repeatable. C) wrong: unrelated. D) wrong: the installer runs once and is hard to test.'
+  explain: 'A) correct: keep the file small and let repeatable tools do the rest. B) wrong: unrelated to the installer. C) wrong: the installer runs once and is hard to test. D) wrong: a checklist is not repeatable.'
+- id: wipeddata
+  prompt: A host reinstalls overnight and the data disk is empty. The Kickstart has "clearpart --all --initlabel" and no other storage lines. What is the most likely cause?
+  choices:
+  - The installer mounted the data disk read-only and lost its files
+  - The reinstall fetched the wrong repository for the target host
+  - The data disk failed at the same moment the reinstall began
+  - No drive filter, so the command cleared the data disk too
+  answer:
+  - 3
+  explain: 'A) wrong: a read-only mount does not erase data. B) wrong: the repository does not partition disks. C) wrong: the file explains the loss without a failure. D) correct: restrict it with ignoredisk --only-use or clearpart --drives.'
+- id: urlpassword
+  prompt: A reviewer finds a shared root password inside the URL used to fetch the answer file. Which change fixes the design?
+  choices:
+  - Lock root, add an SSH key for a named admin, keep secrets off URLs
+  - Shorten the URL so that it fits in the boot menu entry
+  - Move the password to a second URL on the same web server
+  - Rotate the shared password every month and keep fetching the file from the same URL
+  answer:
+  - 0
+  explain: 'A) correct: removes the shared secret and the leak. B) wrong: length does not change the exposure. C) wrong: it still travels as a request that is logged. D) wrong: the secret still sits in logs between rotations.'

@@ -3,85 +3,80 @@ questions:
 - id: machine-quota
   prompt: What is the risk of letting ordinary users join machines through ms-DS-MachineAccountQuota?
   choices:
-  - None; it is the recommended approach
   - It only works for Linux
   - It disables Kerberos on the new machines
   - Any user can create computer objects, which then appear in the directory with an identity the user controls
+  - None; it is the recommended approach
   answer:
-  - 3
-  explain: 'A (wrong): Microsoft discourages it. B (wrong): The quota applies
-    to any joiner. C (wrong): The accounts are valid Kerberos principals. D (correct): The default quota lets each user add several machines,
-    widening the attack surface.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: delegated-join
   prompt: Which join identity best fits the least-privilege principle?
   choices:
-  - A domain admin
-  - The built-in guest account
-  - Any user with the quota
   - A service account delegated 'create computer objects' on one OU
+  - A domain admin
+  - The built-in guest account, which already exists on every domain controller
+  - Any user with the quota
   answer:
-  - 3
-  explain: 'A (wrong): Far more power than enrolment needs. B (wrong): Guests cannot create computer objects. C (wrong): Broad, uncontrolled, discouraged. D (correct): It can enrol machines and nothing else.'
+  - 0
+  explain: 'A) correct: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: otp-join
   prompt: What does a one-time-password join add?
   choices:
-  - It lets the host enrol using a pre-staged account's own password, so no user credentials are stored on or typed
-    into the host
+  - The host enrols with a pre-staged account's password, so no user credentials are used
   - It disables machine password rotation
   - It removes the need for DNS
-  - It creates the account in the default container
+  - It creates the computer account in the default container of the domain instead
   answer:
   - 0
-  explain: 'A (correct): The AD team stages the object; the host proves it is the intended machine and then sets
-    a random password. B (wrong): Rotation continues by the usual schedule. C (wrong): DNS is still required. D
-    (wrong): The account already exists where staged.'
+  explain: 'A) correct: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: gpo-mode
   prompt: Before setting ad_gpo_access_control to enforcing across a fleet, what is wise?
   choices:
-  - Run a pilot in permissive mode and read what would have been denied
-  - Set the clock forward
+  - Set the clock forward on the pilot hosts and check which logins are refused
   - Delete the GPOs
   - Disable SSSD
+  - Run a pilot in permissive mode and read what would have been denied
   answer:
-  - 0
-  explain: 'A (correct): Permissive logs the decisions without blocking, so surprises appear before they lock users
-    out. B (wrong): Time is not
-    part of the decision. C (wrong): GPOs belong to the Windows team. D (wrong): The setting lives in SSSD.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: ldap-signing
-  prompt: A script using 'ldapsearch -x' with a simple bind fails with 'Strong(er) authentication required' against
-    a domain controller. Why?
+  prompt: A script using 'ldapsearch -x' with a simple bind fails with 'Strong(er) authentication required' against a domain controller. Why?
   choices:
+  - The user is in the Protected Users group, which blocks all simple binds
+  - The DC enforces LDAP signing, so the script needs SASL/GSSAPI or LDAPS
   - The DC is out of disk
   - The base DN is wrong
-  - The user is in Protected Users
-  - The DC enforces LDAP signing, so the script must use SASL/GSSAPI or LDAPS
   answer:
-  - 3
-  explain: 'A (wrong): That
-    would not give an authentication message. B (wrong): A wrong base gives a no-such-object result. C (wrong):
-    That affects Kerberos and NTLM, not this error. D (correct): A simple bind over a clear channel is rejected when signing is required.'
+  - 1
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: stale-object
-  prompt: A rebuilt host called app01 fails to join with 'Insufficient access' although the join account works for
-    new names. What probably happened?
+  prompt: A rebuilt host called app01 fails to join with 'Insufficient access' although the join account works for new names. What probably happened?
   choices:
+  - An old APP01$ object exists elsewhere, outside the delegated OU
   - SSSD cache is full
   - The host's clock is slow
-  - The OU name has an upper-case letter
-  - An old APP01$ object exists elsewhere in the directory, outside the delegated OU
+  - The OU name has an upper-case letter, which the directory treats as a new name
   answer:
-  - 3
-  explain: 'A (wrong): The cache is local and unrelated. B (wrong): Skew gives a Kerberos error. C (wrong): DNs are
-    case-insensitive. D (correct): The account cannot modify an object it was not delegated; ask the AD team to move or delete
-    it.'
+  - 0
+  explain: 'A) correct: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: rc4
   prompt: Why can a long-running Linux server suddenly fail after Windows hardening removes RC4?
   choices:
-  - Its machine password was last set under old policy and its keys include no AES entries until it is rotated
-  - Linux cannot use AES
-  - The kernel was updated
+  - The kernel was updated and no longer accepts the Kerberos tickets of the domain
   - The hostname changed
+  - Its machine password predates the policy, so its keys include no AES entries
+  - Linux cannot use AES
+  answer:
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
+- id: join-denied
+  prompt: A rebuilt host called app01 fails to join with "Insufficient access", while the join account works for new names. What do you check?
+  choices:
+  - Whether an old APP01$ object exists elsewhere, outside the delegated OU
+  - Whether the SSSD cache of the host is full, so that new entries are refused
+  - Whether the clock of the host is slow, so that tickets look as if they expired
+  - Whether the OU name has an upper-case letter that the directory treats as new
   answer:
   - 0
-  explain: 'A (correct): The keytab keys were generated when RC4 was acceptable; rotating the password regenerates
-    AES keys. B (wrong): AES is the preferred type on Linux. C (wrong): Kernel updates do not change key types.
-    D (wrong): Name changes cause different symptoms.'
+  explain: 'A) correct: a stale object blocks the join. B) wrong: not related. C) wrong: would give another error. D) wrong: not related.'

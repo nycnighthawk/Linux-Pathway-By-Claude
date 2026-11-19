@@ -3,76 +3,90 @@ questions:
 - id: backport
   prompt: A scanner flags openssl 3.0.15-1~deb12u1 because upstream fixed the CVE in 3.0.16. What is the most likely explanation?
   choices:
+  - The distribution backported the fix, and the scanner compared upstream version strings
+  - The package is vulnerable and unpatched, because the version is below 3.0.16
   - The SBOM is corrupt
   - The CVE does not exist
-  - The distribution backported the fix into its own build, and the scanner compared upstream version strings
-  - The package is vulnerable and unpatched
   answer:
-  - 2
-  explain: 'A) wrong: an SBOM is not involved. B) wrong: nothing suggests that. C) correct: distributions fix older versions in place, so only
-    their own data gives the right answer. D) wrong: confirm in the vendor tracker before assuming.'
+  - 0
+  explain: 'A) correct: distributions fix older versions in place, so only their own data gives the right answer. B) wrong: confirm in the vendor tracker before assuming. C) wrong: an SBOM is not involved. D) wrong: nothing suggests that.'
 - id: purl
   prompt: What does a package URL (purl) provide in an SBOM?
   choices:
-  - A download link
+  - A download link to the exact archive that the component was built from
   - A licence text
   - A signature
-  - A standard identifier that ties a component to ecosystem, name and version for advisory matching
+  - A standard identifier tying a component to ecosystem, name and version
   answer:
   - 3
   explain: 'A) wrong: it identifies, it does not fetch. B) wrong: licences are separate fields. C) wrong: signing is separate. D) correct: scanners join on purls.'
 - id: oval
   prompt: What does an OVAL definition express?
   choices:
-  - A declarative check, such as an installed package being older than the fixed build for a given release
-  - A network capture filter
-  - A container policy
   - A firewall rule
+  - A declarative check, such as a package older than the fixed build for a release
+  - A network capture filter that selects packets for a given vulnerability scan
+  - A container policy
   answer:
-  - 0
-  explain: 'A) correct: oscap evaluates it on the host. B) wrong:
-    unrelated. C) wrong: unrelated. D) wrong: firewalls use their own languages.'
+  - 1
+  explain: 'A) wrong: firewalls use their own languages. B) correct: oscap evaluates it on the host. C) wrong: unrelated. D) wrong: unrelated.'
 - id: vex
   prompt: What is a VEX statement for?
   choices:
-  - Scheduling scans
-  - Stating per CVE and product whether it is affected, with a justification, so scanners can suppress non-exploitable findings
+  - Stating per CVE and product whether it is affected, so scanners can suppress findings
   - Listing licences
-  - Encrypting an SBOM
+  - Encrypting an SBOM so that only the scanner of the vendor can read the list
+  - Scheduling scans
   answer:
-  - 1
-  explain: 'A) wrong: scheduling is a pipeline matter. B) correct: statuses are not_affected, affected, fixed and under_investigation. C) wrong:
-    licences are separate. D) wrong: it does not encrypt.'
+  - 0
+  explain: 'A) correct: statuses are not_affected, affected, fixed and under_investigation. B) wrong: licences are separate. C) wrong: it does not encrypt. D) wrong: scheduling is a pipeline matter.'
 - id: unfixed
   prompt: Why is --ignore-unfixed risky as a global default?
   choices:
-  - It hides findings with no available fix, including real risk that needs a mitigation
+  - It changes the SBOM format and so breaks tools that read the report later
+  - It hides findings with no fix, including real risk needing a mitigation
   - It disables the database
   - It slows the scan
-  - It changes the SBOM format
   answer:
-  - 0
-  explain: 'A) correct: no fix does not mean no risk. B) wrong: the database is still used. C) wrong: speed is unaffected. D) wrong:
-    format is unrelated.'
+  - 1
+  explain: 'A) wrong: format is unrelated. B) correct: no fix does not mean no risk. C) wrong: the database is still used. D) wrong: speed is unaffected.'
 - id: priority
   prompt: Which prioritisation is the most defensible?
   choices:
-  - Sort by CVSS alone
-  - Known exploited first, then likelihood of exploitation (EPSS), then severity adjusted for exposure
-  - Fix in alphabetical order of package name
+  - Fix in alphabetical order of package name so the work is easy to track
   - Fix only critical findings
+  - Sort by CVSS alone
+  - Known exploited first, then likelihood (EPSS), then severity adjusted for exposure
   answer:
-  - 1
-  explain: 'A) wrong: severity in the abstract does not equal risk. B) correct: it uses exploitation evidence and context. C) wrong:
-    it ignores risk. D) wrong: a known-exploited medium may matter more.'
+  - 3
+  explain: 'A) wrong: it ignores risk. B) wrong: a known-exploited medium may matter more. C) wrong: severity in the abstract does not equal risk. D) correct: it uses exploitation evidence and context.'
 - id: stale
   prompt: A pipeline's scans always pass. Which check would reveal a hidden problem?
   choices:
-  - Counting the lines of the SBOM
-  - The size of the image
   - The number of CPU cores
   - The age of the vulnerability database the scanner used
+  - Counting the lines of the SBOM
+  - The size of the image
   answer:
-  - 3
-  explain: 'A) wrong: size says nothing about freshness. B)
-    wrong: irrelevant. C) wrong: irrelevant. D) correct: an old database knows no new CVEs and gives clean results.'
+  - 1
+  explain: 'A) wrong: irrelevant. B) correct: an old database knows no new CVEs and gives clean results. C) wrong: size says nothing about freshness. D) wrong: irrelevant.'
+- id: false-positive
+  prompt: A scanner flags openssl 3.0.15-1~deb12u1 for a CVE fixed upstream in 3.0.16. How do you decide if it is real?
+  choices:
+  - Delete the CVE from the scanner database so that it stops being reported
+  - Trust the scanner and rebuild the whole fleet from a newer base image
+  - Check the distribution advisory, which may show the fix was backported to that build
+  - Upgrade to the upstream 3.0.16 source on the host and rebuild the package there
+  answer:
+  - 2
+  explain: 'A) wrong: hides the finding. B) wrong: may waste effort. C) correct: the version string is misleading. D) wrong: leaves the package manager.'
+- id: always-green
+  prompt: A pipeline's image scans pass every week for a year. Which check could reveal a hidden problem?
+  choices:
+  - The age of the vulnerability database the scanner used
+  - The number of lines in the SBOM, which grows with each new component
+  - The size of the scanned image, which stays about the same from week to week
+  - The colour of the report, which has been green for the whole year
+  answer:
+  - 0
+  explain: 'A) correct: a stale database finds nothing. B) wrong: not related. C) wrong: not related. D) wrong: not related.'

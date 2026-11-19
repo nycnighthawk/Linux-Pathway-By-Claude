@@ -3,19 +3,19 @@ questions:
 - id: master-key
   prompt: Why can you change a LUKS passphrase without re-encrypting the data?
   choices:
-  - The header is rewritten with a new cipher
-  - A random master key encrypts the data, and each slot stores that key encrypted under its own passphrase
   - The TPM holds the data key
-  - The data is encrypted with the passphrase directly
+  - The data is encrypted with the passphrase directly, so changing it re-encrypts all
+  - The header is rewritten with a new cipher
+  - A random master key encrypts the data; each slot stores it under a passphrase
   answer:
-  - 1
-  explain: 'A) wrong: the cipher stays the same. B) correct: slots wrap the master key, so only the wrapper changes. C) wrong: a TPM is one possible slot policy, not the design. D) wrong: then every change would require re-encryption.'
+  - 3
+  explain: 'A) wrong: a TPM is one possible slot policy, not the design. B) wrong: then every change would require re-encryption. C) wrong: the cipher stays the same. D) correct: slots wrap the master key, so only the wrapper changes.'
 - id: pcr7
   prompt: What is the main advantage of sealing to PCR 7 alone instead of PCRs 0, 2 and 4?
   choices:
   - It works without a TPM
-  - It removes the need for a recovery passphrase
-  - It survives firmware and bootloader updates while still reflecting the Secure Boot state
+  - It removes the need for a recovery passphrase if the TPM is ever cleared
+  - It survives firmware and bootloader updates and still reflects Secure Boot state
   - It makes the key longer
   answer:
   - 2
@@ -23,36 +23,33 @@ questions:
 - id: tang
   prompt: A thief steals a server bound only to a Tang server and powers it up outside your network. What happens?
   choices:
-  - The disk unlocks because the TPM is present
-  - The disk stays locked because the key cannot be rebuilt without the server
-  - The disk unlocks with the server's last cached key
+  - The disk unlocks with the last key the server cached in the initramfs
   - The disk is wiped
+  - The disk unlocks because the TPM is present
+  - The disk stays locked, since the key cannot be rebuilt without the server
   answer:
-  - 1
-  explain: 'A) wrong: a Tang-only policy does not use the TPM. B) correct: the client must reach Tang to derive the key. C) wrong:
-    Tang keeps no client state and the client stores no key. D) wrong: nothing erases data.'
+  - 3
+  explain: 'A) wrong: Tang keeps no client state and the client stores no key. B) wrong: nothing erases data. C) wrong: a Tang-only policy does not use the TPM. D) correct: the client must reach Tang to derive the key.'
 - id: sss
   prompt: What does clevis sss with t=2 and three sub-pins (two tang, one tpm2) require?
   choices:
+  - Both tang pins and never the TPM
   - All three pins to succeed
   - Any two of the three pins to succeed
   - Only the TPM pin
-  - Both tang pins and never the TPM
   answer:
-  - 1
-  explain: 'A) wrong: that would be t=3. B) correct: Shamir sharing releases the key when two shares are available. C) wrong:
-    t=2 cannot be met by one pin. D) wrong: the TPM can be one of the two.'
+  - 2
+  explain: 'A) wrong: the TPM can be one of the two. B) wrong: that would be t=3. C) correct: Shamir sharing releases the key when two shares are available. D) wrong: t=2 cannot be met by one pin.'
 - id: thumbprint
   prompt: Why must you compare the key thumbprint shown during clevis luks bind with tang-show-keys on the server?
   choices:
-  - To speed up the exchange
-  - To avoid trusting whichever machine answered the first request
   - To rotate the Tang keys
   - To enable HTTPS
+  - To speed up the key exchange between the client and the Tang server
+  - To avoid trusting whichever machine answered the first request
   answer:
-  - 1
-  explain: 'A) wrong: no effect on speed. B) correct: an unchecked thumbprint binds the disk to an impostor. C) wrong: rotation is a separate server task.
-    D) wrong: the protocol does not need TLS to protect the secret.'
+  - 3
+  explain: 'A) wrong: rotation is a separate server task. B) wrong: the protocol does not need TLS to protect the secret. C) wrong: no effect on speed. D) correct: an unchecked thumbprint binds the disk to an impostor.'
 - id: initramfs
   prompt: A Tang-bound server hangs at boot with no network configured. What is the likely cause?
   choices:
@@ -72,5 +69,24 @@ questions:
   - Replacing Secure Boot
   answer:
   - 0
-  explain: 'A) correct: it emulates the interface for testing. B) wrong: migration encryption is a separate setting. C) wrong: anyone with host access can read its state. D) wrong: it is
-    unrelated to the boot chain signatures.'
+  explain: 'A) correct: it emulates the interface for testing. B) wrong: migration encryption is a separate setting. C) wrong: anyone with host access can read its state. D) wrong: it is unrelated to the boot chain signatures.'
+- id: stolen-server
+  prompt: A laptop is bound to a Tang server and a TPM with sss t=2. A thief boots it away from your network with the TPM intact. What happens?
+  choices:
+  - It unlocks, because the TPM alone is enough to meet the threshold of the policy
+  - It stays locked, because the threshold of two pins is not met without Tang
+  - It unlocks using a key that was cached in the initramfs at the last boot
+  - It wipes the disk after three failed unlock attempts, as the binding is broken
+  answer:
+  - 1
+  explain: 'A) wrong: one pin is not enough. B) correct: the thief has only one of the two pins. C) wrong: no key is cached. D) wrong: not how binding works.'
+- id: boot-hang
+  prompt: After a kernel update a Tang-bound server waits at the passphrase prompt and never uses the network. Which check comes first?
+  choices:
+  - Check that the disk has enough free space for the new kernel and its initramfs
+  - Check whether the LUKS header still has a free key slot for another binding
+  - Check the clock of the TPM against the time of the Tang server before the boot
+  - Check that the new initramfs includes Clevis and has the network arguments
+  answer:
+  - 3
+  explain: 'A) wrong: not related to the prompt. B) wrong: binding already exists. C) wrong: not the cause. D) correct: the unlock needs both at boot.'

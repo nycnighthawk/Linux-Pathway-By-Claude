@@ -3,60 +3,80 @@ questions:
 - id: layers
   prompt: In a snapshot-based design, which layer changes during a rollout?
   choices:
-  - The package files
-  - The snapshots
   - The pointers from environments to snapshots
-  - The upstream mirror's keys
+  - The keys of the upstream mirror
+  - The package files inside each snapshot
+  - The snapshots themselves, as they are edited
   answer:
-  - 2
-  explain: 'A) wrong: files stay as they were. B) wrong: snapshots are immutable. C) correct: promotion and rollback are pointer moves. D) wrong: keys are not part of promotion.'
+  - 0
+  explain: 'A) correct: this is what moves. B) wrong: unrelated. C) wrong: snapshots are immutable. D) wrong: they stay fixed.'
 - id: hardlink
   prompt: Why are hard-link snapshots cheap?
   choices:
-  - They skip metadata
-  - They delete old packages
-  - They compress files
   - Unchanged files are shared between snapshots, so only new files use space
+  - They skip the metadata that describes the packages
+  - They delete the old packages after each new snapshot
+  - They compress the files with a better algorithm
   answer:
-  - 3
-  explain: 'A) wrong: metadata is included. B) wrong: nothing is deleted. C) wrong: no compression is involved. D) correct: a link adds a directory entry, not data.'
+  - 0
+  explain: 'A) correct: one copy of each file. B) wrong: metadata is still there. C) wrong: that would break old snapshots. D) wrong: compression is not used.'
 - id: rollback
   prompt: What does pointing prod at the previous snapshot NOT do?
   choices:
-  - Stop new versions being offered
-  - Change what clients can install
-  - Restore the earlier repository state
-  - Downgrade packages already installed on machines
+  - Change what the clients are allowed to install
+  - Restore the earlier state of the repository for every client that follows the pointer
+  - Downgrade packages that are already installed on machines
+  - Stop the newer versions from being offered to clients
   answer:
-  - 3
-  explain: 'A) wrong: it does stop that. B) wrong: it does change that. C) wrong: it does restore the offered set. D) correct: installed packages stay until downgraded explicitly.'
+  - 2
+  explain: 'A) wrong: it does change that. B) wrong: it does that too. C) correct: clients must do that themselves. D) wrong: it does do that.'
 - id: validuntil
   prompt: Why can apt update reject an old Debian snapshot?
   choices:
-  - The disk is full
+  - The client is too new for the snapshot
+  - The disk of the client is full
   - The Release file has a Valid-Until date that has passed
-  - Snapshots are never signed
-  - The client is too new
+  - Snapshots are never signed by the archive
   answer:
-  - 1
-  explain: 'A) wrong: unrelated. B) correct: upstream marks how long the signed index may be trusted, so internal snapshots are re-signed or the check is relaxed knowingly. C) wrong: they carry upstream signatures. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: not a rule. B) wrong: not a reason for rejection. C) correct: apt treats it as expired. D) wrong: they are signed.'
 - id: retention
   prompt: Which rule makes snapshot deletion safe?
   choices:
-  - Delete anything older than 30 days
-  - Refuse to delete a snapshot that any pointer, image build or record still refers to
-  - Delete the largest first
-  - Never delete anything
+  - Refuse to delete a snapshot that any pointer, image build or record refers to
+  - Never delete anything, whatever the disk usage
+  - Delete anything that is older than 30 days
+  - Delete the largest snapshots first, because they save the most space on the mirror disk
   answer:
-  - 1
-  explain: 'A) wrong: an old pointer target may be live. B) correct: check references first. C) wrong: size is not the criterion. D) wrong: the disk would fill.'
+  - 0
+  explain: 'A) correct: nothing in use disappears. B) wrong: storage runs out. C) wrong: may remove one still in use. D) wrong: size is not safety.'
 - id: name
   prompt: Which names belong to snapshots rather than to pointers?
   choices:
-  - prod, test
-  - latest, stable
-  - 2026-11-08, 2026-11-08-hotfix1
-  - current
+  - 2026-11-08 and 2026-11-08-hotfix1, which never change
+  - prod and test, which name an environment
+  - latest and stable, which move over time
+  - current, which refers to whatever snapshot is live in production at this moment
+  answer:
+  - 0
+  explain: 'A) correct: a snapshot name is fixed. B) wrong: those are pointers. C) wrong: pointers move. D) wrong: a pointer.'
+- id: brokenprod
+  prompt: Prod clients start getting a regression. The team still has the snapshot from last Monday. What is the fastest safe step?
+  choices:
+  - Delete today's snapshot while clients are still using it, to remove the faulty packages
+  - Rebuild the whole mirror from upstream today
+  - Point prod back at that snapshot and let clients pick it up
+  - Edit the packages inside today's snapshot
   answer:
   - 2
-  explain: 'A) wrong: environments are pointers. B) wrong: those are mutable pointer names. C) correct: dates are fixed and self-describing. D) wrong: it is mutable.'
+  explain: 'A) wrong: breaks clients and evidence. B) wrong: slow and may bring the same bug. C) correct: the pointer move is instant. D) wrong: snapshots must not change.'
+- id: expiredrelease
+  prompt: A three-month-old Debian snapshot fails with "Release file is expired". Which is the right fix for a lab that needs it?
+  choices:
+  - Edit the Release file by hand and re-sign it with any key that apt will accept
+  - Use the Check-Valid-Until=false apt option for that source and note why
+  - Set the system clock back three months on all clients
+  - Disable signature verification for every repository
+  answer:
+  - 1
+  explain: 'A) wrong: invalid chain of trust. B) correct: a scoped, explicit exception. C) wrong: breaks other things. D) wrong: removes protection.'

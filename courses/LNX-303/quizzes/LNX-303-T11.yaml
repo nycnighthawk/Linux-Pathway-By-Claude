@@ -3,24 +3,23 @@ questions:
 - id: window
   prompt: A configuration-management agent reapplies the desired state every 30 minutes. What does that period define?
   choices:
-  - The longest time a manual change can persist before being reverted, the drift window
-  - The scan duration
-  - The size of the baseline
+  - The size of the baseline, which grows with every repair that the agent makes
   - The number of exceptions
+  - 'The longest a manual change can last before it is reverted: the drift window'
+  - The scan duration
   answer:
-  - 0
-  explain: 'A) correct: convergence bounds drift by its schedule. B) wrong: scans are separate. C) wrong: it says nothing about baseline size. D) wrong: exceptions are a governance matter.'
+  - 2
+  explain: 'A) wrong: it says nothing about baseline size. B) wrong: exceptions are a governance matter. C) correct: convergence bounds drift by its schedule. D) wrong: scans are separate.'
 - id: decay
   prompt: Which is an example of decay, not drift?
   choices:
+  - A new benchmark tightens a control, so an unchanged host stops being compliant
+  - An administrator opens a port for a test and forgets to close it afterwards
   - Two tools fight over a setting
   - A package replaces a config file
-  - A new benchmark release tightens a control, so an unchanged host stops being compliant
-  - An administrator opens a port and forgets it
   answer:
-  - 2
-  explain: 'A) wrong: that is an automation
-    conflict on the host. B) wrong: that is a software change on the host. C) correct: the standard moved, not the host. D) wrong: that is an operator change on the host.'
+  - 0
+  explain: 'A) correct: the standard moved, not the host. B) wrong: that is an operator change on the host. C) wrong: that is an automation conflict on the host. D) wrong: that is a software change on the host.'
 - id: silent
   prompt: A dashboard says 98 percent of hosts are compliant. What should you check first?
   choices:
@@ -30,47 +29,64 @@ questions:
   - The colour scheme
   answer:
   - 2
-  explain: 'A) wrong: irrelevant. B) wrong: rule count
-    does not explain the number. C) correct: a silent agent removes hosts from the denominator. D) wrong: presentation does not matter.'
+  explain: 'A) wrong: irrelevant. B) wrong: rule count does not explain the number. C) correct: a silent agent removes hosts from the denominator. D) wrong: presentation does not matter.'
 - id: replace
   prompt: What does replacing hosts every 30 days from a rebuilt image achieve?
   choices:
-  - It bounds the accumulation of unknown change, and moves the compliance work to the image pipeline
   - It removes the need for an owner
-  - It eliminates the need for scanning
+  - It eliminates the need for scanning, because every host is new each month
   - It makes exceptions unnecessary
+  - It bounds the build-up of unknown change and moves compliance work to the image pipeline
   answer:
-  - 0
-  explain: 'A) correct: drift cannot outlive the host, but stale images become the risk. B) wrong: the image needs an owner. C) wrong: images and hosts still need scans. D) wrong: exceptions still exist.'
+  - 3
+  explain: 'A) wrong: the image needs an owner. B) wrong: images and hosts still need scans. C) wrong: exceptions still exist. D) correct: drift cannot outlive the host, but stale images become the risk.'
 - id: exception
   prompt: Which exception record is adequate?
   choices:
   - A ticket number
   - Rule, reason, compensating control, owner and an expiry date
   - Rule name only
-  - A screenshot of the scan
+  - A screenshot of the scan result, saved together with the ticket number
   answer:
   - 1
   explain: 'A) wrong: tickets get archived. B) correct: expiry and owner force a decision to be renewed. C) wrong: it cannot be reviewed. D) wrong: a screenshot is not a record.'
 - id: autorepair
   prompt: Why log every automatic repair made by configuration management?
   choices:
-  - Repairs are always errors
   - To fill the disk
-  - Logging is required by SELinux
-  - A setting that keeps being repaired points to a conflicting tool or a baseline that blocks a legitimate need
+  - Logging is required by SELinux for every change that a daemon makes to files
+  - A setting that is repaired again and again points to a conflicting tool or baseline
+  - Repairs are always errors
   answer:
-  - 3
-  explain: 'A) wrong: repairs are normal. B) wrong: that is not a goal. C) wrong:
-    SELinux has no such rule. D) correct: repeating repairs reveal the root cause.'
+  - 2
+  explain: 'A) wrong: that is not a goal. B) wrong: SELinux has no such rule. C) correct: repeating repairs reveal the root cause. D) wrong: repairs are normal.'
 - id: calendar
   prompt: Which event is best handled by a calendar with an owner?
   choices:
-  - A user typing a wrong command
-  - A random kernel crash
   - A network packet loss
   - Distribution end of life, certificate expiry and key rotation dates
+  - A user typing a wrong command in a shell on one of the production hosts
+  - A random kernel crash
+  answer:
+  - 1
+  explain: 'A) wrong: unpredictable. B) correct: these dates are known in advance and change compliance without a local edit. C) wrong: not predictable. D) wrong: unpredictable.'
+- id: green-dashboard
+  prompt: A dashboard shows 98% compliant, but the team suspects it is wrong. What do you check first?
+  choices:
+  - Whether the scanner has enough CPU to finish every scan within its time slot
+  - Whether there are too many rules in the profile for one host to pass at once
+  - Whether the dashboard theme and colours are accessible to every reviewer
+  - Whether the figure counts only hosts that still check in, and the age of the newest scan
   answer:
   - 3
-  explain: 'A) wrong: not predictable. B) wrong:
-    unpredictable. C) wrong: unpredictable. D) correct: these dates are known in advance and change compliance without a local edit.'
+  explain: 'A) wrong: not the issue. B) wrong: not the issue. C) wrong: not the issue. D) correct: silent hosts hide risk.'
+- id: flapping-setting
+  prompt: A setting is repaired by configuration management every 30 minutes for weeks. What does it tell you?
+  choices:
+  - The log is too verbose and should be turned off to save space on the host
+  - The setting is unimportant and can be removed from the baseline for good
+  - Another tool or process changes it back, or the baseline blocks a real need
+  - The agent is working well, and the repeated repair needs no further check
+  answer:
+  - 2
+  explain: 'A) wrong: loses evidence. B) wrong: may be a control. C) correct: investigate the conflict. D) wrong: hides the cause.'

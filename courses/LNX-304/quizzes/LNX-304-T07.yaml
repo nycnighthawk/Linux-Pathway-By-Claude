@@ -3,60 +3,80 @@ questions:
 - id: representative
   prompt: What makes a canary ring useful?
   choices:
-  - It is chosen by hostname
-  - It consists of volunteers
-  - It contains a representative host of every service tier that later rings contain
-  - It is as small as possible
+  - It is chosen by hostname so that the group is easy to remember and to list
+  - It consists of volunteers who ask to go first
+  - It is as small as possible so little can break
+  - It contains a representative host of every service tier in later rings
   answer:
-  - 2
-  explain: 'A) wrong: names say nothing about workload. B) wrong: volunteers are not representative. C) correct: a bug can only show where the code path runs. D) wrong: too small hides problems.'
+  - 3
+  explain: 'A) wrong: names do not make it representative. B) wrong: volunteers are not representative. C) wrong: too small to find problems. D) correct: failures show up early.'
 - id: replicas
   prompt: In which order are a database primary and its replica patched?
   choices:
-  - Primary first
+  - Neither; databases are never patched
+  - Primary first, then the replica
   - Replica first, then the primary
-  - Both together
-  - Neither
+  - Both at the same moment
   answer:
-  - 1
-  explain: 'A) wrong: a failed primary update risks the service. B) correct: the replica tests the update and keeps service if it fails. C) wrong: both down loses redundancy. D) wrong: both are patched.'
+  - 2
+  explain: 'A) wrong: they must be patched. B) wrong: risks the live data first. C) correct: a failure shows up on the replica. D) wrong: no fallback if it fails.'
 - id: effective
   prompt: dnf reports the kernel package updated. What else shows whether the host is actually protected?
   choices:
-  - Nothing, the package is installed
-  - That the running kernel (uname -r) matches the new one, i.e. the reboot happened
-  - The hostname
-  - The disk size
+  - Nothing; an installed package is all that counts, since the update has finished
+  - That the running kernel (uname -r) matches the new one, so the reboot happened
+  - The hostname of the machine that was updated
+  - The disk size of the root file system
   answer:
   - 1
-  explain: 'A) wrong: the old kernel keeps running until reboot. B) correct: effective state needs the reboot or restart. C) wrong: unrelated. D) wrong: unrelated.'
+  explain: 'A) wrong: the old kernel may still run. B) correct: installed is not running. C) wrong: unrelated. D) wrong: unrelated.'
 - id: gate
   prompt: Which gate is sound?
   choices:
-  - A pre-agreed threshold on error rate that stops the rollout automatically
-  - Gate only on update job exit code
-  - A human looks at a dashboard when they have time
-  - No gate; wait for complaints
+  - No gate; wait for the complaints to arrive
+  - Gate only on the exit code of the update job
+  - A human looks at a dashboard when they have time, and decides on a feeling
+  - A pre-agreed error-rate threshold that stops the rollout automatically
   answer:
-  - 0
-  explain: 'A) correct: automate the stop, let a human decide to continue. B) wrong: a successful install says nothing about health. C) wrong: it is skipped under pressure. D) wrong: late and noisy.'
+  - 3
+  explain: 'A) wrong: too late. B) wrong: a successful job can still break services. C) wrong: not reliable. D) correct: objective and fast.'
 - id: soak
   prompt: Why does a memory-leak regression need a longer soak than a boot failure?
   choices:
-  - Leaks affect only canaries
-  - Leaks only appear after hours or days of running
-  - Boot failures are harmless
-  - Soak does not matter
+  - Soak time does not matter for either problem, since both appear within minutes
+  - Leaks only show up after hours or days of running
+  - Leaks affect only the canary hosts
+  - Boot failures are harmless to the service
   answer:
   - 1
-  explain: 'A) wrong: leaks affect any host. B) correct: slow failures need time to show. C) wrong: boot failures are visible at once, not harmless. D) wrong: it is a control.'
+  explain: 'A) wrong: it matters for leaks. B) correct: a boot failure shows at once. C) wrong: not true. D) wrong: they are not.'
 - id: exceptions
   prompt: What should every patching exception have?
   choices:
-  - No record
+  - No record, to keep the register short
   - An owner, a reason, compensating controls and an expiry date
-  - A permanent waiver
-  - Ring 0 placement
+  - A permanent waiver signed once
+  - A place in ring 0, so that the exception gets patched before everything else
   answer:
   - 1
-  explain: 'A) wrong: no audit. B) correct: otherwise it becomes permanent risk. C) wrong: no review. D) wrong: ring 0 is for lab hosts.'
+  explain: 'A) wrong: untracked exceptions pile up. B) correct: makes it temporary and reviewed. C) wrong: never revisited. D) wrong: not the point.'
+- id: canarybad
+  prompt: Ring 1 patches finish without errors, but latency on the web tier doubles ten minutes later. What should the rollout do?
+  choices:
+  - Continue, since the update jobs exited with success
+  - Patch ring 2 faster to compare more hosts
+  - Wait for users to complain before deciding
+  - Halt before ring 2, because the agreed threshold for latency is broken
+  answer:
+  - 3
+  explain: 'A) wrong: a good exit code is not enough. B) wrong: widens the damage. C) wrong: too late. D) correct: the gate protects later rings.'
+- id: replicafirst
+  prompt: The primary of a database cluster has to be patched in the same window as two replicas. What is the safest order?
+  choices:
+  - The primary first, while the replicas keep running
+  - All three at once to finish early
+  - The primary only, and leave the replicas
+  - A replica first, check replication, then fail over and patch the old primary
+  answer:
+  - 3
+  explain: 'A) wrong: risks live data. B) wrong: no fallback. C) wrong: leaves the replicas exposed. D) correct: keeps a good copy and a fallback.'

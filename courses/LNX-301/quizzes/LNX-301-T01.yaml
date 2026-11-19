@@ -1,33 +1,25 @@
 title: 'Quiz: LDAP servers and clients'
 questions:
 - id: acl-order
-  prompt: 'Two slapd access rules both match a request: ''to * by * read'' is listed first and ''to attrs=userPassword
-    by self write by * none'' second. What happens to a read of userPassword by an ordinary user?'
+  prompt: 'Two slapd access rules both match a request: ''to * by * read'' is listed first and ''to attrs=userPassword by self write by * none'' second. What happens to a read of userPassword by an ordinary user?'
   choices:
-  - It is denied, because the more specific rule wins wherever it sits
-  - It is allowed, because the first matching 'to' clause is the one that applies
   - It is allowed only if the user binds over TLS
   - slaptest refuses the file as ambiguous
+  - It is denied, because the more specific rule wins wherever it sits
+  - It is allowed, because the first matching 'to' clause is the one that applies
   answer:
-  - 1
-  explain: 'A (wrong): slapd does not rank rules by specificity; position decides. B (correct): Rules are evaluated
-    in order and the first rule whose ''to'' part matches is used, so the broad rule exposes the hash. C (wrong):
-    TLS changes the security strength factor, not which rule matches. D (wrong): Overlapping rules are legal and
-    slaptest accepts them; that is why the mistake is silent.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: starttls-vs-ldaps
   prompt: Which statement about protecting an LDAP bind is correct?
   choices:
-  - StartTLS upgrades an existing connection on port 389; ldaps:// wraps the connection in TLS from the first byte,
-    normally on port 636
-  - ldaps:// is the standardised method and StartTLS is a vendor extension
-  - A simple bind is safe on a trusted LAN because the password is hashed in transit
+  - A simple bind is safe on a trusted LAN, because the password is hashed in transit by the client
   - TLS is only needed for the administrator account
+  - StartTLS upgrades a connection on port 389; ldaps:// wraps TLS from the first byte
+  - ldaps:// is the standardised method and StartTLS is a vendor extension
   answer:
-  - 0
-  explain: 'A (correct): These are the two mechanisms, and both need a server certificate matching the name used.
-    B (wrong): StartTLS is the standardised extended operation (RFC 2830, now part of RFC 4513); ldaps:// is the
-    unstandardised but universal one. C (wrong): A simple bind sends the password in clear unless the channel is
-    protected. D (wrong): Every simple bind carries a secret, so every bind needs the protected channel.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: ldapsearch-flags
   prompt: You want ldapsearch to insist on StartTLS and stop if the upgrade fails. Which option?
   choices:
@@ -37,58 +29,54 @@ questions:
   - -Z
   answer:
   - 2
-  explain: 'A (wrong): Only reduces the LDIF decoration of the output. B (wrong): Selects simple authentication instead of SASL; it says nothing about TLS. C (correct): Doubling the flag makes StartTLS
-    mandatory: the command aborts if the upgrade fails. D (wrong): A single
-    -Z attempts StartTLS but carries on in clear text if it fails.'
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: tls-reqcert
-  prompt: A client has TLS_REQCERT never in ldap.conf because a certificate once failed in testing. What is the
-    practical effect?
+  prompt: A client has TLS_REQCERT never in ldap.conf because a certificate once failed in testing. What is the practical effect?
   choices:
-  - The client falls back to anonymous binds
-  - Any certificate is accepted, so an active attacker can impersonate the server and read binds
-  - Nothing changes; certificates are still verified against the CA file
   - Only expired certificates are accepted
+  - The client falls back to anonymous binds
+  - Any certificate is accepted, so an active attacker can impersonate the server
+  - Nothing changes, because certificates are still verified against the configured CA file
   answer:
-  - 1
-  explain: 'A (wrong): Binding mode
-    is not affected by this option. B (correct): The channel is encrypted
-    but the peer is not authenticated, which defeats the purpose of TLS for credentials. C (wrong): never disables verification of the server certificate. D (wrong): never skips the checks altogether, not just the expiry check.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: group-schema
-  prompt: A directory exported from Active Directory stores group members as member DNs, but Linux clients show
-    only the primary group. Why?
+  prompt: A directory exported from Active Directory stores group members as member DNs, but Linux clients show only the primary group. Why?
   choices:
-  - The index on uid is missing
+  - The index on the uid attribute is missing, so each group lookup walks the whole tree
   - ldapsearch needs -ZZ
   - TLS is misconfigured
-  - The client expects RFC 2307 memberUid names, while the data uses member DNs (rfc2307bis style); set the group
-    schema or member attribute accordingly
+  - The client expects RFC 2307 memberUid names, but the data uses member DNs
   answer:
   - 3
-  explain: 'A (wrong): A
-    missing index slows searches; it does not hide values. B (wrong): Transport options do not change the attribute
-    that holds membership. C (wrong): A TLS fault would break every lookup, not just supplementary groups. D (correct): The two group models store membership differently and the client must be told which one
-    it is reading.'
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: backup
   prompt: Which backup method works for OpenLDAP without needing the server to be reachable on the network?
   choices:
-  - Backing up /etc/ldap/ldap.conf
   - Copying the mdb directory while slapd is writing
   - ldapsearch with a root bind, once a year
   - slapcat to LDIF, restored later with slapadd
+  - Backing up /etc/ldap/ldap.conf
   answer:
-  - 3
-  explain: 'A (wrong): That is the client configuration, not the directory. B (wrong): A live copy of a database in use can be inconsistent. C (wrong): It needs the network and a running
-    server, and it misses operational data. D (correct): These offline tools read
-    and write the database directly, which gives a portable text dump.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: syncrepl
   prompt: In a multi-provider OpenLDAP pair, why do operators usually send writes to one node at a time?
   choices:
-  - Replication only works in one direction
-  - Conflicting concurrent writes are resolved by timestamp, so a loser can be silently overwritten
+  - Replication only works in one direction, so a second writer would never be read
+  - Conflicting concurrent writes are settled by timestamp, so a loser can vanish
   - The second node has no schema
   - slapd allows only one TCP connection
   answer:
   - 1
-  explain: 'A (wrong): Syncrepl supports multi-provider operation. B (correct): Last-writer-wins on change sequence
-    numbers can discard a concurrent update, which is why a single active writer avoids surprises. C (wrong): Schema
-    replicates like any other data. D (wrong): There is no such limit.'
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
+- id: acl-case
+  prompt: A new slapd rule "to attrs=userPassword by self write" was added below "to * by * read", yet users still read other users' userPassword. Why?
+  choices:
+  - The first matching clause applies, so the broad rule above it wins
+  - slapd applies the most specific clause no matter where in the file it sits
+  - The user must first bind over TLS before the new rule is read by the server
+  - The rule needs a restart of slapd, which was not done after the change was made
+  answer:
+  - 0
+  explain: 'A) correct: order matters. B) wrong: not how ACLs work. C) wrong: TLS does not change order. D) wrong: changes are read at once.'

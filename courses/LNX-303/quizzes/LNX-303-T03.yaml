@@ -3,75 +3,90 @@ questions:
 - id: dbx
   prompt: What does the dbx contain?
   choices:
-  - Kernel module signatures
-  - The platform owner's private key
-  - The list of enrolled MOK keys
   - Keys and hashes that firmware must refuse to run
+  - Kernel module signatures
+  - The private key of the platform owner, which signs the firmware databases
+  - The list of enrolled MOK keys
   answer:
-  - 3
-  explain: 'A) wrong: module
-    signatures are appended to the modules. B) wrong: private keys are never stored in firmware. C) wrong: MOK is managed by shim, separately. D) correct: dbx is the forbidden signature database.'
+  - 0
+  explain: 'A) correct: dbx is the forbidden signature database. B) wrong: module signatures are appended to the modules. C) wrong: private keys are never stored in firmware. D) wrong: MOK is managed by shim, separately.'
 - id: shim
   prompt: Why do most distributions boot through shim?
   choices:
-  - Firmware trusts Microsoft's third-party certificate, and shim carries the distribution's own trust forward
+  - Firmware trusts the Microsoft third-party certificate; shim carries the distro's trust forward
   - Shim encrypts the disk
-  - Shim replaces the kernel keyring
+  - Shim replaces the kernel keyring, so the kernel then trusts only the distribution
   - Shim is required by systemd
   answer:
   - 0
-  explain: 'A) correct: shim is signed once and then verifies GRUB and the kernel with the distribution key and MOK. B) wrong: unrelated
-    to disk encryption. C) wrong: the kernel has its own keyring. D) wrong: systemd does not require it.'
+  explain: 'A) correct: shim is signed once and then verifies GRUB and the kernel with the distribution key and MOK. B) wrong: unrelated to disk encryption. C) wrong: the kernel has its own keyring. D) wrong: systemd does not require it.'
 - id: mok
   prompt: What is the Machine Owner Key list for?
   choices:
   - Storing user passwords
-  - Signing the initramfs automatically
+  - Signing the initramfs automatically each time a new kernel is installed
   - Replacing the Platform Key
-  - Letting a local administrator trust additional keys without changing firmware databases
+  - Letting a local admin trust more keys without changing firmware databases
   answer:
   - 3
-  explain: 'A) wrong: it holds certificates,
-    not passwords. B) wrong: nothing signs the initramfs automatically. C) wrong: PK is firmware level. D) correct: keys enrolled through mokutil are trusted by shim and passed to the kernel.'
+  explain: 'A) wrong: it holds certificates, not passwords. B) wrong: nothing signs the initramfs automatically. C) wrong: PK is firmware level. D) correct: keys enrolled through mokutil are trusted by shim and passed to the kernel.'
 - id: rejected
   prompt: modprobe reports Key was rejected by service for a third-party module on a Secure Boot system. What is the best fix?
   choices:
-  - Sign the module with a code-signing key that is enrolled through MOK
+  - Disable Secure Boot in the firmware setup until the module has loaded once
+  - Sign the module with a code-signing key enrolled through MOK
   - Set lockdown=none
   - Delete the module
-  - Disable Secure Boot in firmware
   answer:
-  - 0
-  explain: 'A) correct: the key must be in a trusted keyring. B) wrong: lockdown does not decide whether a key is trusted. C) wrong:
-    it loses the driver. D) wrong: this removes protection for every other component.'
+  - 1
+  explain: 'A) wrong: this removes protection for every other component. B) correct: the key must be in a trusted keyring. C) wrong: lockdown does not decide whether a key is trusted. D) wrong: it loses the driver.'
 - id: eku
   prompt: Which extended key usage should a module-signing certificate carry?
   choices:
+  - codeSigning
   - serverAuth
   - emailProtection
   - clientAuth
-  - codeSigning
   answer:
-  - 3
-  explain: 'A) wrong: that is for TLS servers. B) wrong: that is for S/MIME mail. C) wrong: that is for client authentication. D) correct: it limits the certificate to signing code.'
+  - 0
+  explain: 'A) correct: it limits the certificate to signing code. B) wrong: that is for TLS servers. C) wrong: that is for S/MIME mail. D) wrong: that is for client authentication.'
 - id: sbat
   prompt: What problem does SBAT solve?
   choices:
-  - Sharing keys between machines
-  - Revoking a whole family of vulnerable loaders with a generation number instead of one dbx hash each
+  - Sharing signing keys between machines so that each of them boots the same loaders
+  - Revoking a family of vulnerable loaders by generation number, not one dbx hash each
   - Encrypting boot partitions
   - Speeding up boot
   answer:
   - 1
-  explain: 'A) wrong: it
-    shares nothing. B) correct: shim compares binary generation numbers with a policy variable. C) wrong: it does not encrypt. D) wrong: it is a security mechanism.'
+  explain: 'A) wrong: it shares nothing. B) correct: shim compares binary generation numbers with a policy variable. C) wrong: it does not encrypt. D) wrong: it is a security mechanism.'
 - id: lockdown
   prompt: What does kernel lockdown add to Secure Boot?
   choices:
+  - It disables the TPM
   - It makes the initramfs read-only
   - It signs every file on the disk
   - It blocks ways a privileged user could bypass the chain, such as loading unsigned code or writing kernel memory
-  - It disables the TPM
   answer:
-  - 2
-  explain: 'A) wrong: it does not change the initramfs. B) wrong: file signing is IMA. C) correct: lockdown ties root to the kernel boundary. D) wrong: the TPM is unaffected.'
+  - 3
+  explain: 'A) wrong: the TPM is unaffected. B) wrong: it does not change the initramfs. C) wrong: file signing is IMA. D) correct: lockdown ties root to the kernel boundary.'
+- id: module-reject
+  prompt: After a kernel update, a third-party driver fails to load with "Key was rejected by service" on a Secure Boot host. What is the right fix?
+  choices:
+  - Set lockdown=none on the kernel command line of every host that uses the driver
+  - Sign the module with a code-signing key enrolled through MOK
+  - Delete the driver and use only the in-tree version, even if it lacks some features
+  - Disable Secure Boot in firmware for the whole fleet until the vendor ships a signed driver
+  answer:
+  - 1
+  explain: 'A) wrong: weakens the host. B) correct: a scoped trust decision. C) wrong: may not exist. D) wrong: removes the whole chain.'
+- id: revoked-loader
+  prompt: A vulnerable signed bootloader is found. Which step revokes it for new machines without breaking all others?
+  choices:
+  - Delete the platform key from the firmware of every machine in the fleet
+  - Re-sign the loader with the MOK key, so that the firmware stops accepting it
+  - Rename the loader file on the EFI partition, so that the boot menu skips it
+  - Raise the SBAT generation, or add its hash to the dbx, through fwupd or a distro package
+  answer:
+  - 3
+  explain: 'A) wrong: breaks every machine. B) wrong: does not revoke anything. C) wrong: the signature still validates. D) correct: revocation by data.'

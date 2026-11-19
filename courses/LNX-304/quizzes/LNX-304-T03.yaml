@@ -3,60 +3,80 @@ questions:
 - id: debmodel
   prompt: What does the Debian family sign to authenticate a whole repository?
   choices:
-  - The kernel
-  - Every .deb file
-  - The Release file (InRelease or Release.gpg), which lists the checksums of the indexes
-  - The sources.list file
+  - The sources.list file of each client machine, which names the repository suite
+  - Every .deb file, one signature per package
+  - The Release file (InRelease or Release.gpg), which lists the index checksums
+  - The kernel image shipped in the installer
   answer:
   - 2
-  explain: 'A) wrong: unrelated. B) wrong: archive packages are not signed one by one. C) correct: signing the top of the hash tree covers everything below. D) wrong: that is local configuration.'
+  explain: 'A) wrong: a local file. B) wrong: the index is what is signed. C) correct: one signature covers the indexes. D) wrong: unrelated.'
 - id: repogpg
   prompt: What does repo_gpgcheck=1 check?
   choices:
   - The signature on the repository metadata
-  - The TLS certificate
-  - The package payload only
-  - The disk space
+  - The free disk space before the download starts
+  - The TLS certificate of the repository server
+  - The payload of each package against the vendor key
   answer:
   - 0
-  explain: 'A) correct: the signed repomd.xml authenticates the metadata. B) wrong: TLS is separate. C) wrong: that is gpgcheck. D) wrong: unrelated.'
+  explain: 'A) correct: it covers the repodata. B) wrong: unrelated. C) wrong: a separate setting. D) wrong: that is gpgcheck.'
 - id: nokey
   prompt: rpm -K prints NOKEY for a package. What is the cause?
   choices:
-  - The package is unsigned
-  - The key expired
+  - The signing key has expired since the package was built
+  - The file is corrupt and fails its checksum test
   - The public key that made the signature is not imported
-  - The file is corrupt
+  - The package carries no signature at all
   answer:
   - 2
-  explain: 'A) wrong: an unsigned package says so. B) wrong: expiry is reported differently. C) correct: import it with rpm --import. D) wrong: corruption gives a bad digest or signature.'
+  explain: 'A) wrong: that gives a different message. B) wrong: that gives a digest failure. C) correct: import the right key. D) wrong: that would say it is unsigned.'
 - id: offline
   prompt: Why keep the primary key offline and sign with a subkey?
   choices:
-  - Routine signing never exposes the primary, and a subkey can be replaced or extended without changing the identity
-  - It makes packages smaller
-  - It is required by GnuPG
-  - Subkeys are faster
+  - It makes the signed packages smaller on the mirror
+  - GnuPG refuses to sign with a primary key
+  - Routine signing never exposes the primary, and a subkey can be replaced
+  - Subkeys sign faster than primary keys do
   answer:
-  - 0
-  explain: 'A) correct: it limits the blast radius and eases renewal. B) wrong: no effect on size. C) wrong: GnuPG does not require it. D) wrong: speed is not the reason.'
+  - 2
+  explain: 'A) wrong: size does not change. B) wrong: it can sign. C) correct: the identity stays the same. D) wrong: speed is not the reason.'
 - id: rotation
   prompt: Which rotation plan avoids an outage?
   choices:
-  - Replace the key on the server and tell clients later
+  - Wait for the old key to expire and then publish a new key to all of the clients
   - Deliver the new key first, sign with both for a while, then retire the old one
-  - Disable signature checking during the change
-  - Wait for the old key to expire
+  - Replace the key on the server and tell the clients later
+  - Disable signature checking during the change window
   answer:
   - 1
-  explain: 'A) wrong: clients that lack the key fail at once. B) correct: overlap lets every step be undone. C) wrong: it removes the protection. D) wrong: expiry is the outage you are avoiding.'
+  explain: 'A) wrong: causes the outage at expiry. B) correct: clients are ready before the switch. C) wrong: clients fail until they get it. D) wrong: removes the protection.'
 - id: trustedyes
   prompt: An import problem blocks updates. What is the correct response?
   choices:
-  - Fix the key delivery (import the right key through a channel you control) and keep verification on
-  - Set trusted=yes or gpgcheck=0 permanently
-  - Use HTTP instead of HTTPS
-  - Delete the repository
+  - Fix the key delivery through a channel you control, and keep verification on
+  - Switch the repository to plain HTTP so the key is not needed
+  - Delete the repository from the clients and add it again later
+  - Set trusted=yes or gpgcheck=0 until the problem is solved for good by the vendor
   answer:
   - 0
-  explain: 'A) correct: solve the cause. B) wrong: it removes the control and is rarely reverted. C) wrong: it weakens transport. D) wrong: it does not fix anything.'
+  explain: 'A) correct: the control stays in place. B) wrong: weakens security. C) wrong: does not fix the key. D) wrong: turns verification off.'
+- id: expiredkey
+  prompt: At 02:00 every client fails with "key expired" on the internal repository. The new key was never distributed. What should have happened?
+  choices:
+  - The clients rebuilt from scratch on the day of the expiry
+  - The new key delivered and trusted before the old one expired, with both used for a while
+  - The old key set to never expire, so that no rotation is needed for the repository
+  - Signature checking turned off just before the expiry date
+  answer:
+  - 1
+  explain: 'A) wrong: heavy and unnecessary. B) correct: rotation with an overlap. C) wrong: removes the benefit of rotation. D) wrong: removes the protection.'
+- id: unsignedmeta
+  prompt: A mirror is signed per package (gpgcheck=1) but repo_gpgcheck=0. What attack does this still allow?
+  choices:
+  - Reading the private key from the client machine
+  - Changing the TLS certificate of the server
+  - Serving an old or tampered repomd that hides or replays package versions
+  - Installing a package whose payload carries a forged signature from an unknown signer
+  answer:
+  - 2
+  explain: 'A) wrong: not exposed by this setting. B) wrong: a different layer. C) correct: metadata is not verified. D) wrong: gpgcheck covers the payload.'
