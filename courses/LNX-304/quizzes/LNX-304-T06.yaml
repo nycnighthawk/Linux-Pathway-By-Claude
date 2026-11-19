@@ -33,13 +33,13 @@ questions:
 - id: filters
   prompt: Which practice with filters is sound?
   choices:
-  - Keep few filters, document them and test them on a canary host
-  - Exclude any package you dislike without testing the result on a single host first
   - Use package-name filters in every view by default
   - Never use filters, whatever the requirement
+  - Keep few filters, document them and test them on a canary host
+  - Exclude any package you dislike without testing the result on a single host first
   answer:
-  - 0
-  explain: 'A) correct: simple and checked. B) wrong: may break dependencies. C) wrong: hard to maintain. D) wrong: too rigid.'
+  - 2
+  explain: 'A) wrong: hard to maintain. B) wrong: too rigid. C) correct: simple and checked. D) wrong: may break dependencies.'
 - id: incremental
   prompt: What is an incremental update used for?
   choices:
@@ -63,20 +63,20 @@ questions:
 - id: noupdates
   prompt: Prod hosts report "no updates" although the newest content view version contains a security fix. What do you check first?
   choices:
-  - Which version is promoted to the Prod lifecycle environment and used by the activation key
   - Whether the hosts have a recent hardware clock
   - Whether the upstream vendor has changed its logo or the name of its repositories
   - Whether the Satellite uses IPv6 internally
+  - Which version is promoted to the Prod lifecycle environment and used by the activation key
   answer:
-  - 0
-  explain: 'A) correct: the version in Prod. B) wrong: unrelated. C) wrong: unrelated. D) wrong: not the cause.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) wrong: not the cause. D) correct: the version in Prod.'
 - id: brokenview
   prompt: A filter removes a library by name and several hosts fail to update with dependency errors. What was the mistake?
   choices:
+  - The hosts were registered in the wrong week
   - The filter was not tested on a canary host before the version reached Prod
   - The content view was published too many times in a single week by the team
   - The activation key had too many subscriptions
-  - The hosts were registered in the wrong week
   answer:
-  - 0
-  explain: 'A) correct: test before promote. B) wrong: not the cause. C) wrong: not the cause. D) wrong: not the cause.'
+  - 1
+  explain: 'A) wrong: not the cause. B) correct: test before promote. C) wrong: not the cause. D) wrong: not the cause.'

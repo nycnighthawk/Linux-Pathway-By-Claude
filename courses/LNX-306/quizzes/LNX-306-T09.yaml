@@ -13,13 +13,13 @@ questions:
 - id: aidedb
   prompt: After a patch window, why must the AIDE database be updated by a person who has reviewed the changes?
   choices:
+  - It makes AIDE run faster on the next scan
   - Otherwise later reports fill with known changes and hide real problems
   - It must never be updated after the first run
   - AIDE deletes the files that are not listed in the database when it runs
-  - It makes AIDE run faster on the next scan
   answer:
-  - 0
-  explain: 'A) correct: the baseline must reflect reviewed state. B) wrong: a stale baseline is useless. C) wrong: it only reports. D) wrong: not the reason.'
+  - 1
+  explain: 'A) wrong: not the reason. B) correct: the baseline must reflect reviewed state. C) wrong: a stale baseline is useless. D) wrong: it only reports.'
 - id: checkmode
   prompt: What is a weakness of detecting drift with Ansible check mode?
   choices:
@@ -53,13 +53,13 @@ questions:
 - id: record
   prompt: A technician wiped 40 drives but kept no record. How does an auditor treat the work?
   choices:
-  - As not done, because sanitisation must be documented and verified
-  - As done, since the drives are now empty
   - As irrelevant to the audit scope
   - As done if the technician is trusted by the team and signs a short note
+  - As not done, because sanitisation must be documented and verified
+  - As done, since the drives are now empty
   answer:
-  - 0
-  explain: 'A) correct: no evidence, no sanitisation. B) wrong: empty is not evidence. C) wrong: sanitisation is audited. D) wrong: trust is not evidence.'
+  - 2
+  explain: 'A) wrong: sanitisation is audited. B) wrong: trust is not evidence. C) correct: no evidence, no sanitisation. D) wrong: empty is not evidence.'
 - id: aidenoise
   prompt: After a kernel patch window, the AIDE report lists thousands of changes. What is the right order of work?
   choices:
@@ -73,10 +73,10 @@ questions:
 - id: decom
   prompt: A server with self-encrypting SSDs is retired and the old team overwrote them once with zeros. Which plan is better for the next one?
   choices:
-  - The drive's sanitize command or cryptographic erase, verified and recorded
-  - Overwrite three times with random data from the OS
   - Quick format the drives, and ship them to the recycler with the rest of the rack
   - Skip the wipe if the drives stay in a locked room
+  - The drive's sanitize command or cryptographic erase, verified and recorded
+  - Overwrite three times with random data from the OS
   answer:
-  - 0
-  explain: 'A) correct: matches how SSDs actually store data. B) wrong: still misses remapped blocks. C) wrong: data remains readable. D) wrong: the data leaves with the drives.'
+  - 2
+  explain: 'A) wrong: data remains readable. B) wrong: the data leaves with the drives. C) correct: matches how SSDs actually store data. D) wrong: still misses remapped blocks.'

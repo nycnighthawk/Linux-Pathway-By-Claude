@@ -73,10 +73,10 @@ questions:
 - id: unsignedmeta
   prompt: A mirror is signed per package (gpgcheck=1) but repo_gpgcheck=0. What attack does this still allow?
   choices:
-  - Serving an old or tampered repomd that hides or replays package versions
   - Installing a package whose payload carries a forged signature from an unknown signer
   - Reading the private key from the client machine
   - Changing the TLS certificate of the server
+  - Serving an old or tampered repomd that hides or replays package versions
   answer:
-  - 0
-  explain: 'A) correct: metadata is not verified. B) wrong: gpgcheck covers the payload. C) wrong: not exposed by this setting. D) wrong: a different layer.'
+  - 3
+  explain: 'A) wrong: gpgcheck covers the payload. B) wrong: not exposed by this setting. C) wrong: a different layer. D) correct: metadata is not verified.'

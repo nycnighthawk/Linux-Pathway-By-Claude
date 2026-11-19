@@ -13,13 +13,13 @@ questions:
 - id: hardlink
   prompt: Why are hard-link snapshots cheap?
   choices:
+  - They compress the files with a better algorithm
   - Unchanged files are shared between snapshots, so only new files use space
   - They skip the metadata that describes the packages
   - They delete the old packages after each new snapshot
-  - They compress the files with a better algorithm
   answer:
-  - 0
-  explain: 'A) correct: one copy of each file. B) wrong: metadata is still there. C) wrong: that would break old snapshots. D) wrong: compression is not used.'
+  - 1
+  explain: 'A) wrong: compression is not used. B) correct: one copy of each file. C) wrong: metadata is still there. D) wrong: that would break old snapshots.'
 - id: rollback
   prompt: What does pointing prod at the previous snapshot NOT do?
   choices:
@@ -63,20 +63,20 @@ questions:
 - id: brokenprod
   prompt: Prod clients start getting a regression. The team still has the snapshot from last Monday. What is the fastest safe step?
   choices:
-  - Point prod back at that snapshot and let clients pick it up
   - Edit the packages inside today's snapshot
   - Delete today's snapshot while clients are still using it, to remove the faulty packages
   - Rebuild the whole mirror from upstream today
+  - Point prod back at that snapshot and let clients pick it up
   answer:
-  - 0
-  explain: 'A) correct: the pointer move is instant. B) wrong: snapshots must not change. C) wrong: breaks clients and evidence. D) wrong: slow and may bring the same bug.'
+  - 3
+  explain: 'A) wrong: snapshots must not change. B) wrong: breaks clients and evidence. C) wrong: slow and may bring the same bug. D) correct: the pointer move is instant.'
 - id: expiredrelease
   prompt: A three-month-old Debian snapshot fails with "Release file is expired". Which is the right fix for a lab that needs it?
   choices:
+  - Edit the Release file by hand and re-sign it with any key that apt will accept
   - Use the Check-Valid-Until=false apt option for that source and note why
   - Set the system clock back three months on all clients
   - Disable signature verification for every repository
-  - Edit the Release file by hand and re-sign it with any key that apt will accept
   answer:
-  - 0
-  explain: 'A) correct: a scoped, explicit exception. B) wrong: breaks other things. C) wrong: removes protection. D) wrong: invalid chain of trust.'
+  - 1
+  explain: 'A) wrong: invalid chain of trust. B) correct: a scoped, explicit exception. C) wrong: breaks other things. D) wrong: removes protection.'

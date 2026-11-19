@@ -13,13 +13,13 @@ questions:
 - id: wave1
   prompt: What should wave 1 contain?
   choices:
-  - A few representative production hosts, one of each major class
   - The most critical hosts, so that the riskiest part is finished at the very start
   - The easiest hosts, so the first wave looks good
   - Only lab hosts that no one uses
+  - A few representative production hosts, one of each major class
   answer:
-  - 0
-  explain: 'A) correct: finds problems early. B) wrong: too risky. C) wrong: finds nothing. D) wrong: not representative.'
+  - 3
+  explain: 'A) wrong: too risky. B) wrong: finds nothing. C) wrong: not representative. D) correct: finds problems early.'
 - id: growth
   prompt: Why stop doubling the wave size at some point?
   choices:
@@ -63,20 +63,20 @@ questions:
 - id: wave2fail
   prompt: Wave 2 of a campaign shows a 3% failure rate, above the agreed 1% stop condition, and the owner of the schedule wants to continue. What happens?
   choices:
+  - It restarts from wave 1 without a cause analysis
   - The campaign stops, because the condition was agreed before and named people decide to lift it
   - It continues if the schedule owner insists
   - It continues with a smaller wave but no review
-  - It restarts from wave 1 without a cause analysis
   answer:
-  - 0
-  explain: 'A) correct: the rule exists for this. B) wrong: overrides the rule. C) wrong: hides the breach. D) wrong: no learning.'
+  - 1
+  explain: 'A) wrong: no learning. B) correct: the rule exists for this. C) wrong: overrides the rule. D) wrong: hides the breach.'
 - id: lastnight
   prompt: Three weeks in, 8% of hosts are still unpatched and the team plans to do them all on the last night. What is the better plan?
   choices:
-  - Put them in an exceptions register with owners, controls and a deadline, and patch in small groups
   - Patch all of them at once on the last night, to finish before the deadline
   - Mark the campaign complete and ignore them
   - Remove them from the inventory report
+  - Put them in an exceptions register with owners, controls and a deadline, and patch in small groups
   answer:
-  - 0
-  explain: 'A) correct: tracked and safe. B) wrong: no recovery margin. C) wrong: risk stays hidden. D) wrong: false numbers.'
+  - 3
+  explain: 'A) wrong: no recovery margin. B) wrong: risk stays hidden. C) wrong: false numbers. D) correct: tracked and safe.'

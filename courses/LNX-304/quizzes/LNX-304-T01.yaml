@@ -23,13 +23,13 @@ questions:
 - id: mock
   prompt: Why build in mock instead of on a developer workstation?
   choices:
-  - The chroot holds only the declared build dependencies, so hidden ones fail the build
-  - RPM refuses to build a package outside of a mock chroot
   - Mock builds finish faster than builds on a fully loaded developer workstation with many tools
   - Mock signs the finished packages with the key of the build host
+  - The chroot holds only the declared build dependencies, so hidden ones fail the build
+  - RPM refuses to build a package outside of a mock chroot
   answer:
-  - 0
-  explain: 'A) correct: this exposes missing BuildRequires. B) wrong: RPM has no such rule. C) wrong: speed is not the reason. D) wrong: signing is a separate step.'
+  - 2
+  explain: 'A) wrong: speed is not the reason. B) wrong: signing is a separate step. C) correct: this exposes missing BuildRequires. D) wrong: RPM has no such rule.'
 - id: scriptlet-arg
   prompt: In a %postun scriptlet the first argument is 0. What happened?
   choices:
@@ -73,20 +73,20 @@ questions:
 - id: buildfail
   prompt: 'A package builds on a developer laptop but fails in mock with "command not found: gcc". What is the likely fix?'
   choices:
+  - Add gcc to Requires so that every user installs the compiler
   - Add gcc to BuildRequires, because the laptop had it by accident
   - Copy gcc from the laptop into the mock chroot by hand
   - Disable mock for this package and keep using the laptop
-  - Add gcc to Requires so that every user installs the compiler
   answer:
-  - 0
-  explain: 'A) correct: mock only has declared dependencies. B) wrong: not reproducible. C) wrong: hides the missing dependency. D) wrong: a runtime dependency is the wrong place.'
+  - 1
+  explain: 'A) wrong: a runtime dependency is the wrong place. B) correct: mock only has declared dependencies. C) wrong: not reproducible. D) wrong: hides the missing dependency.'
 - id: confupgrade
   prompt: After an upgrade an admin finds /etc/app.conf.rpmnew next to the edited file. What does it mean and what do they do?
   choices:
+  - The file is a backup that RPM removes after the next reboot
   - The package kept the edited file and the new default is in .rpmnew; merge by hand
   - The package replaced the edited file and saved the old copy beside it as .rpmnew
   - The upgrade failed and the .rpmnew file must be deleted first
-  - The file is a backup that RPM removes after the next reboot
   answer:
-  - 0
-  explain: 'A) correct: noreplace behaviour. B) wrong: that would be .rpmsave. C) wrong: it is not an error. D) wrong: RPM does not clean it up.'
+  - 1
+  explain: 'A) wrong: RPM does not clean it up. B) correct: noreplace behaviour. C) wrong: that would be .rpmsave. D) wrong: it is not an error.'

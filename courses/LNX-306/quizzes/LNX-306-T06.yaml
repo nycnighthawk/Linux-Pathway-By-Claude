@@ -3,13 +3,13 @@ questions:
 - id: commission
   prompt: What does MAAS commissioning do?
   choices:
-  - It boots an ephemeral image that gathers hardware facts and runs tests
   - It installs the production operating system on the machine and joins it to the site
   - It mirrors the package repositories for later deployment
   - It removes the BMC from the machine record
+  - It boots an ephemeral image that gathers hardware facts and runs tests
   answer:
-  - 0
-  explain: 'A) correct: results go in the inventory. B) wrong: that is deployment. C) wrong: unrelated. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: that is deployment. B) wrong: unrelated. C) wrong: unrelated. D) correct: results go in the inventory.'
 - id: buildmode
   prompt: What is the purpose of build mode in Foreman?
   choices:
@@ -43,13 +43,13 @@ questions:
 - id: bmc
   prompt: Which BMC practice is correct?
   choices:
+  - Share one BMC password across the whole company
   - Isolate the BMC network, vault the credentials and rotate them
   - Expose the BMC to the internet so that the vendor can help with a failed board
   - Keep the default credentials so any engineer can log in
-  - Share one BMC password across the whole company
   answer:
-  - 0
-  explain: 'A) correct: limits exposure and keeps accountability. B) wrong: never expose a BMC. C) wrong: BMC compromise is full machine compromise. D) wrong: no per-host accountability.'
+  - 1
+  explain: 'A) wrong: no per-host accountability. B) correct: limits exposure and keeps accountability. C) wrong: never expose a BMC. D) wrong: BMC compromise is full machine compromise.'
 - id: fdo
   prompt: What problem does FIDO Device Onboard address?
   choices:

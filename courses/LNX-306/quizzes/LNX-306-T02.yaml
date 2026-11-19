@@ -53,13 +53,13 @@ questions:
 - id: relay
   prompt: How does DHCP reach a server on another subnet?
   choices:
-  - A DHCP relay (ip helper) on the router that adds the gateway address
   - A DNS lookup that resolves the DHCP server by name
   - A TFTP proxy running on the client subnet
   - It cannot; a DHCP server has to sit on every subnet that has clients on it
+  - A DHCP relay (ip helper) on the router that adds the gateway address
   answer:
-  - 0
-  explain: 'A) correct: the server picks the scope from the relay address. B) wrong: unrelated. C) wrong: unrelated. D) wrong: relays are standard.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) wrong: relays are standard. D) correct: the server picks the scope from the relay address.'
 - id: loopcase
   prompt: A new batch of UEFI machines gets the boot file but then loops back to it after iPXE starts. What do you check first?
   choices:

@@ -13,13 +13,13 @@ questions:
 - id: tilde
   prompt: How does dpkg order 1.0~rc1 against 1.0?
   choices:
+  - The comparison is an error that dpkg reports to the user and then stops
   - 1.0~rc1 is older, because the tilde sorts before everything
   - They are equal, since the tilde part is ignored
   - 1.0~rc1 is newer, because it has more characters
-  - The comparison is an error that dpkg reports to the user and then stops
   answer:
-  - 0
-  explain: 'A) correct: used for pre-releases. B) wrong: it is not ignored. C) wrong: more characters do not mean newer. D) wrong: the comparison is defined.'
+  - 1
+  explain: 'A) wrong: the comparison is defined. B) correct: used for pre-releases. C) wrong: it is not ignored. D) wrong: more characters do not mean newer.'
 - id: conffile
   prompt: A packaged /etc file and the local copy both changed. What does dpkg do on upgrade?
   choices:
@@ -53,13 +53,13 @@ questions:
 - id: dh
   prompt: What does a minimal debian/rules with the line "dh $@" do?
   choices:
-  - It runs debhelper's standard build sequence; you override only what you need
   - It does nothing at all until every single target has been added by hand to the file
   - It installs the package on the host that runs it
   - It builds only the source package and stops
+  - It runs debhelper's standard build sequence; you override only what you need
   answer:
-  - 0
-  explain: 'A) correct: the usual modern layout. B) wrong: dh supplies the targets. C) wrong: that is not its job. D) wrong: it runs the whole sequence.'
+  - 3
+  explain: 'A) wrong: dh supplies the targets. B) wrong: that is not its job. C) wrong: it runs the whole sequence. D) correct: the usual modern layout.'
 - id: hiddendep
   prompt: A package builds with dpkg-buildpackage on a laptop but fails in sbuild for a missing header. What is the fix?
   choices:

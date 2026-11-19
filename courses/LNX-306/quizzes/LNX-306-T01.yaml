@@ -23,13 +23,13 @@ questions:
 - id: ksdelivery
   prompt: How do you tell Anaconda to use a Kickstart file served over HTTP?
   choices:
-  - The kernel argument inst.ks=http://server/path/ks.cfg
-  - A ks=http://server/path entry in /etc/fstab of the install media
   - A DNS TXT record on the domain that names the answer file
   - A file called ks.cfg that the installer finds by scanning the LAN
+  - The kernel argument inst.ks=http://server/path/ks.cfg
+  - A ks=http://server/path entry in /etc/fstab of the install media
   answer:
-  - 0
-  explain: 'A) correct: inst.ks takes URL, nfs and hd locations. B) wrong: the installer does not read fstab. C) wrong: no such discovery mechanism exists. D) wrong: Anaconda does not scan the network.'
+  - 2
+  explain: 'A) wrong: no such discovery mechanism exists. B) wrong: Anaconda does not scan the network. C) correct: inst.ks takes URL, nfs and hd locations. D) wrong: the installer does not read fstab.'
 - id: preseedtime
   prompt: Why can a preseed file fetched over the network fail to answer the network questions?
   choices:
@@ -73,10 +73,10 @@ questions:
 - id: urlpassword
   prompt: A reviewer finds a shared root password inside the URL used to fetch the answer file. Which change fixes the design?
   choices:
-  - Lock root, add an SSH key for a named admin, keep secrets off URLs
-  - Shorten the URL so that it fits in the boot menu entry
   - Move the password to a second URL on the same web server
   - Rotate the shared password every month and keep fetching the file from the same URL
+  - Lock root, add an SSH key for a named admin, keep secrets off URLs
+  - Shorten the URL so that it fits in the boot menu entry
   answer:
-  - 0
-  explain: 'A) correct: removes the shared secret and the leak. B) wrong: length does not change the exposure. C) wrong: it still travels as a request that is logged. D) wrong: the secret still sits in logs between rotations.'
+  - 2
+  explain: 'A) wrong: it still travels as a request that is logged. B) wrong: the secret still sits in logs between rotations. C) correct: removes the shared secret and the leak. D) wrong: length does not change the exposure.'

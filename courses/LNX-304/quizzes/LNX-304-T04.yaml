@@ -33,13 +33,13 @@ questions:
 - id: ondemand
   prompt: What is the trade-off of the Pulp on_demand policy?
   choices:
+  - It makes the repository read-only for clients
   - It saves disk, but each package is fetched from upstream on first request
   - It uses more disk than a full sync would
   - It disables signature checks for the repository, because content arrives late from upstream
-  - It makes the repository read-only for clients
   answer:
-  - 0
-  explain: 'A) correct: less storage, more dependence on upstream. B) wrong: the opposite. C) wrong: signatures remain. D) wrong: clients stay read-only anyway.'
+  - 1
+  explain: 'A) wrong: clients stay read-only anyway. B) correct: less storage, more dependence on upstream. C) wrong: the opposite. D) wrong: signatures remain.'
 - id: atomic
   prompt: How should a mirror be published so that clients never see a partial update?
   choices:
@@ -63,20 +63,20 @@ questions:
 - id: stalefiles
   prompt: After a sync, clients get "404" for a package that the index still lists. Which publishing mistake is most likely?
   choices:
-  - The index and the packages were published in different steps, so one was missing
-  - The client clock is a few seconds wrong
   - The TLS certificate expired on the server
   - The package is larger than the cache limit
+  - The index and the packages were published in different steps, so one was missing
+  - The client clock is a few seconds wrong
   answer:
-  - 0
-  explain: 'A) correct: not atomic. B) wrong: would not give a 404. C) wrong: would give a TLS error. D) wrong: not a 404.'
+  - 2
+  explain: 'A) wrong: would give a TLS error. B) wrong: not a 404. C) correct: not atomic. D) wrong: would not give a 404.'
 - id: pulpclient
   prompt: A team wants clients to keep working during an upstream outage, with new packages fetched later. Which Pulp setting fits?
   choices:
+  - A shorter sync interval and no stored copies
   - The immediate policy, so all packages are stored locally at sync time
   - The on_demand policy with the upstream remote turned off after the first sync has run
   - A distribution without a publication
-  - A shorter sync interval and no stored copies
   answer:
-  - 0
-  explain: 'A) correct: nothing depends on upstream later. B) wrong: packages not yet fetched would fail. C) wrong: clients get nothing. D) wrong: still depends on upstream.'
+  - 1
+  explain: 'A) wrong: still depends on upstream. B) correct: nothing depends on upstream later. C) wrong: packages not yet fetched would fail. D) wrong: clients get nothing.'

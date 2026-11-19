@@ -13,13 +13,13 @@ questions:
 - id: once
   prompt: Which Redfish settings make a PXE boot apply for one boot only?
   choices:
-  - BootSourceOverrideTarget Pxe with BootSourceOverrideEnabled Once
-  - BootSourceOverrideTarget Pxe with BootSourceOverrideEnabled Continuous
   - PowerState set to Pxe before the next reset
   - ResetType ForceOff followed by ForceOn on the system
+  - BootSourceOverrideTarget Pxe with BootSourceOverrideEnabled Once
+  - BootSourceOverrideTarget Pxe with BootSourceOverrideEnabled Continuous
   answer:
-  - 0
-  explain: 'A) correct: the override clears after one boot. B) wrong: stays for every boot. C) wrong: not a valid state. D) wrong: power cycle only, no boot choice.'
+  - 2
+  explain: 'A) wrong: not a valid state. B) wrong: power cycle only, no boot choice. C) correct: the override clears after one boot. D) wrong: stays for every boot.'
 - id: password
   prompt: Why prefer ipmitool -E (password from the environment) over -P?
   choices:
@@ -53,13 +53,13 @@ questions:
 - id: nohw
   prompt: Which is a way to practise BMC automation without servers?
   choices:
+  - Turn off the firewall on the workstation first
   - A mock Redfish service, sushy-emulator or virtualbmc over libvirt guests
   - Run ping against a test address and read the replies to check the power state
   - Run ipmitool against a public address that answers
-  - Turn off the firewall on the workstation first
   answer:
-  - 0
-  explain: 'A) correct: emulators behave like a BMC. B) wrong: ping does not manage power. C) wrong: attacking others is not practice. D) wrong: unrelated.'
+  - 1
+  explain: 'A) wrong: unrelated. B) correct: emulators behave like a BMC. C) wrong: ping does not manage power. D) wrong: attacking others is not practice.'
 - id: timeoutcase
   prompt: A script sets a one-time PXE boot through Redfish and gets HTTP 400 on a new server model. The same call worked on the old model. What do you do first?
   choices:

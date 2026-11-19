@@ -63,20 +63,20 @@ questions:
 - id: leakedcreds
   prompt: A web application on an instance has a request-forgery bug and the attacker fetches role credentials from the metadata address. Which change would have blocked the simple GET?
   choices:
-  - Requiring session tokens for metadata requests
   - Raising the instance size to handle more requests
   - Moving the credentials into user data instead
   - Opening more ports in the security group
+  - Requiring session tokens for metadata requests
   answer:
-  - 0
-  explain: 'A) correct: a plain GET no longer returns credentials. B) wrong: unrelated. C) wrong: user data is readable too. D) wrong: widens exposure.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: user data is readable too. C) wrong: widens exposure. D) correct: a plain GET no longer returns credentials.'
 - id: lostdata
   prompt: After a stop and start the instance has a new host and the scratch data is gone. The team stored a database there. What is the lesson?
   choices:
+  - Disable cloud-init, so that it cannot reset the disk when the instance restarts
   - Keep data on a persistent volume; use ephemeral disks for scratch only
   - Pick a larger instance type next time
   - Snapshot the ephemeral disk every minute
-  - Disable cloud-init, so that it cannot reset the disk when the instance restarts
   answer:
-  - 0
-  explain: 'A) correct: ephemeral disks are lost on deallocation. B) wrong: size does not make it persistent. C) wrong: it may not be snapshot-able. D) wrong: cloud-init did not delete the data.'
+  - 1
+  explain: 'A) wrong: cloud-init did not delete the data. B) correct: ephemeral disks are lost on deallocation. C) wrong: size does not make it persistent. D) wrong: it may not be snapshot-able.'

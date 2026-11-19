@@ -23,13 +23,13 @@ questions:
 - id: machineid
   prompt: Why truncate /etc/machine-id before capture?
   choices:
-  - Each clone then makes its own identity instead of sharing one
   - It frees disk space in the final image
   - systemd refuses to boot the image at all unless that file is completely empty
   - It turns off networking until the first login
+  - Each clone then makes its own identity instead of sharing one
   answer:
-  - 0
-  explain: 'A) correct: shared ids break DHCP, licensing and monitoring. B) wrong: the file is tiny. C) wrong: it regenerates the value. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: the file is tiny. B) wrong: it regenerates the value. C) wrong: unrelated. D) correct: shared ids break DHCP, licensing and monitoring.'
 - id: secrets
   prompt: Which is the right way to handle the temporary build password?
   choices:
@@ -43,13 +43,13 @@ questions:
 - id: test
   prompt: What is a sound test of a freshly built image?
   choices:
-  - Boot it twice; assert services, ports, no build user, unique host keys
-  - Check that the build finished without errors, then publish
   - Compare the file size with last week's image
   - Read the template once more before the release
+  - Boot it twice; assert services, ports, no build user, unique host keys
+  - Check that the build finished without errors, then publish
   answer:
-  - 0
-  explain: 'A) correct: tests cover identity and security. B) wrong: a successful build says little about the result. C) wrong: weak signal. D) wrong: does not test the artefact.'
+  - 2
+  explain: 'A) wrong: weak signal. B) wrong: does not test the artefact. C) correct: tests cover identity and security. D) wrong: a successful build says little about the result.'
 - id: alt
   prompt: When might Image Builder or a distribution tool be preferable to Packer?
   choices:
@@ -73,10 +73,10 @@ questions:
 - id: weekly
   prompt: A team rebuilds images weekly and the latest one fails to boot in production. Which practice limits the damage?
   choices:
-  - Keep the old image and promote the new one only after its boot test passes
-  - Skip the boot tests whenever the template did not change since the previous week
   - Delete the old images to save storage space
   - Build directly in production to save a copy step
+  - Keep the old image and promote the new one only after its boot test passes
+  - Skip the boot tests whenever the template did not change since the previous week
   answer:
-  - 0
-  explain: 'A) correct: a tested promotion with a rollback. B) wrong: the base packages still change. C) wrong: removes the rollback. D) wrong: removes any gate before release.'
+  - 2
+  explain: 'A) wrong: removes the rollback. B) wrong: removes any gate before release. C) correct: a tested promotion with a rollback. D) wrong: the base packages still change.'

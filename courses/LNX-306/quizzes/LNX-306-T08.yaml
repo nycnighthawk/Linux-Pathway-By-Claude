@@ -63,13 +63,13 @@ questions:
 - id: inhibitorcase
   prompt: leapp preupgrade lists an inhibitor about an unsupported kernel module. The upgrade window opens in an hour. What is the best action?
   choices:
+  - Delete the report file and start the assessment over
   - Remove or replace the module as advised, then rerun preupgrade
   - Run the upgrade anyway and accept the risk this time, since the window is short
   - Ignore the finding because the report is often wrong
-  - Delete the report file and start the assessment over
   answer:
-  - 0
-  explain: 'A) correct: the inhibitor must be cleared first. B) wrong: inhibitors block the upgrade phase. C) wrong: the report is a gate. D) wrong: the problem remains.'
+  - 1
+  explain: 'A) wrong: the problem remains. B) correct: the inhibitor must be cleared first. C) wrong: inhibitors block the upgrade phase. D) wrong: the report is a gate.'
 - id: rebootstuck
   prompt: After an in-place upgrade the host sits at the reboot screen for an hour with no console output. What was the missed preparation?
   choices:

@@ -13,13 +13,13 @@ questions:
 - id: foreach
   prompt: vm_names is a set of three names used with for_each. You remove one name and apply. What happens?
   choices:
-  - Only the VM for the removed name, with its disk and seed
   - All three VMs are destroyed and built again from scratch
   - Nothing changes, because the VM already exists
   - The shared base image is deleted along with the VM
+  - Only the VM for the removed name, with its disk and seed
   answer:
-  - 0
-  explain: 'A) correct: resources are tracked by key. B) wrong: the other keys are unchanged. C) wrong: it is no longer declared. D) wrong: the base volume is shared.'
+  - 3
+  explain: 'A) wrong: the other keys are unchanged. B) wrong: it is no longer declared. C) wrong: the base volume is shared. D) correct: resources are tracked by key.'
 - id: secretsstate
   prompt: Why must the state file be protected?
   choices:
@@ -63,13 +63,13 @@ questions:
 - id: handedit
   prompt: The plan shows a disk it wants to replace, but a colleague resized that disk by hand last week. What is the safest first step?
   choices:
-  - Run tofu plan -refresh-only to see the drift, then decide what to keep
-  - Apply the plan and accept the replacement of the disk
   - Delete the state file and import every resource again from the live libvirt host
   - Run tofu fmt so the difference settles by itself
+  - Run tofu plan -refresh-only to see the drift, then decide what to keep
+  - Apply the plan and accept the replacement of the disk
   answer:
-  - 0
-  explain: 'A) correct: shows the difference without changing anything. B) wrong: may destroy data on the disk. C) wrong: loses the mapping of every resource. D) wrong: formatting does not touch drift.'
+  - 2
+  explain: 'A) wrong: loses the mapping of every resource. B) wrong: formatting does not touch drift. C) correct: shows the difference without changing anything. D) wrong: may destroy data on the disk.'
 - id: twoapply
   prompt: Two pipeline jobs apply to the same state at the same time and one fails with a lock error. What does this tell you?
   choices:

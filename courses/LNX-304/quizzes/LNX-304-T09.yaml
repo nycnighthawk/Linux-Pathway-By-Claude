@@ -43,13 +43,13 @@ questions:
 - id: rebuild
   prompt: Why rebuild images on a schedule even if the blueprint did not change?
   choices:
-  - To pick up package updates so instances do not patch for long at first boot
   - Because the TOML file expires after a month
   - To change the file format of the image
   - Because systemd requires a rebuild of the image each week, or the units fail
+  - To pick up package updates so instances do not patch for long at first boot
   answer:
-  - 0
-  explain: 'A) correct: keeps the image fresh. B) wrong: it does not expire. C) wrong: not needed. D) wrong: no such rule.'
+  - 3
+  explain: 'A) wrong: it does not expire. B) wrong: not needed. C) wrong: no such rule. D) correct: keeps the image fresh.'
 - id: bootcib
   prompt: What does bootc-image-builder take as input?
   choices:
@@ -63,20 +63,20 @@ questions:
 - id: oldimage
   prompt: Instances built from a three-month-old image spend ten minutes updating at first boot and sometimes time out. What fixes the cause?
   choices:
-  - Rebuild images on a schedule from a current snapshot
-  - Raise the timeout on the instance health check so the update can finish in time
   - Disable updates at first boot for good
   - Use a faster mirror and keep the old image
+  - Rebuild images on a schedule from a current snapshot
+  - Raise the timeout on the instance health check so the update can finish in time
   answer:
-  - 0
-  explain: 'A) correct: the image is fresh. B) wrong: hides the delay. C) wrong: leaves known flaws. D) wrong: does not remove the work.'
+  - 2
+  explain: 'A) wrong: leaves known flaws. B) wrong: does not remove the work. C) correct: the image is fresh. D) wrong: hides the delay.'
 - id: leakedtoken
   prompt: A reviewer finds an API token in a blueprint stored in Git. What is the right response?
   choices:
-  - Revoke the token, remove it from the blueprint and inject it at first boot
   - Delete the commit from the history and leave the token active for the pipeline
   - Rename the blueprint so it is harder to find
   - Encrypt the Git repository disk only
+  - Revoke the token, remove it from the blueprint and inject it at first boot
   answer:
-  - 0
-  explain: 'A) correct: closes the exposure. B) wrong: it stays in history and copies. C) wrong: obscurity. D) wrong: the file is still readable by users.'
+  - 3
+  explain: 'A) wrong: it stays in history and copies. B) wrong: obscurity. C) wrong: the file is still readable by users. D) correct: closes the exposure.'

@@ -43,13 +43,13 @@ questions:
 - id: clean
   prompt: What does cloud-init clean --logs prepare for?
   choices:
-  - It makes the next boot a first boot, for image capture or retests
-  - It removes the running kernel from the boot disk
   - It reformats the root file system of the instance
   - It changes the hostname that the instance reports to its DHCP server at boot
+  - It makes the next boot a first boot, for image capture or retests
+  - It removes the running kernel from the boot disk
   answer:
-  - 0
-  explain: 'A) correct: it removes state and logs. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) correct: it removes state and logs. D) wrong: unrelated.'
 - id: validate
   prompt: Which command checks a user-data file against the schema before booting?
   choices:
