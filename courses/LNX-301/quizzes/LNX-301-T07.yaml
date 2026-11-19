@@ -3,81 +3,80 @@ questions:
 - id: why-trust
   prompt: What does a cross-forest trust avoid, compared with joining every Linux host to AD?
   choices:
+  - An AD computer object and AD ports for each Linux host, and Linux schema in AD
   - Time synchronisation
-  - Having any Kerberos at all
+  - Having any Kerberos at all, since the trust uses only plain LDAP binds
   - The need for DNS
-  - An AD computer object and AD ports per Linux host, and any Linux-specific schema or policy in AD
   answer:
-  - 3
-  explain: 'A (wrong): Time still matters. B (wrong): Both use Kerberos. C (wrong): DNS must work in both directions. D (correct): Linux hosts enrol in IdM; AD users still log in through the
-    trust.'
+  - 0
+  explain: 'A) correct: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: controller-agent
   prompt: What is the difference between an IdM trust controller and a trust agent?
   choices:
-  - They are the same role under different names
-  - Controllers run Samba components and can establish the trust and process AD Kerberos requests; agents can resolve
-    AD identities for clients but cannot handle AD Kerberos requests
-  - Agents establish trusts and controllers cannot
+  - Agents establish the trusts and the controllers cannot, because they lack Samba
   - Controllers are clients
+  - They are the same role under different names
+  - Controllers run Samba and can establish the trust; agents only resolve AD identities
   answer:
-  - 1
-  explain: 'A (wrong):
-    They differ in services and exposure. B (correct): This matches the roles described for IdM trusts. C (wrong): The reverse is true. D (wrong): Both are IdM servers.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: external-group
   prompt: Why is an external group nested in a POSIX group when AD users are given sudo rights?
   choices:
+  - External groups hold AD members by SID and cannot be named in HBAC or sudo rules
+  - To make the AD groups writable from IdM, so that members can be added there
   - To rename the AD forest
   - To skip the trust
-  - External groups hold AD members by SID and cannot be named directly in HBAC or sudo rules; the POSIX group wrapper
-    can
-  - To make AD groups writable
   answer:
-  - 2
-  explain: 'A (wrong): Unrelated. B (wrong): The trust is still needed. C (correct): Rules accept POSIX groups only. D (wrong): The nesting does not change AD.'
+  - 0
+  explain: 'A) correct: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: range-type
   prompt: Which statement about the ID range type of a trust is correct?
   choices:
-  - ipa-ad-trust derives IDs from SID RIDs; ipa-ad-trust-posix reads the POSIX attributes stored in AD; changing
-    later after files exist renumbers owners
-  - They are interchangeable at any time with no effect
   - ipa-ad-trust requires uidNumber in AD
   - Both ignore SIDs
+  - ipa-ad-trust derives IDs from SID RIDs; ipa-ad-trust-posix reads POSIX attributes in AD
+  - They are interchangeable at any time, with no effect on files that already exist
   answer:
-  - 0
-  explain: 'A (correct): The choice shapes every file owner and is close to irreversible. B (wrong): Switching changes
-    the UIDs that users receive. C (wrong): That is the posix variant. D (wrong): SIDs are the identifiers AD users
-    have.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: two-way
   prompt: Why is a two-way trust nearly the same as a one-way trust for IdM?
   choices:
-  - Windows forbids two-way trusts
-  - IdM implements no global catalog service, so IdM users cannot be authorised for most AD resources
   - IdM has no users
   - Kerberos is one-way by design
+  - Windows forbids two-way trusts with any realm that does not run Active Directory
+  - IdM has no global catalog, so IdM users cannot be authorised for most AD resources
   answer:
-  - 1
-  explain: 'A (wrong): Windows supports
-    them. B (correct): AD resources need the catalog for access checks, which IdM lacks. C (wrong): IdM has users. D (wrong): Cross-realm tickets can flow both ways.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: dns
   prompt: Why does the trust need DNS forwarding on both sides?
   choices:
-  - Each side must find the other's SRV records for LDAP and Kerberos, so IdM forwards the AD zone and AD forwards
-    the IdM zone
-  - Because SSSD caches DNS answers for a year
   - To allow dynamic updates of NTP
   - Because DNS replaces Kerberos
+  - Each side must find the other's SRV records, so each forwards the other's zone
+  - Because SSSD caches DNS answers for a year and needs a seed from the other side
   answer:
-  - 0
-  explain: 'A (correct): Discovery of services depends on SRV records. B (wrong): Not the reason. C (wrong): Unrelated.
-    D (wrong): It does not.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: healthcheck
   prompt: Which command runs only the trust checks of IdM Healthcheck?
   choices:
-  - ipa-backup --data
   - ipa trust-del
   - realm list
   - ipa-healthcheck --source=ipahealthcheck.ipa.trust
+  - ipa-backup --data
+  answer:
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
+- id: trust-dns
+  prompt: A trust with AD cannot be created, and the IdM server cannot find the AD domain controllers. What do you check first?
+  choices:
+  - The free disk space on the AD controllers, which may be too low for a trust
+  - The number of IdM users, since a trust is limited by the size of the realm
+  - The theme of the IdM web UI, which can block the trust creation form
+  - DNS forwarding on both sides, so each finds the other's SRV records
   answer:
   - 3
-  explain: 'A (wrong): It creates a data
-    backup. B (wrong): It removes the trust. C (wrong): It lists joined realms on a client. D (correct): The --source option limits the run to the trust tests; an empty list means no findings.'
+  explain: 'A) wrong: not related. B) wrong: not related. C) wrong: not related. D) correct: trust needs SRV discovery.'

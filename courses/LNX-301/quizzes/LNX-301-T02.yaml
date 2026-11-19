@@ -3,89 +3,80 @@ questions:
 - id: what-travels
   prompt: In a normal Kerberos login, what does the user's client send to the service it wants to use?
   choices:
+  - A hash of the password, which the service compares with the copy it keeps
   - The user's password, encrypted with TLS
   - The ticket-granting ticket itself
-  - A service ticket plus an authenticator proving the client holds the session key
-  - A hash of the password for the service to compare
-  answer:
-  - 2
-  explain: 'A (wrong): The password never goes to the service; that is the point of the protocol. B (wrong): The
-    TGT is only presented to the KDC''s ticket-granting service, never to ordinary services. C (correct): The
-    ticket is readable only by the service and the authenticator carries a timestamp encrypted with the session
-    key. D (wrong): A password-derived hash would make the service a target for offline attacks.'
-- id: clock-skew
-  prompt: Every login fails with 'Clock skew too great' after a VM is resumed from a snapshot. What is the first
-    fix?
-  choices:
-  - Delete the credential cache and reboot the KDC
-  - Reissue the keytab
-  - Raise the ticket lifetime
-  - Step the clock back to correct time, for example with chronyc makestep
+  - A service ticket plus an authenticator proving it holds the session key
   answer:
   - 3
-  explain: 'A (wrong): Neither addresses
-    the host''s wrong time. B (wrong): The keys are fine; the timestamps in authenticators are not. C (wrong): Lifetime does not change the skew check on authenticators. D (correct): Authenticators carry timestamps and the default tolerance is five minutes,
-    so correct time restores service.'
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
+- id: clock-skew
+  prompt: Every login fails with 'Clock skew too great' after a VM is resumed from a snapshot. What is the first fix?
+  choices:
+  - Delete the credential cache and reboot the KDC, so that new tickets are issued
+  - Reissue the keytab
+  - Raise the ticket lifetime
+  - Step the clock to the correct time, for example with chronyc makestep
+  answer:
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: ktadd-rotates
-  prompt: You run kadmin 'ktadd' for host/web1 on a second occasion and keep the first keytab file as well. What
-    happens to the first file?
+  prompt: You run kadmin 'ktadd' for host/web1 on a second occasion and keep the first keytab file as well. What happens to the first file?
   choices:
-  - It keeps working; both keytabs hold the current key
-  - It stops working because ktadd rotated the key and incremented the key version
-  - It is updated automatically over the network
   - It becomes valid for a different realm
+  - It keeps working, because both keytabs hold the current key for that principal
+  - 'It stops working: ktadd rotated the key and raised the key version'
+  - It is updated automatically over the network
   answer:
-  - 1
-  explain: 'A (wrong): ktadd generates a new key unless told otherwise. B (correct): The KDC now holds a newer key
-    version; tickets use it and the old keytab cannot decrypt them. C (wrong): Keytab files are local and are not
-    synchronised. D (wrong): The realm is part of the principal and does not change.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: ssh-fallback
-  prompt: ssh asks for a password although the user holds a valid TGT and GSSAPIAuthentication is on at both ends.
-    ssh -vvv reports 'Server not found in Kerberos database'. Most likely cause?
+  prompt: ssh asks for a password although the user holds a valid TGT and GSSAPIAuthentication is on at both ends. ssh -vvv reports 'Server not found in Kerberos database'. Most likely cause?
   choices:
-  - The TGT is too old for any service ticket
-  - The client built a service principal from a short name or a CNAME that the KDC does not know
-  - sshd cannot read the client's cache
   - PermitRootLogin is no
+  - The TGT is too old to be used for any service ticket request at all
+  - The client built the service principal from a short name or CNAME the KDC lacks
+  - sshd cannot read the client's cache
   answer:
-  - 1
-  explain: 'A (wrong): An expired TGT gives a different error. B (correct): The client asks for host/<name>; the name must match a principal exactly, so connect by
-    the real FQDN or adjust canonicalisation. C (wrong): The
-    server never reads the client''s credentials cache. D (wrong): That affects authorisation after authentication,
-    not the lookup.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: keytab-secret
   prompt: How should a host keytab be treated?
   choices:
+  - As public data, because the keys inside are encrypted
   - 'Like a password: root-owned, mode 0600, never in images, and a distinct principal per host'
   - As disposable, since tickets expire after ten hours
   - As a log file that can be world-readable for monitoring
-  - As public data, because the keys inside are encrypted
   answer:
-  - 0
-  explain: 'A (correct): A keytab holds long-term keys, so anyone who copies it can impersonate the host. B (wrong): Tickets expire, but the keytab key is what mints them. C (wrong): World-readable keys defeat the whole scheme. D (wrong):
-    Keytabs store keys in a form directly usable by the owner.'
+  - 1
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: krb5-trace
   prompt: Which switch prints a step-by-step trace of KDC discovery, pre-authentication and errors for the MIT client?
   choices:
+  - kvno -q
   - KRB5_TRACE=/dev/stderr
   - klist -e
   - kdestroy -A
-  - kvno -q
   answer:
-  - 0
-  explain: 'A (correct): This environment variable makes libkrb5 print its trace, and is the most useful debugging
-    aid. B (wrong): Shows encryption types of cached tickets, not the process. C (wrong): Deletes all caches. D
-    (wrong): Quiet mode of the key version tool; it hides information.'
+  - 1
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: auth-to-local
-  prompt: A Kerberos principal alice@EXAMPLE.COM authenticates to sshd but no account called alice exists locally.
-    Which mechanisms let the principal map to an account?
+  prompt: A Kerberos principal alice@EXAMPLE.COM authenticates to sshd but no account called alice exists locally. Which mechanisms let the principal map to an account?
   choices:
-  - Removing the host keytab
-  - Setting GSSAPIAuthentication to no
-  - The user's .k5login file, auth_to_local rules in krb5.conf, or SSSD resolving the name from the directory
+  - Setting GSSAPIAuthentication to no on the server and trying a password login
+  - A .k5login file, auth_to_local rules in krb5.conf, or SSSD resolving the name
   - Running kinit on the server
+  - Removing the host keytab
   answer:
-  - 2
-  explain: 'A (wrong): Without the keytab the server cannot authenticate anyone. B (wrong):
-    That disables the method entirely. C (correct): These are the standard places where the principal-to-account mapping is defined. D (wrong):
-    The server''s own ticket does not map users.'
+  - 1
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
+- id: skew-case
+  prompt: After a VM is resumed from a snapshot, every Kerberos login fails with "Clock skew too great". What is the first fix?
+  choices:
+  - Issue a new keytab for the host principal and copy it to the client machine
+  - Step the clock to the correct time, for example with chronyc makestep
+  - Delete the credential cache and reboot the KDC so new tickets can be issued
+  - Raise the ticket lifetime on the KDC for the realm, so that tickets last longer
+  answer:
+  - 1
+  explain: 'A) wrong: not the cause. B) correct: the skew is the cause. C) wrong: not the cause. D) wrong: does not fix the clock.'

@@ -3,30 +3,25 @@ questions:
 - id: who-does-what
   prompt: Which component decides where getpwnam() looks for a user?
   choices:
+  - krb5.conf
   - sshd_config
   - PAM
   - nsswitch.conf, which lists the sources in order
-  - krb5.conf
   answer:
-  - 2
-  explain: 'A (wrong): sshd
-    uses the lookups; it does not define them. B (wrong): PAM handles authentication, account, password and session tasks, not name lookups. C (correct):
-    The Name Service Switch tells libc which modules (files, sss, and so on) to ask, in sequence. D (wrong): It configures Kerberos clients, not identity lookups.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: authselect
   prompt: What does 'authselect select sssd with-mkhomedir' change?
   choices:
-  - The generated PAM stacks and nsswitch.conf for the chosen profile and features
-  - The kernel's UID range
-  - sssd.conf, the SSSD daemon and the domain
+  - The sssd.conf file, the SSSD daemon settings and the domain it serves
   - Only the home directory permissions
+  - The generated PAM stacks and nsswitch.conf for the profile
+  - The kernel's UID range
   answer:
-  - 0
-  explain: 'A (correct): It writes PAM and nsswitch files only;
-    SSSD must be configured and running separately. B (wrong): UID ranges are a different mechanism. C (wrong): authselect never configures the daemon. D (wrong):
-    The feature adds a session module that creates homes; the profile changes much more.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: sssd-conf-mode
-  prompt: SSSD refuses to start with a configuration file that is readable by other users. What mode is expected
-    for /etc/sssd/sssd.conf?
+  prompt: SSSD refuses to start with a configuration file that is readable by other users. What mode is expected for /etc/sssd/sssd.conf?
   choices:
   - '0777'
   - Any mode, if SELinux is enforcing
@@ -34,33 +29,27 @@ questions:
   - '0644'
   answer:
   - 2
-  explain: 'A (wrong): Even less restrictive and equally rejected. B (wrong): SSSD checks the mode itself. C (correct): The file
-    may contain secrets, so it must be accessible to root only. D (wrong): World-readable files can hold bind passwords and SSSD rejects them.'
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: tls-setting
   prompt: Which SSSD LDAP option makes a missing or invalid server certificate fatal?
   choices:
+  - cache_credentials = true
   - ldap_tls_reqcert = never
   - enumerate = false
   - ldap_tls_reqcert = demand
-  - cache_credentials = true
   answer:
-  - 2
-  explain: 'A (wrong): This disables verification
-    entirely. B (wrong): This only stops full listing
-    of users. C (correct): This requires a valid certificate and fails otherwise. D (wrong): This stores a password hash for offline logins.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: cache-staleness
-  prompt: An administrator adds Alice to a group but sudo -l on a client shows no change for an hour. What is the
-    likely reason?
+  prompt: An administrator adds Alice to a group but sudo -l on a client shows no change for an hour. What is the likely reason?
   choices:
   - PAM must be restarted
   - The KDC is down
-  - nsswitch.conf was edited
-  - The cached group entry has not yet expired (entry_cache_timeout); invalidate it with sss_cache -u or wait
+  - nsswitch.conf was edited on the client and the change is not read until a reboot
+  - The cached group entry has not expired yet; invalidate it with sss_cache -u
   answer:
   - 3
-  explain: 'A (wrong): PAM modules
-    are loaded per process; no restart is involved. B (wrong): Group membership comes from the identity provider, not from the KDC. C (wrong): A changed order would affect every lookup, not one
-    group. D (correct): SSSD answers from its cache until the entry is stale or invalidated.'
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: nullok
   prompt: Why do compliance baselines remove 'nullok' from pam_unix lines?
   choices:
@@ -70,16 +59,24 @@ questions:
   - It allows accounts with empty passwords to authenticate
   answer:
   - 3
-  explain: 'A (wrong): Performance is not the concern. B (wrong): They are independent modules. C (wrong): Locking is handled by pam_faillock. D (correct): nullok permits an empty password, so a blank
-    account becomes a login.'
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: offline
   prompt: What makes an offline login possible with SSSD?
   choices:
-  - Enabling enumeration
-  - cache_credentials, which stores a salted hash after a successful online login
-  - Copying /etc/shadow from the server
+  - Copying /etc/shadow from the server onto every client before the network drops
   - Setting ldap_tls_reqcert to never
+  - Enabling enumeration
+  - cache_credentials, which keeps a salted hash after a successful online login
   answer:
-  - 1
-  explain: 'A (wrong): Enumeration lists users; it does not store credentials. B (correct): SSSD checks the typed password against that hash when no server is reachable. C (wrong):
-    SSSD users have no entry in the local shadow file. D (wrong): The TLS setting has no bearing on offline mode.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
+- id: sudo-stale
+  prompt: A user is added to a group, but sudo -l on a client shows no change for an hour. What is the likely cause?
+  choices:
+  - The KDC is down, so no tickets can be issued for the sudo rules of the user
+  - nsswitch.conf was edited in the meantime and the change is not read until a reboot
+  - PAM must be restarted on the client so that it can read the new group list
+  - The cached group entry has not expired yet; expire it with sss_cache -u
+  answer:
+  - 3
+  explain: 'A) wrong: would break all logins. B) wrong: not related. C) wrong: PAM does not cache groups. D) correct: a cache timeout.'

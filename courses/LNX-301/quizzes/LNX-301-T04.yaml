@@ -3,83 +3,80 @@ questions:
 - id: realm-roles
   prompt: In 'realm join', which tool actually creates the computer account and keytab?
   choices:
+  - chronyd
   - sssd
   - authselect
   - adcli, driven by realmd
-  - chronyd
   answer:
-  - 2
-  explain: 'A (wrong): SSSD consumes the result; it does not enrol the host. B (wrong): It writes PAM and nsswitch
-    files. C (correct): realmd discovers the domain
-    and configures; adcli performs the account creation and keytab handling. D (wrong): It keeps time and has nothing to do with enrolment.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: discover-fails
   prompt: '''realm discover ad.example.com'' returns nothing on a freshly built client. What do you check first?'
   choices:
-  - Whether the client resolves SRV records from a DNS server that serves the AD zone
-  - The SSSD cache
-  - The home directory permissions
+  - The permissions on the home directory of the user who runs the discover command
   - The SELinux boolean for NFS
+  - Whether the client resolves SRV records from a DNS server for the AD zone
+  - The SSSD cache
   answer:
-  - 0
-  explain: 'A (correct): Discovery depends on SRV records such as _ldap._tcp.dc._msdcs, so the resolver must reach
-    the DC''s DNS. B (wrong): Nothing is cached before a join. C (wrong): Home directories matter after login. D
-    (wrong): NFS is unrelated.'
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: ldap-id-mapping
   prompt: With ldap_id_mapping = True (the default for AD), where do a user's UID and GID come from?
   choices:
-  - The uidNumber attribute stored in AD
-  - An algorithm over the user's SID inside a range reserved for the domain
   - A random number stored in /etc/passwd
   - The order in which users first log in
+  - The uidNumber attribute stored in AD
+  - An algorithm over the user's SID inside a range reserved for the domain
   answer:
-  - 1
-  explain: 'A (wrong): That is the other mode, ldap_id_mapping = False. B (correct): SSSD derives numbers from the
-    SID, so every SSSD host computes the same value without a coordinator. C (wrong): SSSD does not write directory
-    users into local files. D (wrong): That would give different numbers on different hosts.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
 - id: realm-permit
   prompt: After 'realm permit alice@ad.example.com' what is the default for other domain users?
   choices:
-  - They are allowed because permit only adds an extra rule
-  - They are denied, because the domain becomes default-deny except for the permitted names
+  - They are denied; the domain becomes default-deny except for permitted names
   - They are asked for a second password
   - Their accounts are deleted from AD
+  - They are allowed, because permit only adds one more rule to the access list
   answer:
-  - 1
-  explain: 'A (wrong): permit switches the domain to an allow-list. B (correct): Red Hat recommends this model over
-    permitting everybody and denying exceptions. C (wrong): No second factor is involved. D (wrong): realm permit
-    changes only the local access rule.'
+  - 0
+  explain: 'A) correct: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: enctype
   prompt: '''realm join'' fails with ''KDC has no support for encryption type''. Which approach is preferable first?'
   choices:
-  - Delete /etc/krb5.keytab
   - Disable Kerberos on the client
-  - Reset the join or machine account password so AES keys exist, and only then relax the client policy
-  - Set the crypto policy to LEGACY permanently
+  - Reset the machine account password so AES keys exist, then relax the client policy
+  - Set the crypto policy to LEGACY permanently on every client in the domain
+  - Delete /etc/krb5.keytab
   answer:
-  - 2
-  explain: 'A (wrong): The join creates
-    the keytab; deleting it changes nothing about the KDC. B (wrong): Without
-    Kerberos there is no join. C (correct): Fix the weak keys on the server side before lowering client security. D (wrong): This is a last resort with a security cost.'
+  - 1
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: hostname
-  prompt: Why does a /etc/hosts line mapping the host name to 127.0.1.1 cause trouble for joins on Debian-family
-    systems?
+  prompt: Why does a /etc/hosts line mapping the host name to 127.0.1.1 cause trouble for joins on Debian-family systems?
   choices:
   - It disables IPv6
-  - The host builds principals and DNS records from a name that does not resolve to its real address
-  - It changes the NetBIOS domain
+  - The host builds principals and DNS records from a name that does not resolve to its address
+  - It changes the NetBIOS domain that the host reports when it joins the domain
   - It makes chrony stop
   answer:
   - 1
-  explain: 'A (wrong): The line has
-    no such effect. B (correct): The join and Kerberos depend on a consistent FQDN and address. C (wrong): NetBIOS domain names come from the directory. D (wrong): Time sync is unaffected.'
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: samba-gc
   prompt: Clients read POSIX IDs from a Samba AD DC, whose global catalog lacks the RFC 2307 attributes by default. How is SSSD set up?
   choices:
+  - It cannot be used with Samba
   - It disables Kerberos
   - Set ad_enable_gc = False so SSSD reads the IDs over LDAP on port 389
-  - It requires winbind on the client
-  - It cannot be used with Samba
+  - It requires winbind on the client, and SSSD must be removed from the host
+  answer:
+  - 2
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
+- id: join-fails
+  prompt: A rebuilt Debian host fails realm join, and /etc/hosts maps its name to 127.0.1.1. What do you change?
+  choices:
+  - Disable IPv6 on the host so that name resolution returns only one address
+  - Map the host name to its real address, so principals and DNS records are correct
+  - Delete /etc/krb5.keytab and retry the join so that a new key is created
+  - Set the crypto policy to LEGACY on the host so that old key types are accepted
   answer:
   - 1
-  explain: 'A (wrong): Kerberos is unaffected. B (correct): Plain LDAP carries the POSIX
-    attributes that the catalog lacks. C (wrong): SSSD does not need winbind. D (wrong): SSSD works with Samba DCs routinely.'
+  explain: 'A) wrong: not related. B) correct: the name must resolve properly. C) wrong: not related. D) wrong: not related.'

@@ -9,69 +9,74 @@ questions:
   - auditd
   answer:
   - 1
-  explain: 'A (wrong): Time sync. B (correct): Applications talk to the reader through it. C (wrong): A firewall. D (wrong): Auditing.'
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: pkcs11
   prompt: What does PKCS#11 give applications?
   choices:
   - A uniform API for using keys on tokens without extracting them
   - A DNS extension
-  - A password hashing scheme
+  - A password hashing scheme that keeps the hashes on a hardware token
   - A replacement for TLS
   answer:
   - 0
-  explain: 'A (correct): OpenSC and vendor modules implement it, so SSSD and ssh use the same interface. B (wrong): Unrelated. C (wrong):
-    Not its role. D (wrong): It is key access, not a transport.'
+  explain: 'A) correct: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: mapping
   prompt: Why does an issuer match matter in a certificate mapping rule?
   choices:
-  - It makes the card faster
+  - It makes the card faster, since the reader needs to check only one issuer
   - It changes the shell
-  - Without it, a certificate from another CA with the same subject might map to the account
+  - Without it, a certificate from another CA with the same subject might map
   - It encrypts the PIN
   answer:
   - 2
-  explain: 'A (wrong): No performance effect. B (wrong): No. C (correct): The issuer pins the rule to the intended CA. D (wrong):
-    No.'
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) correct: see the lesson. D) wrong: see the lesson.'
 - id: required
   prompt: What risk comes with 'authselect select sssd with-smartcard-required' fleet-wide?
   choices:
-  - A failed reader or missing driver locks everybody out; use canary hosts and a tested break-glass path
-  - Passwords become stronger
-  - It disables Kerberos
   - Nothing, it only logs
+  - A failed reader or driver locks everybody out; use canary hosts and a break-glass path
+  - Passwords become stronger, because every login must then use the stored key
+  - It disables Kerberos
   answer:
-  - 0
-  explain: 'A (correct): Requiring a card removes the password fallback. B (wrong): They are no longer accepted
-    for login. C (wrong): It does not. D (wrong): It enforces.'
+  - 1
+  explain: 'A) wrong: see the lesson. B) correct: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: verification
   prompt: What does certificate_verification = no_verification do?
   choices:
+  - Disables certificate validation, which removes the security benefit
+  - Requires two cards to be present in the reader before the login can proceed
   - Enables PKINIT
   - Speeds OCSP up
-  - Disables certificate validation, which removes the security benefit
-  - Requires two cards
   answer:
-  - 2
-  explain: 'A (wrong): Unrelated. B (wrong): It skips all
-    checks. C (correct): Anyone with any certificate could be accepted by the chain check. D (wrong): Unrelated.'
+  - 0
+  explain: 'A) correct: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: pkinit
   prompt: How does PKINIT help after a card login?
   choices:
-  - It stores the PIN in the cache
-  - It disables lock-on-removal
-  - The card proof is exchanged for a Kerberos TGT, so later ssh and web access need no further PIN
+  - The card proof is exchanged for a Kerberos TGT, so later ssh needs no PIN
   - It replaces DNS
+  - It stores the PIN in the credential cache so that later logins can reuse it
+  - It disables lock-on-removal
   answer:
-  - 2
-  explain: 'A (wrong): It does not. B (wrong): No. C (correct): The ticket carries single sign-on for the session. D (wrong): No.'
+  - 0
+  explain: 'A) correct: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) wrong: see the lesson.'
 - id: ad-mapping
   prompt: What must the AD team provide for certificate mapping against AD?
   choices:
-  - altSecurityIdentities values (issuer and serial, or another strong mapping) on each user
   - A new forest
-  - Nothing; names are guessed
+  - Nothing at all; names are guessed from the subject of the certificate
   - A larger RID pool
+  - altSecurityIdentities values (issuer and serial, or another strong mapping)
   answer:
-  - 0
-  explain: 'A (correct): Windows strong certificate mapping requires explicit bindings. B (wrong): Not needed. C
-    (wrong): Name guessing is what strong mapping removed. D (wrong): Unrelated.'
+  - 3
+  explain: 'A) wrong: see the lesson. B) wrong: see the lesson. C) wrong: see the lesson. D) correct: see the lesson.'
+- id: lockout
+  prompt: A team plans to set smartcard-required on every host through authselect at once. What is the main risk?
+  choices:
+  - Kerberos is disabled for all users, because the card login does not give a ticket
+  - Nothing happens, since the setting only logs the logins that use a card reader
+  - A failed reader or missing driver locks everybody out; use canary hosts and a break-glass path
+  - Passwords become weaker on the hosts, because the card replaces the second factor
+  answer:
+  - 2
+  explain: 'A) wrong: not true. B) wrong: it enforces. C) correct: test first. D) wrong: not true.'
