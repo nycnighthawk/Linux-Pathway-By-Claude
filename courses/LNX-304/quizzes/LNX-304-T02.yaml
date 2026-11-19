@@ -3,60 +3,80 @@ questions:
 - id: control
   prompt: Which file in debian/ declares the packages needed to build the source?
   choices:
-  - control (the Build-Depends field of the source stanza)
-  - rules
-  - copyright
-  - changelog
+  - rules, in the targets that run before the build
+  - copyright, in the licence header of the source tree
+  - control, in the Build-Depends field of the source stanza
+  - changelog, in the entry for the version being built
   answer:
-  - 0
-  explain: 'A) correct: Build-Depends lives in the source stanza of control. B) wrong: rules is the build makefile. C) wrong: copyright records licences. D) wrong: changelog gives the version and distribution.'
+  - 2
+  explain: 'A) wrong: rules holds the build recipe. B) wrong: copyright holds licence terms. C) correct: this declares the build dependencies. D) wrong: changelog holds the history.'
 - id: tilde
   prompt: How does dpkg order 1.0~rc1 against 1.0?
   choices:
   - 1.0~rc1 is older, because the tilde sorts before everything
-  - They are equal
-  - 1.0~rc1 is newer
-  - The comparison is an error
+  - They are equal, since the tilde part is ignored
+  - 1.0~rc1 is newer, because it has more characters
+  - The comparison is an error that dpkg reports to the user and then stops
   answer:
   - 0
-  explain: 'A) correct: it is the standard way to mark a pre-release. B) wrong: the strings differ and so do the ranks. C) wrong: the tilde lowers the rank. D) wrong: it is a valid version.'
+  explain: 'A) correct: used for pre-releases. B) wrong: it is not ignored. C) wrong: more characters do not mean newer. D) wrong: the comparison is defined.'
 - id: conffile
   prompt: A packaged /etc file and the local copy both changed. What does dpkg do on upgrade?
   choices:
-  - Overwrites the local file silently
-  - Keeps the local file silently
-  - Asks the administrator, or follows the configured policy
-  - Deletes both
+  - It overwrites the local file silently with the new version
+  - It keeps the local file silently and drops the new version
+  - It deletes both files and asks the package to recreate them
+  - It asks the administrator, or follows the configured policy
   answer:
-  - 2
-  explain: 'A) wrong: that would lose the local edits. B) wrong: the new default would be lost unseen. C) correct: dpkg prompts, or applies --force-confold/--force-confnew when given. D) wrong: nothing is deleted.'
+  - 3
+  explain: 'A) wrong: local edits would be lost. B) wrong: changes would go unnoticed. C) wrong: nothing is deleted. D) correct: conffile handling.'
 - id: sbuild
   prompt: Why build with sbuild instead of dpkg-buildpackage on a workstation?
   choices:
-  - It signs packages automatically
-  - It builds faster
-  - The chroot has only build-essential and the declared Build-Depends, so hidden dependencies fail
-  - Debian policy requires it for every package
+  - sbuild signs the packages with the key of the builder
+  - The chroot has only build-essential and the declared Build-Depends
+  - sbuild is faster than building directly on a workstation
+  - Debian policy requires sbuild for every package that enters the main archive
   answer:
-  - 2
-  explain: 'A) wrong: signing is a separate step. B) wrong: speed is not the aim. C) correct: a clean room exposes an incomplete Build-Depends. D) wrong: it is the archive builders'' practice, not a policy for every local build.'
+  - 1
+  explain: 'A) wrong: signing is a separate step. B) correct: hidden dependencies then fail. C) wrong: not the reason. D) wrong: no such policy.'
 - id: scripts
   prompt: What does a maintainer script such as postinst receive as its first argument?
   choices:
-  - The package size
+  - The size of the package in kilobytes
+  - The number of installed instances of the package
+  - Nothing; it reads its state from a file
   - An action word such as configure, upgrade, remove or purge
-  - Nothing
-  - The number of installed instances
   answer:
-  - 1
-  explain: 'A) wrong: size is not passed. B) correct: dpkg passes an action word. C) wrong: the action is always passed. D) wrong: that is the RPM convention.'
+  - 3
+  explain: 'A) wrong: not passed. B) wrong: that is an RPM convention. C) wrong: an argument is passed. D) correct: scripts branch on it.'
 - id: dh
   prompt: What does a minimal debian/rules with the line "dh $@" do?
   choices:
-  - Nothing until you add every target
-  - It runs debhelper's standard build sequence; you override only the steps you need
-  - It installs the package on the host
-  - It only builds the source package
+  - It runs debhelper's standard build sequence; you override only what you need
+  - It does nothing at all until every single target has been added by hand to the file
+  - It installs the package on the host that runs it
+  - It builds only the source package and stops
   answer:
-  - 1
-  explain: 'A) wrong: dh supplies the default sequence. B) correct: override_dh_ targets replace single steps. C) wrong: it builds into debian/ staging only. D) wrong: it drives the binary build sequence.'
+  - 0
+  explain: 'A) correct: the usual modern layout. B) wrong: dh supplies the targets. C) wrong: that is not its job. D) wrong: it runs the whole sequence.'
+- id: hiddendep
+  prompt: A package builds with dpkg-buildpackage on a laptop but fails in sbuild for a missing header. What is the fix?
+  choices:
+  - Add the package that ships the header to Build-Depends
+  - Install the header by hand inside the sbuild chroot and rebuild the package there
+  - Add the header package to Depends for all users
+  - Build on the laptop only, since it already works
+  answer:
+  - 0
+  explain: 'A) correct: the laptop had it by accident. B) wrong: not reproducible. C) wrong: a runtime dependency is wrong. D) wrong: hides the problem.'
+- id: confprompt
+  prompt: During an unattended upgrade, dpkg stops and waits at a conffile question. What should be set up for next time?
+  choices:
+  - A dpkg conffile policy (for example --force-confold) chosen on purpose
+  - A script that presses Enter on every question, so the default answer is always taken
+  - A rule that deletes /etc before every upgrade
+  - A shorter timeout on the terminal session
+  answer:
+  - 0
+  explain: 'A) correct: removes the interactive stop. B) wrong: may pick the wrong answer. C) wrong: destroys configuration. D) wrong: hides the question.'

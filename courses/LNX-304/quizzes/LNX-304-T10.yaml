@@ -3,60 +3,80 @@ questions:
 - id: stops
   prompt: When should stop conditions for a campaign be written?
   choices:
-  - After the first failure
+  - After the first failure, when the facts are known and the cause has been found
   - Before the first wave, with named people who may call and lift them
-  - Never; use judgement on the day
+  - Never; judgement on the day is enough
   - Only for the last wave
   answer:
   - 1
-  explain: 'A) wrong: under pressure they are argued away. B) correct: they protect the business when the schedule pushes. C) wrong: no agreed trigger. D) wrong: all waves need them.'
+  explain: 'A) wrong: too late for fair rules. B) correct: decided in calm. C) wrong: no shared rule. D) wrong: all waves need them.'
 - id: wave1
   prompt: What should wave 1 contain?
   choices:
   - A few representative production hosts, one of each major class
-  - The most critical hosts
-  - The easiest hosts
-  - Only lab hosts
+  - The most critical hosts, so that the riskiest part is finished at the very start
+  - The easiest hosts, so the first wave looks good
+  - Only lab hosts that no one uses
   answer:
   - 0
-  explain: 'A) correct: it exposes the problems later waves would meet. B) wrong: too risky for a first step. C) wrong: it teaches nothing. D) wrong: that is wave 0.'
+  explain: 'A) correct: finds problems early. B) wrong: too risky. C) wrong: finds nothing. D) wrong: not representative.'
 - id: growth
   prompt: Why stop doubling the wave size at some point?
   choices:
-  - The recovery capacity of people and systems, not only the risk, limits how much can fail at once
-  - Gates are optional later
-  - Doubling is forbidden
-  - Machines get slower
+  - Gates are optional in the later waves
+  - Doubling is forbidden by most change policies, whatever the size of the fleet
+  - Machines get slower after many waves
+  - Recovery capacity of people and systems limits how much can fail at once
   answer:
-  - 0
-  explain: 'A) correct: on-call and recovery systems must cope with a failed wave. B) wrong: gates apply throughout. C) wrong: no such rule. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: they are not. B) wrong: no such rule. C) wrong: not the reason. D) correct: risk is not the only limit.'
 - id: ponr
   prompt: What is a point of no return?
   choices:
-  - The end of the soak
-  - A step that cannot be undone, which needs separate approval and a recorded time
-  - The first wave
-  - A failed host
+  - The end of the soak period
+  - A step that cannot be undone, needing separate approval and a recorded time
+  - The first wave of the campaign
+  - A host that failed to patch
   answer:
   - 1
-  explain: 'A) wrong: it is a time, not a step. B) correct: for example retiring an old key. C) wrong: unrelated. D) wrong: unrelated.'
+  explain: 'A) wrong: not it. B) correct: the real decision point. C) wrong: not it. D) wrong: not it.'
 - id: tail
   prompt: How should the last 5 to 10 percent of hosts be handled?
   choices:
-  - Ignore them
-  - An exceptions register with owner, reason, controls, review date and a decision deadline
-  - Upgrade them all on the last night
-  - Remove them from inventory
+  - Ignore them, since most of the fleet is done and the rest is not worth the effort
+  - Upgrade them all on the final night
+  - An exceptions register with owner, reason, controls, review date and deadline
+  - Remove them from the inventory
   answer:
-  - 1
-  explain: 'A) wrong: they become the weak point. B) correct: a standing process beats heroics. C) wrong: riskiest approach. D) wrong: hides the problem.'
+  - 2
+  explain: 'A) wrong: risk stays. B) wrong: no recovery margin. C) correct: tracked and closed. D) wrong: hides the risk.'
 - id: inventory
   prompt: What is the first number to report about the inventory?
   choices:
+  - The number of racks in the data centres
   - The count of hosts with no owner
-  - The number of racks
-  - Total CPU cores
-  - Disk usage
+  - Total CPU cores of the fleet
+  - Disk usage of the fleet
+  answer:
+  - 1
+  explain: 'A) wrong: not first. B) correct: unknown owners cannot be patched safely. C) wrong: not first. D) wrong: not first.'
+- id: wave2fail
+  prompt: Wave 2 of a campaign shows a 3% failure rate, above the agreed 1% stop condition, and the owner of the schedule wants to continue. What happens?
+  choices:
+  - The campaign stops, because the condition was agreed before and named people decide to lift it
+  - It continues if the schedule owner insists
+  - It continues with a smaller wave but no review
+  - It restarts from wave 1 without a cause analysis
   answer:
   - 0
-  explain: 'A) correct: unowned hosts cannot be scheduled or tested. B) wrong: irrelevant. C) wrong: irrelevant. D) wrong: irrelevant.'
+  explain: 'A) correct: the rule exists for this. B) wrong: overrides the rule. C) wrong: hides the breach. D) wrong: no learning.'
+- id: lastnight
+  prompt: Three weeks in, 8% of hosts are still unpatched and the team plans to do them all on the last night. What is the better plan?
+  choices:
+  - Put them in an exceptions register with owners, controls and a deadline, and patch in small groups
+  - Patch all of them at once on the last night, to finish before the deadline
+  - Mark the campaign complete and ignore them
+  - Remove them from the inventory report
+  answer:
+  - 0
+  explain: 'A) correct: tracked and safe. B) wrong: no recovery margin. C) wrong: risk stays hidden. D) wrong: false numbers.'

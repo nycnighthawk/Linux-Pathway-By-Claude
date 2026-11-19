@@ -3,75 +3,90 @@ questions:
 - id: noreplace
   prompt: What does %config(noreplace) do when the package ships a changed default for a file the administrator edited?
   choices:
-  - Overwrites the admin's file without warning
-  - Deletes the file
-  - Keeps the admin's file and writes the new default as a .rpmnew file
-  - Refuses the upgrade
+  - It overwrites the admin's file and logs a warning in the journal
+  - It keeps the admin's file and writes the new default as a .rpmnew file
+  - It deletes the file and asks for it to be recreated by hand
+  - It stops the upgrade until the admin merges the two versions
   answer:
-  - 2
-  explain: 'A) wrong: that is the risk it avoids. B) wrong:
-    nothing is deleted. C) correct: local edits survive and the new default is available beside it. D) wrong: the upgrade proceeds.'
+  - 1
+  explain: 'A) wrong: the admin''s edits would be lost. B) correct: local edits survive and the new default sits beside them. C) wrong: nothing is deleted. D) wrong: the upgrade proceeds.'
 - id: phases
   prompt: Which rpmbuild option builds the binary and source packages together?
   choices:
-  - -bc
-  - -bp
-  - -bb
-  - -ba
+  - -bc, which compiles the sources and then also builds both packages
+  - -bp, which prepares the sources and then packs both of the results
+  - -bb, which builds the binary packages and the source package as well
+  - -ba, which builds both the binary and the source packages
   answer:
   - 3
-  explain: 'A) wrong: -bc stops
-    after %build. B) wrong: -bp stops after %prep. C) wrong: -bb builds the binary packages only. D) correct: -ba builds both.'
+  explain: 'A) wrong: -bc stops after %build. B) wrong: -bp stops after %prep. C) wrong: -bb builds only the binary packages. D) correct: -ba builds both.'
 - id: mock
   prompt: Why build in mock instead of on a developer workstation?
   choices:
-  - Mock is required by RPM
-  - Mock builds are faster
-  - The chroot contains only the declared build dependencies, so hidden dependencies show up as failures
-  - Mock signs packages automatically
+  - The chroot holds only the declared build dependencies, so hidden ones fail the build
+  - RPM refuses to build a package outside of a mock chroot
+  - Mock builds finish faster than builds on a fully loaded developer workstation with many tools
+  - Mock signs the finished packages with the key of the build host
   answer:
-  - 2
-  explain: 'A) wrong: rpmbuild works without it. B) wrong: speed is not the aim. C) correct: a clean room exposes missing BuildRequires. D) wrong: signing is a separate step.'
+  - 0
+  explain: 'A) correct: this exposes missing BuildRequires. B) wrong: RPM has no such rule. C) wrong: speed is not the reason. D) wrong: signing is a separate step.'
 - id: scriptlet-arg
   prompt: In a %postun scriptlet the first argument is 0. What happened?
   choices:
-  - First installation
-  - Upgrade
-  - The last instance of the package was removed
-  - The package failed to install
+  - The package was installed for the first time on this host
+  - The package was upgraded from an older version of itself
+  - The last instance of the package was removed from the host
+  - The installation of the package failed part of the way through
   answer:
   - 2
-  explain: 'A) wrong: install gives 1 in %post and %pre. B) wrong: upgrade gives 1 or more remaining instances, usually 1 in postun.
-    C) correct: 0 means no instances remain. D) wrong: failures are not reported that way.'
+  explain: 'A) wrong: a first install passes 1. B) wrong: an upgrade passes 2 or more. C) correct: 0 means no instances remain. D) wrong: failures are not signalled this way.'
 - id: release
   prompt: A package is rebuilt with a fix but Version and Release are unchanged. What happens on clients?
   choices:
-  - They do not see an update, because the package manager compares version-release
-  - They downgrade
-  - They upgrade automatically
-  - The repository rejects it
+  - Clients downgrade to the rebuilt package at the next refresh
+  - Clients upgrade to it automatically at the next refresh cycle, because the content differs
+  - The repository tool rejects the rebuilt package on upload
+  - Clients see no update, since the manager compares version-release
   answer:
-  - 0
-  explain: 'A) correct: the release must be bumped. B) wrong: a downgrade would need a lower number. C) wrong: nothing differs for the solver. D) wrong: createrepo does not enforce this.'
+  - 3
+  explain: 'A) wrong: the same version is not a downgrade. B) wrong: nothing marks it as newer. C) wrong: it accepts it, which is the trap. D) correct: bump Release for every rebuild.'
 - id: network
   prompt: A spec downloads dependencies during %build. Why is this a problem in a build system?
   choices:
-  - It makes the package larger
-  - Build farms usually block outbound traffic, and unpinned downloads are neither verifiable nor reproducible
-  - RPM forbids it by syntax
-  - It breaks %files
+  - It makes the resulting package larger than it needs to be
+  - Build farms block outbound traffic, and unpinned downloads cannot be verified
+  - RPM forbids network access by its spec syntax rules
+  - It breaks the %files section that lists the installed paths of the finished package
   answer:
   - 1
-  explain: 'A) wrong: size is not the issue. B) correct: inputs must be pinned and checksummed before the build. C) wrong: syntax allows it. D) wrong:
-    %files is unrelated.'
+  explain: 'A) wrong: size is not the issue. B) correct: not reproducible or auditable. C) wrong: no such syntax rule. D) wrong: %files is unrelated.'
 - id: rpm-v
   prompt: What does rpm -V package report?
   choices:
-  - The package's changelog
-  - The packages that depend on it
-  - Files whose digest, mode, owner or size differ from the package database
-  - Its build log
+  - The changelog entries that came with the installed package and its older versions
+  - The packages that depend on the one that is checked
+  - Files whose digest, mode, owner or size differ from the database
+  - The build log of the package from the build host
   answer:
   - 2
-  explain: 'A) wrong: that is rpm -q --changelog. B) wrong: that
-    is rpm -q --whatrequires. C) correct: it verifies installed files against the recorded values. D) wrong: build logs are not in the database.'
+  explain: 'A) wrong: that is rpm -q --changelog. B) wrong: that is rpm -q --whatrequires. C) correct: it verifies installed files. D) wrong: build logs are not in the database.'
+- id: buildfail
+  prompt: 'A package builds on a developer laptop but fails in mock with "command not found: gcc". What is the likely fix?'
+  choices:
+  - Add gcc to BuildRequires, because the laptop had it by accident
+  - Copy gcc from the laptop into the mock chroot by hand
+  - Disable mock for this package and keep using the laptop
+  - Add gcc to Requires so that every user installs the compiler
+  answer:
+  - 0
+  explain: 'A) correct: mock only has declared dependencies. B) wrong: not reproducible. C) wrong: hides the missing dependency. D) wrong: a runtime dependency is the wrong place.'
+- id: confupgrade
+  prompt: After an upgrade an admin finds /etc/app.conf.rpmnew next to the edited file. What does it mean and what do they do?
+  choices:
+  - The package kept the edited file and the new default is in .rpmnew; merge by hand
+  - The package replaced the edited file and saved the old copy beside it as .rpmnew
+  - The upgrade failed and the .rpmnew file must be deleted first
+  - The file is a backup that RPM removes after the next reboot
+  answer:
+  - 0
+  explain: 'A) correct: noreplace behaviour. B) wrong: that would be .rpmsave. C) wrong: it is not an error. D) wrong: RPM does not clean it up.'

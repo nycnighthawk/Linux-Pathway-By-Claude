@@ -3,60 +3,80 @@ questions:
 - id: cvversion
   prompt: What does publishing a content view create?
   choices:
-  - A new repository upstream
-  - A registered activation key
-  - An immutable numbered content view version
-  - A new host
+  - A new repository upstream, visible to all users
+  - An immutable, numbered content view version
+  - A registered activation key for new hosts
+  - A new host record in the inventory
   answer:
-  - 2
-  explain: 'A) wrong: upstream is untouched. B) wrong: keys are created separately. C) correct: the version is the snapshot. D) wrong: hosts register separately.'
+  - 1
+  explain: 'A) wrong: upstream is untouched. B) correct: a snapshot of the selected content. C) wrong: a different object. D) wrong: unrelated.'
 - id: promote
   prompt: A new view version is published but Prod hosts see no updates. Why?
   choices:
-  - The product has no repositories
-  - The hosts are offline
-  - Filters are disabled
-  - Publishing does not promote; the version must be promoted to the Prod environment
+  - The product has no repositories enabled for the lifecycle environment of the hosts
+  - The hosts are offline at the moment
+  - Publishing does not promote; the version must be promoted to Prod
+  - Filters are switched off on the view
   answer:
-  - 3
-  explain: 'A) wrong: the view itself holds content. B) wrong: not implied. C) wrong: unrelated. D) correct: promotion places the version in the environment.'
+  - 2
+  explain: 'A) wrong: then nothing would publish. B) wrong: they would not get anything either. C) correct: promotion moves it. D) wrong: would add content.'
 - id: activationkey
   prompt: What does an activation key give a registering host?
   choices:
-  - A new IP address
-  - A kernel
+  - A fixed IP address that is taken from the Satellite address pool for new hosts
+  - A kernel for the first boot
+  - A root password for the new host
   - Its organisation, lifecycle environment, content view and subscriptions
-  - A root password
   answer:
-  - 2
-  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) correct: it is a registration recipe. D) wrong: not a credential for login.'
+  - 3
+  explain: 'A) wrong: not its job. B) wrong: not its job. C) wrong: not its job. D) correct: everything needed to register.'
 - id: filters
   prompt: Which practice with filters is sound?
   choices:
   - Keep few filters, document them and test them on a canary host
-  - Exclude any package you dislike without testing
-  - Use package-name filters for every view
-  - Never use filters
+  - Exclude any package you dislike without testing the result on a single host first
+  - Use package-name filters in every view by default
+  - Never use filters, whatever the requirement
   answer:
   - 0
-  explain: 'A) correct: filters are powerful and easy to misuse. B) wrong: it can break dependencies on clients. C) wrong: blunt and fragile. D) wrong: an errata date filter is the usual way to get a dated view.'
+  explain: 'A) correct: simple and checked. B) wrong: may break dependencies. C) wrong: hard to maintain. D) wrong: too rigid.'
 - id: incremental
   prompt: What is an incremental update used for?
   choices:
+  - A normal weekly publish of the whole view
   - A fast minor version with only selected errata for an emergency
-  - Deleting old versions
-  - Registering many hosts
-  - A normal weekly publish
+  - Deleting old versions of the view
+  - Registering many hosts at once
   answer:
-  - 0
-  explain: 'A) correct: it is the expedited path and should be folded back later. B) wrong: that is clean-up. C) wrong: unrelated. D) wrong: weekly publishes are full.'
+  - 1
+  explain: 'A) wrong: that is a full publish. B) correct: a quick targeted fix. C) wrong: that is cleanup. D) wrong: that uses activation keys.'
 - id: upgrade
   prompt: What must be in the view and activation key for an in-place OS upgrade of a Satellite-registered host?
   choices:
-  - Only the source version repositories
-  - The repositories for both the source and the target versions (including target minor-version ones)
-  - Nothing
-  - A second Satellite
+  - Only the repositories of the source version
+  - Nothing; the host fetches what it needs from the internet during the upgrade itself
+  - The repositories for both source and target versions, with target minors
+  - A second Satellite that serves only the new release
   answer:
-  - 1
-  explain: 'A) wrong: the target is needed. B) correct: otherwise the upgrade is inhibited. C) wrong: the tool needs content. D) wrong: not required.'
+  - 2
+  explain: 'A) wrong: the upgrade needs the target. B) wrong: it uses Satellite content. C) correct: the upgrade reads both. D) wrong: not needed.'
+- id: noupdates
+  prompt: Prod hosts report "no updates" although the newest content view version contains a security fix. What do you check first?
+  choices:
+  - Which version is promoted to the Prod lifecycle environment and used by the activation key
+  - Whether the hosts have a recent hardware clock
+  - Whether the upstream vendor has changed its logo or the name of its repositories
+  - Whether the Satellite uses IPv6 internally
+  answer:
+  - 0
+  explain: 'A) correct: the version in Prod. B) wrong: unrelated. C) wrong: unrelated. D) wrong: not the cause.'
+- id: brokenview
+  prompt: A filter removes a library by name and several hosts fail to update with dependency errors. What was the mistake?
+  choices:
+  - The filter was not tested on a canary host before the version reached Prod
+  - The content view was published too many times in a single week by the team
+  - The activation key had too many subscriptions
+  - The hosts were registered in the wrong week
+  answer:
+  - 0
+  explain: 'A) correct: test before promote. B) wrong: not the cause. C) wrong: not the cause. D) wrong: not the cause.'

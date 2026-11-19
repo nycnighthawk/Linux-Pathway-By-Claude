@@ -3,60 +3,80 @@ questions:
 - id: composer
   prompt: What does osbuild-composer do with a blueprint?
   choices:
-  - Signs the repository
-  - Resolves packages and generates an osbuild manifest for the chosen output type
-  - Installs the image on hosts
-  - Boots a VM and records it
+  - It signs the repository that holds the packages and then publishes the index
+  - It installs the finished image on the hosts
+  - It boots a VM and records what happened
+  - It resolves packages and creates an osbuild manifest for the output type
   answer:
-  - 1
-  explain: 'A) wrong: unrelated. B) correct: the manifest pins the inputs. C) wrong: installation is a separate step. D) wrong: that is the capture style of older tools.'
+  - 3
+  explain: 'A) wrong: not its job. B) wrong: deployment is separate. C) wrong: not its job. D) correct: that is its job.'
 - id: firstboot
   prompt: Which setting belongs to first-boot provisioning rather than the image?
   choices:
-  - The machine hostname and SSH host keys
   - An enabled sshd service
+  - The machine hostname and SSH host keys
   - The audit kernel argument
   - The chrony package
   answer:
-  - 0
-  explain: 'A) correct: unique per machine, so generated or injected at first boot. B) wrong: common. C) wrong: common. D) wrong: common to every host.'
+  - 1
+  explain: 'A) wrong: common to all hosts. B) correct: unique per machine. C) wrong: common to all hosts. D) wrong: common to all hosts.'
 - id: repeat
   prompt: How do you make an image build repeatable?
   choices:
-  - Disable dependency solving
-  - Point the build sources at a dated snapshot of your repository and verify signatures
-  - Use the newest public mirror each time
-  - Build on the same laptop
+  - Turn off dependency solving to avoid changes
+  - Use the newest public mirror every time
+  - Point the sources at a dated snapshot of your repository and verify signatures
+  - Build on the same laptop each time
   answer:
-  - 1
-  explain: 'A) wrong: it would break the build. B) correct: the same inputs give the same packages. C) wrong: contents change daily. D) wrong: a laptop cache is not a record.'
+  - 2
+  explain: 'A) wrong: breaks the build. B) wrong: changes between builds. C) correct: same inputs, same result. D) wrong: does not fix the inputs.'
 - id: secrets
   prompt: Why must a blueprint not carry passwords or tokens?
   choices:
   - It makes builds slower
-  - The builder rejects all keys
-  - TOML cannot hold strings
-  - Blueprints are stored and readable, and the secret ends up inside every image
+  - The builder rejects every key that appears inside a blueprint file at build time
+  - TOML cannot hold strings of that kind
+  - Blueprints are stored and readable, and the secret ends up in every image
   answer:
   - 3
-  explain: 'A) wrong: no effect on speed. B) wrong: public SSH keys are fine. C) wrong: it can. D) correct: both the store and the image leak it.'
+  explain: 'A) wrong: not the reason. B) wrong: it accepts them. C) wrong: it can. D) correct: a leak by design.'
 - id: rebuild
   prompt: Why rebuild images on a schedule even if the blueprint did not change?
   choices:
-  - To collect package updates from the pinned or current snapshot so instances do not patch for long at first boot
-  - Because TOML expires
-  - To change the file format
-  - It is required by systemd
+  - To pick up package updates so instances do not patch for long at first boot
+  - Because the TOML file expires after a month
+  - To change the file format of the image
+  - Because systemd requires a rebuild of the image each week, or the units fail
   answer:
   - 0
-  explain: 'A) correct: stale images mean a long first-boot update. B) wrong: no expiry. C) wrong: unrelated. D) wrong: unrelated.'
+  explain: 'A) correct: keeps the image fresh. B) wrong: it does not expire. C) wrong: not needed. D) wrong: no such rule.'
 - id: bootcib
   prompt: What does bootc-image-builder take as input?
   choices:
-  - A tarball of /home
-  - A kickstart file
-  - A Debian source package
+  - A tarball of the /home directory
+  - A kickstart file for the installer, together with a list of the packages to add
   - A bootc container image and a small configuration file
+  - A Debian source package
   answer:
-  - 3
-  explain: 'A) wrong: unrelated. B) wrong: that is installer input. C) wrong: wrong family. D) correct: it converts the container image into disk images.'
+  - 2
+  explain: 'A) wrong: not an input. B) wrong: that is anaconda. C) correct: what it converts. D) wrong: wrong ecosystem.'
+- id: oldimage
+  prompt: Instances built from a three-month-old image spend ten minutes updating at first boot and sometimes time out. What fixes the cause?
+  choices:
+  - Rebuild images on a schedule from a current snapshot
+  - Raise the timeout on the instance health check so the update can finish in time
+  - Disable updates at first boot for good
+  - Use a faster mirror and keep the old image
+  answer:
+  - 0
+  explain: 'A) correct: the image is fresh. B) wrong: hides the delay. C) wrong: leaves known flaws. D) wrong: does not remove the work.'
+- id: leakedtoken
+  prompt: A reviewer finds an API token in a blueprint stored in Git. What is the right response?
+  choices:
+  - Revoke the token, remove it from the blueprint and inject it at first boot
+  - Delete the commit from the history and leave the token active for the pipeline
+  - Rename the blueprint so it is harder to find
+  - Encrypt the Git repository disk only
+  answer:
+  - 0
+  explain: 'A) correct: closes the exposure. B) wrong: it stays in history and copies. C) wrong: obscurity. D) wrong: the file is still readable by users.'
