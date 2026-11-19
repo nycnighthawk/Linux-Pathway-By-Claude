@@ -3,46 +3,43 @@ questions:
 - id: pathlen
   prompt: An intermediate CA certificate has basicConstraints CA:TRUE,pathlen:0. What can it do?
   choices:
-  - Sign end-entity certificates but not further CA certificates
   - Sign nothing, it is only a label
   - Sign certificates for any depth of hierarchy
-  - Sign other CAs but not end-entity certificates
+  - Sign other CAs, but no end-entity certificates for servers or users
+  - Sign end-entity certificates, but no further CA certificates
   answer:
-  - 0
-  explain: 'A) correct: pathlen counts the CA levels allowed below it, and zero leaves only leaves. B) wrong: CA:TRUE with keyCertSign gives it signing power. C) wrong: a pathlen value is the limit on depth. D) wrong: the reverse
-    of the meaning.'
+  - 3
+  explain: 'A) wrong: CA:TRUE with keyCertSign gives it signing power. B) wrong: a pathlen value is the limit on depth. C) wrong: the reverse of the meaning. D) correct: pathlen counts the CA levels allowed below it, and zero leaves only leaves.'
 - id: san
   prompt: A certificate has a SAN of DNS:app.example and a common name of db.example. Which name does a modern client check?
   choices:
+  - Neither name; it only checks the issuer of the certificate
   - The common name only
   - Both names, either may match
   - The SAN, ignoring the common name
-  - Neither, it checks the issuer
   answer:
-  - 2
-  explain: 'A) wrong: the common name is a legacy fallback used only without a SAN. B) wrong: clients do not merge them.
-    C) correct: when a SAN exists it is authoritative. D) wrong: name matching concerns the subject, not the issuer.'
+  - 3
+  explain: 'A) wrong: name matching concerns the subject, not the issuer. B) wrong: the common name is a legacy fallback used only without a SAN. C) wrong: clients do not merge them. D) correct: when a SAN exists it is authoritative.'
 - id: soft-fail
   prompt: Why is OCSP soft-fail a weakness?
   choices:
-  - It forces every certificate to be re-issued
   - It requires clients to hold the root key
-  - An attacker who blocks the responder makes the client accept a revoked certificate
+  - A blocked responder makes the client accept a revoked certificate
   - It makes responses larger
+  - It forces every certificate to be re-issued each time the responder is down
   answer:
-  - 2
-  explain: 'A) wrong: nothing is re-issued by a failed check. B) wrong: clients never hold CA keys. C) correct: no answer is treated as no problem, so blocking the query defeats revocation. D) wrong: size is unrelated.'
+  - 1
+  explain: 'A) wrong: clients never hold CA keys. B) correct: no answer is treated as no problem, so blocking the query defeats revocation. C) wrong: size is unrelated. D) wrong: nothing is re-issued by a failed check.'
 - id: stale-crl
   prompt: A CRL passes its nextUpdate time and the issuer does not publish a new one. What do strict clients do?
   choices:
   - Delete the CA from the trust store
   - Switch to OCSP automatically
-  - Reject certificates from that issuer because the revocation data are stale
-  - Treat all certificates from that issuer as valid forever
+  - Reject that issuer's certificates, because the revocation data are stale
+  - Treat all certificates from that issuer as valid for as long as they last
   answer:
   - 2
-  explain: 'A) wrong: validation never edits the trust store. B) wrong: switching mechanisms is not automatic. C) correct: a stale list gives no assurance, so every certificate
-    from that issuer fails at once. D) wrong: strict clients do not assume validity.'
+  explain: 'A) wrong: validation never edits the trust store. B) wrong: switching mechanisms is not automatic. C) correct: a stale list gives no assurance, so every certificate from that issuer fails at once. D) wrong: strict clients do not assume validity.'
 - id: chain
   prompt: A curl call in a minimal container reports an unknown issuer, while a desktop browser accepts the same site. What is the most likely cause?
   choices:
@@ -52,27 +49,44 @@ questions:
   - The root is in the browser's trust store
   answer:
   - 2
-  explain: 'A) wrong: an expired leaf would fail in the browser too. B) wrong: protocol version does not change issuer lookup. C) correct: browsers cache or fetch intermediates, minimal
-    clients do not. D) wrong: both would trust the same public root.'
+  explain: 'A) wrong: an expired leaf would fail in the browser too. B) wrong: protocol version does not change issuer lookup. C) correct: browsers cache or fetch intermediates, minimal clients do not. D) wrong: both would trust the same public root.'
 - id: trust-store
   prompt: Which command makes a new company root trusted by system tools on a Debian or Ubuntu host?
   choices:
-  - certutil -d sql:/etc/pki -A
   - openssl verify -CAfile
-  - update-ca-certificates, after placing a .crt file in /usr/local/share/ca-certificates
+  - update-ca-certificates, after placing a .crt in /usr/local/share/ca-certificates
   - update-ca-trust
+  - certutil -d sql:/etc/pki -A -n company-root -t "C,," -i root.crt
   answer:
-  - 2
-  explain: 'A) wrong: that edits an NSS database for one application family. B) wrong:
-    verify tests a chain and installs nothing. C) correct: it rebuilds the bundle from that directory. D) wrong: that is the Enterprise Linux command.'
+  - 1
+  explain: 'A) wrong: verify tests a chain and installs nothing. B) correct: it rebuilds the bundle from that directory. C) wrong: that is the Enterprise Linux command. D) wrong: that edits an NSS database for one application family.'
 - id: stapling
   prompt: What does OCSP stapling add?
   choices:
-  - The client sends the CRL to the server
+  - The client sends the CRL it holds to the server during the handshake
   - The certificate lifetime is extended
   - The root signs every leaf directly
   - The server attaches a fresh signed status response to the handshake
   answer:
   - 3
-  explain: 'A) wrong: clients
-    do not send CRLs. B) wrong: lifetime is a certificate field. C) wrong: it does not change the hierarchy. D) correct: the server fetches the response, which removes the client query and its privacy leak.'
+  explain: 'A) wrong: clients do not send CRLs. B) wrong: lifetime is a certificate field. C) wrong: it does not change the hierarchy. D) correct: the server fetches the response, which removes the client query and its privacy leak.'
+- id: expired-intermediate
+  prompt: Users report TLS errors for one site, but a desktop browser still shows it as fine. openssl s_client shows the server sends only the leaf. What is the fix?
+  choices:
+  - Switch the site to TLS 1.2 only, so that older clients can complete a handshake
+  - Configure the server to send the intermediate certificate with the leaf
+  - Replace the root certificate on every client machine with a new one from the CA
+  - Extend the lifetime of the leaf certificate by a year so it outlasts the chain
+  answer:
+  - 1
+  explain: 'A) wrong: the protocol is not the cause. B) correct: clients that lack the intermediate can then build the chain. C) wrong: the root is not the problem. D) wrong: expiry is not the issue.'
+- id: crl-stale
+  prompt: Strict clients start rejecting every certificate from one internal CA at 03:10. The CRL nextUpdate was 03:00. What do you do first?
+  choices:
+  - Remove the CA from the trust store of each client and add it again later
+  - Publish a fresh CRL and fix the job that renews it
+  - Turn off revocation checking on all clients until the next CRL is published
+  - Re-issue all certificates from the CA at once so that they carry new serial numbers
+  answer:
+  - 1
+  explain: 'A) wrong: destroys all trust in the CA. B) correct: the data are stale, so renew them. C) wrong: removes the protection. D) wrong: the certificates are fine.'

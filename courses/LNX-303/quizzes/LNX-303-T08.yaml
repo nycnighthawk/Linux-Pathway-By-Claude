@@ -13,8 +13,8 @@ questions:
 - id: tailoring
   prompt: Why tailor a profile with a tailoring file or an extending .profile instead of editing the data stream?
   choices:
-  - Deviations stay small, reviewable and survive content updates
-  - Data streams cannot be edited at all
+  - Deviations stay small and reviewable, and survive content updates
+  - Data streams cannot be edited at all, because they are signed by the vendor
   - Tailoring makes scans faster
   - It removes the need for exceptions
   answer:
@@ -23,55 +23,70 @@ questions:
 - id: na
   prompt: A scan shows 94 percent pass on a new distribution release, using content for the previous release. What should worry you?
   choices:
+  - The profile has too many rules for one host to pass them all at once
+  - The HTML report is too large
   - The scan ran as root
   - Many rules may be notapplicable and skipped, so the score flatters the system
-  - The profile has too many rules
-  - The HTML report is too large
   answer:
-  - 1
-  explain: 'A) wrong: the scanner needs privileges. B) correct: platform mismatches skip rules and the pass rate rises. C) wrong:
-    count is not the issue. D) wrong: size is irrelevant.'
+  - 3
+  explain: 'A) wrong: count is not the issue. B) wrong: size is irrelevant. C) wrong: the scanner needs privileges. D) correct: platform mismatches skip rules and the pass rate rises.'
 - id: remediate
   prompt: What is the safest way to apply generated remediation?
   choices:
+  - Run it only after a reboot
   - Run it on all production hosts at once
   - Apply only the rules that fail
   - Review it, apply to a staging clone and a canary with out-of-band access, then rescan
-  - Run it only after a reboot
   answer:
-  - 2
-  explain: 'A) wrong: one bad rule locks out everything. B) wrong: all remediation is applied to failing rules; the question is how safely. C) correct: a lockout is recoverable only with another way in. D) wrong:
-    rebooting does not make it safe.'
+  - 3
+  explain: 'A) wrong: rebooting does not make it safe. B) wrong: one bad rule locks out everything. C) wrong: all remediation is applied to failing rules; the question is how safely. D) correct: a lockout is recoverable only with another way in.'
 - id: image
   prompt: Why is hardening at image build time preferred to remediation on running hosts?
   choices:
-  - It avoids using OpenSCAP
-  - Hosts start compliant, changes are tested once, and later scans detect drift as an event
   - Images cannot drift
-  - It removes the need for exceptions
+  - It removes the need for exceptions, since no host differs from the image
+  - It avoids using OpenSCAP
+  - Hosts start compliant, changes are tested once, and later scans show drift
   answer:
-  - 1
-  explain: 'A) wrong: the same tools are used. B) correct: build-time application is testable and repeatable. C) wrong: running hosts still drift. D) wrong:
-    exceptions still apply.'
+  - 3
+  explain: 'A) wrong: running hosts still drift. B) wrong: exceptions still apply. C) wrong: the same tools are used. D) correct: build-time application is testable and repeatable.'
 - id: evidence
   prompt: What does a passing OpenSCAP report prove to an auditor?
   choices:
-  - The application is correct
-  - The rules in that profile and content version passed as reported by the scanned host
+  - The rules in that profile and content version passed on the scanned host
   - No vulnerabilities exist
   - The system is secure
+  - The application is correct and every service on the host is configured safely
   answer:
-  - 1
-  explain: 'A) wrong: application correctness is out of scope. B) correct: it is bounded by profile, version and the trustworthiness of
-    the host. C) wrong: vulnerability scanning is a separate activity. D) wrong: benchmarks cover configuration only.'
+  - 0
+  explain: 'A) correct: it is bounded by profile, version and the trustworthiness of the host. B) wrong: vulnerability scanning is a separate activity. C) wrong: benchmarks cover configuration only. D) wrong: application correctness is out of scope.'
 - id: exceptions
   prompt: What belongs in an exception register entry?
   choices:
-  - Only the rule name
   - A screenshot
   - The scan score
   - The rule, the reason, an owner and an expiry date
+  - Only the rule name, with the date on which it was last scanned
   answer:
-  - 3
-  explain: 'A) wrong: it cannot be reviewed without context. B) wrong:
-    a screenshot is not a record. C) wrong: the score belongs to the result. D) correct: reason, owner and expiry force a periodic decision.'
+  - 2
+  explain: 'A) wrong: a screenshot is not a record. B) wrong: the score belongs to the result. C) correct: reason, owner and expiry force a periodic decision. D) wrong: it cannot be reviewed without context.'
+- id: score-flatters
+  prompt: A scan of a new release with last release's content shows 94% pass. What should you check?
+  choices:
+  - Whether the scan ran as root, which may skew the results of some checks
+  - Whether the profile is too short and misses rules from the older release
+  - How many rules were notapplicable and skipped, which would flatter the score
+  - Whether the HTML report has too many pages for the auditor to read easily
+  answer:
+  - 2
+  explain: 'A) wrong: normal. B) wrong: not the cause. C) correct: the score may be inflated. D) wrong: not related.'
+- id: apply-fix
+  prompt: Generated remediation is ready for 600 hosts. Which rollout fits best?
+  choices:
+  - Review it, apply to a staging clone and a canary with console access, then rescan
+  - Run it on all hosts at once during a quiet hour, to finish in a single step
+  - Apply only the rules that already pass, because they are the least risky ones
+  - Skip the review, since the content is generated by the vendor and is trusted
+  answer:
+  - 0
+  explain: 'A) correct: safe and measured. B) wrong: a bad rule hits everyone. C) wrong: changes nothing. D) wrong: no human check.'

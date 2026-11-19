@@ -13,66 +13,80 @@ questions:
 - id: regex-test
   prompt: What does fail2ban-regex tell you?
   choices:
-  - Whether the firewall is running
+  - Whether the firewall is running and whether the jail can insert its ban rules
   - Whether SSH is exposed
   - The bans currently active
-  - How many lines of a log a filter matches, which it misses, and which addresses it found
+  - How many log lines a filter matches, which it misses, and which addresses it found
   answer:
   - 3
-  explain: 'A) wrong: it does not inspect the firewall. B) wrong: it does not scan. C) wrong: that is fail2ban-client
-    status. D) correct: it replays a log against a filter offline.'
+  explain: 'A) wrong: it does not inspect the firewall. B) wrong: it does not scan. C) wrong: that is fail2ban-client status. D) correct: it replays a log against a filter offline.'
 - id: proxy
   prompt: A jail on a site behind a load balancer bans the balancer. What is the correct fix?
   choices:
+  - Move the jail to the balancer's loopback
   - Ban the whole network
   - Log the real client address from X-Forwarded-For and add the balancer to ignoreip
   - Increase maxretry to 1000
-  - Move the jail to the balancer's loopback
   answer:
-  - 1
-  explain: 'A) wrong: this makes it worse. B) correct: the jail must see the true client. C) wrong: it only delays the same ban. D) wrong:
-    it does not change what the log contains.'
+  - 2
+  explain: 'A) wrong: it does not change what the log contains. B) wrong: this makes it worse. C) correct: the jail must see the true client. D) wrong: it only delays the same ban.'
 - id: sid
   prompt: Which sid range is appropriate for local Suricata rules?
   choices:
-  - 1 to 999
-  - 1,000,000 and above
   - Any, because sids are optional
   - The same sid as the rule being overridden
+  - 1 to 999
+  - 1,000,000 and above
   answer:
-  - 1
-  explain: 'A) wrong: low ranges are reserved for the project and rule vendors. B) correct: local rules start at 1,000,000 to avoid
-    clashes. C) wrong: a unique sid is required. D) wrong: duplicates cause conflicts.'
+  - 3
+  explain: 'A) wrong: a unique sid is required. B) wrong: duplicates cause conflicts. C) wrong: low ranges are reserved for the project and rule vendors. D) correct: local rules start at 1,000,000 to avoid clashes.'
 - id: buffer
   prompt: Why write http.uri; content:"/admin/config.php" instead of a content match over the whole stream?
   choices:
-  - It disables reassembly
-  - It makes the rule match faster and only in the decoded request URI, which cuts false positives
+  - It matches faster and only in the decoded request URI, cutting false positives
   - It encrypts the match
-  - It is required by the YAML parser
+  - It is required by the YAML parser, which rejects rules with a bare content match
+  - It disables reassembly
   answer:
-  - 1
-  explain: 'A) wrong: reassembly is a stream feature. B) correct: the app-layer buffer limits the search to the decoded field. C) wrong: matching never encrypts. D) wrong: rules
-    are not YAML.'
+  - 0
+  explain: 'A) correct: the app-layer buffer limits the search to the decoded field. B) wrong: matching never encrypts. C) wrong: rules are not YAML. D) wrong: reassembly is a stream feature.'
 - id: tls
   prompt: What can a passive sensor still use when an attack travels in TLS 1.3?
   choices:
   - Nothing at all
-  - The server's private key
-  - Metadata such as destination, SNI where visible, certificate or client fingerprints, DNS and flow behaviour
+  - The server's private key, which the sensor can request from the web server
+  - Metadata such as destination, SNI where visible, fingerprints, DNS and flows
   - The full payload
   answer:
   - 2
-  explain: 'A) wrong:
-    metadata and DNS are still visible. B) wrong: the sensor never has it. C) correct: detection moves to metadata. D) wrong: payloads are encrypted.'
+  explain: 'A) wrong: metadata and DNS are still visible. B) wrong: the sensor never has it. C) correct: detection moves to metadata. D) wrong: payloads are encrypted.'
 - id: inline
   prompt: What is the safest way to move from alerting to dropping with Suricata?
   choices:
-  - Disable the rule update job
   - Block all traffic by default
-  - Review alert-only data for a week, then convert reviewed rules to drop one at a time
-  - Switch every rule to drop at once
+  - Review alert-only data for a week, then switch reviewed rules to drop one at a time
+  - Switch every rule to drop at once, so that the sensor protects the network early
+  - Disable the rule update job
+  answer:
+  - 1
+  explain: 'A) wrong: this is an outage. B) correct: staged promotion limits blast radius. C) wrong: a false positive then drops production traffic. D) wrong: stale rules miss threats.'
+- id: balancer-ban
+  prompt: fail2ban bans the load balancer's address after failed logins on the web site. What is the correct fix?
+  choices:
+  - Ban the whole network of the balancer, since the attack comes through it
+  - Move the jail to the loopback of the balancer, where it can see the clients
+  - Log the real client from X-Forwarded-For and add the balancer to ignoreip
+  - Raise maxretry to 1000 so that bans never happen on the shared address
   answer:
   - 2
-  explain: 'A) wrong: stale
-    rules miss threats. B) wrong: this is an outage. C) correct: staged promotion limits blast radius. D) wrong: a false positive then drops production traffic.'
+  explain: 'A) wrong: makes it worse. B) wrong: does not see clients. C) correct: bans then target real clients. D) wrong: removes the protection.'
+- id: drop-rollout
+  prompt: A team wants to switch a new Suricata rule set from alert to drop. What is the safest rollout?
+  choices:
+  - Disable the rule update job and wait until the next maintenance window
+  - Review alert-only data for a week, then convert reviewed rules one at a time
+  - Switch every rule to drop at once, so that the sensor protects the network early
+  - Block all traffic by default and open it again for each service in turn
+  answer:
+  - 1
+  explain: 'A) wrong: does not address the risk. B) correct: limits false-positive harm. C) wrong: can cut off production. D) wrong: outage risk.'

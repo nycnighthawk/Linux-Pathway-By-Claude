@@ -9,68 +9,84 @@ questions:
   - All tokens are revoked
   answer:
   - 2
-  explain: 'A) wrong: audit
-    is separate. B) wrong: the listener may still answer status requests. C) correct: the master key is not in memory. D) wrong: tokens are not revoked by sealing.'
+  explain: 'A) wrong: audit is separate. B) wrong: the listener may still answer status requests. C) correct: the master key is not in memory. D) wrong: tokens are not revoked by sealing.'
 - id: root
   prompt: What should happen to the initial root token after setup?
   choices:
-  - It is stored with the unseal keys
-  - It is shared with the on-call team
-  - It is revoked, with a documented break-glass procedure to generate a new one when needed
   - It becomes the CI credential
+  - It is stored with the unseal keys
+  - It is shared with the on-call team so that anyone can fix the server at night
+  - It is revoked, with a break-glass procedure to generate a new one when needed
   answer:
-  - 2
-  explain: 'A) wrong: one leak then
-    opens everything. B) wrong: sharing it widens exposure. C) correct: least privilege with recovery. D) wrong: a daily root credential defeats policies.'
+  - 3
+  explain: 'A) wrong: a daily root credential defeats policies. B) wrong: one leak then opens everything. C) wrong: sharing it widens exposure. D) correct: least privilege with recovery.'
 - id: kv2
   prompt: A policy grants read on secret/payments/* but the service gets permission denied on a KV v2 secret. Why?
   choices:
+  - KV v2 keeps data under secret/data/payments/*, so the policy path matches nothing
+  - The service lacks a client certificate for the KV v2 secrets engine on the server
   - Tokens expired
   - The audit device failed
-  - KV v2 stores data under secret/data/payments/*, so the policy path matches nothing
-  - The service lacks a certificate
   answer:
-  - 2
-  explain: 'A) wrong: an expired token gives a different error. B) wrong: that would stop all requests. C) correct: v2 inserts data/ and metadata/ path segments. D) wrong:
-    not needed for KV.'
+  - 0
+  explain: 'A) correct: v2 inserts data/ and metadata/ path segments. B) wrong: not needed for KV. C) wrong: an expired token gives a different error. D) wrong: that would stop all requests.'
 - id: dynamic
   prompt: What is the main security benefit of dynamic database credentials?
   choices:
-  - They are stored encrypted in Git
-  - Each workload gets its own short-lived account, revoked at lease end, so a leak has bounded value and is attributable
   - They never expire
-  - They remove the need for policies
+  - They remove the need for policies, because every account is created for one task
+  - They are stored encrypted in Git
+  - Each workload gets a short-lived account, revoked at lease end, so a leak is bounded
   answer:
-  - 1
-  explain: 'A) wrong: unrelated. B) correct: lease-bound per-identity credentials limit damage. C) wrong: expiry is the point. D) wrong: policies decide who may request them.'
+  - 3
+  explain: 'A) wrong: expiry is the point. B) wrong: policies decide who may request them. C) wrong: unrelated. D) correct: lease-bound per-identity credentials limit damage.'
 - id: sops
   prompt: What does sops leave unencrypted in a YAML file?
   choices:
-  - Nothing
-  - The keys, so diffs and reviews stay readable, while values are encrypted
-  - Only comments
+  - The keys, so diffs stay readable, while values are encrypted
+  - Only comments, which carry no secrets and are kept in plain text for reviewers
   - The values
+  - Nothing
   answer:
-  - 1
-  explain: 'A) wrong: keys remain readable. B) correct: this leaks structure but allows review. C) wrong: comments are not the design point. D) wrong: values are what it protects.'
+  - 0
+  explain: 'A) correct: this leaks structure but allows review. B) wrong: comments are not the design point. C) wrong: values are what it protects. D) wrong: keys remain readable.'
 - id: recipient
   prompt: A departing engineer is removed from .sops.yaml and the files are re-encrypted. What else is needed?
   choices:
-  - Rotate the secrets themselves, because the engineer may hold copies and old ciphertext in history
-  - Nothing, they can no longer decrypt anything
-  - Change the file format
   - Delete the repository
+  - Rotate the secrets too, because the engineer may keep copies and old ciphertext exists
+  - Nothing, as the engineer can no longer decrypt any file that is stored today
+  - Change the file format
   answer:
-  - 0
-  explain: 'A) correct: only rotation invalidates values they
-    could have read. B) wrong: old ciphertext and copies remain decryptable with their key. C) wrong: format is irrelevant. D) wrong: it does not help.'
+  - 1
+  explain: 'A) wrong: it does not help. B) correct: only rotation invalidates values they could have read. C) wrong: old ciphertext and copies remain decryptable with their key. D) wrong: format is irrelevant.'
 - id: audit
   prompt: Why configure two audit devices?
   choices:
-  - Two devices double the log detail
+  - Two devices double the log detail, because each one records half of the events
   - To speed up unsealing
-  - The server refuses requests when all audit devices fail, so a single full disk causes an outage
+  - The server refuses requests when all audit devices fail, so one full disk is an outage
   - It is required by the licence
   answer:
   - 2
   explain: 'A) wrong: detail is unchanged. B) wrong: unrelated. C) correct: unlogged access is treated as worse than none. D) wrong: no such requirement.'
+- id: kv2-denied
+  prompt: A service gets permission denied on a KV v2 secret although its policy grants read on secret/payments/*. What is wrong?
+  choices:
+  - KV v2 keeps data under secret/data/payments/*, so the policy path matches nothing
+  - The token is too old to read the mount and must be renewed by the service
+  - The audit device is full, so the server refuses every request from the service
+  - The service has no client certificate for the KV v2 secrets engine on the server
+  answer:
+  - 0
+  explain: 'A) correct: the path needs /data/. B) wrong: not the cause. C) wrong: would block all requests. D) wrong: not what a policy denial says.'
+- id: leaver
+  prompt: An engineer who knew the sops recipient key leaves. The team removes them from .sops.yaml and re-encrypts. What else?
+  choices:
+  - Nothing; the engineer can no longer decrypt any file that is in the repository
+  - Change the file format of the secrets, so that the old ciphertext cannot be read
+  - Delete the repository and create a new one, so that the history is gone
+  - Rotate the secrets themselves, since old ciphertext in history stays readable to them
+  answer:
+  - 3
+  explain: 'A) wrong: they may hold old copies. B) wrong: not a fix. C) wrong: overkill and loses history. D) correct: they may hold copies.'
