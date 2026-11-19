@@ -13,43 +13,43 @@ questions:
 - id: replicas
   prompt: In which order are a database primary and its replica patched?
   choices:
+  - Neither; databases are never patched
   - Primary first, then the replica
   - Replica first, then the primary
   - Both at the same moment
-  - Neither; databases are never patched
   answer:
-  - 1
-  explain: 'A) wrong: risks the live data first. B) correct: a failure shows up on the replica. C) wrong: no fallback if it fails. D) wrong: they must be patched.'
+  - 2
+  explain: 'A) wrong: they must be patched. B) wrong: risks the live data first. C) correct: a failure shows up on the replica. D) wrong: no fallback if it fails.'
 - id: effective
   prompt: dnf reports the kernel package updated. What else shows whether the host is actually protected?
   choices:
+  - Nothing; an installed package is all that counts, since the update has finished
   - That the running kernel (uname -r) matches the new one, so the reboot happened
   - The hostname of the machine that was updated
   - The disk size of the root file system
-  - Nothing; an installed package is all that counts, since the update has finished
   answer:
-  - 0
-  explain: 'A) correct: installed is not running. B) wrong: unrelated. C) wrong: unrelated. D) wrong: the old kernel may still run.'
+  - 1
+  explain: 'A) wrong: the old kernel may still run. B) correct: installed is not running. C) wrong: unrelated. D) wrong: unrelated.'
 - id: gate
   prompt: Which gate is sound?
   choices:
+  - No gate; wait for the complaints to arrive
   - Gate only on the exit code of the update job
   - A human looks at a dashboard when they have time, and decides on a feeling
   - A pre-agreed error-rate threshold that stops the rollout automatically
-  - No gate; wait for the complaints to arrive
   answer:
-  - 2
-  explain: 'A) wrong: a successful job can still break services. B) wrong: not reliable. C) correct: objective and fast. D) wrong: too late.'
+  - 3
+  explain: 'A) wrong: too late. B) wrong: a successful job can still break services. C) wrong: not reliable. D) correct: objective and fast.'
 - id: soak
   prompt: Why does a memory-leak regression need a longer soak than a boot failure?
   choices:
-  - Leaks affect only the canary hosts
-  - Boot failures are harmless to the service
   - Soak time does not matter for either problem, since both appear within minutes
   - Leaks only show up after hours or days of running
+  - Leaks affect only the canary hosts
+  - Boot failures are harmless to the service
   answer:
-  - 3
-  explain: 'A) wrong: not true. B) wrong: they are not. C) wrong: it matters for leaks. D) correct: a boot failure shows at once.'
+  - 1
+  explain: 'A) wrong: it matters for leaks. B) correct: a boot failure shows at once. C) wrong: not true. D) wrong: they are not.'
 - id: exceptions
   prompt: What should every patching exception have?
   choices:
@@ -63,13 +63,13 @@ questions:
 - id: canarybad
   prompt: Ring 1 patches finish without errors, but latency on the web tier doubles ten minutes later. What should the rollout do?
   choices:
+  - Continue, since the update jobs exited with success
   - Patch ring 2 faster to compare more hosts
   - Wait for users to complain before deciding
   - Halt before ring 2, because the agreed threshold for latency is broken
-  - Continue, since the update jobs exited with success
   answer:
-  - 2
-  explain: 'A) wrong: widens the damage. B) wrong: too late. C) correct: the gate protects later rings. D) wrong: a good exit code is not enough.'
+  - 3
+  explain: 'A) wrong: a good exit code is not enough. B) wrong: widens the damage. C) wrong: too late. D) correct: the gate protects later rings.'
 - id: replicafirst
   prompt: The primary of a database cluster has to be patched in the same window as two replicas. What is the safest order?
   choices:

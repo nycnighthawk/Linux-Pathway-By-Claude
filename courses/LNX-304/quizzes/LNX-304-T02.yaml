@@ -3,53 +3,53 @@ questions:
 - id: control
   prompt: Which file in debian/ declares the packages needed to build the source?
   choices:
-  - rules, in the targets that run before the build
-  - copyright, in the licence header of the source tree
   - control, in the Build-Depends field of the source stanza
   - changelog, in the entry for the version being built
+  - rules, in the targets that run before the build
+  - copyright, in the licence header of the source tree
   answer:
-  - 2
-  explain: 'A) wrong: rules holds the build recipe. B) wrong: copyright holds licence terms. C) correct: this declares the build dependencies. D) wrong: changelog holds the history.'
+  - 0
+  explain: 'A) correct: this declares the build dependencies. B) wrong: changelog holds the history. C) wrong: rules holds the build recipe. D) wrong: copyright holds licence terms.'
 - id: tilde
   prompt: How does dpkg order 1.0~rc1 against 1.0?
   choices:
-  - The comparison is an error that dpkg reports to the user and then stops
   - 1.0~rc1 is older, because the tilde sorts before everything
   - They are equal, since the tilde part is ignored
   - 1.0~rc1 is newer, because it has more characters
+  - The comparison is an error that dpkg reports to the user and then stops
   answer:
-  - 1
-  explain: 'A) wrong: the comparison is defined. B) correct: used for pre-releases. C) wrong: it is not ignored. D) wrong: more characters do not mean newer.'
+  - 0
+  explain: 'A) correct: used for pre-releases. B) wrong: it is not ignored. C) wrong: more characters do not mean newer. D) wrong: the comparison is defined.'
 - id: conffile
   prompt: A packaged /etc file and the local copy both changed. What does dpkg do on upgrade?
   choices:
-  - It overwrites the local file silently with the new version
   - It keeps the local file silently and drops the new version
   - It deletes both files and asks the package to recreate them
   - It asks the administrator, or follows the configured policy
+  - It overwrites the local file silently with the new version
   answer:
-  - 3
-  explain: 'A) wrong: local edits would be lost. B) wrong: changes would go unnoticed. C) wrong: nothing is deleted. D) correct: conffile handling.'
+  - 2
+  explain: 'A) wrong: changes would go unnoticed. B) wrong: nothing is deleted. C) correct: conffile handling. D) wrong: local edits would be lost.'
 - id: sbuild
   prompt: Why build with sbuild instead of dpkg-buildpackage on a workstation?
   choices:
+  - Debian policy requires sbuild for every package that enters the main archive
   - sbuild signs the packages with the key of the builder
   - The chroot has only build-essential and the declared Build-Depends
   - sbuild is faster than building directly on a workstation
-  - Debian policy requires sbuild for every package that enters the main archive
   answer:
-  - 1
-  explain: 'A) wrong: signing is a separate step. B) correct: hidden dependencies then fail. C) wrong: not the reason. D) wrong: no such policy.'
+  - 2
+  explain: 'A) wrong: no such policy. B) wrong: signing is a separate step. C) correct: hidden dependencies then fail. D) wrong: not the reason.'
 - id: scripts
   prompt: What does a maintainer script such as postinst receive as its first argument?
   choices:
-  - The size of the package in kilobytes
-  - The number of installed instances of the package
   - Nothing; it reads its state from a file
   - An action word such as configure, upgrade, remove or purge
+  - The size of the package in kilobytes
+  - The number of installed instances of the package
   answer:
-  - 3
-  explain: 'A) wrong: not passed. B) wrong: that is an RPM convention. C) wrong: an argument is passed. D) correct: scripts branch on it.'
+  - 1
+  explain: 'A) wrong: an argument is passed. B) correct: scripts branch on it. C) wrong: not passed. D) wrong: that is an RPM convention.'
 - id: dh
   prompt: What does a minimal debian/rules with the line "dh $@" do?
   choices:
@@ -63,13 +63,13 @@ questions:
 - id: hiddendep
   prompt: A package builds with dpkg-buildpackage on a laptop but fails in sbuild for a missing header. What is the fix?
   choices:
-  - Add the package that ships the header to Build-Depends
   - Install the header by hand inside the sbuild chroot and rebuild the package there
   - Add the header package to Depends for all users
   - Build on the laptop only, since it already works
+  - Add the package that ships the header to Build-Depends
   answer:
-  - 0
-  explain: 'A) correct: the laptop had it by accident. B) wrong: not reproducible. C) wrong: a runtime dependency is wrong. D) wrong: hides the problem.'
+  - 3
+  explain: 'A) wrong: not reproducible. B) wrong: a runtime dependency is wrong. C) wrong: hides the problem. D) correct: the laptop had it by accident.'
 - id: confprompt
   prompt: During an unattended upgrade, dpkg stops and waits at a conffile question. What should be set up for next time?
   choices:

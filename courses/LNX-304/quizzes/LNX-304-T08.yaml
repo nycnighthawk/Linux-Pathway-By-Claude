@@ -13,23 +13,23 @@ questions:
 - id: etc
   prompt: A host edited a file in /etc and a new image changes the default of that file. What does an update do?
   choices:
-  - It refuses to update until the edit is reverted
   - It keeps the local edit and applies new defaults to files not changed locally
   - It deletes /etc and starts with the image defaults
   - It discards the local edit and uses the image file
+  - It refuses to update until the edit is reverted
   answer:
-  - 1
-  explain: 'A) wrong: it proceeds. B) correct: a three-way merge. C) wrong: local state is kept. D) wrong: the edit survives.'
+  - 0
+  explain: 'A) correct: a three-way merge. B) wrong: local state is kept. C) wrong: the edit survives. D) wrong: it proceeds.'
 - id: rollback
   prompt: How does bootc rollback work?
   choices:
-  - It downgrades each package one by one
-  - It rebuilds the whole image from the older Containerfile and pushes it again
   - It restores a backup taken before the update
   - It selects the previous deployment for the next boot
+  - It downgrades each package one by one
+  - It rebuilds the whole image from the older Containerfile and pushes it again
   answer:
-  - 3
-  explain: 'A) wrong: it does not use packages. B) wrong: not needed. C) wrong: no backup needed. D) correct: the old deployment is still there.'
+  - 1
+  explain: 'A) wrong: no backup needed. B) correct: the old deployment is still there. C) wrong: it does not use packages. D) wrong: not needed.'
 - id: overlay
   prompt: You fix a bug on one host with rpm-ostree usroverlay. What is the status of the fix?
   choices:
@@ -53,13 +53,13 @@ questions:
 - id: secrets
   prompt: Why must secrets not be baked into a bootc image?
   choices:
-  - dnf forbids it in the image build
   - Images cannot hold files of that kind
   - Anyone able to pull the image can read them
   - They slow down the boot of the host
+  - dnf forbids it in the image build
   answer:
-  - 2
-  explain: 'A) wrong: no such rule. B) wrong: they can. C) correct: images are readable. D) wrong: not the reason.'
+  - 1
+  explain: 'A) wrong: they can. B) correct: images are readable. C) wrong: not the reason. D) wrong: no such rule.'
 - id: rollbackcase
   prompt: After an image update a host boots but the application fails. What is the quickest recovery that keeps the data?
   choices:
@@ -73,10 +73,10 @@ questions:
 - id: tagfollow
   prompt: A team publishes every build to the tag latest and all 400 hosts follow it. A broken build ships on Friday. What design change limits this?
   choices:
-  - Build less often so that there are fewer mistakes that can reach the fleet
-  - Move all hosts to different tags at random
   - Add more registry servers for the tag
   - Promote tags through rings, so a few hosts follow the new build first
+  - Build less often so that there are fewer mistakes that can reach the fleet
+  - Move all hosts to different tags at random
   answer:
-  - 3
-  explain: 'A) wrong: does not stop a bad build. B) wrong: no control. C) wrong: does not help. D) correct: limits the blast radius.'
+  - 1
+  explain: 'A) wrong: does not help. B) correct: limits the blast radius. C) wrong: does not stop a bad build. D) wrong: no control.'

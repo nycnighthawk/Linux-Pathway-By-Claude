@@ -3,33 +3,33 @@ questions:
 - id: inhibitor
   prompt: What does an inhibitor in a Leapp report mean?
   choices:
-  - A warning that can safely be ignored
   - A package that is faster than the old one
   - A problem that blocks the upgrade until it is resolved
   - A firewall rule that Leapp adds on its own while it runs the checks
+  - A warning that can safely be ignored
   answer:
-  - 2
-  explain: 'A) wrong: inhibitors block the upgrade. B) wrong: unrelated. C) correct: resolve it, then run again. D) wrong: unrelated.'
+  - 1
+  explain: 'A) wrong: unrelated. B) correct: resolve it, then run again. C) wrong: unrelated. D) wrong: inhibitors block the upgrade.'
 - id: preupgrade
   prompt: What does leapp preupgrade do?
   choices:
+  - It creates a full backup of the host before the upgrade
   - It upgrades the system to the next major release without needing a reboot at all
   - It assesses upgradability and writes a report without changing the config
   - It removes every third-party package from the host
-  - It creates a full backup of the host before the upgrade
   answer:
-  - 1
-  explain: 'A) wrong: the upgrade phase is separate. B) correct: a safe first step. C) wrong: it does not remove anything. D) wrong: backups are your job.'
+  - 2
+  explain: 'A) wrong: backups are your job. B) wrong: the upgrade phase is separate. C) correct: a safe first step. D) wrong: it does not remove anything.'
 - id: clean
   prompt: The report shows no inhibitors. What does that prove?
   choices:
-  - The application will work unchanged after the upgrade
-  - The upgrade will certainly succeed on this host
   - No reboot is needed for this upgrade
   - Nothing is guaranteed, so a backup and ideally a rehearsal still matter
+  - The application will work unchanged after the upgrade
+  - The upgrade will certainly succeed on this host
   answer:
-  - 3
-  explain: 'A) wrong: nothing about the application is tested. B) wrong: the assessment cannot simulate everything. C) wrong: a reboot is part of the upgrade. D) correct: the check is a filter, not a proof.'
+  - 1
+  explain: 'A) wrong: a reboot is part of the upgrade. B) correct: the check is a filter, not a proof. C) wrong: nothing about the application is tested. D) wrong: the assessment cannot simulate everything.'
 - id: answers
   prompt: Why must required questions be answered before the upgrade phase?
   choices:
@@ -43,33 +43,33 @@ questions:
 - id: watchdog
   prompt: Why disable hardware watchdogs and health checks during an upgrade?
   choices:
-  - They are not needed once the upgrade has finished and the host is running again
   - A busy host may miss the watchdog and be reset mid-transaction
   - They use too much disk space during the upgrade
   - They are incompatible with TLS on the new release
+  - They are not needed once the upgrade has finished and the host is running again
   answer:
-  - 1
-  explain: 'A) wrong: they are needed afterwards. B) correct: a reset mid-transaction can leave a broken system. C) wrong: unrelated. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: a reset mid-transaction can leave a broken system. B) wrong: unrelated. C) wrong: unrelated. D) wrong: they are needed afterwards.'
 - id: rebuild
   prompt: When is a rebuild preferable to an in-place upgrade?
   choices:
+  - Never, since in-place upgrades are always better
   - Only when the hosts run Windows
   - When the host holds unique data and has no snapshot that could be restored later
   - When the host is stateless or built from code, or has drifted
-  - Never, since in-place upgrades are always better
   answer:
-  - 2
-  explain: 'A) wrong: not about Windows. B) wrong: that argues for caution, not a rebuild. C) correct: a clean build beats a risky upgrade. D) wrong: sometimes it is not.'
+  - 3
+  explain: 'A) wrong: sometimes it is not. B) wrong: not about Windows. C) wrong: that argues for caution, not a rebuild. D) correct: a clean build beats a risky upgrade.'
 - id: inhibitorcase
   prompt: leapp preupgrade lists an inhibitor about an unsupported kernel module. The upgrade window opens in an hour. What is the best action?
   choices:
+  - Ignore the finding because the report is often wrong
   - Delete the report file and start the assessment over
   - Remove or replace the module as advised, then rerun preupgrade
   - Run the upgrade anyway and accept the risk this time, since the window is short
-  - Ignore the finding because the report is often wrong
   answer:
-  - 1
-  explain: 'A) wrong: the problem remains. B) correct: the inhibitor must be cleared first. C) wrong: inhibitors block the upgrade phase. D) wrong: the report is a gate.'
+  - 2
+  explain: 'A) wrong: the report is a gate. B) wrong: the problem remains. C) correct: the inhibitor must be cleared first. D) wrong: inhibitors block the upgrade phase.'
 - id: rebootstuck
   prompt: After an in-place upgrade the host sits at the reboot screen for an hour with no console output. What was the missed preparation?
   choices:

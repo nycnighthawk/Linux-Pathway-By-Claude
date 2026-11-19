@@ -3,23 +3,23 @@ questions:
 - id: opt93
   prompt: What does DHCP option 93 carry?
   choices:
-  - The client system architecture, such as BIOS or x86-64 UEFI
   - The lease time granted to the client, measured in seconds
   - The hostname that the client asks the server to register
   - The address of the package repository that the installer should use for the install
+  - The client system architecture, such as BIOS or x86-64 UEFI
   answer:
-  - 0
-  explain: 'A) correct: the server uses it to choose the boot file. B) wrong: that is option 51. C) wrong: that is option 12. D) wrong: no such option exists.'
+  - 3
+  explain: 'A) wrong: that is option 51. B) wrong: that is option 12. C) wrong: no such option exists. D) correct: the server uses it to choose the boot file.'
 - id: loop
   prompt: A UEFI client keeps loading iPXE forever. What is the usual cause?
   choices:
+  - Option 175 is not matched, so iPXE clients get the iPXE binary again
   - The disk of the boot server is full and cannot write the lease
   - The installer kernel is too old to start on this hardware
   - TFTP is switched off on the server once the first stage has loaded the loader
-  - Option 175 is not matched, so iPXE clients get the iPXE binary again
   answer:
-  - 3
-  explain: 'A) wrong: unrelated; the first load works. B) wrong: the kernel is never reached. C) wrong: the first load works, so TFTP is on. D) correct: tag them with option 175 and serve a script URL.'
+  - 0
+  explain: 'A) correct: tag them with option 175 and serve a script URL. B) wrong: unrelated; the first load works. C) wrong: the kernel is never reached. D) wrong: the first load works, so TFTP is on.'
 - id: tftp
   prompt: Why move everything after the first file to HTTP?
   choices:
@@ -33,23 +33,23 @@ questions:
 - id: safedefault
   prompt: What should the boot service answer to a machine that is in service?
   choices:
-  - A rescue shell that the operator can use for repairs
-  - The installer, in case the host needs a refresh anyway
   - A script that exits to the local disk
   - No answer at all, so the client waits until it times out
+  - A rescue shell that the operator can use for repairs
+  - The installer, in case the host needs a refresh anyway
   answer:
-  - 2
-  explain: 'A) wrong: gives away access to a production host. B) wrong: reinstalls production by accident. C) correct: exit falls through to the disk. D) wrong: hanging stalls every reboot.'
+  - 0
+  explain: 'A) correct: exit falls through to the disk. B) wrong: hanging stalls every reboot. C) wrong: gives away access to a production host. D) wrong: reinstalls production by accident.'
 - id: secureboot
   prompt: Why does Secure Boot affect network boot?
   choices:
-  - It blocks DHCP replies for clients with unsigned firmware
-  - It turns off the network card until the OS takes over
   - It requires TFTP for the first stage on every platform that has Secure Boot on
   - The first stage must be signed by a trusted key, so distros ship a signed shim
+  - It blocks DHCP replies for clients with unsigned firmware
+  - It turns off the network card until the OS takes over
   answer:
-  - 3
-  explain: 'A) wrong: DHCP is separate. B) wrong: the card works. C) wrong: no such requirement. D) correct: unsigned loaders do not run.'
+  - 1
+  explain: 'A) wrong: no such requirement. B) correct: unsigned loaders do not run. C) wrong: DHCP is separate. D) wrong: the card works.'
 - id: relay
   prompt: How does DHCP reach a server on another subnet?
   choices:
@@ -63,20 +63,20 @@ questions:
 - id: loopcase
   prompt: A new batch of UEFI machines gets the boot file but then loops back to it after iPXE starts. What do you check first?
   choices:
-  - The server hands out iPXE again instead of a script to iPXE clients
   - The machines run an older BIOS version than the rest of the fleet
   - The installer ISO checksum does not match the published value
   - The router has too few free ports for the new batch of hosts
+  - The server hands out iPXE again instead of a script to iPXE clients
   answer:
-  - 0
-  explain: 'A) correct: a missing option 175 match causes the loop. B) wrong: the first stage already ran. C) wrong: the installer is not reached yet. D) wrong: the clients already reached the server.'
+  - 3
+  explain: 'A) wrong: the first stage already ran. B) wrong: the installer is not reached yet. C) wrong: the clients already reached the server. D) correct: a missing option 175 match causes the loop.'
 - id: liveboot
   prompt: An engineer reboots a running web server and it comes up in the installer. What setting would have prevented this?
   choices:
+  - A second signing key on the installer kernel
   - A shorter DHCP lease for the hosts that are in service
   - A larger TFTP block size on the boot server
   - A default answer that boots the local disk unless the host has been put in build mode
-  - A second signing key on the installer kernel
   answer:
-  - 2
-  explain: 'A) wrong: the lease does not choose the boot action. B) wrong: speed is unrelated to the decision. C) correct: in-service hosts then boot from disk. D) wrong: signing does not decide what is offered.'
+  - 3
+  explain: 'A) wrong: signing does not decide what is offered. B) wrong: the lease does not choose the boot action. C) wrong: speed is unrelated to the decision. D) correct: in-service hosts then boot from disk.'

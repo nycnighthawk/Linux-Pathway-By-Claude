@@ -13,13 +13,13 @@ questions:
 - id: source
   prompt: Where should BMC firmware images come from?
   choices:
-  - A copy from a colleague's laptop
   - The vendor's support site, checked by checksum or signature
   - A random download mirror found by searching for the model and version of the board
   - A forum post with many upvotes
+  - A copy from a colleague's laptop
   answer:
-  - 1
-  explain: 'A) wrong: unverified copy. B) correct: official and verifiable. C) wrong: unverified. D) wrong: popularity is not trust.'
+  - 0
+  explain: 'A) correct: official and verifiable. B) wrong: unverified. C) wrong: popularity is not trust. D) wrong: unverified copy.'
 - id: pilot
   prompt: Why run a pilot and waves instead of updating the whole rack at once?
   choices:
@@ -33,23 +33,23 @@ questions:
 - id: preserve
   prompt: Why check whether the update preserved the configuration?
   choices:
-  - Configuration files are always kept by the update
-  - Only the fan settings are reset to defaults
   - It does not matter once the update has finished
   - Some updates reset the BMC, leaving default accounts on the management network
+  - Configuration files are always kept by the update
+  - Only the fan settings are reset to defaults
   answer:
-  - 3
-  explain: 'A) wrong: not always. B) wrong: more may be reset. C) wrong: it does matter. D) correct: a security risk.'
+  - 1
+  explain: 'A) wrong: it does matter. B) correct: a security risk. C) wrong: not always. D) wrong: more may be reset.'
 - id: secureboot
   prompt: What does UEFI Secure Boot add?
   choices:
+  - It encrypts the BMC password in flash and the boot loader on the host disk
   - It replaces the BMC on the board
   - Only boot programs signed by trusted certificates run, forming a chain of trust
   - It speeds up the boot of the operating system
-  - It encrypts the BMC password in flash and the boot loader on the host disk
   answer:
-  - 1
-  explain: 'A) wrong: different thing. B) correct: blocks unsigned loaders. C) wrong: not its purpose. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: unrelated. B) wrong: different thing. C) correct: blocks unsigned loaders. D) wrong: not its purpose.'
 - id: emulator
   prompt: Which of these can an emulator NOT teach?
   choices:
@@ -63,13 +63,13 @@ questions:
 - id: wave1
   prompt: During wave one, two of ten BMCs stop answering after the update. What should the campaign do?
   choices:
-  - Reboot all ten hosts to clear the fault
   - Flash the same image again on the other machines
   - Stop later waves, recover those two by the vendor procedure, find the cause
   - Continue with wave two at once to finish on time
+  - Reboot all ten hosts to clear the fault
   answer:
-  - 2
-  explain: 'A) wrong: not related to a BMC fault. B) wrong: repeats the failure. C) correct: a pilot exists to find this. D) wrong: spreads the failure.'
+  - 1
+  explain: 'A) wrong: repeats the failure. B) correct: a pilot exists to find this. C) wrong: spreads the failure. D) wrong: not related to a BMC fault.'
 - id: defaults
   prompt: After a firmware update the BMC answers with the vendor's default account on the management network. What do you do?
   choices:

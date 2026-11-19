@@ -23,43 +23,43 @@ questions:
 - id: checkmode
   prompt: What is a weakness of detecting drift with Ansible check mode?
   choices:
-  - It makes changes to the hosts while it runs, which defeats a dry run
   - It cannot read YAML playbooks
   - It works only on Windows hosts
   - Tasks that lack check-mode support, or are not idempotent, mislead it
+  - It makes changes to the hosts while it runs, which defeats a dry run
   answer:
-  - 3
-  explain: 'A) wrong: check mode does not change them. B) wrong: it reads YAML. C) wrong: it works on Linux. D) correct: results can be wrong.'
+  - 2
+  explain: 'A) wrong: it reads YAML. B) wrong: it works on Linux. C) correct: results can be wrong. D) wrong: check mode does not change them.'
 - id: ssd
   prompt: Why is overwriting an SSD from the operating system an unreliable wipe?
   choices:
-  - SSDs cannot be written to by the operating system
   - The drive remaps blocks, so old data can survive an overwrite
   - Overwriting data is not allowed under most data-protection laws and rules
   - SSDs have no controller to manage the cells
+  - SSDs cannot be written to by the operating system
   answer:
-  - 1
-  explain: 'A) wrong: they can. B) correct: use the drive''s sanitize command or cryptographic erase. C) wrong: it is legal. D) wrong: they have one.'
+  - 0
+  explain: 'A) correct: use the drive''s sanitize command or cryptographic erase. B) wrong: it is legal. C) wrong: they have one. D) wrong: they can.'
 - id: crypto
   prompt: What does cryptographic erase of a LUKS volume do?
   choices:
-  - It compresses the volume to save space on the drive
   - It overwrites every block of the volume with zeros, one pass after another
   - It formats the volume as ext4 without a key
   - It removes all key slots, so the master key is lost and data unreadable
+  - It compresses the volume to save space on the drive
   answer:
-  - 3
-  explain: 'A) wrong: unrelated. B) wrong: that is a slow overwrite. C) wrong: unrelated. D) correct: fast and effective for encrypted volumes.'
+  - 2
+  explain: 'A) wrong: that is a slow overwrite. B) wrong: unrelated. C) correct: fast and effective for encrypted volumes. D) wrong: unrelated.'
 - id: record
   prompt: A technician wiped 40 drives but kept no record. How does an auditor treat the work?
   choices:
+  - As done, since the drives are now empty
   - As irrelevant to the audit scope
   - As done if the technician is trusted by the team and signs a short note
   - As not done, because sanitisation must be documented and verified
-  - As done, since the drives are now empty
   answer:
-  - 2
-  explain: 'A) wrong: sanitisation is audited. B) wrong: trust is not evidence. C) correct: no evidence, no sanitisation. D) wrong: empty is not evidence.'
+  - 3
+  explain: 'A) wrong: empty is not evidence. B) wrong: sanitisation is audited. C) wrong: trust is not evidence. D) correct: no evidence, no sanitisation.'
 - id: aidenoise
   prompt: After a kernel patch window, the AIDE report lists thousands of changes. What is the right order of work?
   choices:
@@ -73,10 +73,10 @@ questions:
 - id: decom
   prompt: A server with self-encrypting SSDs is retired and the old team overwrote them once with zeros. Which plan is better for the next one?
   choices:
+  - Overwrite three times with random data from the OS
   - Quick format the drives, and ship them to the recycler with the rest of the rack
   - Skip the wipe if the drives stay in a locked room
   - The drive's sanitize command or cryptographic erase, verified and recorded
-  - Overwrite three times with random data from the OS
   answer:
-  - 2
-  explain: 'A) wrong: data remains readable. B) wrong: the data leaves with the drives. C) correct: matches how SSDs actually store data. D) wrong: still misses remapped blocks.'
+  - 3
+  explain: 'A) wrong: still misses remapped blocks. B) wrong: data remains readable. C) wrong: the data leaves with the drives. D) correct: matches how SSDs actually store data.'

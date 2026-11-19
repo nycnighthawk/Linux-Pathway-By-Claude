@@ -3,13 +3,13 @@ questions:
 - id: cvversion
   prompt: What does publishing a content view create?
   choices:
-  - A new repository upstream, visible to all users
-  - An immutable, numbered content view version
   - A registered activation key for new hosts
   - A new host record in the inventory
+  - A new repository upstream, visible to all users
+  - An immutable, numbered content view version
   answer:
-  - 1
-  explain: 'A) wrong: upstream is untouched. B) correct: a snapshot of the selected content. C) wrong: a different object. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: a different object. B) wrong: unrelated. C) wrong: upstream is untouched. D) correct: a snapshot of the selected content.'
 - id: promote
   prompt: A new view version is published but Prod hosts see no updates. Why?
   choices:
@@ -23,13 +23,13 @@ questions:
 - id: activationkey
   prompt: What does an activation key give a registering host?
   choices:
-  - A fixed IP address that is taken from the Satellite address pool for new hosts
-  - A kernel for the first boot
   - A root password for the new host
   - Its organisation, lifecycle environment, content view and subscriptions
+  - A fixed IP address that is taken from the Satellite address pool for new hosts
+  - A kernel for the first boot
   answer:
-  - 3
-  explain: 'A) wrong: not its job. B) wrong: not its job. C) wrong: not its job. D) correct: everything needed to register.'
+  - 1
+  explain: 'A) wrong: not its job. B) correct: everything needed to register. C) wrong: not its job. D) wrong: not its job.'
 - id: filters
   prompt: Which practice with filters is sound?
   choices:
@@ -43,40 +43,40 @@ questions:
 - id: incremental
   prompt: What is an incremental update used for?
   choices:
+  - Registering many hosts at once
   - A normal weekly publish of the whole view
   - A fast minor version with only selected errata for an emergency
   - Deleting old versions of the view
-  - Registering many hosts at once
   answer:
-  - 1
-  explain: 'A) wrong: that is a full publish. B) correct: a quick targeted fix. C) wrong: that is cleanup. D) wrong: that uses activation keys.'
+  - 2
+  explain: 'A) wrong: that uses activation keys. B) wrong: that is a full publish. C) correct: a quick targeted fix. D) wrong: that is cleanup.'
 - id: upgrade
   prompt: What must be in the view and activation key for an in-place OS upgrade of a Satellite-registered host?
   choices:
+  - A second Satellite that serves only the new release
   - Only the repositories of the source version
   - Nothing; the host fetches what it needs from the internet during the upgrade itself
   - The repositories for both source and target versions, with target minors
-  - A second Satellite that serves only the new release
   answer:
-  - 2
-  explain: 'A) wrong: the upgrade needs the target. B) wrong: it uses Satellite content. C) correct: the upgrade reads both. D) wrong: not needed.'
+  - 3
+  explain: 'A) wrong: not needed. B) wrong: the upgrade needs the target. C) wrong: it uses Satellite content. D) correct: the upgrade reads both.'
 - id: noupdates
   prompt: Prod hosts report "no updates" although the newest content view version contains a security fix. What do you check first?
   choices:
+  - Which version is promoted to the Prod lifecycle environment and used by the activation key
   - Whether the hosts have a recent hardware clock
   - Whether the upstream vendor has changed its logo or the name of its repositories
   - Whether the Satellite uses IPv6 internally
-  - Which version is promoted to the Prod lifecycle environment and used by the activation key
   answer:
-  - 3
-  explain: 'A) wrong: unrelated. B) wrong: unrelated. C) wrong: not the cause. D) correct: the version in Prod.'
+  - 0
+  explain: 'A) correct: the version in Prod. B) wrong: unrelated. C) wrong: unrelated. D) wrong: not the cause.'
 - id: brokenview
   prompt: A filter removes a library by name and several hosts fail to update with dependency errors. What was the mistake?
   choices:
-  - The hosts were registered in the wrong week
-  - The filter was not tested on a canary host before the version reached Prod
   - The content view was published too many times in a single week by the team
   - The activation key had too many subscriptions
+  - The hosts were registered in the wrong week
+  - The filter was not tested on a canary host before the version reached Prod
   answer:
-  - 1
-  explain: 'A) wrong: not the cause. B) correct: test before promote. C) wrong: not the cause. D) wrong: not the cause.'
+  - 3
+  explain: 'A) wrong: not the cause. B) wrong: not the cause. C) wrong: not the cause. D) correct: test before promote.'

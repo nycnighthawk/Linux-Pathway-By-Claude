@@ -3,63 +3,63 @@ questions:
 - id: httpdir
   prompt: What does the http_directory setting of a Packer source do?
   choices:
-  - It selects the folder where the finished image is stored
-  - It serves a directory, such as the Kickstart file, to the installer
   - It chooses the repository mirror that the guest uses while it installs its packages
   - It uploads the finished image to a registry when done
+  - It selects the folder where the finished image is stored
+  - It serves a directory, such as the Kickstart file, to the installer
   answer:
-  - 1
-  explain: 'A) wrong: that is the output setting. B) correct: the boot command points the installer at it. C) wrong: unrelated. D) wrong: that is a post-processor.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: that is a post-processor. C) wrong: that is the output setting. D) correct: the boot command points the installer at it.'
 - id: checksum
   prompt: Why is iso_checksum required to be a real value?
   choices:
+  - Packer uses it to name the output file and the folder of the finished build
   - It speeds up the download of the installation media
   - It proves the media is the intended one, so a tampered ISO fails
   - It selects the processor architecture for the build
-  - Packer uses it to name the output file and the folder of the finished build
   answer:
-  - 1
-  explain: 'A) wrong: unrelated. B) correct: inputs must be pinned and verified. C) wrong: unrelated. D) wrong: not used for naming.'
+  - 2
+  explain: 'A) wrong: not used for naming. B) wrong: unrelated. C) correct: inputs must be pinned and verified. D) wrong: unrelated.'
 - id: machineid
   prompt: Why truncate /etc/machine-id before capture?
   choices:
+  - Each clone then makes its own identity instead of sharing one
   - It frees disk space in the final image
   - systemd refuses to boot the image at all unless that file is completely empty
   - It turns off networking until the first login
-  - Each clone then makes its own identity instead of sharing one
   answer:
-  - 3
-  explain: 'A) wrong: the file is tiny. B) wrong: it regenerates the value. C) wrong: unrelated. D) correct: shared ids break DHCP, licensing and monitoring.'
+  - 0
+  explain: 'A) correct: shared ids break DHCP, licensing and monitoring. B) wrong: the file is tiny. C) wrong: it regenerates the value. D) wrong: unrelated.'
 - id: secrets
   prompt: Which is the right way to handle the temporary build password?
   choices:
-  - Hard-code the password in the template next to the other settings of the source
   - A sensitive variable from a secrets manager, with the account removed in clean-up
   - Print it in the build log so the team can find it
   - Leave the account in the image for later maintenance
+  - Hard-code the password in the template next to the other settings of the source
   answer:
-  - 1
-  explain: 'A) wrong: it lands in Git. B) correct: a build-time secret that does not outlive the build. C) wrong: logs leak. D) wrong: a backdoor in every instance.'
+  - 0
+  explain: 'A) correct: a build-time secret that does not outlive the build. B) wrong: logs leak. C) wrong: a backdoor in every instance. D) wrong: it lands in Git.'
 - id: test
   prompt: What is a sound test of a freshly built image?
   choices:
-  - Compare the file size with last week's image
-  - Read the template once more before the release
   - Boot it twice; assert services, ports, no build user, unique host keys
   - Check that the build finished without errors, then publish
+  - Compare the file size with last week's image
+  - Read the template once more before the release
   answer:
-  - 2
-  explain: 'A) wrong: weak signal. B) wrong: does not test the artefact. C) correct: tests cover identity and security. D) wrong: a successful build says little about the result.'
+  - 0
+  explain: 'A) correct: tests cover identity and security. B) wrong: a successful build says little about the result. C) wrong: weak signal. D) wrong: does not test the artefact.'
 - id: alt
   prompt: When might Image Builder or a distribution tool be preferable to Packer?
   choices:
-  - When the real installer must run on an unusual hypervisor
-  - When you want quick, repeatable images for one distro without an installer
   - When the target is a Windows image for a lab
   - When the image needs no testing before it is released to the whole production fleet
+  - When the real installer must run on an unusual hypervisor
+  - When you want quick, repeatable images for one distro without an installer
   answer:
-  - 1
-  explain: 'A) wrong: that favours Packer. B) correct: composition tools skip the installer boot. C) wrong: Packer covers Windows too. D) wrong: every image needs tests.'
+  - 3
+  explain: 'A) wrong: Packer covers Windows too. B) wrong: every image needs tests. C) wrong: that favours Packer. D) correct: composition tools skip the installer boot.'
 - id: clones
   prompt: Two VMs cloned from the same new image get the same address from DHCP and show as one host in monitoring. What was missed in the build?
   choices:
@@ -73,10 +73,10 @@ questions:
 - id: weekly
   prompt: A team rebuilds images weekly and the latest one fails to boot in production. Which practice limits the damage?
   choices:
-  - Delete the old images to save storage space
-  - Build directly in production to save a copy step
   - Keep the old image and promote the new one only after its boot test passes
   - Skip the boot tests whenever the template did not change since the previous week
+  - Delete the old images to save storage space
+  - Build directly in production to save a copy step
   answer:
-  - 2
-  explain: 'A) wrong: removes the rollback. B) wrong: removes any gate before release. C) correct: a tested promotion with a rollback. D) wrong: the base packages still change.'
+  - 0
+  explain: 'A) correct: a tested promotion with a rollback. B) wrong: the base packages still change. C) wrong: removes the rollback. D) wrong: removes any gate before release.'

@@ -3,53 +3,53 @@ questions:
 - id: stops
   prompt: When should stop conditions for a campaign be written?
   choices:
-  - After the first failure, when the facts are known and the cause has been found
-  - Before the first wave, with named people who may call and lift them
   - Never; judgement on the day is enough
   - Only for the last wave
+  - After the first failure, when the facts are known and the cause has been found
+  - Before the first wave, with named people who may call and lift them
   answer:
-  - 1
-  explain: 'A) wrong: too late for fair rules. B) correct: decided in calm. C) wrong: no shared rule. D) wrong: all waves need them.'
+  - 3
+  explain: 'A) wrong: no shared rule. B) wrong: all waves need them. C) wrong: too late for fair rules. D) correct: decided in calm.'
 - id: wave1
   prompt: What should wave 1 contain?
   choices:
-  - The most critical hosts, so that the riskiest part is finished at the very start
   - The easiest hosts, so the first wave looks good
   - Only lab hosts that no one uses
   - A few representative production hosts, one of each major class
+  - The most critical hosts, so that the riskiest part is finished at the very start
   answer:
-  - 3
-  explain: 'A) wrong: too risky. B) wrong: finds nothing. C) wrong: not representative. D) correct: finds problems early.'
+  - 2
+  explain: 'A) wrong: finds nothing. B) wrong: not representative. C) correct: finds problems early. D) wrong: too risky.'
 - id: growth
   prompt: Why stop doubling the wave size at some point?
   choices:
-  - Gates are optional in the later waves
   - Doubling is forbidden by most change policies, whatever the size of the fleet
   - Machines get slower after many waves
   - Recovery capacity of people and systems limits how much can fail at once
+  - Gates are optional in the later waves
   answer:
-  - 3
-  explain: 'A) wrong: they are not. B) wrong: no such rule. C) wrong: not the reason. D) correct: risk is not the only limit.'
+  - 2
+  explain: 'A) wrong: no such rule. B) wrong: not the reason. C) correct: risk is not the only limit. D) wrong: they are not.'
 - id: ponr
   prompt: What is a point of no return?
   choices:
+  - A host that failed to patch
   - The end of the soak period
   - A step that cannot be undone, needing separate approval and a recorded time
   - The first wave of the campaign
-  - A host that failed to patch
   answer:
-  - 1
-  explain: 'A) wrong: not it. B) correct: the real decision point. C) wrong: not it. D) wrong: not it.'
+  - 2
+  explain: 'A) wrong: not it. B) wrong: not it. C) correct: the real decision point. D) wrong: not it.'
 - id: tail
   prompt: How should the last 5 to 10 percent of hosts be handled?
   choices:
-  - Ignore them, since most of the fleet is done and the rest is not worth the effort
-  - Upgrade them all on the final night
   - An exceptions register with owner, reason, controls, review date and deadline
   - Remove them from the inventory
+  - Ignore them, since most of the fleet is done and the rest is not worth the effort
+  - Upgrade them all on the final night
   answer:
-  - 2
-  explain: 'A) wrong: risk stays. B) wrong: no recovery margin. C) correct: tracked and closed. D) wrong: hides the risk.'
+  - 0
+  explain: 'A) correct: tracked and closed. B) wrong: hides the risk. C) wrong: risk stays. D) wrong: no recovery margin.'
 - id: inventory
   prompt: What is the first number to report about the inventory?
   choices:
@@ -63,20 +63,20 @@ questions:
 - id: wave2fail
   prompt: Wave 2 of a campaign shows a 3% failure rate, above the agreed 1% stop condition, and the owner of the schedule wants to continue. What happens?
   choices:
-  - It restarts from wave 1 without a cause analysis
   - The campaign stops, because the condition was agreed before and named people decide to lift it
   - It continues if the schedule owner insists
   - It continues with a smaller wave but no review
+  - It restarts from wave 1 without a cause analysis
   answer:
-  - 1
-  explain: 'A) wrong: no learning. B) correct: the rule exists for this. C) wrong: overrides the rule. D) wrong: hides the breach.'
+  - 0
+  explain: 'A) correct: the rule exists for this. B) wrong: overrides the rule. C) wrong: hides the breach. D) wrong: no learning.'
 - id: lastnight
   prompt: Three weeks in, 8% of hosts are still unpatched and the team plans to do them all on the last night. What is the better plan?
   choices:
-  - Patch all of them at once on the last night, to finish before the deadline
   - Mark the campaign complete and ignore them
   - Remove them from the inventory report
   - Put them in an exceptions register with owners, controls and a deadline, and patch in small groups
+  - Patch all of them at once on the last night, to finish before the deadline
   answer:
-  - 3
-  explain: 'A) wrong: no recovery margin. B) wrong: risk stays hidden. C) wrong: false numbers. D) correct: tracked and safe.'
+  - 2
+  explain: 'A) wrong: risk stays hidden. B) wrong: false numbers. C) correct: tracked and safe. D) wrong: no recovery margin.'
