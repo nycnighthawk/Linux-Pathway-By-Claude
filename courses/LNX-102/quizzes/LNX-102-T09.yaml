@@ -9,7 +9,7 @@ questions:
   - /var/tuned
   answer:
   - 0
-  explain: 'Profiles shipped by packages live under /usr/lib/tuned and are replaced on update. Your own profiles go under /etc/tuned (newer TuneD releases also read /etc/tuned/profiles; to verify on your release), where they survive updates and can include a shipped profile.'
+  explain: 'Profiles shipped by packages live under /usr/lib/tuned and are replaced on update. Your own profiles go under /etc/tuned (TuneD releases up to about 2.24 and Red Hat''s RHEL 10 guide use /etc/tuned/profiles; newer packaging reads custom profiles directly under /etc/tuned, so check the `profile_dirs` line in `/etc/tuned/tuned-main.conf` on your release), where they survive updates and can include a shipped profile.'
 - id: include
   prompt: What does include= do in a profile?
   choices:
