@@ -3,60 +3,80 @@ questions:
 - id: commission
   prompt: What does MAAS commissioning do?
   choices:
-  - Installs the production OS
-  - Mirrors repositories
-  - Boots an ephemeral image that gathers hardware facts and runs tests, making the machine Ready
-  - Deletes the BMC
+  - It boots an ephemeral image that gathers hardware facts and runs tests
+  - It installs the production operating system on the machine and joins it to the site
+  - It mirrors the package repositories for later deployment
+  - It removes the BMC from the machine record
   answer:
-  - 2
-  explain: 'A) wrong: that is deployment. B) wrong: unrelated. C) correct: results go in the inventory. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: results go in the inventory. B) wrong: that is deployment. C) wrong: unrelated. D) wrong: unrelated.'
 - id: buildmode
   prompt: What is the purpose of build mode in Foreman?
   choices:
-  - It shuts the host down
-  - It compiles packages
-  - It makes the boot service give a host its installer; outside build mode it boots from disk, so a reboot cannot reinstall it
-  - It changes the BMC password
+  - It shuts the host down once the build has finished and removes it from the list
+  - It compiles the packages that the host needs
+  - It rotates the BMC password for the host
+  - Only a host in build mode gets its installer, so reboots are safe
   answer:
-  - 2
-  explain: 'A) wrong: unrelated. B) wrong: nothing is compiled. C) correct: a state protects hosts in service. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: nothing is compiled. C) wrong: unrelated. D) correct: a state protects hosts in service.'
 - id: smartproxy
   prompt: What is a Foreman smart proxy?
   choices:
-  - A kind of firewall
-  - A service near the machines that provides DHCP, DNS, TFTP, BMC control or template serving on the server's behalf
-  - A DNS cache only
-  - A web browser plugin
+  - A firewall that sits in front of the Foreman server and filters its web traffic
+  - A service near the machines that provides DHCP, DNS, TFTP and BMC control
+  - A DNS cache that does nothing else
+  - A browser plugin that edits the host records
   answer:
   - 1
   explain: 'A) wrong: unrelated. B) correct: it keeps boot services local to each site. C) wrong: it does more than DNS. D) wrong: unrelated.'
 - id: split
   prompt: How do platforms and infrastructure as code usually divide the work?
   choices:
-  - IaC owns firmware
-  - They cannot be combined
-  - The platform owns physical machines and their lifecycle; IaC owns logical and virtual resources
-  - The platform owns DNS records for every cloud
+  - IaC owns the firmware of the physical machines
+  - They cannot be combined in one workflow, because each tool needs its own inventory
+  - The platform owns the DNS records of every cloud
+  - The platform owns the physical machines; IaC owns virtual resources
   answer:
-  - 2
-  explain: 'A) wrong: firmware is hardware lifecycle. B) wrong: a MAAS Terraform provider exists. C) correct: each calls the other through its API. D) wrong: not a platform duty.'
+  - 3
+  explain: 'A) wrong: firmware is hardware lifecycle. B) wrong: a MAAS Terraform provider exists. C) wrong: not a platform duty. D) correct: each calls the other through its API.'
 - id: bmc
   prompt: Which BMC practice is correct?
   choices:
-  - Put the BMC on an isolated network, change credentials, store them in a vault and rotate them
-  - Expose it to the internet for support
-  - Leave default credentials for convenience
-  - Share one password across the company
+  - Isolate the BMC network, vault the credentials and rotate them
+  - Expose the BMC to the internet so that the vendor can help with a failed board
+  - Keep the default credentials so any engineer can log in
+  - Share one BMC password across the whole company
   answer:
   - 0
-  explain: 'A) correct. B) wrong: never expose. C) wrong: BMC compromise is full machine compromise. D) wrong: no per-host accountability.'
+  explain: 'A) correct: limits exposure and keeps accountability. B) wrong: never expose a BMC. C) wrong: BMC compromise is full machine compromise. D) wrong: no per-host accountability.'
 - id: fdo
   prompt: What problem does FIDO Device Onboard address?
   choices:
-  - Time sync
-  - Printing
-  - Secure onboarding of devices to their owner without pre-configuration, using an ownership voucher
-  - Disk encryption
+  - Keeping the clocks of devices in step with one another
+  - Secure onboarding of devices to their owner, using an ownership voucher
+  - Sharing printers between hosts on one network
+  - Encrypting the disks of new devices before shipping
+  answer:
+  - 1
+  explain: 'A) wrong: unrelated. B) correct: the device contacts a rendezvous server and then its owner. C) wrong: unrelated. D) wrong: unrelated.'
+- id: stuckcommission
+  prompt: A new MAAS machine powers on, PXE boots the ephemeral image, then stays New and never becomes Ready. What do you check first?
+  choices:
+  - The commissioning output on the machine page, for the failed script
+  - The licence of the operating system image
+  - The DNS records of the production application
+  - The repository mirror used for the final deployment
+  answer:
+  - 0
+  explain: 'A) correct: failures there keep it from Ready. B) wrong: the image is not installed yet. C) wrong: unrelated to commissioning. D) wrong: deployment comes later.'
+- id: rebootinstall
+  prompt: A Foreman host in service reboots after a power cut and starts reinstalling itself. What went wrong?
+  choices:
+  - The smart proxy lost its DNS cache after the outage
+  - The BMC reset the clock of the host
+  - It was still in build mode, so the installer was offered again
+  - The provisioning template had a typo in a comment near the end of the file
   answer:
   - 2
-  explain: 'A) wrong. B) wrong. C) correct: the device contacts a rendezvous server and then its owner. D) wrong.'
+  explain: 'A) wrong: a cache does not start installs. B) wrong: the clock does not choose a boot action. C) correct: leave build mode once the build ends. D) wrong: comments do nothing.'

@@ -3,60 +3,80 @@ questions:
 - id: risk
   prompt: Why is a failed BMC firmware update especially serious?
   choices:
-  - The BMC is also the tool used for remote repair, and a failed update may need physical recovery or a replacement board
-  - It deletes the operating system
-  - It only affects the fan colour
-  - It changes the licence
+  - It deletes the operating system on the host and every file stored on it
+  - It only changes the colour of the fan lights
+  - The BMC is also the repair tool, so recovery may need physical access
+  - It changes the licence of the server
   answer:
-  - 0
-  explain: 'A) correct: you lose remote control of the machine. B) wrong: the host disks are not touched. C) wrong: unrelated. D) wrong: unrelated.'
+  - 2
+  explain: 'A) wrong: the OS is untouched. B) wrong: not serious like this. C) correct: you may lose remote access. D) wrong: unrelated.'
 - id: source
   prompt: Where should BMC firmware images come from?
   choices:
-  - A random mirror
-  - The server vendor's official support site, verified by checksum or signature
-  - Any forum post with a high score
-  - A colleague's laptop
+  - The vendor's support site, checked by checksum or signature
+  - A random download mirror found by searching for the model and version of the board
+  - A forum post with many upvotes
+  - A copy from a colleague's laptop
   answer:
-  - 1
-  explain: 'A) wrong: unverified. B) correct: authenticity matters. C) wrong: untrusted. D) wrong: unverifiable.'
+  - 0
+  explain: 'A) correct: official and verifiable. B) wrong: unverified. C) wrong: popularity is not trust. D) wrong: unverified copy.'
 - id: pilot
   prompt: Why run a pilot and waves instead of updating the whole rack at once?
   choices:
-  - Waves are required by IPMI
-  - It is cheaper in licences
-  - It makes the firmware smaller
-  - A defect then affects only a few machines and the campaign can stop
+  - IPMI requires every update to be rolled out in waves of no more than ten
+  - A defect then hits only a few machines and the campaign can stop
+  - It saves licence cost for the management tools
+  - It makes the firmware image smaller to transfer
   answer:
-  - 3
-  explain: 'A) wrong: not a protocol rule. B) wrong: unrelated. C) wrong: unrelated. D) correct: the blast radius is limited.'
+  - 1
+  explain: 'A) wrong: no such rule. B) correct: limits the blast radius. C) wrong: unrelated. D) wrong: unrelated.'
 - id: preserve
   prompt: Why check whether the update preserved the configuration?
   choices:
-  - It does not matter
-  - Some updates reset the BMC to defaults, leaving a default account and network settings on the management network
-  - Only the fans are reset
-  - Configuration files are always kept
+  - Configuration files are always kept by the update
+  - Only the fan settings are reset to defaults
+  - It does not matter once the update has finished
+  - Some updates reset the BMC, leaving default accounts on the management network
   answer:
-  - 1
-  explain: 'A) wrong: it is a common security gap. B) correct: verify network, accounts and security settings afterwards. C) wrong: more is reset. D) wrong: not guaranteed.'
+  - 3
+  explain: 'A) wrong: not always. B) wrong: more may be reset. C) wrong: it does matter. D) correct: a security risk.'
 - id: secureboot
   prompt: What does UEFI Secure Boot add?
   choices:
-  - The firmware runs only boot programs signed by trusted certificates, starting a chain of trust to the kernel
-  - It replaces the BMC
-  - It speeds up booting
-  - It encrypts the BMC password
+  - It replaces the BMC on the board
+  - Only boot programs signed by trusted certificates run, forming a chain of trust
+  - It speeds up the boot of the operating system
+  - It encrypts the BMC password in flash and the boot loader on the host disk
   answer:
-  - 0
-  explain: 'A) correct: it blocks unsigned boot code, and mokutil --sb-state shows the state. B) wrong: unrelated. C) wrong: unrelated. D) wrong: unrelated.'
+  - 1
+  explain: 'A) wrong: different thing. B) correct: blocks unsigned loaders. C) wrong: not its purpose. D) wrong: unrelated.'
 - id: emulator
   prompt: Which of these can an emulator NOT teach?
   choices:
-  - How long a real update takes, how recovery works on a failed board and how a vendor's tool behaves
-  - How to write a script that sets a boot override
+  - How to script a boot override
   - How to call a Redfish endpoint
-  - How a REST client handles a 401
+  - How a REST client handles a 401 response when the session token has expired
+  - How long a real update takes and how a failed board recovers
+  answer:
+  - 3
+  explain: 'A) wrong: an emulator teaches this. B) wrong: an emulator teaches this. C) wrong: an emulator teaches this. D) correct: only real hardware shows this.'
+- id: wave1
+  prompt: During wave one, two of ten BMCs stop answering after the update. What should the campaign do?
+  choices:
+  - Stop later waves, recover those two by the vendor procedure, find the cause
+  - Continue with wave two at once to finish on time
+  - Reboot all ten hosts to clear the fault
+  - Flash the same image again on the other machines
   answer:
   - 0
-  explain: 'A) correct: these are physical and vendor-specific. B) wrong: emulators teach this. C) wrong: emulators teach this. D) wrong: emulators teach this.'
+  explain: 'A) correct: a pilot exists to find this. B) wrong: spreads the failure. C) wrong: not related to a BMC fault. D) wrong: repeats the failure.'
+- id: defaults
+  prompt: After a firmware update the BMC answers with the vendor's default account on the management network. What do you do?
+  choices:
+  - Change the credentials at once, restore settings, add a post-update check
+  - Leave it until the next maintenance window
+  - Open the BMC to the internet to test it
+  - Share the default login with the whole team so that anyone can fix the settings
+  answer:
+  - 0
+  explain: 'A) correct: a reset to defaults is a known risk. B) wrong: the account is exposed now. C) wrong: makes it worse. D) wrong: no accountability.'

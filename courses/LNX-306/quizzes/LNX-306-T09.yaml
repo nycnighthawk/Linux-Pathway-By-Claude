@@ -3,60 +3,80 @@ questions:
 - id: drift
   prompt: What is configuration drift?
   choices:
-  - Slow network speed
-  - The gap between the recorded intended state of a host and its actual state
-  - A kind of file system
-  - Clock skew between two hosts
+  - A slow network between hosts in the same rack
+  - Clock skew between two hosts in a cluster
+  - A type of file system used on backup hosts
+  - The gap between a host's intended state and its actual state
   answer:
-  - 1
-  explain: 'A) wrong: unrelated. B) correct: hand edits and updates move a host away from its baseline. C) wrong: unrelated. D) wrong: that is time drift.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: a different problem. C) wrong: unrelated. D) correct: what a drift check reports.'
 - id: aidedb
   prompt: After a patch window, why must the AIDE database be updated by a person who has reviewed the changes?
   choices:
-  - It must never be updated
-  - Otherwise every later report is full of known, legitimate changes and real problems are hidden
-  - Because AIDE deletes files
-  - To make AIDE run faster
+  - Otherwise later reports fill with known changes and hide real problems
+  - It must never be updated after the first run
+  - AIDE deletes the files that are not listed in the database when it runs
+  - It makes AIDE run faster on the next scan
   answer:
-  - 1
-  explain: 'A) wrong: a stale baseline is noise. B) correct: the baseline must reflect approved change. C) wrong: it only reports. D) wrong: unrelated.'
+  - 0
+  explain: 'A) correct: the baseline must reflect reviewed state. B) wrong: a stale baseline is useless. C) wrong: it only reports. D) wrong: not the reason.'
 - id: checkmode
   prompt: What is a weakness of detecting drift with Ansible check mode?
   choices:
-  - It changes the hosts
-  - It cannot read YAML
-  - Tasks that do not support check mode or are not idempotent report nothing or always report change
-  - It works only on Windows
+  - It makes changes to the hosts while it runs, which defeats a dry run
+  - It cannot read YAML playbooks
+  - It works only on Windows hosts
+  - Tasks that lack check-mode support, or are not idempotent, mislead it
   answer:
-  - 2
-  explain: 'A) wrong: check mode makes no changes. B) wrong: unrelated. C) correct: the method depends on declarative, idempotent tasks. D) wrong: it works on Linux.'
+  - 3
+  explain: 'A) wrong: check mode does not change them. B) wrong: it reads YAML. C) wrong: it works on Linux. D) correct: results can be wrong.'
 - id: ssd
   prompt: Why is overwriting an SSD from the operating system an unreliable wipe?
   choices:
-  - SSDs cannot be written to
-  - The drive remaps blocks and keeps spare cells, so old data may sit in places the overwrite never touches
-  - Overwriting is illegal
-  - SSDs have no controller
+  - SSDs cannot be written to by the operating system
+  - The drive remaps blocks, so old data can survive an overwrite
+  - Overwriting data is not allowed under most data-protection laws and rules
+  - SSDs have no controller to manage the cells
   answer:
   - 1
-  explain: 'A) wrong: they can be written. B) correct: use the device sanitise or cryptographic erase. C) wrong: not illegal. D) wrong: they have one.'
+  explain: 'A) wrong: they can. B) correct: use the drive''s sanitize command or cryptographic erase. C) wrong: it is legal. D) wrong: they have one.'
 - id: crypto
   prompt: What does cryptographic erase of a LUKS volume do?
   choices:
-  - Compresses the volume
-  - Formats it as ext4
-  - Removes all key slots so the master key cannot be recovered, making the encrypted data unreadable
-  - Overwrites every block with zeros
+  - It compresses the volume to save space on the drive
+  - It overwrites every block of the volume with zeros, one pass after another
+  - It formats the volume as ext4 without a key
+  - It removes all key slots, so the master key is lost and data unreadable
   answer:
-  - 2
-  explain: 'A) wrong: unrelated. B) wrong: the data would remain. C) correct: fast and independent of size, if no key copies survive. D) wrong: that is an overwrite.'
+  - 3
+  explain: 'A) wrong: unrelated. B) wrong: that is a slow overwrite. C) wrong: unrelated. D) correct: fast and effective for encrypted volumes.'
 - id: record
   prompt: A technician wiped 40 drives but kept no record. How does an auditor treat the work?
   choices:
-  - As done, since the drives are empty
-  - As not done, because sanitisation must be tracked, documented and verified
-  - As irrelevant
-  - As done if the technician is trusted
+  - As not done, because sanitisation must be documented and verified
+  - As done, since the drives are now empty
+  - As irrelevant to the audit scope
+  - As done if the technician is trusted by the team and signs a short note
   answer:
-  - 1
-  explain: 'A) wrong: emptiness cannot be proved without a record. B) correct: the control requires evidence per asset. C) wrong: it is a compliance failure. D) wrong: trust is not evidence.'
+  - 0
+  explain: 'A) correct: no evidence, no sanitisation. B) wrong: empty is not evidence. C) wrong: sanitisation is audited. D) wrong: trust is not evidence.'
+- id: aidenoise
+  prompt: After a kernel patch window, the AIDE report lists thousands of changes. What is the right order of work?
+  choices:
+  - Review the list for surprises, then update the database from that state
+  - Update the database at once so the next report is quiet
+  - Disable AIDE for a week to avoid the noise
+  - Delete the database and stop running AIDE
+  answer:
+  - 0
+  explain: 'A) correct: the baseline should follow review. B) wrong: hides anything unexpected. C) wrong: no detection in that period. D) wrong: removes the control.'
+- id: decom
+  prompt: A server with self-encrypting SSDs is retired and the old team overwrote them once with zeros. Which plan is better for the next one?
+  choices:
+  - The drive's sanitize command or cryptographic erase, verified and recorded
+  - Overwrite three times with random data from the OS
+  - Quick format the drives, and ship them to the recycler with the rest of the rack
+  - Skip the wipe if the drives stay in a locked room
+  answer:
+  - 0
+  explain: 'A) correct: matches how SSDs actually store data. B) wrong: still misses remapped blocks. C) wrong: data remains readable. D) wrong: the data leaves with the drives.'

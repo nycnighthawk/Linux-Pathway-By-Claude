@@ -3,60 +3,80 @@ questions:
 - id: state
   prompt: What is the role of the state file?
   choices:
-  - It maps configuration addresses to the real objects the tool created, so later runs update or destroy exactly those
-  - It caches package downloads
-  - It stores the Git history
-  - It holds the provider source code
+  - It caches the package downloads of the provider
+  - It stores the Git history of the configuration
+  - It maps configuration addresses to the real objects the tool created
+  - It holds the source code of the providers and the modules that the root module calls
   answer:
-  - 0
-  explain: 'A) correct: without it the tool would try to recreate everything. B) wrong: unrelated. C) wrong: Git stores history. D) wrong: providers are downloaded separately.'
+  - 2
+  explain: 'A) wrong: unrelated. B) wrong: Git stores history. C) correct: without it the tool would try to recreate everything. D) wrong: providers are downloaded separately.'
 - id: foreach
   prompt: vm_names is a set of three names used with for_each. You remove one name and apply. What happens?
   choices:
-  - Nothing, the VM stays
-  - Only the VM for the removed name (and its disk and seed) is destroyed
-  - All three VMs are recreated
-  - The base image is deleted
+  - Only the VM for the removed name, with its disk and seed
+  - All three VMs are destroyed and built again from scratch
+  - Nothing changes, because the VM already exists
+  - The shared base image is deleted along with the VM
   answer:
-  - 1
-  explain: 'A) wrong: it is no longer declared. B) correct: resources are tracked by key. C) wrong: the other keys are unchanged. D) wrong: the base volume is shared.'
+  - 0
+  explain: 'A) correct: resources are tracked by key. B) wrong: the other keys are unchanged. C) wrong: it is no longer declared. D) wrong: the base volume is shared.'
 - id: secretsstate
   prompt: Why must the state file be protected?
   choices:
-  - It contains attribute values that may include secrets, such as keys and passwords
-  - It is large
-  - It is executable
-  - It has no backups
+  - It can grow very large as resources are added
+  - It is executable and could be made to run commands on the host that opens it
+  - It keeps attribute values, which can include keys and passwords
+  - It is never backed up unless you configure it
   answer:
-  - 0
-  explain: 'A) correct: sensitive variables are hidden from plan output but remain in state. B) wrong: size is not the risk. C) wrong: it is data. D) wrong: backups are advised, but the issue is content.'
+  - 2
+  explain: 'A) wrong: size is not the risk. B) wrong: it is data. C) correct: sensitive variables are hidden from plan output but remain in state. D) wrong: backups are advised, but the issue is content.'
 - id: savedplan
   prompt: Why apply a saved plan file in a pipeline?
   choices:
-  - It disables locking
-  - What was reviewed is exactly what runs, even if the state changed since
-  - It runs faster
-  - It avoids provider downloads
+  - It turns off state locking for that run
+  - It skips the provider download step on the runner
+  - It makes the apply finish faster than a fresh plan
+  - What was reviewed is exactly what runs, even if state changed
   answer:
-  - 1
-  explain: 'A) wrong: locking still applies. B) correct: a fresh plan could differ from the reviewed one. C) wrong: not the point. D) wrong: unrelated.'
+  - 3
+  explain: 'A) wrong: locking still applies. B) wrong: unrelated. C) wrong: not the point. D) correct: a fresh plan could differ from the reviewed one.'
 - id: drift
   prompt: Which command reports differences caused by hand edits without proposing configuration changes?
   choices:
-  - tofu fmt
-  - tofu init
-  - tofu plan -refresh-only
-  - tofu destroy
+  - tofu plan -refresh-only, which compares state with reality
+  - tofu fmt, which only formats the configuration files
+  - tofu init, which installs providers and modules
+  - tofu destroy, which removes all the managed resources so that they can be rebuilt
   answer:
-  - 2
-  explain: 'A) wrong: formatting only. B) wrong: installs providers. C) correct: it refreshes state from reality and shows drift. D) wrong: that deletes.'
+  - 0
+  explain: 'A) correct: it refreshes state from reality and shows drift. B) wrong: formats files only. C) wrong: installs providers. D) wrong: that deletes the resources.'
 - id: userdata
   prompt: You change the user-data template of a running VM and apply. What should you expect?
   choices:
-  - A new seed ISO, but the guest's cloud-init does not re-run unless the instance-id changes or its state is cleaned
-  - The VM is deleted by libvirt
-  - cloud-init re-runs and applies it at once
-  - Nothing at all in the plan
+  - libvirt deletes the VM when the seed ISO changes
+  - A new seed ISO; cloud-init re-runs only after a new instance-id or clean
+  - cloud-init in the guest re-runs and applies the change at once
+  - An empty plan, because user-data is not tracked
+  answer:
+  - 1
+  explain: 'A) wrong: libvirt does not delete. B) correct: replace the VM or push the change by configuration management. C) wrong: per-instance modules run once. D) wrong: the plan shows a seed change.'
+- id: handedit
+  prompt: The plan shows a disk it wants to replace, but a colleague resized that disk by hand last week. What is the safest first step?
+  choices:
+  - Run tofu plan -refresh-only to see the drift, then decide what to keep
+  - Apply the plan and accept the replacement of the disk
+  - Delete the state file and import every resource again from the live libvirt host
+  - Run tofu fmt so the difference settles by itself
   answer:
   - 0
-  explain: 'A) correct: replace the VM or push the change by configuration management. B) wrong: libvirt does not delete. C) wrong: per-instance modules run once. D) wrong: the plan shows a seed change.'
+  explain: 'A) correct: shows the difference without changing anything. B) wrong: may destroy data on the disk. C) wrong: loses the mapping of every resource. D) wrong: formatting does not touch drift.'
+- id: twoapply
+  prompt: Two pipeline jobs apply to the same state at the same time and one fails with a lock error. What does this tell you?
+  choices:
+  - The provider has a bug that has to be reported upstream
+  - The backend locks state so two writers cannot corrupt it; rerun later
+  - One module has a syntax error that only shows up when the plan is applied
+  - The libvirt host ran out of memory while applying
+  answer:
+  - 1
+  explain: 'A) wrong: locking is working as designed. B) correct: the lock protects the state. C) wrong: a syntax error fails earlier. D) wrong: a lock error is about state.'
